@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Pagamento confirmado</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --verde: #27A05A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+  }
+
+  .card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    padding: 3rem 2.5rem;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .check-circle {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(39,160,90,0.15);
+    border: 1px solid rgba(39,160,90,0.4);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    animation: pop 0.4s ease both;
+  }
+  .check-circle svg { width: 28px; height: 28px; }
+
+  @keyframes pop {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 0.05em;
+    color: var(--cinza-texto);
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 0.03em;
+    color: var(--branco);
+    margin-bottom: 0.75rem;
+    line-height: 1.1;
+  }
+
+  .subtitulo {
+    font-size: 14px;
+    color: var(--cinza-texto);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .info-box {
+    background: rgba(39,160,90,0.08);
+    border: 1px solid rgba(39,160,90,0.25);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    font-size: 13px;
+    color: #7DD99A;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+  .info-box strong { color: #A8ECC0; font-weight: 500; }
+
+  .timer-wrap {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 13px; color: var(--cinza-texto);
+    margin-bottom: 1.5rem;
+  }
+  .timer-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px; font-weight: 500;
+    color: var(--branco);
+    min-width: 24px;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: #2A2A2A;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--verde);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.5s linear;
+  }
+
+  .btn-entrar {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--vermelho);
+    color: #fff;
+    border: none; border-radius: 8px;
+    padding: 13px 32px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.2s;
+  }
+  .btn-entrar:hover { background: #8B1A08; }
+
+  .rodape {
+    margin-top: 1.5rem;
+    font-size: 12px; color: #555;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">GraduaBM</div>
+
+  <div class="check-circle">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#27A05A" stroke-width="2.5"
+         stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 12l5 5 11-11"/>
+    </svg>
+  </div>
+
+  <h1>Pagamento<br>confirmado.</h1>
+
+  <p class="subtitulo">
+    Sua assinatura foi ativada. Em alguns segundos você será redirecionado para o login.
+  </p>
+
+  <div class="info-box">
+    <strong>O que acontece agora:</strong><br>
+    Seu acesso está sendo liberado automaticamente. Faça login com o mesmo e-mail usado na compra para acessar o conteúdo completo.
+  </div>
+
+  <div class="timer-wrap">
+    <span>Redirecionando em</span>
+    <span class="timer-num" id="contador">8</span>
+    <span>segundos...</span>
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-fill" id="progress"></div>
+  </div>
+
+  <a href="/login" class="btn-entrar">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+      <polyline points="10 17 15 12 10 7"/>
+      <line x1="15" y1="12" x2="3" y2="12"/>
+    </svg>
+    Entrar agora
+  </a>
+
+  <p class="rodape">Dúvidas? Entre em contato pelo suporte.</p>
+</div>
+
+<script>
+  const TOTAL = 8;
+  let restante = TOTAL;
+
+  const contador  = document.getElementById('contador');
+  const progress  = document.getElementById('progress');
+
+  // Iniciar barra de progresso
+  requestAnimationFrame(() => {
+    progress.style.width = '100%';
+    progress.style.transition = `width ${TOTAL}s linear`;
+  });
+
+  const intervalo = setInterval(() => {
+    restante--;
+    contador.textContent = restante;
+    if (restante <= 0) {
+      clearInterval(intervalo);
+      window.location.href = '/login';
+    }
+  }, 1000);
+</script>
+</body>
+</html>

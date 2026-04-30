@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --vermelho-claro: #F5E8E5;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --branco-suave: #EFEFEA;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+    height: 56px;
+    background: rgba(15,15,15,0.92);
+    border-bottom: 1px solid var(--cinza-borda);
+    backdrop-filter: blur(8px);
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-badge {
+    background: var(--vermelho);
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.08em;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.05em;
+    color: var(--branco);
+  }
+  .nav-links {
+    display: flex; align-items: center; gap: 2rem;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--cinza-texto);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--branco); }
+  .nav-cta {
+    background: var(--vermelho);
+    color: #fff !important;
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 13px !important;
+    font-weight: 500;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--vermelho-escuro) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 56px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(192,39,15,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(192,39,15,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .hero-left {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 4rem 3rem 4rem 4rem;
+    position: relative; z-index: 2;
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(192,39,15,0.12);
+    border: 1px solid rgba(192,39,15,0.35);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #E0866E;
+    letter-spacing: 0.06em;
+    margin-bottom: 2rem;
+    width: fit-content;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--vermelho);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 6vw, 80px);
+    line-height: 0.92;
+    letter-spacing: 0.02em;
+    color: var(--branco);
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero-titulo .destaque {
+    color: var(--vermelho);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--cinza-texto);
+    line-height: 1.7;
+    max-width: 420px;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-sub strong { color: var(--branco-suave); font-weight: 500; }
+
+  .hero-btns {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--vermelho);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 13px 28px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary:hover { background: var(--vermelho-escuro); transform: translateY(-1px); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--branco-suave);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 13px 24px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    text-decoration: none;
+  }
+  .btn-secondary:hover { border-color: #555; background: rgba(255,255,255,0.04); }
+
+  .hero-stats {
+    display: flex; gap: 2rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--cinza-borda);
+    animation: fadeUp 0.6s 0.4s ease both;
+  }
+  .stat { }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 0.04em;
+    color: var(--branco);
+  }
+  .stat-desc { font-size: 11px; color: var(--cinza-texto); line-height: 1.4; }
+
+  /* ── HERO RIGHT — CARD PREVIEW ── */
+  .hero-right {
+    display: flex; align-items: center; justify-content: center;
+    padding: 4rem 4rem 4rem 2rem;
+    position: relative; z-index: 2;
+  }
+
+  .preview-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    width: 100%; max-width: 400px;
+    overflow: hidden;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .preview-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .preview-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+  }
+  .preview-body { padding: 20px 18px; }
+  .preview-area-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    color: var(--vermelho);
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .preview-questao {
+    font-size: 13px; line-height: 1.65;
+    color: var(--branco-suave);
+    margin-bottom: 18px;
+  }
+  .preview-alts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+  .alt {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--cinza-medio);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 12px;
+    color: #bbb;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .alt:hover { border-color: #555; }
+  .alt.correta {
+    border-color: #2D7D46;
+    background: rgba(45,125,70,0.12);
+    color: #7DD99A;
+  }
+  .alt-letra {
+    width: 20px; height: 20px; flex-shrink: 0;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 500;
+    opacity: 0.7;
+  }
+  .alt.correta .alt-letra {
+    background: #2D7D46; border-color: #2D7D46; color: #fff; opacity: 1;
+  }
+  .preview-footer {
+    border-top: 1px solid var(--cinza-borda);
+    padding: 12px 18px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .preview-progress { display: flex; align-items: center; gap: 8px; }
+  .prog-bar { width: 80px; height: 3px; background: #333; border-radius: 3px; }
+  .prog-fill { height: 100%; background: var(--vermelho); border-radius: 3px; width: 40%; }
+  .prog-txt { font-size: 11px; color: var(--cinza-texto); }
+  .preview-next-btn {
+    background: var(--vermelho);
+    color: #fff; border: none;
+    border-radius: 6px; padding: 6px 14px;
+    font-size: 12px; font-weight: 500; cursor: pointer;
+  }
+
+  /* ── AREAS SECTION ── */
+  .areas-section {
+    padding: 5rem 4rem;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .section-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--vermelho);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .section-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px; letter-spacing: 0.03em;
+    color: var(--branco);
+    margin-bottom: 3rem;
+  }
+
+  .areas-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--cinza-borda);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .area-card {
+    background: var(--cinza-escuro);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .area-card:hover { background: var(--cinza-medio); }
+  .area-num-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; line-height: 1;
+    letter-spacing: 0.02em;
+  }
+  .area-q { display: none; }
+  .area-nome {
+    font-size: 13px; font-weight: 500;
+    color: var(--branco); line-height: 1.4;
+    flex: 1;
+  }
+  .area-refs {
+    font-size: 10px; color: var(--cinza-texto);
+    line-height: 1.5;
+  }
+  .area-bar { height: 2px; background: #333; border-radius: 2px; margin-top: auto; }
+  .area-bar-fill { height: 100%; border-radius: 2px; width: 0%; transition: width 0.4s; }
+
+  /* ── FEATURES ── */
+  .features-section {
+    padding: 5rem 4rem;
+    border-top: 1px solid var(--cinza-borda);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--cinza-borda);
+  }
+  .feature {
+    background: var(--carvao);
+    padding: 2.5rem 2rem;
+  }
+  .feature-icon {
+    width: 40px; height: 40px;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.25rem;
+  }
+  .feature-icon svg { width: 18px; height: 18px; stroke: var(--vermelho); }
+  .feature-nome {
+    font-weight: 600; font-size: 15px;
+    color: var(--branco);
+    margin-bottom: 8px;
+  }
+  .feature-desc { font-size: 13px; color: var(--cinza-texto); line-height: 1.6; }
+
+  /* ── CTA FINAL ── */
+  .cta-section {
+    padding: 5rem 4rem;
+    border-top: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center;
+  }
+  .cta-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 56px);
+    letter-spacing: 0.03em;
+    color: var(--branco);
+    max-width: 600px;
+    margin-bottom: 1rem;
+  }
+  .cta-sub { font-size: 14px; color: var(--cinza-texto); margin-bottom: 2rem; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 1.5rem 4rem;
+    border-top: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.04em; color: #444; }
+  .footer-txt { font-size: 11px; color: #444; }
+
+  /* ── ANIM ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <span class="logo-text">GraduaBM</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#areas">Áreas temáticas</a></li>
+    <li><a href="#como-funciona">Como funciona</a></li>
+    <li><a href="#" class="nav-cta">Começar agora</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+
+  <div class="hero-left">
+    <div class="hero-tag">Preparatório para Sargento e Tenente — Processo Seletivo Intelectual</div>
+
+    <h1 class="hero-titulo">
+      A graduação<br>
+      <span class="destaque">começa aqui.</span>
+    </h1>
+
+    <p class="hero-sub">
+      Questões organizadas por legislação, simulados no tempo oficial da prova e acompanhamento do seu desempenho — tudo focado em quem quer <strong>avançar na carreira</strong> pelo mérito intelectual.<br><br>
+      Conteúdo baseado nos <strong>decretos, leis e normativas</strong> cobrados na prova — sem enrolação.
+    </p>
+
+    <div class="hero-btns">
+      <a href="#areas" class="btn-primary">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        Estudar agora
+      </a>
+      <a href="#como-funciona" class="btn-secondary">Ver como funciona</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">60</div>
+        <div class="stat-desc">questões<br>na prova</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-desc">áreas<br>temáticas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">50%</div>
+        <div class="stat-desc">das vagas por<br>mérito intelectual</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="preview-card">
+      <div class="preview-header">
+        <span class="preview-label">graduabm.com.br</span>
+      </div>
+      <div class="preview-body">
+        <div class="preview-area-tag">
+          <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><circle cx="4" cy="4" r="4"/></svg>
+          Direito institucional — LC 14.920/2016
+        </div>
+        <p class="preview-questao">
+          De acordo com a Lei Complementar nº 14.920/2016 (Lei de Organização Básica do CBMRS), assinale a alternativa correta sobre as atribuições do Corpo de Bombeiros Militar do RS:
+        </p>
+        <div class="preview-alts">
+          <div class="alt">
+            <div class="alt-letra">A</div>
+            <span>Cabe ao CBMRS a preservação da ordem pública estadual como missão principal.</span>
+          </div>
+          <div class="alt correta">
+            <div class="alt-letra">B</div>
+            <span>Compete ao CBMRS realizar buscas, salvamentos e resgates aéreo, aquático e terrestre no Estado.</span>
+          </div>
+          <div class="alt">
+            <div class="alt-letra">C</div>
+            <span>O CBMRS está vinculado diretamente ao Governador do Estado, sem intermediação de Secretaria.</span>
+          </div>
+          <div class="alt">
+            <div class="alt-letra">D</div>
+            <span>A credenciação de escolas de bombeiros civis não é atribuição do CBMRS.</span>
+          </div>
+          <div class="alt">
+            <div class="alt-letra">E</div>
+            <span>O poder de polícia administrativa do CBMRS se limita ao combate a incêndios urbanos.</span>
+          </div>
+        </div>
+        <div class="preview-footer">
+          <div class="preview-progress">
+            <div class="prog-bar"><div class="prog-fill"></div></div>
+            <span class="prog-txt">40% concluído</span>
+          </div>
+          <button class="preview-next-btn">Próxima →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- AREAS -->
+<section class="areas-section" id="areas">
+  <div class="section-eyebrow">Conteúdo programático</div>
+  <div class="section-titulo">5 Áreas temáticas</div>
+
+  <div class="areas-grid">
+    <div class="area-card">
+      <div class="area-num-big" style="color:#C0270F;">01</div>
+      <div class="area-q" style="background:rgba(192,39,15,0.12);color:#E0866E;">14 questões</div>
+      <div class="area-nome">Segurança contra incêndios</div>
+      <div class="area-refs">Lei 13.425/17 · LC 14.376/13 · Dec. 51.803/14 · RTs CBMRS</div>
+      <div class="area-bar"><div class="area-bar-fill" style="background:#C0270F;"></div></div>
+    </div>
+    <div class="area-card">
+      <div class="area-num-big" style="color:#BA7517;">02</div>
+      <div class="area-q" style="background:rgba(186,117,23,0.12);color:#EF9F27;">8 questões</div>
+      <div class="area-nome">Combate a incêndios</div>
+      <div class="area-refs">Manual CBMMG Combate a Incêndio Urbano — Cap. 1, 2, 3, 5 e 7</div>
+      <div class="area-bar"><div class="area-bar-fill" style="background:#BA7517;"></div></div>
+    </div>
+    <div class="area-card">
+      <div class="area-num-big" style="color:#185FA5;">03</div>
+      <div class="area-q" style="background:rgba(24,95,165,0.12);color:#85B7EB;">14 questões</div>
+      <div class="area-nome">Buscas e salvamentos / APH</div>
+      <div class="area-refs">ITO 23 · IT 010 BSR · ITO 34 Salv. Veicular · POP RS</div>
+      <div class="area-bar"><div class="area-bar-fill" style="background:#185FA5;"></div></div>
+    </div>
+    <div class="area-card">
+      <div class="area-num-big" style="color:#27A05A;">04</div>
+      <div class="area-q" style="background:rgba(39,160,90,0.12);color:#7DD99A;">12 questões</div>
+      <div class="area-nome">Direito institucional, constitucional e militar</div>
+      <div class="area-refs">LCs · CF/88 · CE/RS · CPM · CPPM · RDBM · IRs Corregedoria</div>
+      <div class="area-bar"><div class="area-bar-fill" style="background:#27A05A;"></div></div>
+    </div>
+    <div class="area-card">
+      <div class="area-num-big" style="color:#7F77DD;">05</div>
+      <div class="area-q" style="background:rgba(127,119,221,0.12);color:#AFA9EC;">12 questões</div>
+      <div class="area-nome">Normas administrativas e documentação técnica</div>
+      <div class="area-refs">Dec. 57.390 · Lei 6.196 · IT 03 (E-193) · IT 04 (FR2) · Caderno ABM</div>
+      <div class="area-bar"><div class="area-bar-fill" style="background:#7F77DD;"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="como-funciona">
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div class="feature-nome">Conteúdo direto da legislação</div>
+    <div class="feature-desc">Cada questão é elaborada a partir dos exatos decretos, leis e normativas cobrados no processo seletivo intelectual. Sem desvios.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <div class="feature-nome">Gabarito comentado com artigos</div>
+    <div class="feature-desc">Cada resposta traz a justificativa com o artigo ou dispositivo exato da norma — você aprende enquanto pratica.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"/>
+        <line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+    </div>
+    <div class="feature-nome">Desempenho por área temática</div>
+    <div class="feature-desc">Acompanhe sua evolução em cada uma das 5 áreas e saiba exatamente onde focar nos dias que antecedem a prova.</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <h2 class="cta-titulo">Pronto para passar pra Sargento?</h2>
+  <p class="cta-sub">Comece agora — escolha a área temática e pratique as questões do CTSP/CBA.</p>
+  <a href="#areas" class="btn-primary" style="font-size:15px;padding:15px 36px;">
+    Começar a estudar
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+  </a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">GraduaBM</span>
+  <span class="footer-txt">CTSP / CBA · Processo Seletivo Intelectual</span>
+</footer>
+
+</body>
+</html>

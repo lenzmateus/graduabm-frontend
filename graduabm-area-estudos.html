@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Área de Estudos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --branco-suave: #EFEFEA;
+
+    --ctsp: #C0270F;
+    --ctsp-bg: rgba(192,39,15,0.08);
+    --ctsp-borda: rgba(192,39,15,0.3);
+
+    --cba: #185FA5;
+    --cba-bg: rgba(24,95,165,0.08);
+    --cba-borda: rgba(24,95,165,0.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column;
+    padding: 0;
+  }
+
+  .sidebar-logo {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.05em;
+    color: var(--branco);
+    text-decoration: none;
+  }
+
+  .sidebar-usuario {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .usuario-nome {
+    font-size: 13px; font-weight: 500;
+    color: var(--branco); margin-bottom: 2px;
+  }
+  .usuario-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 500;
+    color: #7DD99A; letter-spacing: 0.04em;
+  }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: #555;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px;
+  }
+  .nav-label:first-child { margin-top: 0; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 1.25rem;
+    font-size: 13px; color: var(--cinza-texto);
+    cursor: pointer; transition: background 0.12s, color 0.12s;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo {
+    color: var(--branco);
+    border-left-color: var(--vermelho);
+    background: rgba(192,39,15,0.08);
+  }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .btn-sair {
+    width: 100%; background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 7px 0; font-size: 12px;
+    cursor: pointer; transition: all 0.15s;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* ── CONTEÚDO PRINCIPAL ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .topbar {
+    height: 56px; flex-shrink: 0;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+  }
+  .topbar-titulo {
+    font-size: 14px; font-weight: 500;
+    color: var(--branco);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-mono {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+  }
+
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
+
+  /* ── SELETOR DE CURSO ── */
+  .curso-seletor {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 2rem;
+  }
+
+  .curso-card {
+    border-radius: 12px; padding: 1.25rem 1.5rem;
+    cursor: pointer; transition: all 0.15s;
+    border: 1px solid var(--cinza-borda);
+    background: var(--cinza-escuro);
+    position: relative; overflow: hidden;
+  }
+  .curso-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+  }
+  .curso-card.ctsp::before { background: var(--ctsp); }
+  .curso-card.cba::before { background: var(--cba); }
+
+  .curso-card.selecionado.ctsp {
+    border-color: var(--ctsp-borda);
+    background: var(--ctsp-bg);
+  }
+  .curso-card.selecionado.cba {
+    border-color: var(--cba-borda);
+    background: var(--cba-bg);
+  }
+  .curso-card:not(.selecionado):hover { background: var(--cinza-medio); }
+
+  .curso-sigla {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 0.04em;
+    margin-bottom: 2px;
+  }
+  .curso-card.ctsp .curso-sigla { color: var(--ctsp); }
+  .curso-card.cba .curso-sigla { color: var(--cba); }
+
+  .curso-nome {
+    font-size: 13px; font-weight: 500;
+    color: var(--branco); margin-bottom: 2px;
+  }
+  .curso-desc { font-size: 11px; color: var(--cinza-texto); }
+
+  .curso-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .curso-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    padding: 2px 8px; border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+  .ctsp .curso-pill { background: var(--ctsp-bg); color: #E0866E; border: 1px solid var(--ctsp-borda); }
+  .cba .curso-pill { background: var(--cba-bg); color: #85B7EB; border: 1px solid var(--cba-borda); }
+
+  .curso-check {
+    margin-left: auto; width: 18px; height: 18px;
+    border-radius: 50%; border: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .selecionado .curso-check {
+    border-color: currentColor;
+    background: currentColor;
+  }
+  .ctsp.selecionado .curso-check { color: var(--ctsp); }
+  .cba.selecionado .curso-check { color: var(--cba); }
+
+  /* ── ÁREAS TEMÁTICAS ── */
+  .secao-titulo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .secao-titulo::after {
+    content: ''; flex: 1; height: 1px;
+    background: var(--cinza-borda);
+  }
+
+  .areas-lista { display: flex; flex-direction: column; gap: 1px; }
+
+  .area-item {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .area-item:hover { border-color: #444; }
+
+  .area-header {
+    display: flex; align-items: center; gap: 0;
+    cursor: pointer; padding: 0;
+  }
+
+  .area-num {
+    width: 52px; flex-shrink: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    align-self: stretch; gap: 2px;
+    border-right: 1px solid var(--cinza-borda);
+    padding: 14px 0;
+  }
+  .area-num-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: #555; letter-spacing: 0.06em;
+  }
+  .area-num-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.02em;
+  }
+
+  .area-info { flex: 1; padding: 14px 16px; min-width: 0; }
+  .area-nome {
+    font-size: 13px; font-weight: 500;
+    color: var(--branco); margin-bottom: 4px;
+  }
+  .area-legislacao {
+    font-size: 11px; color: var(--cinza-texto);
+    line-height: 1.5; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .area-legislacao.expandida { white-space: normal; }
+
+  .area-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 500;
+    padding: 2px 7px; border-radius: 20px;
+    letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .tag-igual { background: rgba(255,255,255,0.05); color: #666; border: 1px solid #333; }
+  .tag-exclusivo-ctsp { background: var(--ctsp-bg); color: #E0866E; border: 1px solid var(--ctsp-borda); }
+  .tag-exclusivo-cba { background: var(--cba-bg); color: #85B7EB; border: 1px solid var(--cba-borda); }
+
+  .area-acoes {
+    display: flex; flex-direction: column; gap: 6px;
+    padding: 14px 16px; flex-shrink: 0;
+    border-left: 1px solid var(--cinza-borda);
+    align-items: flex-end; justify-content: center;
+    min-width: 130px;
+  }
+
+  .btn-estudar {
+    background: var(--vermelho); color: #fff;
+    border: none; border-radius: 6px;
+    padding: 7px 16px; font-size: 12px; font-weight: 500;
+    cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
+    transition: background 0.15s; white-space: nowrap;
+    width: 100%;
+  }
+  .btn-estudar:hover { background: var(--vermelho-escuro); }
+  .btn-estudar.cba-btn { background: var(--cba); }
+  .btn-estudar.cba-btn:hover { background: #0C447C; }
+
+  .area-prog { width: 100%; }
+  .prog-bar { height: 3px; background: #2A2A2A; border-radius: 3px; margin-bottom: 3px; }
+  .prog-fill { height: 100%; border-radius: 3px; width: 0%; }
+  .prog-txt { font-size: 10px; color: #555; text-align: right; }
+
+  /* ── AVISO LEGISLAÇÃO DIFERENTE ── */
+  .aviso-diff {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-left: 3px solid #854F0B;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: 12px; color: var(--cinza-texto);
+    line-height: 1.6; margin-bottom: 8px;
+    display: none;
+  }
+  .aviso-diff.visivel { display: block; }
+  .aviso-diff strong { color: #EF9F27; font-weight: 500; }
+
+  /* ── STATS RÁPIDOS ── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 10px; margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .stat-label { font-size: 10px; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.03em; color: var(--branco); }
+  .stat-sub { font-size: 10px; color: var(--cinza-texto); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .conteudo { animation: fadeUp 0.3s ease both; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="graduabm.html" class="logo-text">GraduaBM</a>
+    </div>
+
+    <div class="sidebar-usuario">
+      <div class="usuario-nome">Mateus Lenz</div>
+      <div class="usuario-status">
+        <span class="status-dot"></span>
+        Assinatura ativa
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Estudos</div>
+      <a class="nav-item ativo" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Áreas temáticas
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Desempenho
+      </a>
+
+      <div class="nav-label">Conta</div>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Minha conta
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-sair">Sair</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Áreas temáticas</span>
+      <div class="topbar-right">
+        <span class="topbar-mono" id="curso-ativo-label">CTSP selecionado</span>
+      </div>
+    </div>
+
+    <div class="conteudo">
+
+      <!-- SELETOR DE CURSO -->
+      <div class="secao-titulo">Selecione o curso</div>
+      <div class="curso-seletor">
+
+        <div class="curso-card ctsp selecionado" id="card-ctsp" onclick="selecionarCurso('ctsp')">
+          <div class="curso-sigla">CTSP</div>
+          <div class="curso-nome">Curso Técnico em Segurança Pública</div>
+          <div class="curso-desc">Soldado → Sargento</div>
+          <div class="curso-meta">
+            <span class="curso-pill">60 questões</span>
+            <span class="curso-pill">5 áreas temáticas</span>
+            <div class="curso-check" id="check-ctsp">
+              <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+                <path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="curso-card cba" id="card-cba" onclick="selecionarCurso('cba')">
+          <div class="curso-sigla">CBA</div>
+          <div class="curso-nome">Curso Básico de Administração Bombeiro Militar</div>
+          <div class="curso-desc">1º Sargento → Tenente</div>
+          <div class="curso-meta">
+            <span class="curso-pill">40 questões</span>
+            <span class="curso-pill">5 áreas temáticas</span>
+            <div class="curso-check" id="check-cba"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- BOAS-VINDAS / STATS -->
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card">
+          <div class="stat-label">Questões na prova</div>
+          <div class="stat-val" id="stat-total">60</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Respondidas</div>
+          <div class="stat-val">0</div>
+          <div class="stat-sub">comece por qualquer área</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Taxa de acerto</div>
+          <div class="stat-val" style="font-size:13px;padding-top:6px;color:#555;">Estude para ver</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Próximo passo</div>
+          <div class="stat-val" style="font-size:12px;padding-top:4px;color:#BA7517;">Escolha uma área ↓</div>
+        </div>
+      </div>
+
+      <!-- BANNER BOAS-VINDAS — aparece só para novos usuários -->
+      <div id="banner-bv" style="
+        background: var(--cinza-escuro);
+        border: 1px solid var(--cinza-borda);
+        border-left: 3px solid #C0270F;
+        border-radius: 0 8px 8px 0;
+        padding: 12px 16px;
+        margin-bottom: 1.5rem;
+        display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      ">
+        <div>
+          <div style="font-size:13px;font-weight:500;color:var(--branco);margin-bottom:3px;">Como funciona</div>
+          <div style="font-size:12px;color:var(--cinza-texto);line-height:1.5;">
+            Selecione o curso, escolha uma área temática, filtre as legislações que quer estudar e inicie. As questões são sorteadas aleatoriamente entre os temas selecionados.
+          </div>
+        </div>
+        <button onclick="document.getElementById('banner-bv').style.display='none'" style="
+          background:none;border:none;color:#555;cursor:pointer;font-size:18px;
+          flex-shrink:0;line-height:1;padding:0 4px;
+        ">×</button>
+      </div>
+
+      <!-- ÁREAS TEMÁTICAS -->
+      <div class="secao-titulo" id="label-areas">Áreas temáticas — CTSP</div>
+
+      <div class="areas-lista" id="areas-lista"></div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const dados = {
+  ctsp: {
+    cor: '#C0270F',
+    corBtn: '',
+    areas: [
+      {
+        num: '01',
+        nome: 'Segurança contra incêndios',
+        cor: '#C0270F',
+        legislacao: 'Lei Federal 13.425/17 · LC 14.376/13 · Dec. Estadual 51.803/14 · RT CBMRS 01/2022 · SOL-CBMRS 4ª Ed. · RT 05 (Partes 1.1, 02, 3.1, 7.2, 08, 06) · RT 11 Pt.01/2016 · RT 14/2016 · RT 12/2021 · RT 15 Pt.01/2023',
+        tags: [
+          { txt: 'Lei 13.425/17 — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
+          { txt: 'RT 11, 12, 14 — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
+          { txt: 'RT 05 Partes 3.1 e 08 — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
+        ]
+      },
+      {
+        num: '02',
+        nome: 'Combate a incêndios',
+        cor: '#BA7517',
+        legislacao: 'Manual de Bombeiro Militar — Combate a Incêndio Urbano CBMMG 1ª Ed. 2020 (Cap. 1, 2, 3, 5 e 7)',
+        tags: [{ txt: 'Igual ao CBA', tipo: 'igual' }]
+      },
+      {
+        num: '03',
+        nome: 'Buscas e salvamentos / APH',
+        cor: '#185FA5',
+        legislacao: 'ITO 23 — Protocolo APH CBMMG 3ª Ed. 2021 (Mód. 100, 200, 500) · IT 010/AODC-GCG (busca, salvamento e resgate) · ITO 34 — Salvamento Veicular CBMMG 1ª Ed. 2023 (p. 24–154) · POP Salvamento Veicular RS',
+        tags: [{ txt: 'Igual ao CBA', tipo: 'igual' }]
+      },
+      {
+        num: '04',
+        nome: 'Direito institucional, constitucional e militar',
+        cor: '#27A05A',
+        legislacao: 'LC 10.990/97 · LC 10.992/97 · LC 14.920/2016 · Dec. 53.897/2018 · LC 15.008/17 · LC 15.009/17 · CF/88 (arts. 37–42, 125–126, 142–143, 144) · CE/RS (arts. 46–48, 124–131) · CPM (arts. 1–9, 121–122, 149–334) · CPPM (arts. 7–253) · RDBM Dec. 43.245/2004 · IR 003.1 PADM · IR 006 Sindicância · IR 008 IPM',
+        tags: [
+          { txt: 'LC 10.992/97 — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
+          { txt: 'IR 003.1, 006, 008 — presentes', tipo: 'igual' },
+        ]
+      },
+      {
+        num: '05',
+        nome: 'Normas administrativas e documentação técnica',
+        cor: '#7F77DD',
+        legislacao: 'Dec. 57.390/23 (Movimentação) · Lei 6.196/71 (Vencimentos) · Dec. 24.846/76 (Diárias) · Dec. 35.693/94 (Prestação de contas) · Dec. 35.818/95 (Substituições) · Dec. 49.113/2012 (Estágio Probatório) · Dec. 40.986/2001 (Serviço extraordinário) · IT 03 (E-193) · IT 04.2/2024 (FR2) · IT 09 · Caderno Temático ABM 2023 · Portaria 021/20 (Glossário)',
+        tags: [
+          { txt: 'Decretos administrativos — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
+          { txt: 'IT 03, 04, 09 e Caderno ABM — presentes', tipo: 'igual' },
+        ]
+      },
+    ]
+  },
+  cba: {
+    cor: '#185FA5',
+    areas: [
+      {
+        num: '01',
+        nome: 'Segurança contra incêndios',
+        cor: '#185FA5',
+        legislacao: 'LC 14.376/13 · Dec. Estadual 51.803/14 · RT CBMRS 01/2022 · SOL-CBMRS 4ª Ed. · RT 05 (Partes 1.1, 02, 04A, 04B, 04C, 7.2, 06) · RT 15 Pt.01/2022',
+        tags: [
+          { txt: 'RT 05 Partes 04A, 04B, 04C — exclusivo CBA', tipo: 'exclusivo-cba' },
+          { txt: 'Sem Lei 13.425/17, RT 11, 12, 14', tipo: 'exclusivo-cba' },
+        ]
+      },
+      {
+        num: '02',
+        nome: 'Combate a incêndios',
+        cor: '#BA7517',
+        legislacao: 'Manual de Bombeiro Militar — Combate a Incêndio Urbano CBMMG 1ª Ed. 2020 (Cap. 1, 2, 3, 5 e 7)',
+        tags: [{ txt: 'Igual ao CTSP', tipo: 'igual' }]
+      },
+      {
+        num: '03',
+        nome: 'Buscas e salvamentos / APH',
+        cor: '#C0270F',
+        legislacao: 'ITO 23 — Protocolo APH CBMMG 3ª Ed. 2021 (Mód. 100, 200, 500) · IT 010/AODC-GCG (busca, salvamento e resgate) · ITO 34 — Salvamento Veicular CBMMG 1ª Ed. 2023 (p. 24–154) · POP Salvamento Veicular RS',
+        tags: [{ txt: 'Igual ao CTSP', tipo: 'igual' }]
+      },
+      {
+        num: '04',
+        nome: 'Direito institucional, constitucional e militar',
+        cor: '#27A05A',
+        legislacao: 'LC 10.990/97 · LC 14.920/2016 · Dec. 53.897/2018 · LC 15.008/17 · LC 15.009/17 · Dec. 43.245/04 (RDBM) · CF/88 (arts. 37–42, 125–126, 142–143, 144) · CE/RS (arts. 46–48, 124–131) · CPM (arts. 1–9, 121–122, 149–334) · CPPM (arts. 7–253)',
+        tags: [
+          { txt: 'Sem LC 10.992/97', tipo: 'exclusivo-cba' },
+          { txt: 'Sem IR 003.1, 006, 008 (estão na AT5)', tipo: 'exclusivo-cba' },
+        ]
+      },
+      {
+        num: '05',
+        nome: 'Normas institucionais e documentação técnica',
+        cor: '#7F77DD',
+        legislacao: 'IR 003/ADM/EXC-20 (Escalas e efetividade) · IR 002/Adm/RH-20 (Estágio Probatório) · IR 001.1/Corregedoria (Conselho de Disciplina) · IR 003.1/Corregedoria (PADM) · IR 006/Corregedoria (Sindicância) · IR 008/Corregedoria (IPM) · IT 03 (E-193) · IT 04.2/2024 (FR2) · IT 09 · Portaria 018/24 (Circunscrição Adm. e Operacional) · Caderno Temático ABM 2023 · Portaria 021/20 (Glossário)',
+        tags: [
+          { txt: 'IRs de RH e escalas — exclusivo CBA', tipo: 'exclusivo-cba' },
+          { txt: 'Portaria 018/24 — exclusivo CBA', tipo: 'exclusivo-cba' },
+          { txt: 'Sem decretos de diárias e movimentação', tipo: 'exclusivo-cba' },
+        ]
+      },
+    ]
+  }
+};
+
+let cursoAtual = 'ctsp';
+
+function selecionarCurso(curso) {
+  cursoAtual = curso;
+
+  ['ctsp','cba'].forEach(c => {
+    const card = document.getElementById('card-' + c);
+    const check = document.getElementById('check-' + c);
+    if (c === curso) {
+      card.classList.add('selecionado');
+      check.innerHTML = '<svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    } else {
+      card.classList.remove('selecionado');
+      check.innerHTML = '';
+    }
+  });
+
+  document.getElementById('curso-ativo-label').textContent = curso.toUpperCase() + ' selecionado';
+  document.getElementById('stat-total').textContent = curso === 'ctsp' ? '60' : '40';
+  document.getElementById('label-areas').textContent = 'Áreas temáticas — ' + curso.toUpperCase();
+
+  renderAreas();
+}
+
+function renderAreas() {
+  const lista = document.getElementById('areas-lista');
+  lista.innerHTML = '';
+  const areas = dados[cursoAtual].areas;
+  const isCba = cursoAtual === 'cba';
+
+  areas.forEach(area => {
+    const div = document.createElement('div');
+    div.className = 'area-item';
+
+    const tagsHtml = area.tags.map(t =>
+      `<span class="tag tag-${t.tipo}">${t.txt}</span>`
+    ).join('');
+
+    const btnClass = isCba ? 'btn-estudar cba-btn' : 'btn-estudar';
+
+    div.innerHTML = `
+      <div class="area-header">
+        <div class="area-num">
+          <span class="area-num-label">AT</span>
+          <span class="area-num-val" style="color:${area.cor}">${area.num}</span>
+        </div>
+        <div class="area-info">
+          <div class="area-nome">${area.nome}</div>
+          <div class="area-legislacao">${area.legislacao}</div>
+          <div class="area-tags">${tagsHtml}</div>
+        </div>
+        <div class="area-acoes">
+          <button class="${btnClass}" onclick="iniciarEstudo('${area.num}')">Estudar →</button>
+          <div class="area-prog">
+            <div class="prog-bar"><div class="prog-fill" style="background:${area.cor};width:0%"></div></div>
+            <div class="prog-txt">0 questões respondidas</div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    lista.appendChild(div);
+  });
+}
+
+function iniciarEstudo(num) {
+  // Salvar contexto e navegar para a tela de seleção de legislação
+  sessionStorage.setItem('graduabm_at', 'AT' + num);
+  sessionStorage.setItem('graduabm_curso', cursoAtual);
+  window.location.href = '/graduabm-selecao-legislacao.html';
+}
+
+renderAreas();
+
+// ── Proteção de rota + dados reais do usuário ─────────────
+async function iniciarApp() {
+  // Protege a rota — redireciona se não logado ou sem assinatura
+  await GraduaBM.protegerRota();
+
+  // Preenche o nome do usuário na sidebar com dado real
+  const usuario = GraduaBM.getUsuario();
+  if (usuario) {
+    const nomeEl = document.querySelector('.usuario-nome');
+    if (nomeEl) nomeEl.textContent = usuario.nome;
+  }
+
+  // Carrega desempenho real do usuário da API
+  try {
+    const data = await GraduaBM.Progresso.desempenho({ curso: cursoAtual });
+    if (data?.totais?.total_respondidas > 0) {
+      // Tem dados reais — esconder o banner de boas-vindas
+      const banner = document.getElementById('banner-bv');
+      if (banner) banner.style.display = 'none';
+
+      // Atualizar stats com dados reais
+      document.getElementById('stat-total').textContent =
+        cursoAtual === 'ctsp' ? '60' : '40';
+
+      const respondidas = data.totais.total_respondidas;
+      const taxa = data.totais.taxa_acerto_pct;
+
+      const statCards = document.querySelectorAll('.stat-card');
+      if (statCards[1]) {
+        statCards[1].querySelector('.stat-val').textContent = respondidas;
+        statCards[1].querySelector('.stat-sub').textContent = 'questões respondidas';
+      }
+      if (statCards[2] && taxa !== null) {
+        statCards[2].querySelector('.stat-val').textContent = taxa + '%';
+        statCards[2].querySelector('.stat-val').style.color =
+          taxa >= 70 ? '#27A05A' : taxa >= 50 ? '#BA7517' : '#C0270F';
+      }
+
+      // Atualizar barras de progresso por área
+      if (data.por_area) {
+        data.por_area.forEach(area => {
+          const fills = document.querySelectorAll(
+            `.area-item .prog-fill`
+          );
+          // Vincula por posição com base na AT
+          const atIdx = parseInt(area.area_tematica.replace('AT','')) - 1;
+          if (fills[atIdx]) {
+            fills[atIdx].style.width = area.taxa_acerto_pct + '%';
+            const txt = fills[atIdx].closest('.area-prog')?.querySelector('.prog-txt');
+            if (txt) txt.textContent = area.total_respondidas + ' questões respondidas';
+          }
+        });
+      }
+    }
+  } catch (err) {
+    // Silencioso — dados de desempenho são opcionais para a tela carregar
+    console.warn('Desempenho não carregado:', err.message);
+  }
+}
+
+// Carregar api.js e chamar iniciarApp apenas uma vez após carregado
+</script>
+<script src="/js/api.js" onload="iniciarApp()"></script>
+</body>
+</html>

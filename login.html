@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Entrar</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --branco-suave: #EFEFEA;
+    --erro: #E24B4A;
+    --sucesso: #2D7D46;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── NAV ── */
+  nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem; height: 56px;
+    border-bottom: 1px solid var(--cinza-borda);
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.05em;
+    color: var(--branco); text-decoration: none;
+  }
+  .nav-link {
+    font-size: 13px; color: var(--cinza-texto);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--branco); }
+
+  /* ── LAYOUT PRINCIPAL ── */
+  .main {
+    flex: 1; display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* ── LADO ESQUERDO — decorativo ── */
+  .side-esquerdo {
+    background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+    padding: 4rem;
+    position: relative; overflow: hidden;
+  }
+  .side-bg-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(192,39,15,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(192,39,15,0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+  .side-content { position: relative; z-index: 1; }
+  .side-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--vermelho);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .side-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--vermelho); border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+  .side-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px; line-height: 0.92;
+    letter-spacing: 0.02em;
+    color: var(--branco);
+    margin-bottom: 1.5rem;
+  }
+  .side-titulo span { color: var(--vermelho); display: block; }
+  .side-desc {
+    font-size: 14px; color: var(--cinza-texto);
+    line-height: 1.7; max-width: 360px;
+    margin-bottom: 2.5rem;
+  }
+  .side-areas { display: flex; flex-direction: column; gap: 10px; }
+  .side-area {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px; color: var(--cinza-texto);
+  }
+  .area-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  /* ── LADO DIREITO — formulário ── */
+  .side-direito {
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    padding: 4rem 3rem;
+  }
+
+  .form-container {
+    width: 100%; max-width: 380px;
+    animation: fadeUp 0.5s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .form-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 0.03em;
+    color: var(--branco);
+    margin-bottom: 6px;
+  }
+  .form-sub {
+    font-size: 13px; color: var(--cinza-texto);
+    margin-bottom: 2rem;
+  }
+  .form-sub a {
+    color: var(--vermelho); text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .form-sub a:hover { opacity: 0.8; }
+
+  /* Tabs login/cadastro */
+  .tabs {
+    display: flex; gap: 0;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px; overflow: hidden;
+    margin-bottom: 2rem;
+  }
+  .tab {
+    flex: 1; padding: 9px 0;
+    font-size: 13px; font-weight: 500;
+    text-align: center; cursor: pointer;
+    background: transparent;
+    color: var(--cinza-texto);
+    border: none;
+    transition: background 0.15s, color 0.15s;
+  }
+  .tab.ativo {
+    background: var(--vermelho);
+    color: #fff;
+  }
+  .tab:not(.ativo):hover { background: var(--cinza-medio); color: var(--branco); }
+
+  /* Campos */
+  .campo { margin-bottom: 1rem; }
+  .campo label {
+    display: block;
+    font-size: 12px; font-weight: 500;
+    color: var(--cinza-texto);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+  }
+  .campo input {
+    width: 100%;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px;
+    color: var(--branco);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .campo input::placeholder { color: #555; }
+  .campo input:focus { border-color: var(--vermelho); }
+  .campo input.erro-campo { border-color: var(--erro); }
+
+  .campo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* Mensagem de erro/sucesso */
+  .msg {
+    font-size: 12px; padding: 10px 14px;
+    border-radius: 6px; margin-bottom: 1rem;
+    display: none;
+  }
+  .msg.erro { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.3); color: #F09595; display: block; }
+  .msg.sucesso { background: rgba(45,125,70,0.12); border: 1px solid rgba(45,125,70,0.3); color: #7DD99A; display: block; }
+
+  /* Esqueci senha */
+  .esqueci {
+    display: flex; justify-content: flex-end;
+    margin-top: -6px; margin-bottom: 1.25rem;
+  }
+  .esqueci a {
+    font-size: 12px; color: var(--cinza-texto);
+    text-decoration: none; transition: color 0.2s;
+  }
+  .esqueci a:hover { color: var(--branco); }
+
+  /* Botão principal */
+  .btn-submit {
+    width: 100%;
+    background: var(--vermelho);
+    color: #fff; border: none;
+    border-radius: 8px;
+    padding: 13px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-bottom: 1.25rem;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-submit:hover { background: var(--vermelho-escuro); transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { background: #444; cursor: default; transform: none; }
+
+  /* Spinner */
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Divisor */
+  .divisor {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+  .divisor-linha { flex: 1; height: 1px; background: var(--cinza-borda); }
+  .divisor-txt { font-size: 11px; color: #555; white-space: nowrap; }
+
+  /* Termos */
+  .termos {
+    font-size: 11px; color: #555;
+    text-align: center; line-height: 1.6;
+  }
+  .termos a { color: var(--cinza-texto); text-decoration: none; }
+  .termos a:hover { color: var(--branco); }
+
+  /* Acesso bloqueado */
+  .bloqueado-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: none;
+  }
+  .bloqueado-card.visivel { display: block; }
+  .bloqueado-icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(226,75,74,0.12);
+    border: 1px solid rgba(226,75,74,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .bloqueado-titulo {
+    font-size: 14px; font-weight: 500;
+    color: var(--branco); margin-bottom: 4px;
+  }
+  .bloqueado-desc {
+    font-size: 12px; color: var(--cinza-texto); line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .btn-assinar {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--vermelho);
+    color: var(--vermelho);
+    border-radius: 7px; padding: 9px;
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: background 0.2s, color 0.2s;
+  }
+  .btn-assinar:hover { background: var(--vermelho); color: #fff; }
+
+  /* Painel — área logada */
+  .painel { display: none; }
+  .painel.visivel { display: block; }
+  .painel-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .painel-bem-vindo { font-size: 13px; color: var(--cinza-texto); }
+  .painel-nome { font-size: 18px; font-weight: 500; color: var(--branco); }
+  .painel-status {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 500;
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+  .status-ativo { background: rgba(45,125,70,0.15); border: 1px solid rgba(45,125,70,0.3); color: #7DD99A; }
+  .status-inativo { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.3); color: #F09595; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .btn-logout {
+    background: transparent; border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 6px 14px; font-size: 12px; cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-logout:hover { border-color: #555; color: var(--branco); }
+
+  /* Forms visíveis/ocultos */
+  .form-login, .form-cadastro { display: none; }
+  .form-login.visivel, .form-cadastro.visivel { display: block; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="graduabm.html" class="logo-text">GraduaBM</a>
+  <a href="graduabm.html" class="nav-link">← Voltar ao início</a>
+</nav>
+
+<div class="main">
+
+  <!-- LADO ESQUERDO -->
+  <div class="side-esquerdo">
+    <div class="side-bg-grid"></div>
+    <div class="side-content">
+      <div class="side-tag">Processo seletivo intelectual</div>
+      <h2 class="side-titulo">
+        A graduação<br>
+        <span>começa aqui.</span>
+      </h2>
+      <p class="side-desc">
+        Questões elaboradas a partir dos decretos, leis e normativas cobrados na prova — organizadas por área temática.
+      </p>
+      <div class="side-areas">
+        <div class="side-area">
+          <div class="area-dot" style="background:#C0270F;"></div>
+          AT1 — Segurança contra incêndios
+        </div>
+        <div class="side-area">
+          <div class="area-dot" style="background:#BA7517;"></div>
+          AT2 — Combate a incêndios
+        </div>
+        <div class="side-area">
+          <div class="area-dot" style="background:#185FA5;"></div>
+          AT3 — Buscas e salvamentos / APH
+        </div>
+        <div class="side-area">
+          <div class="area-dot" style="background:#27A05A;"></div>
+          AT4 — Direito institucional e militar
+        </div>
+        <div class="side-area">
+          <div class="area-dot" style="background:#7F77DD;"></div>
+          AT5 — Normas e documentação técnica
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LADO DIREITO -->
+  <div class="side-direito">
+    <div class="form-container">
+
+      <!-- PAINEL PÓS-LOGIN -->
+      <div class="painel" id="painel">
+        <div class="painel-header">
+          <div>
+            <div class="painel-bem-vindo">Bem-vindo de volta,</div>
+            <div class="painel-nome" id="painel-nome">—</div>
+          </div>
+          <button class="btn-logout" onclick="logout()">Sair</button>
+        </div>
+
+        <!-- Assinatura ativa -->
+        <div id="bloco-ativo" style="display:none;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+            <div class="painel-status status-ativo">
+              <span class="status-dot"></span> Assinatura ativa
+            </div>
+            <span style="font-size:11px;color:var(--cinza-texto);" id="vencimento-txt"></span>
+          </div>
+          <button class="btn-submit" onclick="irParaEstudos()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Começar a estudar
+          </button>
+        </div>
+
+        <!-- Assinatura inativa -->
+        <div class="bloqueado-card visivel" id="bloco-inativo" style="display:none;">
+          <div class="bloqueado-icon">
+            <svg width="16" height="16" fill="none" stroke="#F09595" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div class="bloqueado-titulo">Acesso inativo</div>
+          <div class="bloqueado-desc">Sua assinatura está encerrada. Assine para voltar a ter acesso ao conteúdo completo.</div>
+          <button class="btn-assinar" onclick="irParaAssinatura()">Assinar — R$19,90/mês</button>
+        </div>
+      </div>
+
+      <!-- TABS + FORMULÁRIOS -->
+      <div id="area-forms">
+        <div class="form-titulo" id="form-titulo">Entrar</div>
+        <div class="form-sub" id="form-sub">Não tem conta? <a href="#" onclick="trocarTab('cadastro')">Cadastre-se</a></div>
+
+        <div class="tabs">
+          <button class="tab ativo" id="tab-login" onclick="trocarTab('login')">Entrar</button>
+          <button class="tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Cadastrar</button>
+        </div>
+
+        <!-- FORM LOGIN -->
+        <div class="form-login visivel" id="form-login">
+          <div class="msg" id="msg-login"></div>
+
+          <div class="campo">
+            <label>E-mail</label>
+            <input type="email" id="login-email" placeholder="seu@email.com">
+          </div>
+          <div class="campo">
+            <label>Senha</label>
+            <input type="password" id="login-senha" placeholder="••••••••">
+          </div>
+
+          <div class="esqueci">
+            <a href="#" onclick="esqueceuSenha()">Esqueci minha senha</a>
+          </div>
+
+          <button class="btn-submit" id="btn-login" onclick="fazerLogin()">
+            <span class="spinner" id="spin-login"></span>
+            <span id="txt-login">Entrar</span>
+          </button>
+
+          <div class="termos">
+            Ao entrar, você concorda com os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>.
+          </div>
+        </div>
+
+        <!-- FORM CADASTRO -->
+        <div class="form-cadastro" id="form-cadastro">
+          <div class="msg" id="msg-cadastro"></div>
+
+          <div class="campo-row">
+            <div class="campo">
+              <label>Nome</label>
+              <input type="text" id="cad-nome" placeholder="João">
+            </div>
+            <div class="campo">
+              <label>Sobrenome</label>
+              <input type="text" id="cad-sobrenome" placeholder="Silva">
+            </div>
+          </div>
+          <div class="campo">
+            <label>E-mail</label>
+            <input type="email" id="cad-email" placeholder="seu@email.com">
+          </div>
+          <div class="campo">
+            <label>Senha</label>
+            <input type="password" id="cad-senha" placeholder="Mínimo 8 caracteres">
+          </div>
+          <div class="campo">
+            <label>Confirmar senha</label>
+            <input type="password" id="cad-confirma" placeholder="Repita a senha">
+          </div>
+
+          <button class="btn-submit" id="btn-cadastro" onclick="fazerCadastro()" style="margin-top:0.5rem;">
+            <span class="spinner" id="spin-cadastro"></span>
+            <span id="txt-cadastro">Criar conta</span>
+          </button>
+
+          <div class="divisor">
+            <div class="divisor-linha"></div>
+            <span class="divisor-txt">após o cadastro</span>
+            <div class="divisor-linha"></div>
+          </div>
+
+          <div style="background:var(--cinza-escuro);border:1px solid var(--cinza-borda);border-radius:8px;padding:14px 16px;margin-bottom:1.25rem;">
+            <div style="font-size:12px;color:var(--cinza-texto);margin-bottom:6px;">O que você tem acesso</div>
+            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bbb;">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#27A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Questões organizadas por legislação específica
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bbb;">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#27A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Simulados CTSP e CBA no tempo oficial da prova
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bbb;">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#27A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Gabarito comentado com artigos de lei
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bbb;">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#27A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Revisão de erros e painel de desempenho
+              </div>
+            </div>
+            <div style="border-top:1px solid var(--cinza-borda);padding-top:10px;display:flex;align-items:baseline;gap:6px;">
+              <div style="font-size:22px;font-weight:500;color:var(--branco);font-family:'Bebas Neue',sans-serif;letter-spacing:0.03em;">R$ 19,90</div>
+              <span style="font-size:13px;color:var(--cinza-texto);">/ mês</span>
+              <span style="font-size:11px;color:#555;margin-left:auto;">Cancele quando quiser</span>
+            </div>
+          </div>
+
+          <div class="termos">
+            Ao criar conta, você concorda com os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+  // ── Se já está logado e ativo, vai direto para estudos ──
+  (function() {
+    if (GraduaBM.Auth.estaLogado() && GraduaBM.Auth.usuarioAtivo()) {
+      window.location.href = '/graduabm-area-estudos.html';
+    }
+  })();
+
+  // ── UI helpers ────────────────────────────────────────────
+  function trocarTab(tab) {
+    const isLogin = tab === 'login';
+    document.getElementById('tab-login').classList.toggle('ativo', isLogin);
+    document.getElementById('tab-cadastro').classList.toggle('ativo', !isLogin);
+    document.getElementById('form-login').classList.toggle('visivel', isLogin);
+    document.getElementById('form-cadastro').classList.toggle('visivel', !isLogin);
+    document.getElementById('form-titulo').textContent = isLogin ? 'Entrar' : 'Criar conta';
+    document.getElementById('form-sub').innerHTML = isLogin
+      ? 'Não tem conta? <a href="#" onclick="trocarTab(\'cadastro\')">Cadastre-se</a>'
+      : 'Já tem conta? <a href="#" onclick="trocarTab(\'login\')">Entrar</a>';
+    limparMsgs();
+  }
+
+  function limparMsgs() {
+    ['msg-login','msg-cadastro'].forEach(id => {
+      const el = document.getElementById(id);
+      el.className = 'msg'; el.textContent = '';
+    });
+  }
+
+  function mostrarMsg(id, texto, tipo) {
+    const el = document.getElementById(id);
+    el.textContent = texto;
+    el.className = 'msg ' + tipo;
+  }
+
+  function setLoading(btnId, spinId, txtId, loading, txtLabel) {
+    document.getElementById(btnId).disabled = loading;
+    document.getElementById(spinId).style.display = loading ? 'block' : 'none';
+    document.getElementById(txtId).textContent = loading ? '' : txtLabel;
+  }
+
+  // ── Login ─────────────────────────────────────────────────
+  async function fazerLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const senha = document.getElementById('login-senha').value;
+
+    if (!email || !senha) {
+      mostrarMsg('msg-login', 'Preencha e-mail e senha.', 'erro');
+      return;
+    }
+
+    setLoading('btn-login', 'spin-login', 'txt-login', true, 'Entrar');
+    limparMsgs();
+
+    try {
+      const data = await GraduaBM.Auth.login({ email, senha });
+      mostrarPainel(data.usuario);
+    } catch (err) {
+      mostrarMsg('msg-login', err.message || 'Erro ao fazer login.', 'erro');
+    } finally {
+      setLoading('btn-login', 'spin-login', 'txt-login', false, 'Entrar');
+    }
+  }
+
+  // ── Cadastro ──────────────────────────────────────────────
+  async function fazerCadastro() {
+    const nome     = document.getElementById('cad-nome').value.trim();
+    const sobre    = document.getElementById('cad-sobrenome').value.trim();
+    const email    = document.getElementById('cad-email').value.trim();
+    const senha    = document.getElementById('cad-senha').value;
+    const confirma = document.getElementById('cad-confirma').value;
+
+    if (!nome || !sobre || !email || !senha || !confirma) {
+      mostrarMsg('msg-cadastro', 'Preencha todos os campos.', 'erro'); return;
+    }
+    if (senha.length < 8) {
+      mostrarMsg('msg-cadastro', 'A senha precisa ter no mínimo 8 caracteres.', 'erro'); return;
+    }
+    if (senha !== confirma) {
+      mostrarMsg('msg-cadastro', 'As senhas não coincidem.', 'erro'); return;
+    }
+
+    setLoading('btn-cadastro', 'spin-cadastro', 'txt-cadastro', true, 'Criar conta');
+    limparMsgs();
+
+    try {
+      const data = await GraduaBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha });
+      // Cadastro feito — usuário inativo até pagar
+      mostrarPainel(data.usuario);
+    } catch (err) {
+      mostrarMsg('msg-cadastro', err.message || 'Erro ao criar conta.', 'erro');
+    } finally {
+      setLoading('btn-cadastro', 'spin-cadastro', 'txt-cadastro', false, 'Criar conta');
+    }
+  }
+
+  // ── Painel pós-login ──────────────────────────────────────
+  function mostrarPainel(usuario) {
+    document.getElementById('area-forms').style.display = 'none';
+    document.getElementById('painel').classList.add('visivel');
+    document.getElementById('painel-nome').textContent = usuario.nome;
+
+    document.getElementById('bloco-ativo').style.display   = usuario.ativo ? 'block' : 'none';
+    document.getElementById('bloco-inativo').style.display = usuario.ativo ? 'none'  : 'block';
+
+    if (usuario.ativo && usuario.vencimento) {
+      document.getElementById('vencimento-txt').textContent =
+        'Ativo até ' + new Date(usuario.vencimento).toLocaleDateString('pt-BR');
+    }
+  }
+
+  function logout() {
+    GraduaBM.Auth.logout();
+  }
+
+  function esqueceuSenha() {
+    mostrarMsg('msg-login', 'Em breve: recuperação de senha por e-mail.', 'sucesso');
+  }
+
+  function irParaEstudos() {
+    window.location.href = '/graduabm-area-estudos.html';
+  }
+
+  function irParaAssinatura() {
+    // URL do produto no Kiwify — substituir pelo link real
+    window.location.href = 'https://pay.kiwify.com.br/LINK-DO-PRODUTO';
+  }
+
+  // ── Init: verificar se já logado mas inativo ──────────────
+  (function() {
+    const u = GraduaBM.getUsuario();
+    if (u && GraduaBM.Auth.estaLogado()) mostrarPainel(u);
+  })();
+</script>
+</body>
+</html>

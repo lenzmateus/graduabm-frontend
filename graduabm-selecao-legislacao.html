@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Selecionar legislação</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --branco-suave: #EFEFEA;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ── SIDEBAR (compacta) ── */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column;
+  }
+  .sidebar-logo {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.05em;
+    color: var(--branco); text-decoration: none;
+  }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: #555;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0 1.25rem; margin-bottom: 6px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 1.25rem; font-size: 13px;
+    color: var(--cinza-texto); cursor: pointer;
+    border-left: 2px solid transparent;
+    text-decoration: none; transition: all 0.12s;
+  }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: rgba(192,39,15,0.08); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair {
+    width: 100%; background: transparent;
+    border: 1px solid var(--cinza-borda); color: var(--cinza-texto);
+    border-radius: 6px; padding: 7px 0; font-size: 12px;
+    cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; }
+
+  .topbar {
+    height: 56px; border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 2rem; flex-shrink: 0;
+  }
+  .breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px;
+  }
+  .breadcrumb a { color: var(--cinza-texto); text-decoration: none; transition: color 0.15s; }
+  .breadcrumb a:hover { color: var(--branco); }
+  .breadcrumb-sep { color: #444; font-size: 12px; }
+  .breadcrumb-atual { color: var(--branco); font-weight: 500; }
+
+  .conteudo { flex: 1; padding: 2rem; max-width: 900px; }
+
+  /* ── CABEÇALHO DA ÁREA ── */
+  .area-cabecalho {
+    display: flex; align-items: flex-start;
+    justify-content: space-between; gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .area-id {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .curso-badge {
+    padding: 2px 8px; border-radius: 20px;
+    font-size: 9px; font-weight: 500; letter-spacing: 0.06em;
+  }
+  .area-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 0.03em;
+    color: var(--branco); line-height: 1;
+    margin-bottom: 6px;
+  }
+  .area-desc { font-size: 13px; color: var(--cinza-texto); }
+
+  .resumo-selecionados {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    min-width: 200px; text-align: right; flex-shrink: 0;
+  }
+  .resumo-label { font-size: 11px; color: var(--cinza-texto); margin-bottom: 4px; }
+  .resumo-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px; letter-spacing: 0.03em; line-height: 1;
+  }
+  .resumo-sub { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; }
+
+  /* ── AÇÕES RÁPIDAS ── */
+  .acoes-rapidas {
+    display: flex; gap: 8px; margin-bottom: 1.5rem;
+  }
+  .btn-acao {
+    background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 6px 14px; font-size: 12px;
+    cursor: pointer; transition: all 0.15s;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .btn-acao:hover { border-color: #555; color: var(--branco); background: var(--cinza-medio); }
+  .btn-acao.ativo-sel { border-color: var(--vermelho); color: var(--branco); background: rgba(192,39,15,0.1); }
+
+  /* ── LISTA DE LEGISLAÇÕES ── */
+  .secao-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .secao-label::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+
+  .leg-lista { display: flex; flex-direction: column; gap: 8px; margin-bottom: 2rem; }
+
+  .leg-item {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex; align-items: flex-start; gap: 14px;
+    cursor: pointer; transition: all 0.15s;
+    user-select: none;
+  }
+  .leg-item:hover { border-color: #444; background: var(--cinza-medio); }
+  .leg-item.selecionado {
+    border-color: var(--cor-area, var(--vermelho));
+    background: rgba(var(--cor-area-rgb, 192,39,15), 0.07);
+  }
+
+  .checkbox {
+    width: 18px; height: 18px; flex-shrink: 0;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 4px; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .selecionado .checkbox {
+    background: var(--cor-area, var(--vermelho));
+    border-color: var(--cor-area, var(--vermelho));
+  }
+  .checkbox svg { display: none; }
+  .selecionado .checkbox svg { display: block; }
+
+  .leg-info { flex: 1; min-width: 0; }
+  .leg-nome {
+    font-size: 13px; font-weight: 500;
+    color: var(--branco); margin-bottom: 2px;
+  }
+  .leg-detalhe { font-size: 11px; color: var(--cinza-texto); line-height: 1.5; }
+
+  .leg-meta { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .leg-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 500;
+    padding: 2px 7px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .tag-exclusivo { background: rgba(192,39,15,0.1); color: #E0866E; border: 1px solid rgba(192,39,15,0.3); }
+  .tag-exclusivo-cba { background: rgba(24,95,165,0.1); color: #85B7EB; border: 1px solid rgba(24,95,165,0.3); }
+  .tag-comum { background: rgba(255,255,255,0.04); color: #666; border: 1px solid #333; }
+  .leg-qcount { font-size: 10px; color: #555; }
+
+  /* ── SUBGRUPOS (capítulos, módulos) ── */
+  .subgrupo { margin-bottom: 1.5rem; }
+  .subgrupo-titulo {
+    font-size: 12px; font-weight: 500;
+    color: var(--cinza-texto); margin-bottom: 8px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .subgrupo-titulo::before {
+    content: ''; width: 3px; height: 14px;
+    background: var(--cor-area, var(--vermelho));
+    border-radius: 2px;
+  }
+
+  /* ── BOTÃO INICIAR ── */
+  .rodape-acao {
+    position: sticky; bottom: 0;
+    background: linear-gradient(transparent, var(--carvao) 30%);
+    padding: 1.5rem 0 2rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .btn-iniciar {
+    background: var(--cor-area, var(--vermelho));
+    color: #fff; border: none;
+    border-radius: 8px; padding: 13px 32px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-iniciar:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-iniciar:disabled { background: #2A2A2A; color: #555; cursor: default; transform: none; }
+  .btn-iniciar-info { font-size: 12px; color: var(--cinza-texto); }
+
+  /* Tabs de visualização */
+  .view-tabs {
+    display: flex; gap: 0;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 7px; overflow: hidden;
+    margin-left: auto;
+  }
+  .view-tab {
+    padding: 5px 14px; font-size: 12px;
+    background: transparent; border: none;
+    color: var(--cinza-texto); cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.12s;
+  }
+  .view-tab.ativo { background: var(--cinza-medio); color: var(--branco); }
+
+  /* ── SELETOR DE QUANTIDADE ── */
+  .config-bloco {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .config-grupo { display: flex; flex-direction: column; gap: 8px; }
+  .config-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .qtd-opts { display: flex; gap: 6px; }
+  .qtd-btn {
+    background: var(--cinza-medio);
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 5px 14px; font-size: 13px;
+    cursor: pointer; transition: all 0.12s;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .qtd-btn:hover { border-color: #555; color: var(--branco); }
+  .qtd-btn.ativo {
+    background: var(--cor-area, var(--vermelho));
+    border-color: var(--cor-area, var(--vermelho));
+    color: #fff;
+  }
+
+  /* ── POMODORO ── */
+  .pomodoro-wrap { display: flex; align-items: center; gap: 10px; }
+  .pomodoro-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 0.06em;
+    color: var(--branco); line-height: 1;
+    min-width: 80px; text-align: center;
+  }
+  .pomodoro-display.rodando { color: var(--cor-area, var(--vermelho)); }
+  .pomodoro-display.pausado { color: var(--cinza-texto); }
+  .pomodoro-controls { display: flex; gap: 6px; }
+  .pom-btn {
+    background: var(--cinza-medio);
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.12s;
+    flex-shrink: 0;
+  }
+  .pom-btn:hover { border-color: #555; color: var(--branco); }
+  .pom-btn svg { width: 12px; height: 12px; }
+  .pom-presets { display: flex; gap: 4px; }
+  .pom-preset {
+    background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto);
+    border-radius: 5px; padding: 3px 8px;
+    font-size: 11px; cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: all 0.12s;
+  }
+  .pom-preset:hover { border-color: #555; color: var(--branco); }
+  .pom-preset.ativo { border-color: var(--cor-area, var(--vermelho)); color: var(--branco); }
+  input[type=number]:focus {
+    border-color: var(--cor-area, var(--vermelho)) !important;
+  }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button {
+    opacity: 0.4;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .leg-lista { animation: fadeUp 0.25s ease both; }
+
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="graduabm-area-estudos.html" class="logo-text">GraduaBM</a>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Estudos</div>
+      <a class="nav-item ativo" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Áreas temáticas
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados
+      </a>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Desempenho
+      </a>
+      <div class="nav-label" style="margin-top:16px;">Conta</div>
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Minha conta
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair">Sair</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="breadcrumb">
+        <a href="graduabm-area-estudos.html">Áreas temáticas</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-atual" id="bc-area">AT1 — Segurança contra incêndios</span>
+      </div>
+    </div>
+
+    <div class="conteudo">
+
+      <!-- CABEÇALHO -->
+      <div class="area-cabecalho">
+        <div>
+          <div class="area-id">
+            <span id="area-id-txt">Área temática 1</span>
+            <span class="curso-badge" id="curso-badge-el">CTSP</span>
+          </div>
+          <div class="area-titulo" id="area-titulo-el">Segurança contra incêndios</div>
+          <div class="area-desc" id="area-desc-el">Selecione as legislações que deseja estudar. Você pode escolher uma ou várias.</div>
+        </div>
+        <div class="resumo-selecionados">
+          <div class="resumo-label">Legislações selecionadas</div>
+          <div class="resumo-num" id="resumo-num" style="color: var(--cor-area);">0</div>
+          <div class="resumo-sub" id="resumo-sub">Selecione ao menos uma</div>
+        </div>
+      </div>
+
+      <!-- AÇÕES RÁPIDAS -->
+      <div class="acoes-rapidas">
+        <button class="btn-acao" onclick="selecionarTodas()">Selecionar todas</button>
+        <button class="btn-acao" onclick="limparSelecao()">Limpar seleção</button>
+        <div class="view-tabs" style="margin-left:auto;">
+          <button class="view-tab ativo" onclick="trocarArea('at1',this)">AT1</button>
+          <button class="view-tab" onclick="trocarArea('at2',this)">AT2</button>
+          <button class="view-tab" onclick="trocarArea('at3',this)">AT3</button>
+          <button class="view-tab" onclick="trocarArea('at4',this)">AT4</button>
+          <button class="view-tab" onclick="trocarArea('at5',this)">AT5</button>
+        </div>
+      </div>
+
+      <!-- LISTA DE LEGISLAÇÕES -->
+      <div id="conteudo-legislacoes"></div>
+
+      <!-- CONFIGURAÇÃO: QUANTIDADE + POMODORO -->
+      <div class="config-bloco">
+
+        <div class="config-grupo">
+          <div class="config-label">Quantidade de questões</div>
+          <div class="qtd-opts">
+            <button class="qtd-btn" onclick="setQtd(10, this)">10</button>
+            <button class="qtd-btn" onclick="setQtd(15, this)">15</button>
+            <button class="qtd-btn ativo" onclick="setQtd(20, this)">20</button>
+            <button class="qtd-btn" onclick="setQtd(30, this)">30</button>
+            <button class="qtd-btn" onclick="setQtd(0, this)">Todas</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+            <span style="font-size:11px;color:var(--cinza-texto);">Ou digite:</span>
+            <input
+              type="number" id="qtd-manual" min="1" max="200"
+              placeholder="ex: 45"
+              oninput="setQtdManual(this)"
+              style="
+                width:80px; background:var(--cinza-medio);
+                border:1px solid var(--cinza-borda); border-radius:6px;
+                padding:4px 10px; font-size:13px; color:var(--branco);
+                font-family:'IBM Plex Mono',monospace;
+                outline:none; transition:border-color 0.15s;
+              "
+            >
+            <span style="font-size:11px;color:var(--cinza-texto);" id="qtd-manual-label"></span>
+          </div>
+        </div>
+
+        <div class="config-grupo">
+          <div class="config-label">Temporizador</div>
+          <div class="pomodoro-wrap">
+            <div>
+              <div class="pom-presets" style="margin-bottom:6px;">
+                <button class="pom-preset ativo" onclick="setPomodoro(25, this)">25min</button>
+                <button class="pom-preset" onclick="setPomodoro(45, this)">45min</button>
+                <button class="pom-preset" onclick="setPomodoro(60, this)">60min</button>
+                <button class="pom-preset" onclick="setPomodoro(0, this)">Livre</button>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;" id="pom-custom-row">
+                <span style="font-size:11px;color:var(--cinza-texto);">Personalizado:</span>
+                <input
+                  type="number" id="pom-custom-min" min="1" max="300"
+                  placeholder="min"
+                  oninput="setPomodoroCostum(this)"
+                  style="
+                    width:60px; background:var(--cinza-medio);
+                    border:1px solid var(--cinza-borda); border-radius:6px;
+                    padding:3px 8px; font-size:12px; color:var(--branco);
+                    font-family:'IBM Plex Mono',monospace;
+                    outline:none; transition:border-color 0.15s;
+                  "
+                >
+                <span style="font-size:11px;color:var(--cinza-texto);">min</span>
+              </div>
+              <div class="pom-sessoes" id="pom-sessoes">Sessões hoje: 0</div>
+            </div>
+            <div class="pomodoro-display pausado" id="pom-display">25:00</div>
+            <div class="pomodoro-controls">
+              <button class="pom-btn" id="pom-play" onclick="togglePomodoro()" title="Iniciar / Pausar">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </button>
+              <button class="pom-btn" onclick="resetPomodoro()" title="Reiniciar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RODAPÉ COM BOTÃO INICIAR -->
+      <div class="rodape-acao">
+        <button class="btn-iniciar" id="btn-iniciar" onclick="iniciarQuestoes()" disabled>
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Iniciar questões
+        </button>
+        <span class="btn-iniciar-info" id="info-iniciar">Selecione ao menos uma legislação para começar</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const AREAS = {
+  at1: {
+    ctsp: {
+      titulo: 'Segurança contra incêndios',
+      cor: '#C0270F',
+      corRgb: '192,39,15',
+      badgeStyle: 'background:rgba(192,39,15,0.15);color:#E0866E;',
+      grupos: [
+        {
+          titulo: 'Leis e Decretos',
+          items: [
+            { id:'lei13425', nome:'Lei Federal nº 13.425/2017', detalhe:'Prevenção e combate a incêndio e a desastres em estabelecimentos, edificações e áreas de reunião de público', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'lc14376', nome:'Lei Complementar nº 14.376/2013', detalhe:'Normas sobre segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'dec51803', nome:'Decreto Estadual nº 51.803/2014', detalhe:'Regulamenta a LC 14.376/2013', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Resoluções Técnicas — Procedimentos Administrativos',
+          items: [
+            { id:'rt01', nome:'RT CBMRS nº 01/2022', detalhe:'Procedimentos administrativos gerais do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'solcbmrs', nome:'SOL-CBMRS — 4ª Edição 2022', detalhe:'Sistema Online de Licenciamento do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p11', nome:'RT CBMRS nº 05 — Parte 1.1/2016', detalhe:'Disposições gerais e definições', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p02', nome:'RT CBMRS nº 05 — Parte 02/2023', detalhe:'Acesso de viaturas', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p31', nome:'RT CBMRS nº 05 — Parte 3.1/2016', detalhe:'Instalações prediais de água para combate a incêndios', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'rt05p72', nome:'RT CBMRS nº 05 — Parte 7.2/2021', detalhe:'Proteção por chuveiros automáticos', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p08', nome:'RT CBMRS nº 05 — Parte 08/2016', detalhe:'Símbolos gráficos para projetos de segurança contra incêndio', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'rt05p06', nome:'RT CBMRS nº 05 — Parte 06/2023', detalhe:'Saídas de emergência', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Resoluções Técnicas — Medidas de Segurança',
+          items: [
+            { id:'rt11', nome:'RT CBMRS nº 11 — Parte 01/2016', detalhe:'Brigada de incêndio', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'rt14', nome:'RT CBMRS nº 14/2016', detalhe:'Carga de incêndio nas edificações', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'rt12', nome:'RT CBMRS nº 12/2021', detalhe:'Sinalização de emergência', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'rt15', nome:'RT CBMRS nº 15 — Parte 01/2023', detalhe:'Brigada de incêndio (versão revisada)', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+          ]
+        }
+      ]
+    },
+    cba: {
+      titulo: 'Segurança contra incêndios',
+      cor: '#185FA5',
+      corRgb: '24,95,165',
+      badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;',
+      grupos: [
+        {
+          titulo: 'Leis e Decretos',
+          items: [
+            { id:'lc14376', nome:'Lei Complementar nº 14.376/2013', detalhe:'Normas sobre segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'dec51803', nome:'Decreto Estadual nº 51.803/2014', detalhe:'Regulamenta a LC 14.376/2013', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Resoluções Técnicas — Procedimentos Administrativos',
+          items: [
+            { id:'rt01', nome:'RT CBMRS nº 01/2022', detalhe:'Procedimentos administrativos gerais do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'solcbmrs', nome:'SOL-CBMRS — 4ª Edição 2022', detalhe:'Sistema Online de Licenciamento do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p11', nome:'RT CBMRS nº 05 — Parte 1.1/2016', detalhe:'Disposições gerais e definições', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p02', nome:'RT CBMRS nº 05 — Parte 02/2023', detalhe:'Acesso de viaturas', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p04a', nome:'RT CBMRS nº 05 — Parte 04A/2017', detalhe:'Extintores de incêndio', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+            { id:'rt05p04b', nome:'RT CBMRS nº 05 — Parte 04B/2017', detalhe:'Sistema de hidrantes e mangotinhos', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+            { id:'rt05p04c', nome:'RT CBMRS nº 05 — Parte 04C/2017', detalhe:'Chuveiros automáticos — complemento', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+            { id:'rt05p72', nome:'RT CBMRS nº 05 — Parte 7.2/2021', detalhe:'Proteção por chuveiros automáticos', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p06', nome:'RT CBMRS nº 05 — Parte 06/2023', detalhe:'Saídas de emergência', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Resoluções Técnicas — Medidas de Segurança',
+          items: [
+            { id:'rt15cba', nome:'RT CBMRS nº 15 — Parte 01/2022', detalhe:'Brigada de incêndio (versão CBA)', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+          ]
+        }
+      ]
+    }
+  },
+  at2: {
+    ctsp: {
+      titulo: 'Combate a incêndios',
+      cor: '#BA7517',
+      corRgb: '186,117,23',
+      badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;',
+      grupos: [
+        {
+          titulo: 'Manual CBMMG — Combate a Incêndio Urbano (1ª Ed. 2020)',
+          items: [
+            { id:'cap1', nome:'Capítulo 1 — Fundamentos do incêndio', detalhe:'Teoria do fogo, triângulo e tetraedro do fogo, classes de incêndio, propagação do calor', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cap2', nome:'Capítulo 2 — Agentes extintores', detalhe:'Tipos de agentes, mecanismos de extinção, aplicação por classe de incêndio', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cap3', nome:'Capítulo 3 — Equipamentos e viaturas', detalhe:'Equipamentos de proteção individual, viaturas de combate, ferramentas operacionais', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cap5', nome:'Capítulo 5 — Técnicas de combate', detalhe:'Táticas de ataque, posicionamento, ventilação, busca e resgate em incêndio', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cap7', nome:'Capítulo 7 — Incêndios especiais', detalhe:'Incêndios em líquidos inflamáveis, gases, veículos, áreas rurais', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        }
+      ]
+    },
+    cba: {
+      titulo: 'Combate a incêndios',
+      cor: '#BA7517',
+      corRgb: '186,117,23',
+      badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;',
+      grupos: [
+        {
+          titulo: 'Manual CBMMG — Combate a Incêndio Urbano (1ª Ed. 2020)',
+          items: [
+            { id:'cap1', nome:'Capítulo 1 — Fundamentos do incêndio', detalhe:'Teoria do fogo, triângulo e tetraedro do fogo, classes de incêndio, propagação do calor', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cap2', nome:'Capítulo 2 — Agentes extintores', detalhe:'Tipos de agentes, mecanismos de extinção, aplicação por classe de incêndio', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cap3', nome:'Capítulo 3 — Equipamentos e viaturas', detalhe:'Equipamentos de proteção individual, viaturas de combate, ferramentas operacionais', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cap5', nome:'Capítulo 5 — Técnicas de combate', detalhe:'Táticas de ataque, posicionamento, ventilação, busca e resgate em incêndio', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cap7', nome:'Capítulo 7 — Incêndios especiais', detalhe:'Incêndios em líquidos inflamáveis, gases, veículos, áreas rurais', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        }
+      ]
+    }
+  },
+  at3: {
+    ctsp: {
+      titulo: 'Buscas e salvamentos / APH',
+      cor: '#185FA5',
+      corRgb: '24,95,165',
+      badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;',
+      grupos: [
+        {
+          titulo: 'Atendimento Pré-Hospitalar — ITO 23 (CBMMG 3ª Ed. 2021)',
+          items: [
+            { id:'aph-intro', nome:'Introdução ao APH (p. 1–7)', detalhe:'Conceitos, histórico, sistemas de emergência, cadeia de sobrevivência', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'mod100', nome:'Módulo 100 — Suporte básico de vida (p. 7–72)', detalhe:'Avaliação da cena, avaliação primária e secundária, RCP, DEA, obstrução de vias aéreas', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'mod200', nome:'Módulo 200 — Trauma (p. 77–130)', detalhe:'Cinemática do trauma, hemorragias, choque, lesões musculoesqueléticas, imobilização', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'mod500', nome:'Módulo 500 — Situações especiais (p. 251–310)', detalhe:'Emergências clínicas, parto de emergência, intoxicações, afogamento', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Busca, Salvamento e Resgate',
+          items: [
+            { id:'it010', nome:'IT nº 010/AODC-GCG — Busca, salvamento e resgate', detalhe:'Protocolos, equipamentos, técnicas de busca e salvamento em diferentes ambientes', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Salvamento Veicular — ITO 34 (CBMMG 1ª Ed. 2023)',
+          items: [
+            { id:'salv-veic', nome:'Salvamento Veicular (p. 24–154)', detalhe:'Avaliação da cena, estabilização de veículos, ferramentas, técnicas de desencarceramento', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'pop-rs', nome:'POP — Salvamento Veicular RS', detalhe:'Procedimento Operacional Padrão do CBMRS para salvamento veicular', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        }
+      ]
+    },
+    cba: {
+      titulo: 'Buscas e salvamentos / APH',
+      cor: '#185FA5',
+      corRgb: '24,95,165',
+      badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;',
+      grupos: [] // mesmo conteúdo — preenchido no script
+    }
+  },
+  at4: {
+    ctsp: {
+      titulo: 'Direito institucional, constitucional e militar',
+      cor: '#27A05A',
+      corRgb: '39,160,90',
+      badgeStyle: 'background:rgba(39,160,90,0.15);color:#7DD99A;',
+      grupos: [
+        {
+          titulo: 'Legislação Institucional',
+          items: [
+            { id:'lc10990', nome:'LC nº 10.990/1997 — Estatuto dos Militares Estaduais', detalhe:'Situação, obrigações, deveres, direitos e prerrogativas dos servidores militares', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc10992', nome:'LC nº 10.992/1997 — Carreira dos Militares Estaduais', detalhe:'Quadros, carreiras, promoções e acesso aos cursos', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'lc14920', nome:'LC nº 14.920/2016 — Lei de Organização Básica do CBMRS', detalhe:'Estrutura, atribuições e organização do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'dec53897', nome:'Decreto nº 53.897/2018 — Regulamenta a LC 14.920/2016', detalhe:'Organização interna, departamentos e comandos regionais', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc15008', nome:'LC nº 15.008/2017 — Lei de Transição do CBMRS', detalhe:'Regras de transição para estruturação do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc15009', nome:'LC nº 15.009/2017 — Fixação de Efetivo do CBMRS', detalhe:'Efetivo de oficiais e praças do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rdbm', nome:'Decreto nº 43.245/2004 — RDBM', detalhe:'Regulamento Disciplinar da Brigada Militar — transgressões, punições e comportamento', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Constituição Federal',
+          items: [
+            { id:'cf-adm', nome:'CF/88 — Administração Pública (arts. 37 a 42)', detalhe:'Princípios, servidores públicos, teto remuneratório, aposentadoria', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cf-jud', nome:'CF/88 — Poder Judiciário (arts. 125 e 126)', detalhe:'Justiça Estadual e Militar Estadual', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cf-fa', nome:'CF/88 — Forças Armadas (arts. 142 e 143)', detalhe:'Destinação, organização e serviço militar', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cf-sp', nome:'CF/88 — Segurança Pública (art. 144)', detalhe:'Órgãos, atribuições e organização da segurança pública', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Constituição do RS',
+          items: [
+            { id:'cers-mil', nome:'CE/RS — Servidores Públicos Militares (arts. 46 a 48)', detalhe:'Direitos e garantias dos militares estaduais', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cers-sp', nome:'CE/RS — Segurança Pública (arts. 124 a 131)', detalhe:'Brigada Militar, CBMRS e sistema de segurança pública do RS', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Direito Penal e Processual Militar',
+          items: [
+            { id:'cpm-ap', nome:'CPM — Aplicação da lei penal militar (arts. 1º a 9º)', detalhe:'Princípio da legalidade, territorialidade, crimes militares em tempo de paz', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cpm-acao', nome:'CPM — Ação penal militar (arts. 121 e 122)', detalhe:'Ação penal pública e privada no âmbito militar', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cpm-crimes', nome:'CPM — Crimes militares em tempo de paz (arts. 149–334)', detalhe:'Crimes contra a hierarquia, serviço militar, administração e patrimônio', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cppm-pjm', nome:'CPPM — Polícia Judiciária Militar (arts. 7º e 8º)', detalhe:'Exercício e competência da polícia judiciária militar', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cppm-ipm', nome:'CPPM — Inquérito Policial Militar (arts. 9º a 28)', detalhe:'Instauração, instrução e conclusão do IPM', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cppm-busca', nome:'CPPM — Busca e apreensão (arts. 170 a 189)', detalhe:'Procedimentos de busca e apreensão no processo penal militar', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cppm-prisao', nome:'CPPM — Prisão provisória e flagrante (arts. 220 a 253)', detalhe:'Prisão provisória, em flagrante e preventiva no âmbito militar', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Normas Correicionais — exclusivo CTSP',
+          items: [
+            { id:'ir003', nome:'IR nº 003.1/Corregedoria — PADM', detalhe:'Processo Administrativo Disciplinar Militar no âmbito do CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'ir006', nome:'IR nº 006/Corregedoria — Sindicância Militar', detalhe:'Procedimentos de sindicância no CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'ir008', nome:'IR nº 008/Corregedoria — IPM', detalhe:'Inquérito Policial Militar no âmbito do CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+          ]
+        }
+      ]
+    },
+    cba: {
+      titulo: 'Direito institucional, constitucional e militar',
+      cor: '#27A05A',
+      corRgb: '39,160,90',
+      badgeStyle: 'background:rgba(39,160,90,0.15);color:#7DD99A;',
+      grupos: [
+        {
+          titulo: 'Legislação Institucional',
+          items: [
+            { id:'lc10990', nome:'LC nº 10.990/1997 — Estatuto dos Militares Estaduais', detalhe:'Situação, obrigações, deveres, direitos e prerrogativas dos servidores militares', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc14920', nome:'LC nº 14.920/2016 — Lei de Organização Básica do CBMRS', detalhe:'Estrutura, atribuições e organização do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'dec53897', nome:'Decreto nº 53.897/2018 — Regulamenta a LC 14.920/2016', detalhe:'Organização interna, departamentos e comandos regionais', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc15008', nome:'LC nº 15.008/2017 — Lei de Transição do CBMRS', detalhe:'Regras de transição para estruturação do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc15009', nome:'LC nº 15.009/2017 — Fixação de Efetivo do CBMRS', detalhe:'Efetivo de oficiais e praças do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rdbm', nome:'Decreto nº 43.245/2004 — RDBM', detalhe:'Regulamento Disciplinar da Brigada Militar', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Constituição Federal e Estadual',
+          items: [
+            { id:'cf-adm', nome:'CF/88 — Administração Pública (arts. 37 a 42)', detalhe:'Princípios, servidores públicos, teto remuneratório', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cf-jud', nome:'CF/88 — Poder Judiciário (arts. 125 e 126)', detalhe:'Justiça Estadual e Militar Estadual', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cf-fa', nome:'CF/88 — Forças Armadas (arts. 142 e 143)', detalhe:'Destinação e organização', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cf-sp', nome:'CF/88 — Segurança Pública (art. 144)', detalhe:'Órgãos e atribuições', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cers-mil', nome:'CE/RS — Servidores Públicos Militares (arts. 46 a 48)', detalhe:'Direitos e garantias', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cers-sp', nome:'CE/RS — Segurança Pública (arts. 124 a 131)', detalhe:'Sistema de segurança pública do RS', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Direito Penal e Processual Militar',
+          items: [
+            { id:'cpm-ap', nome:'CPM — Aplicação da lei penal militar (arts. 1º a 9º)', detalhe:'Crimes militares em tempo de paz', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cpm-acao', nome:'CPM — Ação penal militar (arts. 121 e 122)', detalhe:'Ação penal pública e privada', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cpm-crimes', nome:'CPM — Crimes militares em tempo de paz (arts. 149–334)', detalhe:'Crimes contra hierarquia, serviço e patrimônio', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cppm-pjm', nome:'CPPM — Polícia Judiciária Militar (arts. 7º e 8º)', detalhe:'Exercício e competência', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cppm-ipm', nome:'CPPM — IPM (arts. 9º a 28)', detalhe:'Instauração e instrução', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cppm-busca', nome:'CPPM — Busca e apreensão (arts. 170 a 189)', detalhe:'Procedimentos', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'cppm-prisao', nome:'CPPM — Prisão provisória e flagrante (arts. 220 a 253)', detalhe:'Prisão no processo penal militar', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        }
+      ]
+    }
+  },
+  at5: {
+    ctsp: {
+      titulo: 'Normas administrativas e documentação técnica',
+      cor: '#7F77DD',
+      corRgb: '127,119,221',
+      badgeStyle: 'background:rgba(127,119,221,0.15);color:#AFA9EC;',
+      grupos: [
+        {
+          titulo: 'Decretos Administrativos — exclusivo CTSP',
+          items: [
+            { id:'dec57390', nome:'Decreto nº 57.390/2023 — Movimentação de Militares', detalhe:'Regulamento de Movimentação dos militares estaduais da BM e do CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'lei6196', nome:'Lei nº 6.196/1971 — Código de Vencimentos', detalhe:'Vencimentos, proventos, indenizações e direitos do pessoal da BM', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'dec24846', nome:'Decreto nº 24.846/1976 — Ajuda de custo, diárias e transportes', detalhe:'Concessão de ajuda de custo, diárias e meios de transporte aos servidores', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'dec35693', nome:'Decreto nº 35.693/1994 — Prestação de contas de diárias', detalhe:'Procedimentos de prestação de contas e homologação de diárias', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'dec35818', nome:'Decreto nº 35.818/1995 — Substituições temporárias', detalhe:'Procedimentos para realização de substituições temporárias na BM', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'dec49113', nome:'Decreto nº 49.113/2012 — Estágio Probatório', detalhe:'Regulamento do Estágio Probatório dos Militares Estaduais da BM', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+            { id:'dec40986', nome:'Decreto nº 40.986/2001 — Serviço extraordinário', detalhe:'Convocação e pagamento de serviço extraordinário dos militares estaduais', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
+          ]
+        },
+        {
+          titulo: 'Instruções Técnicas Operacionais',
+          items: [
+            { id:'it03', nome:'IT nº 03/AODC-GCG — Sistema E-193', detalhe:'Regulamenta o Sistema de Emergência 193 do CBMRS (atualizada até Portaria 77/CBMRS de Jul/24)', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'it04', nome:'IT nº 04.2/2024 — Força de Resposta Rápida (FR2)', detalhe:'Estruturação e emprego da FR2 do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'it09', nome:'IT nº 09/AODC-GCG — Sistema de Comando de Incidentes', detalhe:'Utilização do SCI no âmbito do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        },
+        {
+          titulo: 'Documentação Técnica',
+          items: [
+            { id:'caderno', nome:'Caderno Temático de Documentação Técnica — ABM 2023', detalhe:'Documentos técnicos, redação oficial, pronomes de tratamento e gestão documental', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'port021', nome:'Portaria nº 021/2020 — Glossário Operacional', detalhe:'Glossário de designações, terminologias e atos normativos do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        }
+      ]
+    },
+    cba: {
+      titulo: 'Normas institucionais e documentação técnica',
+      cor: '#7F77DD',
+      corRgb: '127,119,221',
+      badgeStyle: 'background:rgba(127,119,221,0.15);color:#AFA9EC;',
+      grupos: [
+        {
+          titulo: 'Instruções Reguladoras — exclusivo CBA',
+          items: [
+            { id:'ir003adm', nome:'IR nº 003/ADM/EXC-20 — Escalas e efetividade', detalhe:'Procedimentos para escalas, efetividade e sistema RHE', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+            { id:'ir002adm', nome:'IR nº 002/Adm/RH-20 — Estágio Probatório', detalhe:'Regulamenta o estágio probatório no âmbito do CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+            { id:'ir0011', nome:'IR nº 001.1/Corregedoria — Conselho de Disciplina', detalhe:'Procedimentos para Conselho de Disciplina no CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+            { id:'ir0031', nome:'IR nº 003.1/Corregedoria — PADM', detalhe:'Processo Administrativo Disciplinar Militar no CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+            { id:'ir006', nome:'IR nº 006/Corregedoria — Sindicância Militar', detalhe:'Procedimentos de sindicância no CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+            { id:'ir008', nome:'IR nº 008/Corregedoria — IPM', detalhe:'Inquérito Policial Militar no âmbito do CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+          ]
+        },
+        {
+          titulo: 'Instruções Técnicas Operacionais',
+          items: [
+            { id:'it03', nome:'IT nº 03/AODC-GCG — Sistema E-193', detalhe:'Regulamenta o Sistema de Emergência 193 do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'it04', nome:'IT nº 04.2/2024 — Força de Resposta Rápida (FR2)', detalhe:'Estruturação e emprego da FR2 do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'it09', nome:'IT nº 09/AODC-GCG — Sistema de Comando de Incidentes', detalhe:'Utilização do SCI no âmbito do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'port018', nome:'Portaria nº 018/2024 — Circunscrição Administrativa e Operacional', detalhe:'Define circunscrições administrativas e operacionais do CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
+          ]
+        },
+        {
+          titulo: 'Documentação Técnica',
+          items: [
+            { id:'caderno', nome:'Caderno Temático de Documentação Técnica — ABM 2023', detalhe:'Documentos técnicos, redação oficial e gestão documental', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'port021', nome:'Portaria nº 021/2020 — Glossário Operacional', detalhe:'Glossário de designações, terminologias e atos normativos do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+          ]
+        }
+      ]
+    }
+  }
+};
+
+// AT3 CBA = mesmo conteúdo do CTSP
+AREAS.at3.cba.grupos = AREAS.at3.ctsp.grupos;
+
+// ── ESTADO GLOBAL ──
+let areaAtual  = 'at1';
+let cursoAtual = 'ctsp'; // recebido da tela anterior via URL param ou padrão
+let selecionados = new Set();
+let qtdQuestoes  = 20;
+
+// ── POMODORO ──
+let pomMinutos   = 25;
+let pomSegundos  = 0;
+let pomRodando   = false;
+let pomInterval  = null;
+let pomSessoes   = 0;
+let pomLivre     = false;
+
+function tagClass(tag) {
+  if (tag === 'exclusivo')     return 'tag-exclusivo';
+  if (tag === 'exclusivo-cba') return 'tag-exclusivo-cba';
+  return 'tag-comum';
+}
+
+// ── RENDER PRINCIPAL ──
+function render() {
+  const area = AREAS[areaAtual][cursoAtual];
+  if (!area) return;
+
+  document.documentElement.style.setProperty('--cor-area', area.cor);
+  document.documentElement.style.setProperty('--cor-area-rgb', area.corRgb);
+
+  document.getElementById('bc-area').textContent =
+    areaAtual.toUpperCase() + ' — ' + area.titulo;
+  document.getElementById('area-id-txt').textContent =
+    'Área temática ' + areaAtual.replace('at','');
+  document.getElementById('area-titulo-el').textContent = area.titulo;
+
+  const badge = document.getElementById('curso-badge-el');
+  badge.textContent = cursoAtual.toUpperCase();
+  badge.style.cssText = area.badgeStyle +
+    'border-radius:20px;padding:2px 10px;font-size:10px;font-weight:500;letter-spacing:0.05em;';
+
+  document.getElementById('resumo-num').style.color = area.cor;
+
+  // Atualizar cor dos botões de qtd e pomodoro ao mudar área
+  document.querySelectorAll('.qtd-btn.ativo, .pom-preset.ativo').forEach(b => {
+    b.style.background = area.cor;
+    b.style.borderColor = area.cor;
+  });
+
+  const container = document.getElementById('conteudo-legislacoes');
+  container.innerHTML = '';
+
+  area.grupos.forEach(grupo => {
+    const grupoDiv = document.createElement('div');
+    grupoDiv.className = 'subgrupo';
+
+    const tituloDiv = document.createElement('div');
+    tituloDiv.className = 'subgrupo-titulo';
+    tituloDiv.textContent = grupo.titulo;
+    grupoDiv.appendChild(tituloDiv);
+
+    const lista = document.createElement('div');
+    lista.className = 'leg-lista';
+
+    grupo.items.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'leg-item' + (selecionados.has(item.id) ? ' selecionado' : '');
+      div.onclick = () => toggleItem(item.id, div);
+      div.innerHTML = `
+        <div class="checkbox">
+          <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="leg-info">
+          <div class="leg-nome">${item.nome}</div>
+          <div class="leg-detalhe">${item.detalhe}</div>
+        </div>
+        <div class="leg-meta">
+          <span class="leg-tag ${tagClass(item.tag)}">${item.tagTxt}</span>
+        </div>
+      `;
+      lista.appendChild(div);
+    });
+
+    grupoDiv.appendChild(lista);
+    container.appendChild(grupoDiv);
+  });
+
+  atualizarResumo();
+}
+
+function toggleItem(id, el) {
+  if (selecionados.has(id)) {
+    selecionados.delete(id);
+    el.classList.remove('selecionado');
+  } else {
+    selecionados.add(id);
+    el.classList.add('selecionado');
+  }
+  atualizarResumo();
+}
+
+function atualizarResumo() {
+  const n = selecionados.size;
+  document.getElementById('resumo-num').textContent = n;
+  const btn  = document.getElementById('btn-iniciar');
+  const info = document.getElementById('info-iniciar');
+  if (n === 0) {
+    btn.disabled = true;
+    document.getElementById('resumo-sub').textContent = 'Selecione ao menos uma';
+    info.textContent = 'Selecione ao menos uma legislação para começar';
+  } else {
+    btn.disabled = false;
+    const qtdLabel = qtdQuestoes === 0 ? 'todas as disponíveis' : qtdQuestoes + ' questões';
+    document.getElementById('resumo-sub').textContent =
+      n === 1 ? '1 selecionada' : n + ' selecionadas';
+    info.textContent = 'Serão sorteadas ' + qtdLabel + ' aleatoriamente';
+  }
+}
+
+function selecionarTodas() {
+  const area = AREAS[areaAtual][cursoAtual];
+  area.grupos.forEach(g => g.items.forEach(i => selecionados.add(i.id)));
+  render();
+}
+
+function limparSelecao() {
+  selecionados.clear();
+  render();
+}
+
+// ── TROCAR ÁREA — sem parâmetro de curso (já está definido) ──
+function trocarArea(at, btn) {
+  areaAtual = at;
+  selecionados.clear();
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  render();
+}
+
+// ── SELETOR DE QUANTIDADE ──
+function setQtd(n, btn) {
+  qtdQuestoes = n;
+  document.querySelectorAll('.qtd-btn').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  atualizarResumo();
+}
+
+// ── POMODORO ──
+function padZ(n) { return n < 10 ? '0' + n : '' + n; }
+
+function atualizarDisplayPom() {
+  const el = document.getElementById('pom-display');
+  el.textContent = padZ(pomMinutos) + ':' + padZ(pomSegundos);
+  el.className = 'pomodoro-display ' + (pomRodando ? 'rodando' : 'pausado');
+}
+
+function setPomodoro(min, btn) {
+  // Para o timer antes de mudar
+  pausarPomodoro();
+  pomLivre    = (min === 0);
+  pomMinutos  = pomLivre ? 99 : min;
+  pomSegundos = 0;
+  document.querySelectorAll('.pom-preset').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  atualizarDisplayPom();
+}
+
+function togglePomodoro() {
+  if (pomRodando) {
+    pausarPomodoro();
+  } else {
+    iniciarPomodoro();
+  }
+}
+
+function iniciarPomodoro() {
+  if (pomLivre) {
+    // Modo livre: conta pra cima
+    pomRodando = true;
+    atualizarDisplayPom();
+    updatePlayBtn();
+    pomInterval = setInterval(() => {
+      pomSegundos++;
+      if (pomSegundos === 60) { pomSegundos = 0; pomMinutos++; }
+      atualizarDisplayPom();
+    }, 1000);
+    return;
+  }
+
+  if (pomMinutos === 0 && pomSegundos === 0) resetPomodoro();
+  pomRodando = true;
+  atualizarDisplayPom();
+  updatePlayBtn();
+
+  pomInterval = setInterval(() => {
+    if (pomSegundos === 0) {
+      if (pomMinutos === 0) {
+        // Sessão concluída!
+        clearInterval(pomInterval);
+        pomRodando = false;
+        pomSessoes++;
+        document.getElementById('pom-sessoes').textContent =
+          'Sessões hoje: ' + pomSessoes;
+        document.getElementById('pom-display').className = 'pomodoro-display pausado';
+        updatePlayBtn();
+        // Notificação sonora simples
+        try {
+          const ctx = new AudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = 880;
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
+          osc.start(); osc.stop(ctx.currentTime + 0.8);
+        } catch(e) {}
+        return;
+      }
+      pomMinutos--;
+      pomSegundos = 59;
+    } else {
+      pomSegundos--;
+    }
+    atualizarDisplayPom();
+  }, 1000);
+}
+
+function pausarPomodoro() {
+  clearInterval(pomInterval);
+  pomRodando = false;
+  atualizarDisplayPom();
+  updatePlayBtn();
+}
+
+function resetPomodoro() {
+  clearInterval(pomInterval);
+  pomRodando = false;
+  // Repõe o tempo do preset ativo
+  const ativo = document.querySelector('.pom-preset.ativo');
+  if (ativo) {
+    const txt = ativo.textContent;
+    pomMinutos  = pomLivre ? 0 : parseInt(txt);
+    pomSegundos = 0;
+  }
+  atualizarDisplayPom();
+  updatePlayBtn();
+}
+
+function updatePlayBtn() {
+  const btn = document.getElementById('pom-play');
+  btn.innerHTML = pomRodando
+    ? '<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+}
+
+// ── QUANTIDADE MANUAL ──
+function setQtdManual(input) {
+  const val = parseInt(input.value);
+  if (!val || val < 1) {
+    document.getElementById('qtd-manual-label').textContent = '';
+    return;
+  }
+  // Desativar botões de preset
+  document.querySelectorAll('.qtd-btn').forEach(b => b.classList.remove('ativo'));
+  qtdQuestoes = val;
+  document.getElementById('qtd-manual-label').textContent = 'questões';
+  atualizarResumo();
+}
+
+// ── POMODORO PERSONALIZADO ──
+function setPomodoroCostum(input) {
+  const val = parseInt(input.value);
+  if (!val || val < 1) return;
+  // Para o timer e desativa presets
+  pausarPomodoro();
+  pomLivre    = false;
+  pomMinutos  = val;
+  pomSegundos = 0;
+  document.querySelectorAll('.pom-preset').forEach(b => b.classList.remove('ativo'));
+  atualizarDisplayPom();
+}
+
+
+function iniciarQuestoes() {
+  const qtdLabel = qtdQuestoes === 0 ? 'todas' : qtdQuestoes;
+  const pomLabel = pomLivre ? 'Livre' :
+    document.querySelector('.pom-preset.ativo')?.textContent || '25min';
+  alert(
+    'Tudo pronto!\n\n' +
+    '📚 Curso: ' + cursoAtual.toUpperCase() + '\n' +
+    '📋 Área: ' + areaAtual.toUpperCase() + '\n' +
+    '📝 Questões: ' + qtdLabel + '\n' +
+    '⏱ Pomodoro: ' + pomLabel + '\n' +
+    '📌 Legislações: ' + selecionados.size + ' selecionada(s)\n\n' +
+    '(A tela de questões será desenvolvida na próxima etapa.)'
+  );
+}
+
+// ── INIT ──
+atualizarDisplayPom();
+render();
+</script>
+</body>
+</html>
