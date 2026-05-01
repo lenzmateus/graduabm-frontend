@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Questões</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --verde: #27A05A;
+    --verde-bg: rgba(39,160,90,0.1);
+    --verde-borda: rgba(39,160,90,0.35);
+    --erro-bg: rgba(226,75,74,0.1);
+    --erro-borda: rgba(226,75,74,0.35);
+    --cor-area: #C0270F;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--carvao); color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px; line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── LOADING ── */
+  #tela-loading {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 1.5rem;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; letter-spacing: 0.05em; color: var(--branco);
+    text-decoration: none;
+  }
+  .spinner-grande {
+    width: 32px; height: 32px;
+    border: 3px solid #333;
+    border-top-color: var(--cor-area);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-txt { font-size: 13px; color: var(--cinza-texto); }
+
+  /* ── QUIZ HEADER ── */
+  #tela-questao {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .quiz-header {
+    height: 56px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    background: var(--cinza-escuro);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .header-left {
+    display: flex; align-items: center; gap: 10px;
+    min-width: 160px;
+  }
+  .header-sep { color: #444; }
+  .header-contexto {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+  }
+  .header-center {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; gap: 4px;
+    padding: 0 2rem;
+  }
+  .prog-info {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--cinza-texto);
+  }
+  .prog-info span:first-child { color: var(--branco); font-weight: 500; }
+  .prog-track {
+    width: 200px; height: 3px;
+    background: #2A2A2A; border-radius: 3px;
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%; border-radius: 3px;
+    background: var(--cor-area);
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+  .header-right {
+    display: flex; align-items: center; gap: 12px;
+    min-width: 160px; justify-content: flex-end;
+  }
+  .timer-display {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; color: var(--cinza-texto);
+    min-width: 44px; text-align: right;
+  }
+  .btn-sair-quiz {
+    background: transparent; border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-sair-quiz:hover { border-color: #555; color: var(--branco); }
+
+  /* ── QUIZ MAIN ── */
+  .quiz-main {
+    flex: 1;
+    display: flex; align-items: flex-start; justify-content: center;
+    padding: 2.5rem 1rem 4rem;
+  }
+  .questao-card {
+    width: 100%; max-width: 760px;
+    animation: fadeUp 0.25s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── BADGES ── */
+  .questao-badges {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 1.25rem; flex-wrap: wrap;
+  }
+  .badge-area {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    padding: 3px 10px; border-radius: 20px;
+    letter-spacing: 0.06em;
+    background: rgba(192,39,15,0.12);
+    border: 1px solid rgba(192,39,15,0.3);
+    color: #E0866E;
+  }
+  .badge-leg {
+    font-size: 11px; color: var(--cinza-texto);
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 20px; padding: 3px 10px;
+    max-width: 400px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* ── ENUNCIADO ── */
+  .questao-enunciado {
+    font-size: 15px; line-height: 1.75;
+    color: var(--branco);
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+
+  /* ── ALTERNATIVAS ── */
+  .alternativas {
+    display: flex; flex-direction: column; gap: 8px;
+    margin-bottom: 1.5rem;
+  }
+  .alt {
+    display: flex; align-items: flex-start; gap: 12px;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px; padding: 12px 16px;
+    cursor: pointer; transition: all 0.15s;
+    font-size: 14px; color: #bbb;
+    user-select: none;
+  }
+  .alt:hover:not(.bloqueada) { border-color: #555; background: var(--cinza-medio); color: var(--branco); }
+  .alt.selecionada {
+    border-color: var(--cor-area);
+    background: rgba(192,39,15,0.07);
+    color: var(--branco);
+  }
+  .alt.correta {
+    border-color: var(--verde-borda);
+    background: var(--verde-bg);
+    color: #7DD99A;
+  }
+  .alt.errada {
+    border-color: var(--erro-borda);
+    background: var(--erro-bg);
+    color: #F09595;
+  }
+  .alt.bloqueada { cursor: default; }
+  .alt-letra {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border-radius: 50%; border: 1px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+    transition: all 0.15s; margin-top: 1px;
+  }
+  .alt.correta .alt-letra { background: var(--verde); border-color: var(--verde); color: #fff; }
+  .alt.errada .alt-letra { background: #8B1A08; border-color: #8B1A08; color: #fff; }
+  .alt.selecionada .alt-letra { background: var(--cor-area); border-color: var(--cor-area); color: #fff; }
+
+  /* ── FEEDBACK ── */
+  .feedback {
+    border-radius: 8px; padding: 14px 16px;
+    margin-bottom: 1.5rem; font-size: 13px; line-height: 1.65;
+    animation: fadeUp 0.2s ease both;
+  }
+  .feedback-acerto {
+    background: var(--verde-bg);
+    border: 1px solid var(--verde-borda);
+  }
+  .feedback-erro {
+    background: var(--erro-bg);
+    border: 1px solid var(--erro-borda);
+  }
+  .feedback-titulo {
+    font-weight: 600; margin-bottom: 6px; font-size: 13px;
+  }
+  .feedback-acerto .feedback-titulo { color: #7DD99A; }
+  .feedback-erro .feedback-titulo { color: #F09595; }
+  .feedback-txt { color: var(--cinza-texto); line-height: 1.7; }
+
+  /* ── AÇÃO ── */
+  .questao-acao {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .btn-confirmar {
+    background: var(--cor-area); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 13px 32px; font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+  .btn-confirmar:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+  .btn-confirmar:disabled { background: var(--cinza-medio); color: #555; cursor: default; transform: none; }
+  .btn-proxima { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); }
+  .btn-proxima:hover:not(:disabled) { background: var(--cinza-medio); border-color: #555; opacity: 1; }
+  .btn-encerrar { background: var(--verde); }
+  .btn-encerrar:hover:not(:disabled) { opacity: 0.88; }
+  .acao-hint { font-size: 12px; color: var(--cinza-texto); }
+
+  /* ── RESULTADOS ── */
+  #tela-resultados {
+    display: none;
+    min-height: 100vh;
+    flex-direction: column; align-items: center;
+    padding: 3rem 1rem 4rem;
+  }
+  .resultado-header {
+    text-align: center; margin-bottom: 2rem;
+    width: 100%; max-width: 680px;
+  }
+  .resultado-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #444; margin-bottom: 1.5rem; }
+  .resultado-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; letter-spacing: 0.03em;
+    color: var(--branco); margin-bottom: 4px;
+  }
+  .resultado-sub { font-size: 13px; color: var(--cinza-texto); }
+
+  .resultado-score {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin-bottom: 2rem;
+    width: 100%; max-width: 680px;
+  }
+  .score-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px; padding: 1.25rem;
+    text-align: center;
+  }
+  .score-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; letter-spacing: 0.03em;
+    line-height: 1; margin-bottom: 4px;
+  }
+  .score-label { font-size: 11px; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .resultado-lista {
+    width: 100%; max-width: 680px;
+    margin-bottom: 2rem;
+  }
+  .resultado-secao {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .resultado-secao::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+  .resultado-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--cinza-borda);
+    font-size: 13px;
+  }
+  .resultado-item:last-child { border-bottom: none; }
+  .res-icone {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 11px; font-weight: 600; margin-top: 2px;
+  }
+  .res-ok { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
+  .res-err { background: var(--erro-bg); border: 1px solid var(--erro-borda); color: #F09595; }
+  .res-texto { flex: 1; color: #bbb; line-height: 1.5; }
+  .res-gabarito {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto); flex-shrink: 0;
+  }
+
+  .resultado-acoes {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    width: 100%; max-width: 680px;
+  }
+  .btn-resultado {
+    padding: 13px 28px; border-radius: 8px;
+    font-size: 14px; font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer; transition: all 0.15s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-resultado.primario { background: var(--cor-area); color: #fff; border: none; }
+  .btn-resultado.primario:hover { opacity: 0.88; }
+  .btn-resultado.secundario { background: transparent; border: 1px solid var(--cinza-borda); color: var(--branco); }
+  .btn-resultado.secundario:hover { border-color: #555; background: var(--cinza-medio); }
+
+  /* ── ERRO ── */
+  #tela-erro {
+    display: none;
+    min-height: 100vh;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 1rem; text-align: center;
+    padding: 2rem;
+  }
+  .erro-icone {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  .erro-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--branco); }
+  .erro-desc { font-size: 13px; color: var(--cinza-texto); max-width: 380px; line-height: 1.65; }
+  .btn-erro {
+    margin-top: 0.5rem;
+    padding: 11px 24px; border-radius: 8px;
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+    color: var(--branco); font-size: 13px;
+    cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.15s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-erro:hover { border-color: #555; background: var(--cinza-medio); }
+
+  /* ── CONFIRMAÇÃO SAÍDA ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .modal-overlay.visivel { display: flex; }
+  .modal-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px; padding: 2rem;
+    max-width: 380px; width: 90%; text-align: center;
+  }
+  .modal-titulo { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .modal-desc { font-size: 13px; color: var(--cinza-texto); margin-bottom: 1.5rem; line-height: 1.6; }
+  .modal-acoes { display: flex; gap: 10px; justify-content: center; }
+  .btn-modal {
+    padding: 10px 22px; border-radius: 7px; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; border: none;
+    transition: all 0.15s;
+  }
+  .btn-modal-cancel { background: var(--cinza-medio); color: var(--cinza-texto); border: 1px solid var(--cinza-borda); }
+  .btn-modal-cancel:hover { color: var(--branco); border-color: #555; }
+  .btn-modal-sair { background: var(--vermelho); color: #fff; }
+  .btn-modal-sair:hover { background: #8B1A08; }
+
+  @media (max-width: 768px) {
+    .quiz-header { padding: 0 1rem; height: 52px; }
+    .header-left .header-sep,
+    .header-contexto { display: none; }
+    .header-center { padding: 0 0.75rem; }
+    .prog-track { width: 120px; }
+    .quiz-main { padding: 1.25rem 1rem 3rem; }
+    .questao-acao { flex-direction: column; align-items: stretch; }
+    .btn-confirmar { width: 100%; justify-content: center; }
+    .acao-hint { text-align: center; }
+    .resultado-score { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .score-num { font-size: 32px; }
+    .resultado-acoes { flex-direction: column; }
+    .btn-resultado { width: 100%; justify-content: center; }
+  }
+  @media (max-width: 480px) {
+    .resultado-score { grid-template-columns: 1fr; }
+    .questao-enunciado { font-size: 14px; }
+    .alt { font-size: 13px; padding: 10px 12px; }
+    .timer-display { display: none; }
+    #tela-resultados { padding: 1.5rem 1rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="tela-loading">
+  <a href="/" class="logo-text">GraduaBM</a>
+  <div class="spinner-grande" id="spinner"></div>
+  <div class="loading-txt" id="loading-txt">Preparando questões…</div>
+</div>
+
+<!-- QUESTÃO -->
+<div id="tela-questao">
+  <header class="quiz-header">
+    <div class="header-left">
+      <a href="/" class="logo-text">GraduaBM</a>
+      <span class="header-sep">·</span>
+      <span class="header-contexto" id="hdr-contexto">—</span>
+    </div>
+    <div class="header-center">
+      <div class="prog-info">
+        <span id="hdr-atual">1</span>/<span id="hdr-total">—</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" id="prog-fill"></div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="timer-display" id="timer-display">00:00</div>
+      <button class="btn-sair-quiz" onclick="confirmarSaida()" title="Encerrar sessão">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="quiz-main">
+    <div class="questao-card">
+      <div class="questao-badges">
+        <span class="badge-area" id="badge-area">—</span>
+        <span class="badge-leg" id="badge-leg">—</span>
+      </div>
+      <div class="questao-enunciado" id="enunciado">—</div>
+      <div class="alternativas" id="alternativas"></div>
+      <div class="feedback" id="feedback" style="display:none"></div>
+      <div class="questao-acao">
+        <button class="btn-confirmar" id="btn-acao" onclick="acaoPrincipal()" disabled>Confirmar</button>
+        <span class="acao-hint" id="acao-hint">Selecione uma alternativa</span>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- RESULTADOS -->
+<div id="tela-resultados">
+  <div class="resultado-header">
+    <div class="resultado-logo">GraduaBM</div>
+    <div class="resultado-titulo" id="res-titulo">Sessão encerrada</div>
+    <div class="resultado-sub" id="res-sub">—</div>
+  </div>
+
+  <div class="resultado-score">
+    <div class="score-card">
+      <div class="score-num" id="res-acertos" style="color:#27A05A">0</div>
+      <div class="score-label">Acertos</div>
+    </div>
+    <div class="score-card">
+      <div class="score-num" id="res-pct">0%</div>
+      <div class="score-label">Aproveitamento</div>
+    </div>
+    <div class="score-card">
+      <div class="score-num" id="res-erros" style="color:#E24B4A">0</div>
+      <div class="score-label">Erros</div>
+    </div>
+  </div>
+
+  <div class="resultado-lista">
+    <div class="resultado-secao">Gabarito</div>
+    <div id="res-lista"></div>
+  </div>
+
+  <div class="resultado-acoes">
+    <a href="/selecao-legislacao" class="btn-resultado primario">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      Estudar de novo
+    </a>
+    <a href="/area-estudos" class="btn-resultado secundario">← Voltar às áreas</a>
+  </div>
+</div>
+
+<!-- ERRO -->
+<div id="tela-erro">
+  <div class="erro-icone">
+    <svg width="24" height="24" fill="none" stroke="#F09595" stroke-width="1.5" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+  </div>
+  <div class="erro-titulo">Sem questões</div>
+  <div class="erro-desc" id="erro-desc">Nenhuma questão foi encontrada para a seleção feita.</div>
+  <a href="/selecao-legislacao" class="btn-erro">← Voltar e tentar outra seleção</a>
+</div>
+
+<!-- MODAL SAÍDA -->
+<div class="modal-overlay" id="modal-saida">
+  <div class="modal-card">
+    <div class="modal-titulo">Encerrar sessão?</div>
+    <div class="modal-desc">Seu progresso até aqui será salvo. Você pode retomar os estudos a qualquer momento.</div>
+    <div class="modal-acoes">
+      <button class="btn-modal btn-modal-cancel" onclick="fecharModal()">Continuar</button>
+      <button class="btn-modal btn-modal-sair" onclick="sairSessao()">Encerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
+  <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
+</div>
+<script>if(sessionStorage.getItem('graduabm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
+<script>
+// ── ESTADO ──
+let questoes   = [];
+let idxAtual   = 0;
+let sessaoId   = null;
+let acertos    = 0;
+let erros      = 0;
+let selecionada = null;
+let respondida  = false;
+let historicoRespostas = [];
+let timerInterval = null;
+let timerSeg  = 0;
+
+// ── PARAMS (vindos da tela anterior) ──
+const curso      = sessionStorage.getItem('graduabm_curso') || 'ctsp';
+const area       = sessionStorage.getItem('graduabm_at')    || 'AT1';
+const legsRaw    = sessionStorage.getItem('graduabm_legislacoes');
+const legislacoes = legsRaw ? JSON.parse(legsRaw) : [];
+const qtd        = parseInt(sessionStorage.getItem('graduabm_qtd') || '20') || 20;
+
+// ── HELPERS DE ESTRUTURA ──
+function getEnunciado(q) {
+  return q.enunciado || q.texto || q.pergunta || q.questao || '';
+}
+function getAlternativas(q) {
+  if (Array.isArray(q.alternativas)) {
+    return q.alternativas.map((a, i) => {
+      if (typeof a === 'string') return { letra: String.fromCharCode(65 + i), texto: a };
+      return { letra: (a.letra || String.fromCharCode(65 + i)).toUpperCase(), texto: a.texto || a.conteudo || '' };
+    });
+  }
+  // colunas separadas: alternativa_a, alternativa_b…
+  return ['a','b','c','d','e']
+    .map(l => ({ letra: l.toUpperCase(), texto: q['alternativa_' + l] || '' }))
+    .filter(a => a.texto);
+}
+function getRespostaCorreta(q) {
+  const r = q.resposta_correta || q.gabarito || '';
+  return r.toString().toUpperCase().trim().charAt(0);
+}
+function getJustificativa(q) {
+  return q.justificativa || q.gabarito_comentado || q.explicacao || q.comentario || '';
+}
+function getLegislacao(q) {
+  return q.legislacao || q.referencia || q.lei || '';
+}
+
+// ── BUSCAR QUESTÕES VIA SUPABASE (admin mode) ──
+async function carregarQuestoesAdmin() {
+  const supaUrl = sessionStorage.getItem('graduabm_supa_url');
+  const supaKey = sessionStorage.getItem('graduabm_supa_key');
+  const limite = qtd || 10;
+
+  let url = `${supaUrl}/rest/v1/questoes?ativa=eq.true&select=*&limit=${limite}`;
+  if (legislacoes.length > 0) {
+    const legFilter = legislacoes.map(id => `legislacao_id.eq.${id}`).join(',');
+    url += `&or=(${legFilter})`;
+  }
+  const res = await fetch(url, {
+    headers: { 'apikey': supaKey, 'Authorization': 'Bearer ' + supaKey }
+  });
+  if (!res.ok) throw new Error('Supabase error: ' + res.status);
+  const rows = await res.json();
+  return rows.map(q => ({
+    ...q,
+    gabarito: typeof q.gabarito === 'number'
+      ? String.fromCharCode(65 + q.gabarito)
+      : q.gabarito,
+    legislacao: q.legislacao_nome || q.legislacao_id || '',
+  }));
+}
+
+// ── INIT ──
+async function init() {
+  try {
+    if (GraduaBM.isAdmin()) {
+      questoes = await carregarQuestoesAdmin();
+    } else {
+      await GraduaBM.protegerRota();
+
+      const params = new URLSearchParams({ curso, area });
+      if (legislacoes.length) params.set('legislacoes', legislacoes.join(','));
+      if (qtd) params.set('quantidade', String(qtd));
+
+      const dados = await GraduaBM.api.questoes.listar(params.toString());
+      questoes = Array.isArray(dados) ? dados : (dados.questoes || []);
+
+      try {
+        const sessao = await GraduaBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
+        sessaoId = sessao.id;
+      } catch { }
+    }
+
+    if (!questoes.length) {
+      mostrarErro('Nenhuma questão cadastrada para as legislações selecionadas. Tente outra combinação.');
+      return;
+    }
+
+    setCor(area);
+    iniciarTimer();
+    document.getElementById('hdr-total').textContent = questoes.length;
+    document.getElementById('hdr-contexto').textContent = curso.toUpperCase() + ' — ' + area;
+    mostrarQuestao();
+    document.getElementById('tela-loading').style.display = 'none';
+    document.getElementById('tela-questao').style.display = 'flex';
+
+  } catch (err) {
+    mostrarErro('Erro ao carregar questões. Verifique sua conexão e tente novamente.');
+    console.error(err);
+  }
+}
+
+// ── COR POR ÁREA ──
+function setCor(at) {
+  const cores = { AT1:'#C0270F', AT2:'#BA7517', AT3:'#185FA5', AT4:'#27A05A', AT5:'#7F77DD' };
+  const cor = cores[at] || '#C0270F';
+  document.documentElement.style.setProperty('--cor-area', cor);
+}
+
+// ── MOSTRAR QUESTÃO ──
+function mostrarQuestao() {
+  selecionada = null;
+  respondida  = false;
+
+  const q    = questoes[idxAtual];
+  const alts = getAlternativas(q);
+  const leg  = getLegislacao(q);
+
+  document.getElementById('hdr-atual').textContent  = idxAtual + 1;
+  document.getElementById('prog-fill').style.width  = (idxAtual / questoes.length * 100) + '%';
+  document.getElementById('badge-area').textContent = area;
+  document.getElementById('badge-leg').textContent  = leg || '—';
+  document.getElementById('enunciado').textContent  = getEnunciado(q);
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('acao-hint').textContent  = 'Selecione uma alternativa';
+
+  const container = document.getElementById('alternativas');
+  container.innerHTML = '';
+  alts.forEach(alt => {
+    const div = document.createElement('div');
+    div.className = 'alt';
+    div.dataset.letra = alt.letra;
+    div.onclick = () => selecionarAlt(alt.letra, div);
+    div.innerHTML = `<div class="alt-letra">${alt.letra}</div><span>${alt.texto}</span>`;
+    container.appendChild(div);
+  });
+
+  const btn = document.getElementById('btn-acao');
+  btn.textContent = 'Confirmar';
+  btn.disabled = true;
+  btn.className = 'btn-confirmar';
+
+  // animar
+  document.querySelector('.questao-card').style.animation = 'none';
+  requestAnimationFrame(() => {
+    document.querySelector('.questao-card').style.animation = 'fadeUp 0.25s ease both';
+  });
+}
+
+// ── SELECIONAR ALTERNATIVA ──
+function selecionarAlt(letra, el) {
+  if (respondida) return;
+  selecionada = letra;
+  document.querySelectorAll('.alt').forEach(a => a.classList.remove('selecionada'));
+  el.classList.add('selecionada');
+  const btn = document.getElementById('btn-acao');
+  btn.disabled = false;
+  document.getElementById('acao-hint').textContent = '';
+}
+
+// ── AÇÃO PRINCIPAL (confirmar / próxima) ──
+async function acaoPrincipal() {
+  if (!respondida) await confirmarResposta();
+  else             proximaQuestao();
+}
+
+async function confirmarResposta() {
+  if (!selecionada) return;
+  respondida = true;
+
+  const q       = questoes[idxAtual];
+  const correta = getRespostaCorreta(q);
+  const acertou = selecionada === correta;
+
+  if (acertou) acertos++; else erros++;
+  historicoRespostas.push({ q, escolhida: selecionada, correta, acertou });
+
+  // visual
+  document.querySelectorAll('.alt').forEach(alt => {
+    const l = alt.dataset.letra;
+    alt.classList.add('bloqueada');
+    if (l === correta)                   alt.classList.add('correta');
+    else if (l === selecionada && !acertou) alt.classList.add('errada');
+  });
+
+  // feedback
+  const just = getJustificativa(q);
+  const fb   = document.getElementById('feedback');
+  fb.style.display = 'block';
+  fb.className = 'feedback ' + (acertou ? 'feedback-acerto' : 'feedback-erro');
+  fb.innerHTML =
+    `<div class="feedback-titulo">${acertou ? '✓ Correto!' : '✗ Incorreto — Gabarito: alternativa ' + correta}</div>` +
+    (just ? `<div class="feedback-txt">${just}</div>` : '');
+
+  // registrar resposta na API
+  if (sessaoId) {
+    GraduaBM.api.sessoes.responder(sessaoId, { questao_id: q.id, resposta_escolhida: selecionada, correta: acertou })
+      .catch(() => {});
+  }
+
+  // atualizar botão
+  const ultima = idxAtual === questoes.length - 1;
+  const btn    = document.getElementById('btn-acao');
+  btn.textContent = ultima ? 'Ver resultado' : 'Próxima →';
+  btn.className   = ultima ? 'btn-confirmar btn-encerrar' : 'btn-confirmar btn-proxima';
+  btn.disabled    = false;
+  document.getElementById('acao-hint').textContent = '';
+}
+
+// ── PRÓXIMA / ENCERRAR ──
+async function proximaQuestao() {
+  if (idxAtual < questoes.length - 1) {
+    idxAtual++;
+    mostrarQuestao();
+  } else {
+    await encerrarSessao();
+  }
+}
+
+async function encerrarSessao() {
+  if (sessaoId) {
+    GraduaBM.api.sessoes.encerrar(sessaoId).catch(() => {});
+  }
+  pararTimer();
+  mostrarResultados();
+}
+
+// ── RESULTADOS ──
+function mostrarResultados() {
+  document.getElementById('tela-questao').style.display = 'none';
+
+  const total  = questoes.length;
+  const pct    = Math.round(acertos / total * 100);
+  const tempo  = formatarTempo(timerSeg);
+  const corPct = pct >= 70 ? '#27A05A' : pct >= 50 ? '#BA7517' : '#E24B4A';
+
+  document.getElementById('res-titulo').textContent =
+    pct >= 70 ? 'Muito bem!' : pct >= 50 ? 'Bom desempenho' : 'Continue praticando';
+  document.getElementById('res-sub').textContent =
+    curso.toUpperCase() + ' — ' + area + ' · ' + tempo + ' de estudo';
+  document.getElementById('res-acertos').textContent = acertos;
+  document.getElementById('res-erros').textContent   = erros;
+  document.getElementById('res-pct').textContent     = pct + '%';
+  document.getElementById('res-pct').style.color     = corPct;
+
+  const lista = document.getElementById('res-lista');
+  lista.innerHTML = '';
+  historicoRespostas.forEach((h, i) => {
+    const div = document.createElement('div');
+    div.className = 'resultado-item';
+    const enunciado = getEnunciado(h.q);
+    const trecho    = enunciado.length > 100 ? enunciado.slice(0, 100) + '…' : enunciado;
+    div.innerHTML = `
+      <div class="res-icone ${h.acertou ? 'res-ok' : 'res-err'}">${h.acertou ? '✓' : '✗'}</div>
+      <div class="res-texto">
+        <span style="color:#666;font-family:'IBM Plex Mono',monospace;font-size:10px;">Q${i + 1}</span>
+        <span style="margin-left:6px;">${trecho}</span>
+      </div>
+      <div class="res-gabarito">
+        ${h.acertou ? h.correta : `<span style="color:#F09595">${h.escolhida}</span> → <span style="color:#7DD99A">${h.correta}</span>`}
+      </div>
+    `;
+    lista.appendChild(div);
+  });
+
+  document.getElementById('tela-resultados').style.display = 'flex';
+}
+
+// ── TIMER ──
+function iniciarTimer() {
+  timerInterval = setInterval(() => {
+    timerSeg++;
+    document.getElementById('timer-display').textContent = formatarTempo(timerSeg);
+  }, 1000);
+}
+function pararTimer() { clearInterval(timerInterval); }
+function formatarTempo(s) {
+  const m = Math.floor(s / 60), sg = s % 60;
+  return String(m).padStart(2,'0') + ':' + String(sg).padStart(2,'0');
+}
+
+// ── SAÍDA ──
+function confirmarSaida() { document.getElementById('modal-saida').classList.add('visivel'); }
+function fecharModal()    { document.getElementById('modal-saida').classList.remove('visivel'); }
+async function sairSessao() {
+  if (sessaoId) GraduaBM.api.sessoes.encerrar(sessaoId).catch(() => {});
+  pararTimer();
+  window.location.href = '/selecao-legislacao';
+}
+
+// ── ERRO ──
+function mostrarErro(msg) {
+  document.getElementById('tela-loading').style.display = 'none';
+  document.getElementById('erro-desc').textContent = msg;
+  document.getElementById('tela-erro').style.display = 'flex';
+}
+
+// ── KEYBOARD ──
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (document.getElementById('modal-saida').classList.contains('visivel')) fecharModal(); else confirmarSaida(); }
+  if (e.key === 'Enter' && !document.getElementById('btn-acao').disabled) acaoPrincipal();
+  const idx = ['a','b','c','d','e'].indexOf(e.key.toLowerCase());
+  if (idx !== -1 && !respondida) {
+    const alts = document.querySelectorAll('.alt');
+    if (alts[idx]) alts[idx].click();
+  }
+});
+
+// ── API COMPAT (expõe métodos do objeto api do api.js) ──
+GraduaBM.api = {
+  questoes: { listar: (qs) => request('/api/questoes?' + qs) },
+  sessoes:  {
+    criar:     (body) => request('/api/sessoes', { method:'POST', body: JSON.stringify(body) }),
+    responder: (id, body) => request('/api/sessoes/'+id+'/respostas', { method:'POST', body: JSON.stringify(body) }),
+    encerrar:  (id) => request('/api/sessoes/'+id+'/encerrar', { method:'PATCH' }),
+  },
+};
+
+init();
+</script>
+</body>
+</html>

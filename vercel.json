@@ -5,7 +5,11 @@
     { "source": "/login", "destination": "/login.html" },
     { "source": "/area-estudos", "destination": "/graduabm-area-estudos.html" },
     { "source": "/selecao-legislacao", "destination": "/graduabm-selecao-legislacao.html" },
-    { "source": "/checkout-sucesso", "destination": "/graduabm-checkout-sucesso.html" }
+    { "source": "/checkout-sucesso", "destination": "/graduabm-checkout-sucesso.html" },
+    { "source": "/questoes", "destination": "/graduabm-questoes.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/admin-login", "destination": "/admin-login.html" },
+    { "source": "/admin-questoes", "destination": "/admin-questoes.html" }
   ],
   "headers": [
     {

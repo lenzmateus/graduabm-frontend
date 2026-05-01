@@ -335,23 +335,57 @@
     to   { opacity: 1; transform: translateY(0); }
   }
   .conteudo { animation: fadeUp 0.3s ease both; }
+
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar {
+      width: 100%; flex-direction: row;
+      align-items: center; justify-content: space-between;
+      border-right: none; border-bottom: 1px solid var(--cinza-borda);
+      padding: 0 1rem; height: 52px; flex-shrink: 0;
+    }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer {
+      border-top: none; padding: 0;
+    }
+    .sidebar-footer .btn-sair {
+      width: auto; padding: 6px 14px; font-size: 12px;
+    }
+    .topbar { padding: 0 1rem; }
+    .conteudo { padding: 1rem; }
+    .curso-seletor { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .area-acoes { min-width: 100px; }
+    .area-legislacao { white-space: normal; }
+  }
+  @media (max-width: 480px) {
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .area-acoes { display: none; }
+    .area-item { cursor: pointer; }
+  }
 </style>
 </head>
 <body>
+
+<div id="preview-banner" style="display:none;background:#7F77DD;color:#fff;padding:7px 20px;font-size:12px;font-weight:600;align-items:center;justify-content:center;gap:16px;position:sticky;top:0;z-index:200;">
+  🎓 Modo Aluno ativo — você está vendo como um aluno vê
+  <a href="/admin" onclick="sessionStorage.removeItem('graduabm_preview_aluno')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>
+</div>
 
 <div class="layout">
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="graduabm.html" class="logo-text">GraduaBM</a>
+      <a href="/" class="logo-text">GraduaBM</a>
     </div>
 
     <div class="sidebar-usuario">
-      <div class="usuario-nome">Mateus Lenz</div>
-      <div class="usuario-status">
+      <div class="usuario-nome" id="sidebar-nome">—</div>
+      <div class="usuario-status" id="sidebar-status">
         <span class="status-dot"></span>
-        Assinatura ativa
+        <span id="sidebar-status-txt">Carregando…</span>
       </div>
     </div>
 
@@ -378,7 +412,7 @@
     </nav>
 
     <div class="sidebar-footer">
-      <button class="btn-sair">Sair</button>
+      <button class="btn-sair" onclick="handleSair()">Sair</button>
     </div>
   </aside>
 
@@ -648,76 +682,103 @@ function renderAreas() {
 }
 
 function iniciarEstudo(num) {
-  // Salvar contexto e navegar para a tela de seleção de legislação
   sessionStorage.setItem('graduabm_at', 'AT' + num);
   sessionStorage.setItem('graduabm_curso', cursoAtual);
-  window.location.href = '/graduabm-selecao-legislacao.html';
+  window.location.href = '/selecao-legislacao';
 }
 
 renderAreas();
 
+function handleSair() {
+  if (GraduaBM.isAdmin()) {
+    sessionStorage.removeItem('graduabm_admin');
+    sessionStorage.removeItem('graduabm_admin_ts');
+    window.location.href = '/';
+  } else {
+    GraduaBM.Auth.logout();
+  }
+}
+
 // ── Proteção de rota + dados reais do usuário ─────────────
 async function iniciarApp() {
-  // Protege a rota — redireciona se não logado ou sem assinatura
-  await GraduaBM.protegerRota();
+  const isPreview = sessionStorage.getItem('graduabm_preview_aluno') === '1';
+  const isAdmin   = GraduaBM.isAdmin();
 
-  // Preenche o nome do usuário na sidebar com dado real
-  const usuario = GraduaBM.getUsuario();
-  if (usuario) {
-    const nomeEl = document.querySelector('.usuario-nome');
-    if (nomeEl) nomeEl.textContent = usuario.nome;
+  // Admin navegando como admin puro (sem preview)
+  if (isAdmin && !isPreview) {
+    document.getElementById('sidebar-nome').textContent = 'Administrador';
+    document.getElementById('sidebar-status-txt').textContent = 'Admin';
+    document.querySelector('.status-dot').style.background = '#7F77DD';
+    document.getElementById('sidebar-status').style.color = '#AFA9EC';
+    return;
   }
 
-  // Carrega desempenho real do usuário da API
-  try {
-    const data = await GraduaBM.Progresso.desempenho({ curso: cursoAtual });
-    if (data?.totais?.total_respondidas > 0) {
-      // Tem dados reais — esconder o banner de boas-vindas
-      const banner = document.getElementById('banner-bv');
-      if (banner) banner.style.display = 'none';
+  // Aluno real — protege a rota via backend
+  if (!isAdmin) {
+    await GraduaBM.protegerRota();
+  }
 
-      // Atualizar stats com dados reais
-      document.getElementById('stat-total').textContent =
-        cursoAtual === 'ctsp' ? '60' : '40';
-
-      const respondidas = data.totais.total_respondidas;
-      const taxa = data.totais.taxa_acerto_pct;
-
-      const statCards = document.querySelectorAll('.stat-card');
-      if (statCards[1]) {
-        statCards[1].querySelector('.stat-val').textContent = respondidas;
-        statCards[1].querySelector('.stat-sub').textContent = 'questões respondidas';
-      }
-      if (statCards[2] && taxa !== null) {
-        statCards[2].querySelector('.stat-val').textContent = taxa + '%';
-        statCards[2].querySelector('.stat-val').style.color =
-          taxa >= 70 ? '#27A05A' : taxa >= 50 ? '#BA7517' : '#C0270F';
-      }
-
-      // Atualizar barras de progresso por área
-      if (data.por_area) {
-        data.por_area.forEach(area => {
-          const fills = document.querySelectorAll(
-            `.area-item .prog-fill`
-          );
-          // Vincula por posição com base na AT
-          const atIdx = parseInt(area.area_tematica.replace('AT','')) - 1;
-          if (fills[atIdx]) {
-            fills[atIdx].style.width = area.taxa_acerto_pct + '%';
-            const txt = fills[atIdx].closest('.area-prog')?.querySelector('.prog-txt');
-            if (txt) txt.textContent = area.total_respondidas + ' questões respondidas';
-          }
-        });
-      }
+  // Preenche nome na sidebar — lê localStorage (preview ou aluno real)
+  const usuario = GraduaBM.getUsuario();
+  if (usuario) {
+    document.getElementById('sidebar-nome').textContent = usuario.nome;
+    document.getElementById('sidebar-status-txt').textContent =
+      isPreview ? 'Modo Aluno (Preview)' : 'Assinatura ativa';
+    if (isPreview) {
+      document.querySelector('.status-dot').style.background = '#7F77DD';
+      document.getElementById('sidebar-status').style.color = '#AFA9EC';
     }
-  } catch (err) {
-    // Silencioso — dados de desempenho são opcionais para a tela carregar
-    console.warn('Desempenho não carregado:', err.message);
+  }
+
+  // Banner de preview mode
+  if (isPreview) {
+    const banner = document.getElementById('preview-banner');
+    if (banner) banner.style.display = 'flex';
+  }
+
+  // Dados de desempenho só para alunos reais (backend funcionando)
+  if (!isPreview && !isAdmin) {
+    try {
+      const data = await GraduaBM.Progresso.desempenho({ curso: cursoAtual });
+      if (data?.totais?.total_respondidas > 0) {
+        const bv = document.getElementById('banner-bv');
+        if (bv) bv.style.display = 'none';
+        const respondidas = data.totais.total_respondidas;
+        const taxa = data.totais.taxa_acerto_pct;
+        const statCards = document.querySelectorAll('.stat-card');
+        if (statCards[1]) {
+          statCards[1].querySelector('.stat-val').textContent = respondidas;
+          statCards[1].querySelector('.stat-sub').textContent = 'questões respondidas';
+        }
+        if (statCards[2] && taxa !== null) {
+          statCards[2].querySelector('.stat-val').textContent = taxa + '%';
+          statCards[2].querySelector('.stat-val').style.color =
+            taxa >= 70 ? '#27A05A' : taxa >= 50 ? '#BA7517' : '#C0270F';
+        }
+        if (data.por_area) {
+          data.por_area.forEach(area => {
+            const fills = document.querySelectorAll('.area-item .prog-fill');
+            const atIdx = parseInt(area.area_tematica.replace('AT','')) - 1;
+            if (fills[atIdx]) {
+              fills[atIdx].style.width = area.taxa_acerto_pct + '%';
+              const txt = fills[atIdx].closest('.area-prog')?.querySelector('.prog-txt');
+              if (txt) txt.textContent = area.total_respondidas + ' questões respondidas';
+            }
+          });
+        }
+      }
+    } catch (err) {
+      console.warn('Desempenho não carregado:', err.message);
+    }
   }
 }
 
 // Carregar api.js e chamar iniciarApp apenas uma vez após carregado
 </script>
 <script src="/js/api.js" onload="iniciarApp()"></script>
+<div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
+  <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
+</div>
+<script>if(sessionStorage.getItem('graduabm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
 </body>
 </html>

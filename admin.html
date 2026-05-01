@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Painel Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --roxo: #7F77DD;
+    --roxo-bg: rgba(127,119,221,0.08);
+    --roxo-borda: rgba(127,119,221,0.3);
+    --verde: #27A05A;
+    --verde-bg: rgba(39,160,90,0.08);
+    --verde-borda: rgba(39,160,90,0.3);
+    --erro: #E24B4A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #AFA9EC; letter-spacing: 0.04em; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--roxo); }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; animation: fadeUp 0.3s ease both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* TOPBAR DIREITA */
+  .topbar-direita { display: flex; align-items: center; gap: 12px; }
+  .btn-modo-aluno { display: inline-flex; align-items: center; gap: 7px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s; }
+  .btn-modo-aluno:hover { background: #6960C8; }
+
+  /* STATS */
+  .grid-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.25rem; }
+  .stat-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.03em; color: var(--branco); }
+  .stat-sub { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; }
+
+  /* SEÇÕES */
+  .secao-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+  .secao-titulo::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+  .painel-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .painel-card-titulo { font-size: 14px; font-weight: 600; color: var(--branco); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .painel-card-desc { font-size: 13px; color: var(--cinza-texto); line-height: 1.6; margin-bottom: 1.25rem; }
+
+  /* BOTÕES */
+  .btn-acesso { display: inline-flex; align-items: center; gap: 8px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 11px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s, transform 0.1s; text-decoration: none; }
+  .btn-acesso:hover { background: #6960C8; transform: translateY(-1px); }
+  .btn-acesso.verde { background: var(--verde); }
+  .btn-acesso.verde:hover { background: #1D6B3E; }
+  .btn-acesso.outline { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); }
+  .btn-acesso.outline:hover { border-color: #555; color: var(--branco); background: var(--cinza-medio); transform: none; }
+  .atalhos { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* API STATUS */
+  .api-status-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--cinza-borda); font-size: 13px; }
+  .api-status-row:last-child { border-bottom: none; }
+  .status-pill { display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.04em; flex-shrink: 0; }
+  .pill-ok { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
+  .pill-erro { background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.3); color: #F09595; }
+  .pill-check { background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
+  .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  /* CHAVE CLAUDE */
+  .chave-box { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #AFA9EC; letter-spacing: 0.06em; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .chave-copy { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
+  .chave-copy:hover { border-color: var(--roxo); color: #AFA9EC; }
+  .chave-copy.copiado { border-color: var(--verde); color: #7DD99A; }
+  .instrucoes-claude { background: var(--roxo-bg); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #AFA9EC; line-height: 1.7; }
+  .instrucoes-claude strong { color: var(--branco); font-weight: 500; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
+  .toast.visivel { transform: translateX(-50%) translateY(0); }
+  .toast.verde { border-color: var(--verde-borda); color: #7DD99A; }
+  .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
+
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
+    .topbar { padding: 0 1rem; }
+    .conteudo { padding: 1rem; }
+    .grid-cards { grid-template-columns: repeat(2, 1fr); }
+    .atalhos { flex-direction: column; }
+    .btn-acesso { width: 100%; justify-content: center; }
+    .topbar-mono { display: none; }
+  }
+  @media (max-width: 480px) {
+    .grid-cards { grid-template-columns: 1fr; }
+    .chave-box { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/" class="logo-text">GraduaBM</a>
+      <span class="admin-chip">ADMIN</span>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome">Administrador</div>
+      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Painel</div>
+      <a class="nav-item ativo" href="/admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <div class="nav-label">Conteúdo</div>
+      <a class="nav-item" href="/admin-questoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Questões
+      </a>
+      <div class="nav-label">Sistema</div>
+      <a class="nav-item" href="/" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver site
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" id="btn-sair">Encerrar sessão admin</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Painel de administração <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#444;margin-left:8px">v2</span></span>
+      <div class="topbar-direita">
+        <span class="topbar-mono" id="topbar-data"></span>
+        <button class="btn-modo-aluno" id="btn-modo-aluno">🎓 Modo Aluno</button>
+      </div>
+    </div>
+
+    <div class="conteudo">
+      <!-- STATS -->
+      <div class="grid-cards">
+        <div class="stat-card">
+          <div class="stat-label">Total questões</div>
+          <div class="stat-val" id="stat-total">—</div>
+          <div class="stat-sub" id="stat-total-sub">Carregando…</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Questões ativas</div>
+          <div class="stat-val" id="stat-ativas">—</div>
+          <div class="stat-sub">disponíveis no quiz</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Status API</div>
+          <div class="stat-val" id="stat-api" style="font-size:14px;padding-top:6px;color:#555">Verificando…</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sessão admin</div>
+          <div class="stat-val" id="stat-tempo" style="font-size:18px;padding-top:8px">—</div>
+          <div class="stat-sub">desde o login</div>
+        </div>
+      </div>
+
+      <!-- ACESSO RÁPIDO -->
+      <div class="secao-titulo">Acesso rápido</div>
+      <div class="painel-card">
+        <div class="painel-card-titulo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Navegar como administrador
+        </div>
+        <div class="painel-card-desc">
+          Acesse qualquer área do site sem assinatura. O bloqueio de pagamento é ignorado para esta sessão admin.
+        </div>
+        <div class="atalhos">
+          <a href="/area-estudos" class="btn-acesso">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Área de estudos
+          </a>
+          <a href="/admin-questoes" class="btn-acesso verde">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Gerenciar questões
+          </a>
+          <a href="/login" class="btn-acesso outline">Tela de login</a>
+          <a href="/" class="btn-acesso outline">Landing page</a>
+        </div>
+      </div>
+
+      <!-- STATUS DA API -->
+      <div class="secao-titulo">Status dos serviços</div>
+      <div class="painel-card">
+        <div class="painel-card-titulo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Conectividade
+        </div>
+        <div id="api-status-container">
+          <div class="api-status-row">
+            <span class="status-pill pill-check"><span class="pill-dot"></span>Verificando</span>
+            <span style="color:var(--cinza-texto);font-size:12px;font-family:'IBM Plex Mono',monospace;">Aguarde…</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHAVE CLAUDE -->
+      <div class="secao-titulo">Autorizar Claude</div>
+      <div class="painel-card">
+        <div class="painel-card-titulo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          Chave de sessão diária
+        </div>
+        <div class="painel-card-desc">
+          Cole esta chave no início de uma conversa com o Claude Code para autorizar edições neste projeto. Muda diariamente.
+        </div>
+        <div class="chave-box">
+          <span id="chave-texto">—</span>
+          <button class="chave-copy" id="btn-copiar">Copiar</button>
+        </div>
+        <div class="instrucoes-claude">
+          <strong>Como usar:</strong> Cole a chave no início da conversa com Claude Code.<br>
+          Exemplo: <em>"Chave admin: [CHAVE] — pode editar o projeto graduabm-frontend."</em>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ── Auth guard ── */
+  if (sessionStorage.getItem('graduabm_admin') !== '1') {
+    window.location.href = '/admin-login';
+    return;
+  }
+
+  const ADMIN_TOKEN = sessionStorage.getItem('graduabm_admin_token');
+
+  async function supaQuery(path, prefer, method, body) {
+    const res = await fetch('/api/admin/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN || '' },
+      body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
+    });
+    const text = await res.text();
+    const contentRange = res.headers.get('Content-Range');
+    return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null, contentRange };
+  }
+
+  /* ── Toast ── */
+  function toast(msg, tipo) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast visivel' + (tipo ? ' ' + tipo : '');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.className = 'toast'; }, 3000);
+  }
+
+  /* ── Logout ── */
+  document.getElementById('btn-sair').addEventListener('click', function () {
+    ['graduabm_admin', 'graduabm_admin_ts', 'graduabm_admin_token'].forEach(k => sessionStorage.removeItem(k));
+    localStorage.removeItem('usuario');
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  });
+
+  /* ── Modo Aluno ── */
+  document.getElementById('btn-modo-aluno').addEventListener('click', function () {
+    localStorage.setItem('usuario', JSON.stringify({
+      nome: 'Aluno Teste',
+      email: 'soulreaperfps@gmail.com',
+      ativo: true,
+      plano: 'mensal'
+    }));
+    localStorage.setItem('token', 'admin-preview-token');
+    sessionStorage.setItem('graduabm_preview_aluno', '1');
+    window.location.href = '/area-estudos';
+  });
+
+  /* Ao voltar para o painel admin, sai do preview */
+  sessionStorage.removeItem('graduabm_preview_aluno');
+
+  /* ── Data na topbar ── */
+  try {
+    document.getElementById('topbar-data').textContent =
+      new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  } catch (e) {}
+
+  /* ── Tempo de sessão (atualiza a cada 30s) ── */
+  function atualizarTempo() {
+    try {
+      const ts = parseInt(sessionStorage.getItem('graduabm_admin_ts') || '0');
+      if (!ts) return;
+      const diff = Math.floor((Date.now() - ts) / 60000);
+      const el = document.getElementById('stat-tempo');
+      if (diff < 1) { el.textContent = 'Agora'; }
+      else if (diff < 60) { el.textContent = diff + ' min'; }
+      else { const h = Math.floor(diff / 60); el.textContent = h + 'h ' + (diff % 60) + 'min'; }
+    } catch (e) {}
+  }
+  atualizarTempo();
+  setInterval(atualizarTempo, 30000);
+
+  /* ── Chave Claude ── */
+  function gerarChave() {
+    const dia = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    return 'GRAD-ADM-' + dia + '-7F77DD';
+  }
+  try { document.getElementById('chave-texto').textContent = gerarChave(); } catch (e) {}
+
+  document.getElementById('btn-copiar').addEventListener('click', function () {
+    const chave = gerarChave();
+    const btn = document.getElementById('btn-copiar');
+
+    function sucesso() {
+      btn.textContent = 'Copiado!';
+      btn.classList.add('copiado');
+      toast('Chave copiada!', 'verde');
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copiado'); }, 2000);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(chave).then(sucesso).catch(function () {
+        fallbackCopy(chave, sucesso);
+      });
+    } else {
+      fallbackCopy(chave, sucesso);
+    }
+  });
+
+  function fallbackCopy(texto, cb) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = texto;
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      cb();
+    } catch (e) {
+      toast('Erro ao copiar. Selecione o texto manualmente.', 'erro');
+    }
+  }
+
+  /* ── Stats do Supabase ── */
+  async function carregarStats() {
+    if (!ADMIN_TOKEN) return;
+    try {
+      const [rTotal, rAtivas] = await Promise.all([
+        supaQuery('/rest/v1/questoes?select=id', 'count=exact'),
+        supaQuery('/rest/v1/questoes?select=id&ativa=eq.true', 'count=exact'),
+      ]);
+
+      const total  = parseInt(rTotal.contentRange?.split('/')[1] ?? '0') || 0;
+      const ativas = parseInt(rAtivas.contentRange?.split('/')[1] ?? '0') || 0;
+
+      document.getElementById('stat-total').textContent = total;
+      document.getElementById('stat-total-sub').textContent = total === 1 ? 'questão cadastrada' : 'questões cadastradas';
+      document.getElementById('stat-ativas').textContent = ativas;
+    } catch (e) {
+      document.getElementById('stat-total').textContent = '—';
+      document.getElementById('stat-total-sub').textContent = 'erro ao carregar';
+    }
+  }
+
+  /* ── Status dos serviços ── */
+  async function verificarServicos() {
+    const container = document.getElementById('api-status-container');
+    const statEl    = document.getElementById('stat-api');
+
+    let supaStatus = 'ERRO'; let supaOk = false;
+    let backStatus = 'ERRO'; let backOk = false;
+
+    try {
+      const r = await supaQuery('/rest/v1/questoes?select=id&limit=1');
+      supaOk = r.ok; supaStatus = String(r.status);
+    } catch (e) { supaStatus = 'ERRO'; }
+
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 7000);
+      const r = await fetch('https://graduabm-backend-production.up.railway.app/api/auth/me', { signal: ctrl.signal });
+      clearTimeout(timer);
+      backOk = r.status < 500; backStatus = String(r.status);
+    } catch (e) { backStatus = e.name === 'AbortError' ? 'TIMEOUT' : 'ERRO'; }
+
+    const todosOk = supaOk && backOk;
+    container.innerHTML = `
+      <div class="api-status-row">
+        <span class="status-pill ${supaOk ? 'pill-ok' : 'pill-erro'}"><span class="pill-dot"></span>${supaStatus}</span>
+        <span style="color:var(--cinza-texto);font-size:12px;font-family:'IBM Plex Mono',monospace;">Supabase (banco de dados)</span>
+      </div>
+      <div class="api-status-row">
+        <span class="status-pill ${backOk ? 'pill-ok' : 'pill-erro'}"><span class="pill-dot"></span>${backStatus}</span>
+        <span style="color:var(--cinza-texto);font-size:12px;font-family:'IBM Plex Mono',monospace;">Backend Railway (/api/auth/me)</span>
+      </div>`;
+    statEl.textContent  = todosOk ? 'Online' : 'Com erros';
+    statEl.style.color  = todosOk ? '#7DD99A' : '#F09595';
+    statEl.style.fontSize = '22px';
+  }
+
+  /* ── Iniciar ── */
+  carregarStats();
+  verificarServicos();
+}());
+</script>
+</body>
+</html>

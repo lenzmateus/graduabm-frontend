@@ -337,6 +337,37 @@
   }
   .leg-lista { animation: fadeUp 0.25s ease both; }
 
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar {
+      width: 100%; flex-direction: row;
+      align-items: center; justify-content: space-between;
+      border-right: none; border-bottom: 1px solid var(--cinza-borda);
+      padding: 0 1rem; height: 52px; flex-shrink: 0;
+    }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-nav { display: none; }
+    .sidebar-footer {
+      border-top: none; padding: 0;
+    }
+    .sidebar-footer .btn-sair {
+      width: auto; padding: 6px 14px; font-size: 12px;
+    }
+    .conteudo { padding: 1rem; max-width: 100%; }
+    .area-cabecalho { flex-direction: column; gap: 1rem; }
+    .resumo-selecionados { text-align: left; min-width: auto; width: 100%; }
+    .config-bloco { flex-direction: column; gap: 1.25rem; }
+    .acoes-rapidas { flex-wrap: wrap; }
+    .view-tabs { margin-left: 0; width: 100%; }
+    .view-tab { flex: 1; text-align: center; }
+    .rodape-acao { position: static; background: transparent; padding: 1.5rem 0 1rem; flex-direction: column; align-items: stretch; }
+    .btn-iniciar { width: 100%; justify-content: center; }
+  }
+  @media (max-width: 480px) {
+    .qtd-opts { flex-wrap: wrap; }
+    .pom-presets { flex-wrap: wrap; }
+    .topbar { padding: 0 1rem; }
+  }
 </style>
 </head>
 <body>
@@ -346,7 +377,7 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="graduabm-area-estudos.html" class="logo-text">GraduaBM</a>
+      <a href="/area-estudos" class="logo-text">GraduaBM</a>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-label">Estudos</div>
@@ -369,7 +400,7 @@
       </a>
     </nav>
     <div class="sidebar-footer">
-      <button class="btn-sair">Sair</button>
+      <button class="btn-sair" onclick="handleSair()">Sair</button>
     </div>
   </aside>
 
@@ -377,7 +408,7 @@
   <div class="main">
     <div class="topbar">
       <div class="breadcrumb">
-        <a href="graduabm-area-estudos.html">Áreas temáticas</a>
+        <a href="/area-estudos">Áreas temáticas</a>
         <span class="breadcrumb-sep">›</span>
         <span class="breadcrumb-atual" id="bc-area">AT1 — Segurança contra incêndios</span>
       </div>
@@ -834,9 +865,11 @@ const AREAS = {
 // AT3 CBA = mesmo conteúdo do CTSP
 AREAS.at3.cba.grupos = AREAS.at3.ctsp.grupos;
 
-// ── ESTADO GLOBAL ──
-let areaAtual  = 'at1';
-let cursoAtual = 'ctsp'; // recebido da tela anterior via URL param ou padrão
+// ── ESTADO GLOBAL — lido do sessionStorage ──
+const _atParam    = sessionStorage.getItem('graduabm_at');
+const _cursoParam = sessionStorage.getItem('graduabm_curso');
+let areaAtual  = _atParam  ? _atParam.toLowerCase()  : 'at1';
+let cursoAtual = _cursoParam || 'ctsp';
 let selecionados = new Set();
 let qtdQuestoes  = 20;
 
@@ -1118,23 +1151,54 @@ function setPomodoroCostum(input) {
 
 
 function iniciarQuestoes() {
-  const qtdLabel = qtdQuestoes === 0 ? 'todas' : qtdQuestoes;
-  const pomLabel = pomLivre ? 'Livre' :
-    document.querySelector('.pom-preset.ativo')?.textContent || '25min';
-  alert(
-    'Tudo pronto!\n\n' +
-    '📚 Curso: ' + cursoAtual.toUpperCase() + '\n' +
-    '📋 Área: ' + areaAtual.toUpperCase() + '\n' +
-    '📝 Questões: ' + qtdLabel + '\n' +
-    '⏱ Pomodoro: ' + pomLabel + '\n' +
-    '📌 Legislações: ' + selecionados.size + ' selecionada(s)\n\n' +
-    '(A tela de questões será desenvolvida na próxima etapa.)'
-  );
+  sessionStorage.setItem('graduabm_legislacoes', JSON.stringify([...selecionados]));
+  sessionStorage.setItem('graduabm_qtd', qtdQuestoes === 0 ? '' : String(qtdQuestoes));
+  window.location.href = '/questoes';
 }
+
+function handleSair() {
+  if (sessionStorage.getItem('graduabm_admin') === '1') {
+    sessionStorage.removeItem('graduabm_admin');
+    sessionStorage.removeItem('graduabm_admin_ts');
+    window.location.href = '/';
+  } else if (typeof GraduaBM !== 'undefined') {
+    GraduaBM.Auth.logout();
+  } else {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = '/login';
+  }
+}
+
+// ── PROTEÇÃO DE ROTA ──
+(function() {
+  if (sessionStorage.getItem('graduabm_admin') === '1') return;
+  if (!localStorage.getItem('token')) {
+    window.location.href = '/login';
+  }
+})();
 
 // ── INIT ──
 atualizarDisplayPom();
+
+// Marcar tab correta com base na AT vinda do sessionStorage
+document.querySelectorAll('.view-tab').forEach(function(t) {
+  t.classList.toggle('ativo', t.textContent.trim().toLowerCase() === areaAtual);
+});
+
+// Banner de preview mode
+if (sessionStorage.getItem('graduabm_preview_aluno') === '1') {
+  const b = document.createElement('div');
+  b.style.cssText = 'background:#7F77DD;color:#fff;padding:7px 20px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:16px;position:sticky;top:0;z-index:200;';
+  b.innerHTML = '🎓 Modo Aluno ativo — você está vendo como um aluno vê <a href="/admin" onclick="sessionStorage.removeItem(\'graduabm_preview_aluno\')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>';
+  document.body.insertBefore(b, document.body.firstChild);
+}
+
 render();
 </script>
+<div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
+  <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
+</div>
+<script>if(sessionStorage.getItem('graduabm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
 </body>
 </html>

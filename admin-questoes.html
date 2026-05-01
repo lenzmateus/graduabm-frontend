@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Questões</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --roxo: #7F77DD;
+    --roxo-bg: rgba(127,119,221,0.08);
+    --roxo-borda: rgba(127,119,221,0.3);
+    --verde: #27A05A;
+    --verde-bg: rgba(39,160,90,0.08);
+    --verde-borda: rgba(39,160,90,0.3);
+    --erro: #E24B4A;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #AFA9EC; letter-spacing: 0.04em; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--roxo); }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; gap: 1rem; }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .btn-novo { display: inline-flex; align-items: center; gap: 7px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s, transform 0.1s; }
+  .btn-novo:hover { background: #6960C8; transform: translateY(-1px); }
+
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
+
+  /* filtros */
+  .filtros { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 8px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; cursor: pointer; outline: none; }
+  .filtro-select:focus { border-color: var(--roxo); }
+  .filtro-busca { flex: 1; min-width: 180px; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 8px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; outline: none; }
+  .filtro-busca:focus { border-color: var(--roxo); }
+  .filtro-busca::placeholder { color: #555; }
+
+  /* lista */
+  .lista-header { display: grid; grid-template-columns: 1fr 90px 60px 100px; gap: 1rem; padding: 8px 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 4px; }
+  .questao-row { display: grid; grid-template-columns: 1fr 90px 60px 100px; gap: 1rem; align-items: center; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 1rem; margin-bottom: 6px; transition: border-color 0.15s; }
+  .questao-row:hover { border-color: #444; }
+  .questao-enunciado { font-size: 13px; color: var(--branco); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .questao-leg { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; }
+  .questao-gabarito { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--roxo); text-align: center; }
+  .questao-status { display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 20px; }
+  .status-ativa { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
+  .status-inativa { background: rgba(226,75,74,0.08); border: 1px solid rgba(226,75,74,0.2); color: #F09595; }
+  .questao-acoes { display: flex; gap: 6px; justify-content: flex-end; }
+  .btn-mini { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.12s; }
+  .btn-mini:hover { border-color: #555; color: var(--branco); }
+  .btn-mini.danger:hover { border-color: var(--erro); color: #F09595; }
+  .btn-mini.edit:hover { border-color: var(--roxo); color: #AFA9EC; }
+
+  .vazio { text-align: center; padding: 4rem 2rem; color: var(--cinza-texto); }
+  .vazio-icon { font-size: 32px; margin-bottom: 1rem; opacity: 0.4; }
+  .loading-txt { text-align: center; padding: 3rem; color: var(--cinza-texto); font-size: 13px; }
+
+  .total-txt { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-bottom: 1rem; }
+
+  /* modal */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+  .overlay.aberto { display: flex; }
+  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; }
+  .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.03em; }
+  .modal-fechar { background: transparent; border: none; color: var(--cinza-texto); font-size: 20px; cursor: pointer; padding: 0 4px; transition: color 0.15s; }
+  .modal-fechar:hover { color: var(--branco); }
+  .modal-body { padding: 1.5rem; overflow-y: auto; flex: 1; }
+  .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--cinza-borda); display: flex; gap: 10px; justify-content: flex-end; flex-shrink: 0; }
+
+  .campo { margin-bottom: 1rem; }
+  .campo label { display: block; font-size: 11px; font-weight: 500; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+  .campo input, .campo select, .campo textarea { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 9px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.2s; }
+  .campo input:focus, .campo select:focus, .campo textarea:focus { border-color: var(--roxo); }
+  .campo input::placeholder, .campo textarea::placeholder { color: #555; }
+  .campo textarea { resize: vertical; min-height: 80px; }
+  .campo select option { background: var(--cinza-medio); }
+  .campos-alts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .alt-label { display: flex; align-items: center; gap: 6px; }
+  .alt-letra { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; color: var(--roxo); width: 14px; }
+
+  .btn-salvar { background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s; }
+  .btn-salvar:hover { background: #6960C8; }
+  .btn-salvar:disabled { background: #444; cursor: default; }
+  .btn-cancelar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .btn-cancelar:hover { border-color: #555; color: var(--branco); }
+
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
+    .topbar { padding: 0 1rem; }
+    .conteudo { padding: 1rem; }
+    .lista-header { display: none; }
+    .questao-row { grid-template-columns: 1fr auto; }
+    .questao-gabarito, .questao-status { display: none; }
+    .campos-alts { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<script>
+if (sessionStorage.getItem('graduabm_admin') !== '1') window.location.href = '/admin-login';
+const ADMIN_TOKEN = sessionStorage.getItem('graduabm_admin_token');
+</script>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/admin" class="logo-text">GraduaBM</a>
+      <span class="admin-chip">ADMIN</span>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome">Administrador</div>
+      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Painel</div>
+      <a class="nav-item" href="/admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <div class="nav-label">Conteúdo</div>
+      <a class="nav-item ativo" href="/admin-questoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Questões
+      </a>
+      <div class="nav-label">Sistema</div>
+      <a class="nav-item" href="/area-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Modo Aluno
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Gestão de Questões</span>
+      <button class="btn-novo" id="btn-novo">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nova Questão
+      </button>
+    </div>
+
+    <div class="conteudo">
+      <div class="filtros">
+        <select class="filtro-select" id="filtro-curso">
+          <option value="">Todos os cursos</option>
+          <option value="ctsp">CTSP</option>
+          <option value="cba">CBA</option>
+        </select>
+        <select class="filtro-select" id="filtro-area">
+          <option value="">Todas as áreas</option>
+          <option value="AT1">AT1</option>
+          <option value="AT2">AT2</option>
+          <option value="AT3">AT3</option>
+          <option value="AT4">AT4</option>
+          <option value="AT5">AT5</option>
+        </select>
+        <select class="filtro-select" id="filtro-status">
+          <option value="">Todos</option>
+          <option value="true">Ativas</option>
+          <option value="false">Inativas</option>
+        </select>
+        <input class="filtro-busca" type="text" id="filtro-busca" placeholder="Buscar enunciado ou legislação…">
+      </div>
+
+      <div class="total-txt" id="total-txt">Carregando…</div>
+
+      <div class="lista-header">
+        <div>Questão</div>
+        <div>Legislação</div>
+        <div style="text-align:center">Gabarito</div>
+        <div style="text-align:right">Ações</div>
+      </div>
+
+      <div id="lista-questoes"><div class="loading-txt">Carregando questões…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR/CRIAR -->
+<div class="overlay" id="overlay-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-titulo" id="modal-titulo">Nova Questão</span>
+      <button class="modal-fechar" id="btn-fechar-modal">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="modal-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="campo">
+          <label>Curso</label>
+          <select id="m-curso">
+            <option value="ctsp">CTSP</option>
+            <option value="cba">CBA</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Área Temática</label>
+          <select id="m-area">
+            <option value="AT1">AT1</option>
+            <option value="AT2">AT2</option>
+            <option value="AT3">AT3</option>
+            <option value="AT4">AT4</option>
+            <option value="AT5">AT5</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="campo">
+          <label>ID da Legislação</label>
+          <input type="text" id="m-leg-id" placeholder="ex: 10990, lei13425">
+        </div>
+        <div class="campo">
+          <label>Nome da Legislação</label>
+          <input type="text" id="m-leg-nome" placeholder="ex: Lei Complementar 10.990/RS">
+        </div>
+      </div>
+      <div class="campo">
+        <label>Enunciado</label>
+        <textarea id="m-enunciado" rows="4" placeholder="Digite o enunciado da questão…"></textarea>
+      </div>
+      <div class="campo">
+        <label>Alternativas</label>
+        <div class="campos-alts">
+          <div class="campo" style="margin:0">
+            <div class="alt-label"><span class="alt-letra">A</span><input type="text" id="m-alt-a" placeholder="Alternativa A"></div>
+          </div>
+          <div class="campo" style="margin:0">
+            <div class="alt-label"><span class="alt-letra">B</span><input type="text" id="m-alt-b" placeholder="Alternativa B"></div>
+          </div>
+          <div class="campo" style="margin:0">
+            <div class="alt-label"><span class="alt-letra">C</span><input type="text" id="m-alt-c" placeholder="Alternativa C"></div>
+          </div>
+          <div class="campo" style="margin:0">
+            <div class="alt-label"><span class="alt-letra">D</span><input type="text" id="m-alt-d" placeholder="Alternativa D"></div>
+          </div>
+          <div class="campo" style="margin:0">
+            <div class="alt-label"><span class="alt-letra">E</span><input type="text" id="m-alt-e" placeholder="Alternativa E (opcional)"></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="campo">
+          <label>Gabarito (letra correta)</label>
+          <select id="m-gabarito">
+            <option value="0">A</option>
+            <option value="1">B</option>
+            <option value="2">C</option>
+            <option value="3">D</option>
+            <option value="4">E</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Status</label>
+          <select id="m-ativa">
+            <option value="true">Ativa</option>
+            <option value="false">Inativa</option>
+          </select>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Comentário / Justificativa</label>
+        <textarea id="m-comentario" rows="3" placeholder="Explicação da resposta correta (opcional)…"></textarea>
+      </div>
+      <div id="modal-erro" style="font-size:12px;color:#F09595;margin-top:4px;display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" id="btn-cancelar-modal">Cancelar</button>
+      <button class="btn-salvar" id="btn-salvar">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="overlay" id="overlay-delete">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <span class="modal-titulo" style="color:#F09595">Excluir Questão</span>
+      <button class="modal-fechar" id="btn-fechar-delete">×</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--cinza-texto);line-height:1.7">Tem certeza que deseja excluir esta questão? Esta ação não pode ser desfeita.</p>
+      <p style="font-size:12px;margin-top:1rem;color:#F09595;background:rgba(226,75,74,0.08);border:1px solid rgba(226,75,74,0.2);padding:10px;border-radius:6px" id="delete-preview"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" id="btn-cancelar-delete">Cancelar</button>
+      <button class="btn-salvar" id="btn-confirmar-delete" style="background:var(--erro)">Excluir</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const LETRAS = ['A','B','C','D','E'];
+let todasQuestoes = [];
+let deleteId = null;
+
+async function supaFetch(path, method = 'GET', body = null) {
+  const res = await fetch('/api/admin/query', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN || '' },
+    body: JSON.stringify({ path, method, body: body || undefined, prefer: 'return=representation' }),
+  });
+  const txt = await res.text();
+  return { ok: res.ok, status: res.status, data: txt ? JSON.parse(txt) : null };
+}
+
+async function carregarQuestoes() {
+  const r = await supaFetch('/rest/v1/questoes?select=*&order=criado_em.desc&limit=500');
+  if (r.ok && Array.isArray(r.data)) {
+    todasQuestoes = r.data;
+    aplicarFiltros();
+  } else {
+    document.getElementById('lista-questoes').innerHTML = '<div class="loading-txt" style="color:#F09595">Erro ao carregar questões.</div>';
+  }
+}
+
+function aplicarFiltros() {
+  const curso = document.getElementById('filtro-curso').value;
+  const area = document.getElementById('filtro-area').value;
+  const status = document.getElementById('filtro-status').value;
+  const busca = document.getElementById('filtro-busca').value.toLowerCase();
+
+  let filtradas = todasQuestoes.filter(q => {
+    if (curso && q.curso !== curso) return false;
+    if (area && q.area_tematica !== area) return false;
+    if (status !== '' && String(q.ativa) !== status) return false;
+    if (busca && !q.enunciado.toLowerCase().includes(busca) && !q.legislacao_nome?.toLowerCase().includes(busca)) return false;
+    return true;
+  });
+
+  document.getElementById('total-txt').textContent = `${filtradas.length} questão${filtradas.length !== 1 ? 'ões' : ''} encontrada${filtradas.length !== 1 ? 's' : ''}`;
+  renderLista(filtradas);
+}
+
+function renderLista(questoes) {
+  const el = document.getElementById('lista-questoes');
+  if (!questoes.length) {
+    el.innerHTML = '<div class="vazio"><div class="vazio-icon">📭</div><div>Nenhuma questão encontrada</div></div>';
+    return;
+  }
+  el.innerHTML = questoes.map(q => {
+    const letra = LETRAS[q.gabarito] || '?';
+    const enunciado = q.enunciado.length > 80 ? q.enunciado.substring(0, 80) + '…' : q.enunciado;
+    const enunciadoEsc = enunciado.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const enunciadoTitle = q.enunciado.replace(/"/g,'&quot;');
+    return `
+    <div class="questao-row" id="row-${q.id}">
+      <div>
+        <div class="questao-enunciado" title="${enunciadoTitle}">${enunciadoEsc}</div>
+        <div class="questao-leg">${q.legislacao_nome || q.legislacao_id || '—'} · ${(q.curso || '').toUpperCase()} ${q.area_tematica || ''}</div>
+      </div>
+      <div class="questao-gabarito">${letra}</div>
+      <div><span class="questao-status ${q.ativa ? 'status-ativa' : 'status-inativa'}">${q.ativa ? 'Ativa' : 'Inativa'}</span></div>
+      <div class="questao-acoes">
+        <button class="btn-mini edit" data-action="editar" data-id="${q.id}">Editar</button>
+        <button class="btn-mini danger" data-action="deletar" data-id="${q.id}" data-preview="${enunciadoEsc}">Excluir</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* Delegação de eventos para os botões da lista */
+document.getElementById('lista-questoes').addEventListener('click', function (e) {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const id     = btn.dataset.id;
+  if (action === 'editar')  abrirModalEditar(id);
+  if (action === 'deletar') pedirDelete(id, btn.dataset.preview || '');
+});
+
+function abrirModalNova() {
+  document.getElementById('modal-titulo').textContent = 'Nova Questão';
+  document.getElementById('modal-id').value = '';
+  ['m-enunciado','m-alt-a','m-alt-b','m-alt-c','m-alt-d','m-alt-e','m-comentario','m-leg-id','m-leg-nome'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('m-curso').value = 'ctsp';
+  document.getElementById('m-area').value = 'AT1';
+  document.getElementById('m-gabarito').value = '0';
+  document.getElementById('m-ativa').value = 'true';
+  document.getElementById('modal-erro').style.display = 'none';
+  document.getElementById('overlay-modal').classList.add('aberto');
+}
+
+function abrirModalEditar(id) {
+  const q = todasQuestoes.find(x => x.id === id);
+  if (!q) return;
+  document.getElementById('modal-titulo').textContent = 'Editar Questão';
+  document.getElementById('modal-id').value = q.id;
+  document.getElementById('m-curso').value = q.curso || 'ctsp';
+  document.getElementById('m-area').value = q.area_tematica || 'AT1';
+  document.getElementById('m-leg-id').value = q.legislacao_id || '';
+  document.getElementById('m-leg-nome').value = q.legislacao_nome || '';
+  document.getElementById('m-enunciado').value = q.enunciado || '';
+  const alts = Array.isArray(q.alternativas) ? q.alternativas : [];
+  ['a','b','c','d','e'].forEach((l, i) => { document.getElementById('m-alt-' + l).value = alts[i] || ''; });
+  document.getElementById('m-gabarito').value = String(q.gabarito ?? 0);
+  document.getElementById('m-ativa').value = String(q.ativa !== false);
+  document.getElementById('m-comentario').value = q.comentario || '';
+  document.getElementById('modal-erro').style.display = 'none';
+  document.getElementById('overlay-modal').classList.add('aberto');
+}
+
+function fecharModal() { document.getElementById('overlay-modal').classList.remove('aberto'); }
+
+async function salvarQuestao() {
+  const btn = document.getElementById('btn-salvar');
+  const erroEl = document.getElementById('modal-erro');
+  erroEl.style.display = 'none';
+
+  const id = document.getElementById('modal-id').value;
+  const enunciado = document.getElementById('m-enunciado').value.trim();
+  const altA = document.getElementById('m-alt-a').value.trim();
+  const altB = document.getElementById('m-alt-b').value.trim();
+
+  if (!enunciado || !altA || !altB) {
+    erroEl.textContent = 'Preencha o enunciado e pelo menos as alternativas A e B.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  const alternativas = ['a','b','c','d','e'].map(l => document.getElementById('m-alt-' + l).value.trim()).filter((v, i) => i < 2 || v);
+
+  const payload = {
+    curso: document.getElementById('m-curso').value,
+    area_tematica: document.getElementById('m-area').value,
+    legislacao_id: document.getElementById('m-leg-id').value.trim(),
+    legislacao_nome: document.getElementById('m-leg-nome').value.trim(),
+    enunciado,
+    alternativas,
+    gabarito: parseInt(document.getElementById('m-gabarito').value),
+    comentario: document.getElementById('m-comentario').value.trim() || null,
+    ativa: document.getElementById('m-ativa').value === 'true'
+  };
+
+  btn.disabled = true;
+  btn.textContent = 'Salvando…';
+
+  let r;
+  if (id) {
+    r = await supaFetch(`/rest/v1/questoes?id=eq.${id}`, 'PATCH', payload);
+  } else {
+    r = await supaFetch('/rest/v1/questoes', 'POST', [payload]);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Salvar';
+
+  if (r.ok) {
+    fecharModal();
+    await carregarQuestoes();
+  } else {
+    erroEl.textContent = r.data?.message || 'Erro ao salvar. Tente novamente.';
+    erroEl.style.display = 'block';
+  }
+}
+
+function pedirDelete(id, preview) {
+  deleteId = id;
+  document.getElementById('delete-preview').textContent = preview;
+  document.getElementById('overlay-delete').classList.add('aberto');
+}
+
+function fecharDelete() { document.getElementById('overlay-delete').classList.remove('aberto'); deleteId = null; }
+
+async function confirmarDelete() {
+  if (!deleteId) return;
+  const btn = document.getElementById('btn-confirmar-delete');
+  btn.disabled = true;
+  btn.textContent = 'Excluindo…';
+  await supaFetch(`/rest/v1/questoes?id=eq.${deleteId}`, 'DELETE');
+  btn.disabled = false;
+  btn.textContent = 'Excluir';
+  fecharDelete();
+  await carregarQuestoes();
+}
+
+/* ── Event listeners ── */
+document.getElementById('btn-sair').addEventListener('click', function () {
+  ['graduabm_admin', 'graduabm_admin_ts', 'graduabm_admin_token'].forEach(k => sessionStorage.removeItem(k));
+  localStorage.removeItem('usuario');
+  localStorage.removeItem('token');
+  window.location.href = '/';
+});
+
+document.getElementById('btn-novo').addEventListener('click', abrirModalNova);
+document.getElementById('btn-fechar-modal').addEventListener('click', fecharModal);
+document.getElementById('btn-cancelar-modal').addEventListener('click', fecharModal);
+document.getElementById('btn-salvar').addEventListener('click', salvarQuestao);
+document.getElementById('btn-fechar-delete').addEventListener('click', fecharDelete);
+document.getElementById('btn-cancelar-delete').addEventListener('click', fecharDelete);
+document.getElementById('btn-confirmar-delete').addEventListener('click', confirmarDelete);
+
+['filtro-curso','filtro-area','filtro-status'].forEach(id => {
+  document.getElementById(id).addEventListener('change', aplicarFiltros);
+});
+document.getElementById('filtro-busca').addEventListener('input', aplicarFiltros);
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape') { fecharModal(); fecharDelete(); }
+});
+
+/* Modo aluno na sidebar */
+const linkModoAluno = document.querySelector('.sidebar-nav a[href="/area-estudos"]');
+if (linkModoAluno) {
+  linkModoAluno.addEventListener('click', function (e) {
+    e.preventDefault();
+    localStorage.setItem('usuario', JSON.stringify({ nome: 'Aluno Teste', email: 'soulreaperfps@gmail.com', ativo: true, plano: 'mensal' }));
+    localStorage.setItem('token', 'admin-preview-token');
+    window.location.href = '/area-estudos';
+  });
+}
+
+carregarQuestoes();
+</script>
+</body>
+</html>

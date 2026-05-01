@@ -12,26 +12,72 @@ async function request(path, options = {}) {
   return data;
 }
 
-const api = {
-  auth: {
-    cadastro: (body) => request('/api/auth/cadastro', { method: 'POST', body: JSON.stringify(body) }),
-    login: (body) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
-    me: () => request('/api/auth/me'),
+const GraduaBM = {
+  getUsuario() {
+    try { return JSON.parse(localStorage.getItem('usuario')); }
+    catch { return null; }
   },
-  questoes: {
-    listar: (params = {}) => request('/api/questoes?' + new URLSearchParams(params)),
-    legislacoes: () => request('/api/questoes/legislacoes'),
-    erros: () => request('/api/questoes/erros'),
+
+  isAdmin() {
+    return sessionStorage.getItem('graduabm_admin') === '1';
   },
-  sessoes: {
-    criar: (body) => request('/api/sessoes', { method: 'POST', body: JSON.stringify(body) }),
-    responder: (id, body) => request(`/api/sessoes/${id}/respostas`, { method: 'POST', body: JSON.stringify(body) }),
-    encerrar: (id) => request(`/api/sessoes/${id}/encerrar`, { method: 'PATCH' }),
+
+  async protegerRota() {
+    if (GraduaBM.isAdmin()) return;
+
+    if (!GraduaBM.Auth.estaLogado()) {
+      window.location.href = '/login';
+      return;
+    }
+    try {
+      const data = await request('/api/auth/me');
+      if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      if (!data.usuario?.ativo) {
+        window.location.href = '/login';
+      }
+    } catch {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      window.location.href = '/login';
+    }
   },
-  progresso: {
-    desempenho: () => request('/api/progresso/desempenho'),
-    errosPorLegislacao: () => request('/api/progresso/erros-por-legislacao'),
-    sessoesRecentes: () => request('/api/progresso/sessoes-recentes'),
-    evolucaoSemanal: () => request('/api/progresso/evolucao-semanal'),
+
+  Auth: {
+    estaLogado() {
+      return !!localStorage.getItem('token');
+    },
+    usuarioAtivo() {
+      const u = GraduaBM.getUsuario();
+      return u?.ativo === true;
+    },
+    async login({ email, senha }) {
+      const data = await request('/api/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, senha }),
+      });
+      if (data.token) localStorage.setItem('token', data.token);
+      if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      return data;
+    },
+    async cadastrar({ nome, email, senha }) {
+      const data = await request('/api/auth/cadastro', {
+        method: 'POST',
+        body: JSON.stringify({ nome, email, senha }),
+      });
+      if (data.token) localStorage.setItem('token', data.token);
+      if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      return data;
+    },
+    logout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      window.location.href = '/login';
+    },
+  },
+
+  Progresso: {
+    desempenho(params = {}) {
+      return request('/api/progresso/desempenho?' + new URLSearchParams(params));
+    },
   },
 };

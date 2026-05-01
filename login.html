@@ -328,13 +328,24 @@
   /* Forms visíveis/ocultos */
   .form-login, .form-cadastro { display: none; }
   .form-login.visivel, .form-cadastro.visivel { display: block; }
+
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    .side-esquerdo { display: none; }
+    .side-direito { padding: 2rem 1.5rem; align-items: stretch; }
+    .form-container { max-width: 100%; }
+  }
+  @media (max-width: 480px) {
+    .campo-row { grid-template-columns: 1fr; }
+    nav { padding: 0 1rem; }
+  }
 </style>
 </head>
 <body>
 
 <nav>
-  <a href="graduabm.html" class="logo-text">GraduaBM</a>
-  <a href="graduabm.html" class="nav-link">← Voltar ao início</a>
+  <a href="/" class="logo-text">GraduaBM</a>
+  <a href="/" class="nav-link">← Voltar ao início</a>
 </nav>
 
 <div class="main">
@@ -533,7 +544,7 @@
   // ── Se já está logado e ativo, vai direto para estudos ──
   (function() {
     if (GraduaBM.Auth.estaLogado() && GraduaBM.Auth.usuarioAtivo()) {
-      window.location.href = '/graduabm-area-estudos.html';
+      window.location.href = '/area-estudos';
     }
   })();
 
@@ -587,7 +598,13 @@
       const data = await GraduaBM.Auth.login({ email, senha });
       mostrarPainel(data.usuario);
     } catch (err) {
-      mostrarMsg('msg-login', err.message || 'Erro ao fazer login.', 'erro');
+      if (err.codigo === 'ASSINATURA_INATIVA' && err.usuario) {
+        if (err.token) localStorage.setItem('token', err.token);
+        localStorage.setItem('usuario', JSON.stringify(err.usuario));
+        mostrarPainel(err.usuario);
+      } else {
+        mostrarMsg('msg-login', err.erro || err.message || 'E-mail ou senha incorretos.', 'erro');
+      }
     } finally {
       setLoading('btn-login', 'spin-login', 'txt-login', false, 'Entrar');
     }
@@ -649,7 +666,7 @@
   }
 
   function irParaEstudos() {
-    window.location.href = '/graduabm-area-estudos.html';
+    window.location.href = '/area-estudos';
   }
 
   function irParaAssinatura() {
