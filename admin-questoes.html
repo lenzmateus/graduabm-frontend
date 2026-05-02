@@ -655,31 +655,50 @@ const AREAS = {
 };
 AREAS.at3.cba.grupos = AREAS.at3.ctsp.grupos;
 
+function atualizarOpcaoCursoAmbos() {
+  const areaNum = document.getElementById('m-area').value.toLowerCase();
+  const areaData = AREAS[areaNum];
+  const optAmbos = document.querySelector('#m-curso option[value="ambos"]');
+  if (!optAmbos) return;
+
+  // Verifica se a área tem ao menos uma legislação comum nos dois cursos
+  const temComum = areaData && areaData['ctsp'] &&
+    areaData['ctsp'].grupos.some(g => g.items.some(item => item.tag === 'comum'));
+
+  optAmbos.disabled = !temComum;
+  optAmbos.textContent = temComum ? 'Ambos (CTSP e CBA)' : 'Ambos (CTSP e CBA) — indisponível para esta área';
+
+  // Se "ambos" estava selecionado e não tem mais itens comuns, volta para ctsp
+  if (!temComum && document.getElementById('m-curso').value === 'ambos') {
+    document.getElementById('m-curso').value = 'ctsp';
+  }
+}
+
 function atualizarSelectLegislacoes() {
   const curso = document.getElementById('m-curso').value;
   const areaNum = document.getElementById('m-area').value.toLowerCase();
   const sel = document.getElementById('m-leg-id');
   sel.innerHTML = '';
-  
+
   const areaData = AREAS[areaNum];
-  if(!areaData) return;
-  
+  if (!areaData) return;
+
+  atualizarOpcaoCursoAmbos();
+
   let gruposParaMostrar = [];
-  
+
   if (curso === 'ambos') {
     if (areaData['ctsp']) {
-      gruposParaMostrar = areaData['ctsp'].grupos.map(g => {
-        return {
-          titulo: g.titulo,
-          items: g.items.filter(item => item.tag === 'comum')
-        };
-      }).filter(g => g.items.length > 0);
+      gruposParaMostrar = areaData['ctsp'].grupos.map(g => ({
+        titulo: g.titulo,
+        items: g.items.filter(item => item.tag === 'comum')
+      })).filter(g => g.items.length > 0);
     }
   } else {
     if (!areaData[curso]) return;
     gruposParaMostrar = areaData[curso].grupos;
   }
-  
+
   gruposParaMostrar.forEach(g => {
     const optgroup = document.createElement('optgroup');
     optgroup.label = g.titulo;
@@ -687,17 +706,24 @@ function atualizarSelectLegislacoes() {
       const opt = document.createElement('option');
       opt.value = item.id;
       opt.textContent = item.nome;
+      // Indica visualmente itens exclusivos (quando não estiver em modo 'ambos')
+      if (curso !== 'ambos' && item.tag !== 'comum') {
+        opt.textContent = item.nome + ' ★';
+        opt.title = item.tagTxt;
+      }
       optgroup.appendChild(opt);
     });
     sel.appendChild(optgroup);
   });
+
   atualizarNomeLegislacao();
 }
 
 function atualizarNomeLegislacao() {
   const sel = document.getElementById('m-leg-id');
-  if(sel.selectedIndex >= 0) {
-    document.getElementById('m-leg-nome').value = sel.options[sel.selectedIndex].text;
+  if (sel.selectedIndex >= 0) {
+    // Remove o ★ do nome que vai para o banco
+    document.getElementById('m-leg-nome').value = sel.options[sel.selectedIndex].text.replace(' ★', '');
   } else {
     document.getElementById('m-leg-nome').value = '';
   }
