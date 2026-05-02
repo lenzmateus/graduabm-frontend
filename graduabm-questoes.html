@@ -568,6 +568,7 @@ function getAlternativas(q) {
     .filter(a => a.texto);
 }
 function getRespostaCorreta(q) {
+  if (typeof q.gabarito === 'number') return String.fromCharCode(65 + q.gabarito);
   const r = q.resposta_correta || q.gabarito || '';
   return r.toString().toUpperCase().trim().charAt(0);
 }
