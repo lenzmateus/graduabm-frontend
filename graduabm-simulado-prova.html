@@ -400,7 +400,7 @@ async function init() {
       questao_id: q.id,
       rascunho: null,
       oficial: null,
-      gabaritoReal: (q.resposta_correta || q.gabarito || '').toString().toUpperCase().trim().charAt(0)
+      gabaritoReal: typeof q.gabarito === 'number' ? String.fromCharCode(65 + q.gabarito) : (q.resposta_correta || q.gabarito || '').toString().toUpperCase().trim().charAt(0)
     }));
 
     // Cria sessão no banco
