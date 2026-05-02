@@ -677,7 +677,7 @@ function renderAreas() {
 }
 
 function iniciarEstudo(num) {
-  sessionStorage.setItem('graduabm_at', 'AT' + num);
+  sessionStorage.setItem('graduabm_at', 'AT' + parseInt(num, 10));
   sessionStorage.setItem('graduabm_curso', cursoAtual);
   window.location.href = '/selecao-legislacao';
 }

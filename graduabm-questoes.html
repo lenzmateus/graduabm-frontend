@@ -602,7 +602,7 @@ async function init() {
     } catch { }
 
     if (!questoes.length) {
-      mostrarErro('Nenhuma questão encontrada. Parâmetros: curso=' + curso + ' area=' + area + ' legislações=' + (legislacoes.join(',') || '(nenhuma)'));
+      mostrarErro('Nenhuma questão cadastrada para as legislações selecionadas. Tente outra combinação.');
       return;
     }
 

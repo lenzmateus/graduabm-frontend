@@ -1168,6 +1168,8 @@ function setFiltro(val, btn) {
 }
 
 function iniciarQuestoes() {
+  sessionStorage.setItem('graduabm_at', areaAtual.toUpperCase());
+  sessionStorage.setItem('graduabm_curso', cursoAtual);
   sessionStorage.setItem('graduabm_legislacoes', JSON.stringify([...selecionados]));
   sessionStorage.setItem('graduabm_qtd', qtdQuestoes === 0 ? '' : String(qtdQuestoes));
   sessionStorage.setItem('graduabm_filtro', filtroConfig);
