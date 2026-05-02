@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Simulados Oficiais</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --branco-suave: #EFEFEA;
+
+    --ctsp: #C0270F;
+    --ctsp-bg: rgba(192,39,15,0.08);
+    --ctsp-borda: rgba(192,39,15,0.3);
+
+    --cba: #185FA5;
+    --cba-bg: rgba(24,95,165,0.08);
+    --cba-borda: rgba(24,95,165,0.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column;
+    padding: 0;
+  }
+
+  .sidebar-logo {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.05em;
+    color: var(--branco);
+    text-decoration: none;
+  }
+
+  .sidebar-usuario {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .usuario-nome {
+    font-size: 13px; font-weight: 500;
+    color: var(--branco); margin-bottom: 2px;
+  }
+  .usuario-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 500;
+    color: #7DD99A; letter-spacing: 0.04em;
+  }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: #555;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px;
+  }
+  .nav-label:first-child { margin-top: 0; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 1.25rem;
+    font-size: 13px; color: var(--cinza-texto);
+    cursor: pointer; transition: background 0.12s, color 0.12s;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo {
+    color: var(--branco);
+    border-left-color: var(--vermelho);
+    background: rgba(192,39,15,0.08);
+  }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .btn-sair {
+    width: 100%; background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 7px 0; font-size: 12px;
+    cursor: pointer; transition: all 0.15s;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* ── CONTEÚDO PRINCIPAL ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .topbar {
+    height: 56px; flex-shrink: 0;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+  }
+  .topbar-titulo {
+    font-size: 14px; font-weight: 500;
+    color: var(--branco);
+  }
+
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; max-width: 800px; }
+
+  .simulado-header {
+    margin-bottom: 2rem;
+  }
+  .simulado-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 0.05em;
+    color: var(--branco);
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+  .simulado-desc {
+    color: var(--cinza-texto);
+    font-size: 14px;
+    max-width: 600px;
+  }
+
+  /* ── SELETOR DE CURSO ── */
+  .curso-seletor {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 12px; margin-bottom: 2rem;
+  }
+
+  .curso-card {
+    border-radius: 12px; padding: 1.25rem 1.5rem;
+    cursor: pointer; transition: all 0.15s;
+    border: 1px solid var(--cinza-borda);
+    background: var(--cinza-escuro);
+    position: relative; overflow: hidden;
+  }
+  .curso-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+  }
+  .curso-card.ctsp::before { background: var(--ctsp); }
+  .curso-card.cba::before { background: var(--cba); }
+
+  .curso-card.selecionado.ctsp {
+    border-color: var(--ctsp-borda);
+    background: var(--ctsp-bg);
+  }
+  .curso-card.selecionado.cba {
+    border-color: var(--cba-borda);
+    background: var(--cba-bg);
+  }
+  .curso-card:not(.selecionado):hover { background: var(--cinza-medio); }
+
+  .curso-sigla {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 0.04em;
+    margin-bottom: 2px;
+  }
+  .curso-card.ctsp .curso-sigla { color: var(--ctsp); }
+  .curso-card.cba .curso-sigla { color: var(--cba); }
+
+  .curso-nome {
+    font-size: 13px; font-weight: 500;
+    color: var(--branco); margin-bottom: 2px;
+  }
+  .curso-desc { font-size: 11px; color: var(--cinza-texto); }
+
+  .curso-meta {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 12px; padding-top: 12px;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .curso-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    padding: 2px 8px; border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+  .ctsp .curso-pill { background: var(--ctsp-bg); color: #E0866E; border: 1px solid var(--ctsp-borda); }
+  .cba .curso-pill { background: var(--cba-bg); color: #85B7EB; border: 1px solid var(--cba-borda); }
+
+  .curso-check {
+    margin-left: auto; width: 18px; height: 18px;
+    border-radius: 50%; border: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .selecionado .curso-check {
+    border-color: currentColor;
+    background: currentColor;
+  }
+  .ctsp.selecionado .curso-check { color: var(--ctsp); }
+  .cba.selecionado .curso-check { color: var(--cba); }
+
+  .simulado-regras {
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed var(--cinza-borda);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  .simulado-regras ul {
+    margin-left: 1.5rem;
+    color: var(--cinza-texto);
+    font-size: 13px;
+  }
+  .simulado-regras li { margin-bottom: 8px; }
+  .simulado-regras li strong { color: var(--branco); font-weight: 500; }
+
+  .btn-iniciar {
+    background: var(--vermelho);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 14px 24px;
+    font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    transition: background 0.2s;
+  }
+  .btn-iniciar:hover { background: var(--vermelho-escuro); }
+
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <a href="/" class="logo-text">GRADUABM</a>
+    </div>
+    
+    <div class="sidebar-usuario">
+      <div class="usuario-nome" id="user-nome">Carregando…</div>
+      <div class="usuario-status"><div class="status-dot"></div>ALUNO PRO</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item" href="/dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="/area-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Estudar Legislação
+      </a>
+      <a class="nav-item ativo" href="/simulados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados Oficiais
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Simulados Oficiais</span>
+    </div>
+
+    <div class="conteudo">
+      <div class="simulado-header">
+        <h1 class="simulado-titulo">Simulado Modo Edital</h1>
+        <p class="simulado-desc">Prepare-se para o cenário real. O simulado replica com precisão as condições da prova oficial, exigindo resistência, controle de tempo e domínio sobre todas as áreas.</p>
+      </div>
+
+      <h2 style="font-size: 14px; font-weight: 500; color: var(--cinza-texto); margin-bottom: 15px; text-transform: uppercase; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.1em;">1. Escolha o Curso</h2>
+      
+      <div class="curso-seletor">
+        <div class="curso-card ctsp selecionado" onclick="selecionarCurso('ctsp')">
+          <div class="curso-sigla">CTSP</div>
+          <div class="curso-nome">Curso Técnico de Segurança Pública</div>
+          <div class="curso-desc">60 questões com distribuição exata conforme o edital oficial.</div>
+          <div class="curso-meta">
+            <span class="curso-pill">60 QUESTÕES</span>
+            <div class="curso-check"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--carvao)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+        </div>
+        <div class="curso-card cba" onclick="selecionarCurso('cba')">
+          <div class="curso-sigla">CBA</div>
+          <div class="curso-nome">Curso Básico de Administração</div>
+          <div class="curso-desc">40 questões focadas no edital específico para Tenentes.</div>
+          <div class="curso-meta">
+            <span class="curso-pill">40 QUESTÕES</span>
+            <div class="curso-check"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="simulado-regras">
+        <h3 style="font-size: 13px; font-weight: 600; color: var(--branco); margin-bottom: 12px;">Regras do Simulado:</h3>
+        <ul>
+          <li><strong>Cronômetro:</strong> Você terá exatamente <strong>4 horas</strong> para concluir a prova.</li>
+          <li><strong>Sem Feedback Imediato:</strong> O gabarito só será revelado no final da prova.</li>
+          <li><strong>Cartão Resposta (Novo):</strong> Ao final do tempo, ou quando desejar encerrar, você deverá preencher o Cartão Resposta (folha óptica). Apenas o que estiver no cartão será pontuado.</li>
+          <li><strong>Sorteio:</strong> As questões são extraídas aleatoriamente do banco de dados, respeitando o quantitativo exato de cada área temática da Portaria.</li>
+        </ul>
+      </div>
+
+      <button class="btn-iniciar" onclick="iniciarSimulado()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+        Gerar Simulado Inédito
+      </button>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+let cursoSelecionado = 'ctsp';
+
+function selecionarCurso(c) {
+  cursoSelecionado = c;
+  document.querySelectorAll('.curso-card').forEach(el => {
+    el.classList.remove('selecionado');
+    const check = el.querySelector('.curso-check');
+    if(check) check.innerHTML = '';
+  });
+
+  const card = document.querySelector(`.curso-card.${c}`);
+  if(card) {
+    card.classList.add('selecionado');
+    const check = card.querySelector('.curso-check');
+    if(check) check.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--carvao)" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>`;
+  }
+}
+
+function iniciarSimulado() {
+  sessionStorage.setItem('graduabm_modo', 'simulado');
+  sessionStorage.setItem('graduabm_simulado_curso', cursoSelecionado);
+  window.location.href = '/simulado-prova';
+}
+
+function init() {
+  GraduaBM.protegerRota();
+  const user = GraduaBM.getUsuario();
+  if (user) document.getElementById('user-nome').textContent = user.nome;
+  document.getElementById('btn-sair').addEventListener('click', () => GraduaBM.Auth.logout());
+}
+
+init();
+</script>
+</body>
+</html>

@@ -449,8 +449,21 @@
       <!-- LISTA DE LEGISLAÇÕES -->
       <div id="conteudo-legislacoes"></div>
 
-      <!-- CONFIGURAÇÃO: QUANTIDADE + POMODORO -->
+      <!-- CONFIGURAÇÃO: FILTROS + QUANTIDADE + POMODORO -->
       <div class="config-bloco">
+
+        <!-- MODO DE ESTUDO (Filtro) -->
+        <div class="config-grupo" style="flex: 1.5;">
+          <div class="config-label">Modo de Estudo</div>
+          <div class="qtd-opts" id="filtro-opts">
+            <button class="qtd-btn ativo" onclick="setFiltro('todas', this)">Todas</button>
+            <button class="qtd-btn" onclick="setFiltro('ineditas', this)">Inéditas</button>
+            <button class="qtd-btn" style="color: #F09595;" onclick="setFiltro('erradas', this)">Caderno de Erros</button>
+          </div>
+          <div style="font-size:11px;color:var(--cinza-texto);margin-top:8px;">
+            Filtre as questões com base no seu histórico de respostas.
+          </div>
+        </div>
 
         <div class="config-grupo">
           <div class="config-label">Quantidade de questões</div>
@@ -868,7 +881,7 @@ AREAS.at3.cba.grupos = AREAS.at3.ctsp.grupos;
 // ── ESTADO GLOBAL — lido do sessionStorage ──
 const _atParam    = sessionStorage.getItem('graduabm_at');
 const _cursoParam = sessionStorage.getItem('graduabm_curso');
-let areaAtual  = _atParam  ? _atParam.toLowerCase()  : 'at1';
+let areaAtual  = _atParam  ? _atParam.toLowerCase().replace(/at0?(\d)/, 'at$1')  : 'at1';
 let cursoAtual = _cursoParam || 'ctsp';
 let selecionados = new Set();
 let qtdQuestoes  = 20;
@@ -1150,9 +1163,18 @@ function setPomodoroCostum(input) {
 }
 
 
+let filtroConfig = 'todas';
+
+function setFiltro(val, btn) {
+  document.querySelectorAll('#filtro-opts .qtd-btn').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  filtroConfig = val;
+}
+
 function iniciarQuestoes() {
   sessionStorage.setItem('graduabm_legislacoes', JSON.stringify([...selecionados]));
   sessionStorage.setItem('graduabm_qtd', qtdQuestoes === 0 ? '' : String(qtdQuestoes));
+  sessionStorage.setItem('graduabm_filtro', filtroConfig);
   window.location.href = '/questoes';
 }
 

@@ -163,6 +163,10 @@
       <span class="topbar-titulo">Painel de administração <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#444;margin-left:8px">v2</span></span>
       <div class="topbar-direita">
         <span class="topbar-mono" id="topbar-data"></span>
+        <select id="preview-curso" style="background: var(--cinza-escuro); color: white; border: 1px solid var(--roxo-borda); border-radius: 6px; padding: 7px 10px; font-size: 12px; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; outline: none;">
+          <option value="ctsp">Simular CTSP</option>
+          <option value="cba">Simular CBA</option>
+        </select>
         <button class="btn-modo-aluno" id="btn-modo-aluno">🎓 Modo Aluno</button>
       </div>
     </div>
@@ -202,7 +206,7 @@
           Acesse qualquer área do site sem assinatura. O bloqueio de pagamento é ignorado para esta sessão admin.
         </div>
         <div class="atalhos">
-          <a href="/area-estudos" class="btn-acesso">
+          <a href="/dashboard" class="btn-acesso" onclick="ativarPreview()">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
             Área de estudos
           </a>
@@ -296,7 +300,11 @@
   });
 
   /* ── Modo Aluno ── */
-  document.getElementById('btn-modo-aluno').addEventListener('click', function () {
+  window.ativarPreview = function() {
+    const cursoSel = document.getElementById('preview-curso');
+    if (cursoSel) {
+      sessionStorage.setItem('graduabm_curso', cursoSel.value);
+    }
     localStorage.setItem('usuario', JSON.stringify({
       nome: 'Aluno Teste',
       email: 'soulreaperfps@gmail.com',
@@ -305,7 +313,11 @@
     }));
     localStorage.setItem('token', 'admin-preview-token');
     sessionStorage.setItem('graduabm_preview_aluno', '1');
-    window.location.href = '/area-estudos';
+  };
+
+  document.getElementById('btn-modo-aluno').addEventListener('click', function () {
+    window.ativarPreview();
+    window.location.href = '/dashboard';
   });
 
   /* Ao voltar para o painel admin, sai do preview */

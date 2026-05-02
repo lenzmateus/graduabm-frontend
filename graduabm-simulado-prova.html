@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Simulado Oficial</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --verde: #7DD99A;
+    --bg-verde: rgba(125,217,154,0.1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; }
+
+  .layout { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    height: 60px; flex-shrink: 0; background: var(--cinza-escuro); border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
+  }
+  .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--branco); letter-spacing: 0.05em; text-decoration: none;}
+  
+  .timer-box {
+    display: flex; align-items: center; gap: 10px; background: var(--cinza-medio); border: 1px solid var(--cinza-borda);
+    padding: 6px 16px; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600;
+  }
+  .timer-box.alerta { color: #F09595; border-color: #F09595; animation: pisca 1s infinite; }
+  @keyframes pisca { 50% { opacity: 0.5; } }
+
+  .btn-finalizar {
+    background: var(--vermelho); color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+  }
+  .btn-finalizar:hover { background: var(--vermelho-escuro); }
+
+  /* ── MAIN AREA ── */
+  .main-area { flex: 1; display: flex; overflow: hidden; }
+
+  /* ── SIDEBAR NAVEGAÇÃO ── */
+  .nav-sidebar {
+    width: 250px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column;
+  }
+  .nav-header { padding: 1rem; border-bottom: 1px solid var(--cinza-borda); font-size: 13px; font-weight: 600; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; }
+  .nav-grid { padding: 1rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; overflow-y: auto; flex: 1; }
+  .nav-btn {
+    aspect-ratio: 1; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 6px;
+    color: var(--branco); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
+  }
+  .nav-btn.ativo { border-color: var(--vermelho); background: rgba(192,39,15,0.1); }
+  .nav-btn.marcada { background: rgba(255,255,255,0.1); border-color: #555; }
+
+  /* ── ÁREA DA QUESTÃO ── */
+  .questao-container { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; }
+  .q-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; border-bottom: 1px solid var(--cinza-borda); padding-bottom: 1rem; }
+  .q-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--branco); line-height: 1; }
+  .q-area { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cinza-texto); text-transform: uppercase; }
+
+  .enunciado { font-size: 16px; line-height: 1.8; color: var(--branco); margin-bottom: 2rem; white-space: pre-wrap; }
+
+  .alts-lista { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; }
+  .alt {
+    display: flex; align-items: center; gap: 16px; padding: 1rem; background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda); border-radius: 8px; cursor: pointer; transition: 0.15s;
+  }
+  .alt:hover { border-color: #555; background: var(--cinza-medio); }
+  .alt.selecionada { border-color: var(--vermelho); background: rgba(192,39,15,0.05); }
+  
+  .alt-letra {
+    width: 32px; height: 32px; flex-shrink: 0; border: 1px solid var(--cinza-borda); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-weight: 600;
+  }
+  .alt.selecionada .alt-letra { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
+  .alt-texto { font-size: 15px; color: var(--branco); line-height: 1.5; }
+
+  .q-actions { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 2rem; }
+  .btn-nav { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 10px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+  .btn-nav:hover:not(:disabled) { background: var(--cinza-medio); }
+  .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── CARTÃO RESPOSTA (GABARITO) ── */
+  .gabarito-overlay {
+    position: fixed; top: 60px; left: 0; right: 0; bottom: 0; background: var(--carvao); z-index: 100;
+    display: none; flex-direction: column;
+  }
+  .gabarito-overlay.ativo { display: flex; }
+  
+  .gab-header { padding: 1.5rem 3rem; border-bottom: 1px solid var(--cinza-borda); display: flex; justify-content: space-between; align-items: center; background: var(--cinza-escuro); }
+  .gab-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.05em; }
+  .gab-aviso { font-size: 13px; color: var(--cinza-texto); max-width: 500px; line-height: 1.4; }
+
+  .gab-content { display: flex; flex: 1; overflow: hidden; }
+  
+  .gab-col { flex: 1; padding: 2rem 3rem; overflow-y: auto; }
+  .gab-col-left { border-right: 1px solid var(--cinza-borda); background: rgba(255,255,255,0.01); }
+  
+  .gab-subtitle { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--cinza-texto); margin-bottom: 1.5rem; font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+
+  .gab-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .gab-grid { grid-template-columns: 1fr; } }
+  
+  .gab-item { display: flex; align-items: center; gap: 15px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .gab-num { width: 30px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--cinza-texto); }
+  
+  /* Bolinhas rascunho (caderno) */
+  .rascunho-val { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--branco); font-size: 16px; }
+  .rascunho-vazio { color: #555; font-style: italic; font-size: 13px; }
+
+  /* Bolinhas oficiais */
+  .bolinhas-wrap { display: flex; gap: 8px; }
+  .bolinha {
+    width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--cinza-texto);
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    color: var(--cinza-texto); cursor: pointer; transition: 0.1s; background: transparent;
+  }
+  .bolinha:hover { border-color: var(--branco); color: var(--branco); }
+  .bolinha.preenchida { background: var(--branco); color: var(--carvao); border-color: var(--branco); font-weight: 600; }
+
+  .gab-footer { padding: 1.5rem 3rem; background: var(--cinza-escuro); border-top: 1px solid var(--cinza-borda); display: flex; justify-content: flex-end; gap: 15px; }
+
+  /* TELA DE LOADING E FIM */
+  .tela-cheia {
+    position: fixed; inset: 0; background: var(--carvao); z-index: 999; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .loader { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--vermelho); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+</style>
+</head>
+<body>
+
+<div class="tela-cheia" id="tela-loading">
+  <div class="loader"></div>
+  <div style="font-size: 14px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace;">GERANDO CADERNO DE PROVA...</div>
+</div>
+
+<div class="layout">
+  
+  <header class="topbar">
+    <a href="/dashboard" class="topbar-logo">GRADUABM</a>
+    <div class="timer-box" id="timer">04:00:00</div>
+    <button class="btn-finalizar" onclick="abrirGabarito()">Ir para o Gabarito</button>
+  </header>
+
+  <main class="main-area">
+    
+    <aside class="nav-sidebar">
+      <div class="nav-header">Caderno de Questões</div>
+      <div class="nav-grid" id="nav-grid">
+        <!-- Gerado via JS -->
+      </div>
+    </aside>
+
+    <div class="questao-container">
+      <div class="q-header">
+        <div class="q-num" id="q-num">Q. 01</div>
+        <div class="q-area" id="q-area">Área Temática</div>
+      </div>
+
+      <div class="enunciado" id="q-enunciado">Carregando...</div>
+      
+      <div class="alts-lista" id="alts-lista">
+        <!-- Alternativas injetadas via JS -->
+      </div>
+
+      <div class="q-actions">
+        <button class="btn-nav" id="btn-prev" onclick="navegar(-1)">← Anterior</button>
+        <button class="btn-nav" id="btn-next" onclick="navegar(1)">Próxima →</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- CARTÃO RESPOSTA OVERLAY -->
+  <div class="gabarito-overlay" id="tela-gabarito">
+    <div class="gab-header">
+      <div>
+        <h2 class="gab-titulo">Cartão Resposta Oficial</h2>
+        <p class="gab-aviso">ATENÇÃO: O que vale para a sua nota final são apenas as bolinhas preenchidas no lado direito desta tela. Transcreva suas marcações com cuidado.</p>
+      </div>
+      <button class="btn-nav" onclick="fecharGabarito()">Voltar para a Prova</button>
+    </div>
+    
+    <div class="gab-content">
+      <!-- Lado Esquerdo: Rascunho (O que marcou no caderno) -->
+      <div class="gab-col gab-col-left">
+        <div class="gab-subtitle">Suas marcações no Caderno</div>
+        <div class="gab-grid" id="gab-rascunho-list"></div>
+      </div>
+
+      <!-- Lado Direito: O Cartão Resposta Interativo -->
+      <div class="gab-col">
+        <div class="gab-subtitle">Cartão Resposta (PREENCHA AQUI)</div>
+        <div class="gab-grid" id="gab-oficial-list"></div>
+      </div>
+    </div>
+
+    <div class="gab-footer">
+      <button class="btn-nav" onclick="fecharGabarito()">Continuar Revisando</button>
+      <button class="btn-finalizar" onclick="entregarProva(false)" style="padding: 12px 24px;">Entregar Prova Definitivamente</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- API COMPAT -->
+<script src="/js/api.js"></script>
+<script>
+// Mock api se n tiver no api.js (já que GraduaBM.api sumiu globalmente)
+if(!GraduaBM.api) {
+  GraduaBM.api = {
+    questoes: {
+      simulado: (curso) => request(`/api/questoes/simulado?curso=${curso}`)
+    },
+    sessoes:  {
+      criar:     (body) => request('/api/sessoes', { method:'POST', body: JSON.stringify(body) }),
+      responder: (id, body) => request('/api/sessoes/'+id+'/respostas', { method:'POST', body: JSON.stringify(body) }),
+      encerrar:  (id) => request('/api/sessoes/'+id+'/encerrar', { method:'PATCH' }),
+    }
+  };
+}
+</script>
+
+<script>
+// Proteção Anti-Cópia
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('copy', e => { e.clipboardData.setData('text/plain', 'A cópia deste conteúdo não é permitida.'); e.preventDefault(); });
+
+let questoes = [];
+let sessaoId = null;
+let currentIndex = 0;
+
+// Estado local da prova. 
+// rascunho: o que clicou no caderno
+// oficial: o que clicou no cartão resposta
+let respostas = []; 
+
+// Cronômetro: 4 horas = 14400 segundos
+let tempoRestante = 14400; 
+let timerInterval = null;
+
+async function init() {
+  GraduaBM.protegerRota();
+
+  const curso = sessionStorage.getItem('graduabm_simulado_curso');
+  if (!curso) { window.location.href = '/simulados'; return; }
+
+  try {
+    const res = await GraduaBM.api.questoes.simulado(curso);
+    questoes = res.questoes || [];
+
+    if (questoes.length === 0) {
+      alert("Nenhuma questão encontrada para este simulado.");
+      window.location.href = '/simulados';
+      return;
+    }
+
+    // Inicializa o estado das respostas
+    respostas = questoes.map(q => ({
+      questao_id: q.id,
+      rascunho: null,
+      oficial: null,
+      gabaritoReal: (q.resposta_correta || q.gabarito || '').toString().toUpperCase().trim().charAt(0)
+    }));
+
+    // Cria sessão no banco
+    try {
+      const s = await GraduaBM.api.sessoes.criar({ curso, area: 'SIMULADO', legislacoes: [], quantidade: questoes.length });
+      sessaoId = s.id;
+    } catch(e) { console.error("Erro ao criar sessão", e); }
+
+    document.getElementById('tela-loading').style.display = 'none';
+    
+    iniciarCronometro();
+    renderizarNav();
+    carregarQuestao(0);
+
+  } catch (err) {
+    console.error(err);
+    alert("Erro ao carregar o simulado.");
+    window.location.href = '/simulados';
+  }
+}
+
+function iniciarCronometro() {
+  const el = document.getElementById('timer');
+  timerInterval = setInterval(() => {
+    tempoRestante--;
+    
+    const h = String(Math.floor(tempoRestante / 3600)).padStart(2, '0');
+    const m = String(Math.floor((tempoRestante % 3600) / 60)).padStart(2, '0');
+    const s = String(tempoRestante % 60).padStart(2, '0');
+    el.textContent = `${h}:${m}:${s}`;
+
+    if (tempoRestante <= 300) { // 5 minutos
+      el.classList.add('alerta');
+    }
+
+    if (tempoRestante <= 0) {
+      clearInterval(timerInterval);
+      entregarProva(true); // tempo esgotado!
+    }
+  }, 1000);
+}
+
+function renderizarNav() {
+  const grid = document.getElementById('nav-grid');
+  grid.innerHTML = '';
+  questoes.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.className = `nav-btn ${i === currentIndex ? 'ativo' : ''} ${respostas[i].rascunho ? 'marcada' : ''}`;
+    btn.textContent = i + 1;
+    btn.onclick = () => carregarQuestao(i);
+    grid.appendChild(btn);
+  });
+}
+
+function carregarQuestao(index) {
+  currentIndex = index;
+  renderizarNav();
+  
+  const q = questoes[index];
+  document.getElementById('q-num').textContent = `Q. ${String(index + 1).padStart(2, '0')}`;
+  document.getElementById('q-area').textContent = (q.area || 'GERAL').toUpperCase();
+  document.getElementById('q-enunciado').textContent = q.enunciado || q.texto || q.questao || '';
+
+  const lista = document.getElementById('alts-lista');
+  lista.innerHTML = '';
+
+  // Parse alternativas
+  let alts = [];
+  if (Array.isArray(q.alternativas)) {
+    alts = q.alternativas.map((a, i) => {
+      if (typeof a === 'string') return { letra: String.fromCharCode(65 + i), texto: a };
+      return { letra: (a.letra || String.fromCharCode(65 + i)).toUpperCase(), texto: a.texto || a.conteudo || '' };
+    });
+  } else {
+    alts = ['a','b','c','d','e'].map(l => ({ letra: l.toUpperCase(), texto: q['alternativa_' + l] || '' })).filter(a => a.texto);
+  }
+
+  alts.forEach(a => {
+    const isSelecionada = respostas[index].rascunho === a.letra;
+    const div = document.createElement('div');
+    div.className = `alt ${isSelecionada ? 'selecionada' : ''}`;
+    div.onclick = () => marcarRascunho(index, a.letra);
+    div.innerHTML = `<div class="alt-letra">${a.letra}</div><div class="alt-texto">${a.texto}</div>`;
+    lista.appendChild(div);
+  });
+
+  document.getElementById('btn-prev').disabled = index === 0;
+  document.getElementById('btn-next').disabled = index === questoes.length - 1;
+}
+
+function marcarRascunho(index, letra) {
+  respostas[index].rascunho = letra;
+  carregarQuestao(index); // re-render
+}
+
+function navegar(dir) {
+  const n = currentIndex + dir;
+  if (n >= 0 && n < questoes.length) carregarQuestao(n);
+}
+
+// ── LÓGICA DO GABARITO ──
+function abrirGabarito() {
+  document.getElementById('tela-gabarito').classList.add('ativo');
+  renderizarGabarito();
+}
+
+function fecharGabarito() {
+  document.getElementById('tela-gabarito').classList.remove('ativo');
+}
+
+function renderizarGabarito() {
+  const rList = document.getElementById('gab-rascunho-list');
+  const oList = document.getElementById('gab-oficial-list');
+  rList.innerHTML = ''; oList.innerHTML = '';
+
+  questoes.forEach((_, i) => {
+    const r = respostas[i];
+    
+    // Rascunho
+    const rItem = document.createElement('div');
+    rItem.className = 'gab-item';
+    rItem.innerHTML = `<div class="gab-num">${i + 1}.</div>` + 
+      (r.rascunho 
+        ? `<div class="rascunho-val">${r.rascunho}</div>` 
+        : `<div class="rascunho-vazio">Em branco</div>`);
+    rList.appendChild(rItem);
+
+    // Oficial
+    const oItem = document.createElement('div');
+    oItem.className = 'gab-item';
+    oItem.innerHTML = `<div class="gab-num">${i + 1}.</div>`;
+    
+    const bolinhasWrap = document.createElement('div');
+    bolinhasWrap.className = 'bolinhas-wrap';
+    
+    ['A','B','C','D','E'].forEach(letra => {
+      const b = document.createElement('div');
+      b.className = `bolinha ${r.oficial === letra ? 'preenchida' : ''}`;
+      b.textContent = letra;
+      b.onclick = () => pintarBolinha(i, letra);
+      bolinhasWrap.appendChild(b);
+    });
+
+    oItem.appendChild(bolinhasWrap);
+    oList.appendChild(oItem);
+  });
+}
+
+function pintarBolinha(index, letra) {
+  // Se já tá preenchido igual, desmarca
+  if (respostas[index].oficial === letra) respostas[index].oficial = null;
+  else respostas[index].oficial = letra;
+  
+  renderizarGabarito(); // Re-render só o gabarito
+}
+
+// ── ENTREGA DA PROVA ──
+async function entregarProva(porTempoEsgotado) {
+  if (porTempoEsgotado) {
+    alert("Tempo esgotado! A prova será entregue automaticamente com as bolinhas preenchidas no Cartão Resposta oficial até agora.");
+  } else {
+    const brancas = respostas.filter(r => !r.oficial).length;
+    if (brancas > 0) {
+      const c = confirm(`Você deixou ${brancas} bolinha(s) em branco no Cartão Resposta. Deseja entregar a prova mesmo assim? O que está apenas no rascunho NÃO conta!`);
+      if(!c) return;
+    }
+  }
+
+  clearInterval(timerInterval);
+  
+  // Mostrar loading over the whole page
+  document.getElementById('tela-loading').querySelector('div:nth-child(2)').textContent = 'CORRIGINDO PROVA E SALVANDO GABARITO...';
+  document.getElementById('tela-loading').style.display = 'flex';
+
+  if (!sessaoId) {
+    window.location.href = '/dashboard';
+    return;
+  }
+
+  // Envia cada resposta pintada no oficial
+  for (const r of respostas) {
+    const marcou = r.oficial; 
+    // Se marcou nulo, manda nulo pro backend e correta=false
+    const acertou = marcou ? (marcou === r.gabaritoReal) : false;
+    
+    try {
+      await GraduaBM.api.sessoes.responder(sessaoId, { 
+        questao_id: r.questao_id, 
+        resposta_escolhida: marcou || 'N/A', 
+        correta: acertou 
+      });
+    } catch(e) { console.error("Erro salvando", e); }
+  }
+
+  try {
+    await GraduaBM.api.sessoes.encerrar(sessaoId);
+  } catch(e) {}
+
+  window.location.href = '/dashboard';
+}
+
+init();
+</script>
+</body>
+</html>

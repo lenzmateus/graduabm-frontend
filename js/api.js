@@ -8,6 +8,14 @@ async function request(path, options = {}) {
   const res = await fetch(`${API_URL}${path}`, { ...options, headers });
   const data = await res.json();
 
+  if (res.status === 401 && data.erro && data.erro.includes('Sessão encerrada')) {
+    alert(data.erro);
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = '/login';
+    throw new Error('Sessão encerrada');
+  }
+
   if (!res.ok) throw { status: res.status, ...data };
   return data;
 }
@@ -76,8 +84,17 @@ const GraduaBM = {
   },
 
   Progresso: {
-    desempenho(params = {}) {
-      return request('/api/progresso/desempenho?' + new URLSearchParams(params));
+    desempenho() {
+      return request('/api/progresso/desempenho');
     },
+    errosPorLegislacao() {
+      return request('/api/progresso/erros-por-legislacao');
+    },
+    sessoesRecentes() {
+      return request('/api/progresso/sessoes-recentes');
+    },
+    evolucaoSemanal() {
+      return request('/api/progresso/evolucao-semanal');
+    }
   },
 };

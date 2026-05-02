@@ -403,6 +403,14 @@
     .timer-display { display: none; }
     #tela-resultados { padding: 1.5rem 1rem 3rem; }
   }
+
+  /* PROTEÇÃO ANTI-CÓPIA */
+  body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
 </style>
 </head>
 <body>
@@ -570,51 +578,27 @@ function getLegislacao(q) {
   return q.legislacao || q.referencia || q.lei || '';
 }
 
-// ── BUSCAR QUESTÕES VIA SUPABASE (admin mode) ──
-async function carregarQuestoesAdmin() {
-  const supaUrl = sessionStorage.getItem('graduabm_supa_url');
-  const supaKey = sessionStorage.getItem('graduabm_supa_key');
-  const limite = qtd || 10;
-
-  let url = `${supaUrl}/rest/v1/questoes?ativa=eq.true&select=*&limit=${limite}`;
-  if (legislacoes.length > 0) {
-    const legFilter = legislacoes.map(id => `legislacao_id.eq.${id}`).join(',');
-    url += `&or=(${legFilter})`;
-  }
-  const res = await fetch(url, {
-    headers: { 'apikey': supaKey, 'Authorization': 'Bearer ' + supaKey }
-  });
-  if (!res.ok) throw new Error('Supabase error: ' + res.status);
-  const rows = await res.json();
-  return rows.map(q => ({
-    ...q,
-    gabarito: typeof q.gabarito === 'number'
-      ? String.fromCharCode(65 + q.gabarito)
-      : q.gabarito,
-    legislacao: q.legislacao_nome || q.legislacao_id || '',
-  }));
-}
-
 // ── INIT ──
 async function init() {
   try {
-    if (GraduaBM.isAdmin()) {
-      questoes = await carregarQuestoesAdmin();
-    } else {
+    if (!GraduaBM.isAdmin()) {
       await GraduaBM.protegerRota();
-
-      const params = new URLSearchParams({ curso, area });
-      if (legislacoes.length) params.set('legislacoes', legislacoes.join(','));
-      if (qtd) params.set('quantidade', String(qtd));
-
-      const dados = await GraduaBM.api.questoes.listar(params.toString());
-      questoes = Array.isArray(dados) ? dados : (dados.questoes || []);
-
-      try {
-        const sessao = await GraduaBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
-        sessaoId = sessao.id;
-      } catch { }
     }
+
+    const params = new URLSearchParams({ curso, area });
+    if (legislacoes.length) params.set('legislacoes', legislacoes.join(','));
+    if (qtd) params.set('quantidade', String(qtd));
+    
+    const filtro = sessionStorage.getItem('graduabm_filtro');
+    if (filtro && filtro !== 'todas') params.set('filtro', filtro);
+
+    const dados = await GraduaBM.api.questoes.listar(params.toString());
+    questoes = Array.isArray(dados) ? dados : (dados.questoes || []);
+
+    try {
+      const sessao = await GraduaBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
+      sessaoId = sessao.id;
+    } catch { }
 
     if (!questoes.length) {
       mostrarErro('Nenhuma questão cadastrada para as legislações selecionadas. Tente outra combinação.');
@@ -649,6 +633,14 @@ function mostrarQuestao() {
 
   const q    = questoes[idxAtual];
   const alts = getAlternativas(q);
+  
+  // Embaralhar as alternativas
+  const shuffledAlts = [...alts].sort(() => Math.random() - 0.5);
+  const displayLetters = ['A', 'B', 'C', 'D', 'E'];
+  shuffledAlts.forEach((alt, index) => {
+    alt.displayLetra = displayLetters[index];
+  });
+
   const leg  = getLegislacao(q);
 
   document.getElementById('hdr-atual').textContent  = idxAtual + 1;
@@ -661,12 +653,13 @@ function mostrarQuestao() {
 
   const container = document.getElementById('alternativas');
   container.innerHTML = '';
-  alts.forEach(alt => {
+  shuffledAlts.forEach(alt => {
     const div = document.createElement('div');
     div.className = 'alt';
-    div.dataset.letra = alt.letra;
+    div.dataset.originalLetra = alt.letra;
+    div.dataset.displayLetra = alt.displayLetra;
     div.onclick = () => selecionarAlt(alt.letra, div);
-    div.innerHTML = `<div class="alt-letra">${alt.letra}</div><span>${alt.texto}</span>`;
+    div.innerHTML = `<div class="alt-letra">${alt.displayLetra}</div><span>${alt.texto}</span>`;
     container.appendChild(div);
   });
 
@@ -711,11 +704,16 @@ async function confirmarResposta() {
   historicoRespostas.push({ q, escolhida: selecionada, correta, acertou });
 
   // visual
+  let corretaDisplay = correta;
   document.querySelectorAll('.alt').forEach(alt => {
-    const l = alt.dataset.letra;
+    const origL = alt.dataset.originalLetra;
+    const dispL = alt.dataset.displayLetra;
     alt.classList.add('bloqueada');
-    if (l === correta)                   alt.classList.add('correta');
-    else if (l === selecionada && !acertou) alt.classList.add('errada');
+    if (origL === correta) {
+      alt.classList.add('correta');
+      corretaDisplay = dispL;
+    }
+    else if (origL === selecionada && !acertou) alt.classList.add('errada');
   });
 
   // feedback
@@ -724,8 +722,9 @@ async function confirmarResposta() {
   fb.style.display = 'block';
   fb.className = 'feedback ' + (acertou ? 'feedback-acerto' : 'feedback-erro');
   fb.innerHTML =
-    `<div class="feedback-titulo">${acertou ? '✓ Correto!' : '✗ Incorreto — Gabarito: alternativa ' + correta}</div>` +
-    (just ? `<div class="feedback-txt">${just}</div>` : '');
+    `<div class="feedback-titulo">${acertou ? '✓ Correto!' : '✗ Incorreto — Gabarito: alternativa ' + corretaDisplay}</div>` +
+    (just ? `<div class="feedback-txt">${just}</div>` : '') +
+    (q.codigo ? `<div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.45">Cód. ${q.codigo}</div>` : '');
 
   // registrar resposta na API
   if (sessaoId) {
@@ -841,15 +840,13 @@ document.addEventListener('keydown', e => {
   }
 });
 
-// ── API COMPAT (expõe métodos do objeto api do api.js) ──
-GraduaBM.api = {
-  questoes: { listar: (qs) => request('/api/questoes?' + qs) },
-  sessoes:  {
-    criar:     (body) => request('/api/sessoes', { method:'POST', body: JSON.stringify(body) }),
-    responder: (id, body) => request('/api/sessoes/'+id+'/respostas', { method:'POST', body: JSON.stringify(body) }),
-    encerrar:  (id) => request('/api/sessoes/'+id+'/encerrar', { method:'PATCH' }),
-  },
-};
+// ── PROTEÇÃO ANTI-CÓPIA ──
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('copy', e => {
+  e.clipboardData.setData('text/plain', 'A cópia deste conteúdo não é permitida.');
+  e.preventDefault();
+});
 
 init();
 </script>

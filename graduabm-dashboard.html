@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --branco-suave: #EFEFEA;
+
+    --ctsp: #C0270F;
+    --ctsp-bg: rgba(192,39,15,0.08);
+    --ctsp-borda: rgba(192,39,15,0.3);
+
+    --cba: #185FA5;
+    --cba-bg: rgba(24,95,165,0.08);
+    --cba-borda: rgba(24,95,165,0.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column;
+    padding: 0;
+  }
+
+  .sidebar-logo {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.05em;
+    color: var(--branco);
+    text-decoration: none;
+  }
+
+  .sidebar-usuario {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .usuario-nome {
+    font-size: 13px; font-weight: 500;
+    color: var(--branco); margin-bottom: 2px;
+  }
+  .usuario-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 500;
+    color: #7DD99A; letter-spacing: 0.04em;
+  }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: #555;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px;
+  }
+  .nav-label:first-child { margin-top: 0; }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 1.25rem;
+    font-size: 13px; color: var(--cinza-texto);
+    cursor: pointer; transition: background 0.12s, color 0.12s;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo {
+    color: var(--branco);
+    border-left-color: var(--vermelho);
+    background: rgba(192,39,15,0.08);
+  }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .btn-sair {
+    width: 100%; background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 7px 0; font-size: 12px;
+    cursor: pointer; transition: all 0.15s;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* ── CONTEÚDO PRINCIPAL ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  .topbar {
+    height: 56px; flex-shrink: 0;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+  }
+  .topbar-titulo {
+    font-size: 14px; font-weight: 500;
+    color: var(--branco);
+  }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-mono {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+  }
+
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
+
+  /* ── DASHBOARD STYLES ── */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  .dash-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .dash-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--vermelho);
+  }
+  .dash-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 0.05em;
+    color: var(--branco);
+    line-height: 1;
+    margin-bottom: 5px;
+  }
+  .dash-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--cinza-texto);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .sessoes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sessao-item {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sessao-info {
+    display: flex;
+    flex-direction: column;
+  }
+  .sessao-curso {
+    font-size: 14px; font-weight: 500; color: var(--branco);
+  }
+  .sessao-data {
+    font-size: 11px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace;
+  }
+  .sessao-stats {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+  .stat-pill {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .stat-ok { background: rgba(125, 217, 154, 0.1); color: #7DD99A; }
+  .stat-err { background: rgba(240, 149, 149, 0.1); color: #F09595; }
+
+  .header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .btn-iniciar {
+    background: var(--vermelho);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-weight: 500;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+  }
+  .btn-iniciar:hover { background: var(--vermelho-escuro); }
+
+  @media (max-width: 768px) {
+    .dash-grid { grid-template-columns: 1fr; }
+    .header-actions { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .sessao-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <a href="/" class="logo-text">GRADUABM</a>
+    </div>
+    
+    <div class="sidebar-usuario">
+      <div class="usuario-nome" id="user-nome">Carregando…</div>
+      <div class="usuario-status"><div class="status-dot"></div>ALUNO PRO</div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item ativo" href="/dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="/area-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Estudar Legislação
+      </a>
+      <a class="nav-item" href="/simulados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados Oficiais
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Meu Desempenho</span>
+      <div class="topbar-right">
+        <span class="topbar-mono" id="topbar-data"></span>
+      </div>
+    </div>
+
+    <div class="conteudo">
+      <div class="header-actions">
+        <h2 style="font-size: 20px; font-weight: 500;">Visão Geral</h2>
+        <a href="/area-estudos" class="btn-iniciar">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          Iniciar Sessão de Estudo
+        </a>
+      </div>
+
+      <div class="dash-grid" id="stats-grid">
+        <div class="dash-card">
+          <div class="dash-val" id="stat-resolvidas">—</div>
+          <div class="dash-label">Questões Resolvidas</div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-val" id="stat-acertos">—</div>
+          <div class="dash-label">Taxa de Acerto Geral</div>
+        </div>
+        <div class="dash-card" style="border-top-color: #85B7EB;">
+          <div class="dash-val" id="stat-sessoes">—</div>
+          <div class="dash-label">Sessões Concluídas</div>
+        </div>
+      </div>
+
+      <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 15px; color: var(--cinza-texto);">Sessões Recentes</h2>
+      <div class="sessoes-list" id="sessoes-list">
+        <div style="color: var(--cinza-texto); font-size: 13px;">Carregando sessões...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+async function init() {
+  GraduaBM.protegerRota();
+
+  const user = GraduaBM.getUsuario();
+  if (user) document.getElementById('user-nome').textContent = user.nome;
+
+  const dataOpts = { weekday: 'long', day: '2-digit', month: 'long' };
+  document.getElementById('topbar-data').textContent = new Date().toLocaleDateString('pt-BR', dataOpts);
+
+  document.getElementById('btn-sair').addEventListener('click', () => GraduaBM.Auth.logout());
+
+  try {
+    const desempenho = await GraduaBM.Progresso.desempenho();
+    if (desempenho) {
+      document.getElementById('stat-resolvidas').textContent = desempenho.total_questoes || 0;
+      document.getElementById('stat-acertos').textContent = (desempenho.taxa_acerto ? Number(desempenho.taxa_acerto).toFixed(1) : 0) + '%';
+      document.getElementById('stat-sessoes').textContent = desempenho.total_sessoes || 0;
+    }
+
+    const sessoes = await GraduaBM.Progresso.sessoesRecentes();
+    const list = document.getElementById('sessoes-list');
+    
+    if (Array.isArray(sessoes) && sessoes.length > 0) {
+      list.innerHTML = '';
+      sessoes.slice(0, 10).forEach(s => {
+        const pct = Math.round((s.total_acertos / s.total_respondidas) * 100) || 0;
+        const dataFmt = new Date(s.encerrada_em || s.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+        
+        list.innerHTML += `
+          <div class="sessao-item">
+            <div class="sessao-info">
+              <span class="sessao-curso">${s.curso ? s.curso.toUpperCase() : 'GERAL'} - ${s.area || 'Diversas'}</span>
+              <span class="sessao-data">${dataFmt}</span>
+            </div>
+            <div class="sessao-stats">
+              <span style="font-size: 12px; color: var(--cinza-texto);">${s.total_respondidas} respondidas</span>
+              <span class="stat-pill ${pct >= 70 ? 'stat-ok' : 'stat-err'}">${pct}% Acerto</span>
+            </div>
+          </div>
+        `;
+      });
+    } else {
+      list.innerHTML = '<div style="color: var(--cinza-texto); font-size: 13px; padding: 1rem; border: 1px dashed var(--cinza-borda); border-radius: 8px; text-align: center;">Você ainda não completou nenhuma sessão de estudos.</div>';
+    }
+
+  } catch (err) {
+    console.error('Erro ao carregar dashboard', err);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
