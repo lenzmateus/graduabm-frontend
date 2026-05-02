@@ -615,7 +615,8 @@ async function init() {
     document.getElementById('tela-questao').style.display = 'flex';
 
   } catch (err) {
-    mostrarErro('Erro ao carregar questões. Verifique sua conexão e tente novamente.');
+    const detalhe = err.erro || err.message || (err.status ? 'HTTP ' + err.status : '');
+    mostrarErro('Erro ao carregar questões' + (detalhe ? ': ' + detalhe : '. Verifique sua conexão.'));
     console.error(err);
   }
 }

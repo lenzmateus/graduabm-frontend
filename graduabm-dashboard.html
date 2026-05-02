@@ -232,10 +232,36 @@
   }
   .btn-iniciar:hover { background: var(--vermelho-escuro); }
 
+  /* ── GRÁFICO ── */
+  .chart-section {
+    margin-bottom: 30px;
+  }
+  .chart-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 15px;
+  }
+  .chart-title {
+    font-size: 16px; font-weight: 500; color: var(--cinza-texto);
+  }
+  .chart-container {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.5rem;
+    position: relative;
+    height: 280px;
+  }
+  .chart-empty {
+    display: flex; align-items: center; justify-content: center;
+    height: 100%; color: var(--cinza-texto); font-size: 13px;
+    border: 1px dashed var(--cinza-borda); border-radius: 8px;
+  }
+
   @media (max-width: 768px) {
     .dash-grid { grid-template-columns: 1fr; }
     .header-actions { flex-direction: column; align-items: flex-start; gap: 15px; }
     .sessao-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .chart-container { height: 220px; }
   }
 </style>
 </head>
@@ -307,6 +333,16 @@
         </div>
       </div>
 
+      <!-- GRÁFICO DE EVOLUÇÃO -->
+      <div class="chart-section">
+        <div class="chart-header">
+          <h2 class="chart-title">Evolução Semanal</h2>
+        </div>
+        <div class="chart-container" id="chart-container">
+          <canvas id="chart-evolucao"></canvas>
+        </div>
+      </div>
+
       <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 15px; color: var(--cinza-texto);">Sessões Recentes</h2>
       <div class="sessoes-list" id="sessoes-list">
         <div style="color: var(--cinza-texto); font-size: 13px;">Carregando sessões...</div>
@@ -315,10 +351,132 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="/js/api.js"></script>
 <script>
+let chartInstance = null;
+
+async function carregarGrafico() {
+  try {
+    const dados = await GraduaBM.Progresso.evolucaoSemanal();
+    
+    if (!Array.isArray(dados) || dados.length === 0) {
+      document.getElementById('chart-container').innerHTML = '<div class="chart-empty">Complete sessões de estudo para ver sua evolução aqui.</div>';
+      return;
+    }
+
+    const labels = dados.map(d => {
+      const dt = new Date(d.semana || d.data || d.periodo);
+      return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    });
+    const taxas = dados.map(d => Number(d.taxa_acerto || d.taxa_acerto_pct || 0));
+    const questoes = dados.map(d => Number(d.total_questoes || d.total_respondidas || 0));
+
+    const ctx = document.getElementById('chart-evolucao').getContext('2d');
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'Taxa de Acerto (%)',
+            data: taxas,
+            borderColor: '#C0270F',
+            backgroundColor: 'rgba(192,39,15,0.1)',
+            borderWidth: 2,
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: '#C0270F',
+            pointBorderColor: '#C0270F',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            yAxisID: 'y',
+          },
+          {
+            label: 'Questões Resolvidas',
+            data: questoes,
+            borderColor: '#85B7EB',
+            backgroundColor: 'rgba(133,183,235,0.08)',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.35,
+            pointBackgroundColor: '#85B7EB',
+            pointBorderColor: '#85B7EB',
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            borderDash: [5, 3],
+            yAxisID: 'y1',
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: {
+            position: 'top',
+            align: 'end',
+            labels: {
+              color: '#888',
+              font: { family: "'IBM Plex Sans', sans-serif", size: 11 },
+              boxWidth: 12,
+              boxHeight: 2,
+              padding: 16,
+              usePointStyle: true,
+              pointStyle: 'line',
+            }
+          },
+          tooltip: {
+            backgroundColor: '#1A1A1A',
+            borderColor: '#333',
+            borderWidth: 1,
+            titleColor: '#F8F6F2',
+            bodyColor: '#888',
+            titleFont: { family: "'IBM Plex Sans', sans-serif", weight: '600' },
+            bodyFont: { family: "'IBM Plex Mono', monospace", size: 12 },
+            padding: 10,
+            cornerRadius: 8,
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: {
+              color: '#555',
+              font: { family: "'IBM Plex Mono', monospace", size: 10 }
+            }
+          },
+          y: {
+            position: 'left',
+            min: 0, max: 100,
+            grid: { color: 'rgba(255,255,255,0.04)' },
+            ticks: {
+              color: '#555',
+              font: { family: "'IBM Plex Mono', monospace", size: 10 },
+              callback: v => v + '%'
+            }
+          },
+          y1: {
+            position: 'right',
+            min: 0,
+            grid: { drawOnChartArea: false },
+            ticks: {
+              color: '#555',
+              font: { family: "'IBM Plex Mono', monospace", size: 10 }
+            }
+          }
+        }
+      }
+    });
+  } catch (err) {
+    console.warn('Gráfico não carregado:', err);
+    document.getElementById('chart-container').innerHTML = '<div class="chart-empty">Complete sessões de estudo para ver sua evolução aqui.</div>';
+  }
+}
+
 async function init() {
-  GraduaBM.protegerRota();
+  await GraduaBM.protegerRota();
 
   const user = GraduaBM.getUsuario();
   if (user) document.getElementById('user-nome').textContent = user.nome;
@@ -335,6 +493,9 @@ async function init() {
       document.getElementById('stat-acertos').textContent = (desempenho.taxa_acerto ? Number(desempenho.taxa_acerto).toFixed(1) : 0) + '%';
       document.getElementById('stat-sessoes').textContent = desempenho.total_sessoes || 0;
     }
+
+    // Carregar gráfico de evolução
+    carregarGrafico();
 
     const sessoes = await GraduaBM.Progresso.sessoesRecentes();
     const list = document.getElementById('sessoes-list');

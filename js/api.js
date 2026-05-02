@@ -5,8 +5,19 @@ async function request(path, options = {}) {
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const res = await fetch(`${API_URL}${path}`, { ...options, headers });
-  const data = await res.json();
+  let res;
+  try {
+    res = await fetch(`${API_URL}${path}`, { ...options, headers });
+  } catch (err) {
+    throw { status: 0, erro: 'Sem conexão com o servidor. Verifique sua internet.' };
+  }
+
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    throw { status: res.status, erro: `Resposta inválida do servidor (HTTP ${res.status})` };
+  }
 
   if (res.status === 401 && data.erro && data.erro.includes('Sessão encerrada')) {
     alert(data.erro);
@@ -97,4 +108,31 @@ const GraduaBM = {
       return request('/api/progresso/evolucao-semanal');
     }
   },
+
+  // API unificada — questões e sessões
+  api: {
+    questoes: {
+      listar(qs) {
+        return request('/api/questoes?' + qs);
+      },
+      simulado(curso) {
+        return request(`/api/questoes/simulado?curso=${curso}`);
+      },
+      erros() {
+        return request('/api/questoes/erros');
+      },
+    },
+    sessoes: {
+      criar(body) {
+        return request('/api/sessoes', { method: 'POST', body: JSON.stringify(body) });
+      },
+      responder(id, body) {
+        return request('/api/sessoes/' + id + '/respostas', { method: 'POST', body: JSON.stringify(body) });
+      },
+      encerrar(id) {
+        return request('/api/sessoes/' + id + '/encerrar', { method: 'PATCH' });
+      },
+    },
+  },
 };
+

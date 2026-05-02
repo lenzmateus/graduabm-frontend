@@ -135,6 +135,119 @@
   }
   .loader { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--vermelho); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
   @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── TELA DE RESULTADO ── */
+  .resultado-overlay {
+    position: fixed; inset: 0; background: var(--carvao); z-index: 998;
+    display: none; flex-direction: column; overflow-y: auto;
+  }
+  .resultado-overlay.ativo { display: flex; }
+  .resultado-topbar {
+    height: 60px; flex-shrink: 0; background: var(--cinza-escuro); border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
+  }
+  .resultado-body {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 3rem 1.5rem 4rem; max-width: 800px; width: 100%; margin: 0 auto;
+  }
+  .res-hero { text-align: center; margin-bottom: 2.5rem; animation: fadeUp 0.4s ease both; }
+  .res-hero-titulo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 52px;
+    letter-spacing: 0.04em; line-height: 1; margin-bottom: 6px;
+  }
+  .res-hero-sub { font-size: 14px; color: var(--cinza-texto); }
+
+  .res-score-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; width: 100%; margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s ease 0.1s both;
+  }
+  .res-score-card {
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+    border-radius: 12px; padding: 1.25rem; text-align: center;
+  }
+  .res-score-card .val {
+    font-family: 'Bebas Neue', sans-serif; font-size: 42px;
+    letter-spacing: 0.04em; line-height: 1; margin-bottom: 4px;
+  }
+  .res-score-card .label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  .res-area-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 8px; width: 100%; margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s ease 0.2s both;
+  }
+  .res-area-card {
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+    border-radius: 8px; padding: 0.75rem; text-align: center;
+  }
+  .res-area-card .at-num {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--cinza-texto); margin-bottom: 4px;
+  }
+  .res-area-card .at-score {
+    font-family: 'Bebas Neue', sans-serif; font-size: 26px;
+    line-height: 1; margin-bottom: 2px;
+  }
+  .res-area-card .at-detail {
+    font-size: 10px; color: var(--cinza-texto);
+  }
+
+  .res-section-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+    width: 100%;
+    animation: fadeUp 0.4s ease 0.3s both;
+  }
+  .res-section-title::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+
+  .res-gabarito-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 6px; width: 100%; margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s ease 0.35s both;
+  }
+  .res-gab-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border-radius: 6px; font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+  }
+  .res-gab-item .num { color: var(--cinza-texto); min-width: 22px; }
+  .res-gab-item .marcou { font-weight: 600; }
+  .res-gab-item.ok { border-color: rgba(125,217,154,0.3); }
+  .res-gab-item.ok .marcou { color: #7DD99A; }
+  .res-gab-item.err { border-color: rgba(240,149,149,0.2); }
+  .res-gab-item.err .marcou { color: #F09595; }
+  .res-gab-item .corr { color: #7DD99A; font-size: 10px; }
+
+  .res-acoes {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    width: 100%; animation: fadeUp 0.4s ease 0.4s both;
+  }
+  .res-btn {
+    padding: 13px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif; cursor: pointer;
+    transition: all 0.15s; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .res-btn-primary { background: var(--vermelho); color: #fff; border: none; }
+  .res-btn-primary:hover { background: var(--vermelho-escuro); }
+  .res-btn-secondary { background: transparent; border: 1px solid var(--cinza-borda); color: var(--branco); }
+  .res-btn-secondary:hover { background: var(--cinza-medio); border-color: #555; }
+
+  @media (max-width: 768px) {
+    .res-score-grid { grid-template-columns: repeat(2, 1fr); }
+    .res-area-grid { grid-template-columns: repeat(3, 1fr); }
+    .res-gabarito-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+    .res-hero-titulo { font-size: 36px; }
+    .res-acoes { flex-direction: column; }
+    .res-btn { width: 100%; justify-content: center; }
+  }
 
 </style>
 </head>
@@ -212,25 +325,40 @@
     </div>
   </div>
 
+  <!-- TELA DE RESULTADO -->
+  <div class="resultado-overlay" id="tela-resultado">
+    <div class="resultado-topbar">
+      <span class="topbar-logo">GRADUABM</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cinza-texto);" id="res-tempo-info">Tempo utilizado: --</span>
+    </div>
+    <div class="resultado-body">
+      <div class="res-hero">
+        <div class="res-hero-titulo" id="res-titulo">Simulado Concluído</div>
+        <div class="res-hero-sub" id="res-subtitulo">Confira seu desempenho abaixo</div>
+      </div>
+
+      <div class="res-score-grid" id="res-score-grid"></div>
+      
+      <div class="res-section-title">Desempenho por Área Temática</div>
+      <div class="res-area-grid" id="res-area-grid"></div>
+
+      <div class="res-section-title">Gabarito Comparativo</div>
+      <div class="res-gabarito-grid" id="res-gabarito-grid"></div>
+
+      <div class="res-acoes">
+        <a href="/simulados" class="res-btn res-btn-primary">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+          Fazer Outro Simulado
+        </a>
+        <a href="/dashboard" class="res-btn res-btn-secondary">← Voltar ao Dashboard</a>
+      </div>
+    </div>
+  </div>
+
 </div>
 
-<!-- API COMPAT -->
+<!-- API -->
 <script src="/js/api.js"></script>
-<script>
-// Mock api se n tiver no api.js (já que GraduaBM.api sumiu globalmente)
-if(!GraduaBM.api) {
-  GraduaBM.api = {
-    questoes: {
-      simulado: (curso) => request(`/api/questoes/simulado?curso=${curso}`)
-    },
-    sessoes:  {
-      criar:     (body) => request('/api/sessoes', { method:'POST', body: JSON.stringify(body) }),
-      responder: (id, body) => request('/api/sessoes/'+id+'/respostas', { method:'POST', body: JSON.stringify(body) }),
-      encerrar:  (id) => request('/api/sessoes/'+id+'/encerrar', { method:'PATCH' }),
-    }
-  };
-}
-</script>
 
 <script>
 // Proteção Anti-Cópia
@@ -448,14 +576,13 @@ async function entregarProva(porTempoEsgotado) {
   document.getElementById('tela-loading').style.display = 'flex';
 
   if (!sessaoId) {
-    window.location.href = '/dashboard';
+    mostrarResultado();
     return;
   }
 
   // Envia cada resposta pintada no oficial
   for (const r of respostas) {
     const marcou = r.oficial; 
-    // Se marcou nulo, manda nulo pro backend e correta=false
     const acertou = marcou ? (marcou === r.gabaritoReal) : false;
     
     try {
@@ -471,7 +598,102 @@ async function entregarProva(porTempoEsgotado) {
     await GraduaBM.api.sessoes.encerrar(sessaoId);
   } catch(e) {}
 
-  window.location.href = '/dashboard';
+  mostrarResultado();
+}
+
+function mostrarResultado() {
+  document.getElementById('tela-loading').style.display = 'none';
+  document.getElementById('tela-gabarito').classList.remove('ativo');
+
+  const total = respostas.length;
+  const acertos = respostas.filter(r => r.oficial && r.oficial === r.gabaritoReal).length;
+  const erros = respostas.filter(r => r.oficial && r.oficial !== r.gabaritoReal).length;
+  const branco = respostas.filter(r => !r.oficial).length;
+  const pct = total > 0 ? Math.round((acertos / total) * 100) : 0;
+
+  // Tempo usado
+  const tempoUsado = 14400 - tempoRestante;
+  const hU = String(Math.floor(tempoUsado / 3600)).padStart(2, '0');
+  const mU = String(Math.floor((tempoUsado % 3600) / 60)).padStart(2, '0');
+  const sU = String(tempoUsado % 60).padStart(2, '0');
+  document.getElementById('res-tempo-info').textContent = `Tempo utilizado: ${hU}:${mU}:${sU}`;
+
+  // Titulo dinâmico
+  const titulo = pct >= 70 ? 'Excelente!' : pct >= 50 ? 'Bom desempenho!' : 'Continue praticando!';
+  const corTitulo = pct >= 70 ? '#7DD99A' : pct >= 50 ? '#EF9F27' : '#F09595';
+  document.getElementById('res-titulo').textContent = titulo;
+  document.getElementById('res-titulo').style.color = corTitulo;
+
+  const curso = (sessionStorage.getItem('graduabm_simulado_curso') || '').toUpperCase();
+  document.getElementById('res-subtitulo').textContent = `Simulado Oficial ${curso} — ${total} questões`;
+
+  // Score cards
+  const scoreGrid = document.getElementById('res-score-grid');
+  const corPct = pct >= 70 ? '#7DD99A' : pct >= 50 ? '#EF9F27' : '#F09595';
+  scoreGrid.innerHTML = `
+    <div class="res-score-card">
+      <div class="val" style="color:${corPct}">${pct}%</div>
+      <div class="label">Aproveitamento</div>
+    </div>
+    <div class="res-score-card">
+      <div class="val" style="color:#7DD99A">${acertos}</div>
+      <div class="label">Acertos</div>
+    </div>
+    <div class="res-score-card">
+      <div class="val" style="color:#F09595">${erros}</div>
+      <div class="label">Erros</div>
+    </div>
+    <div class="res-score-card">
+      <div class="val" style="color:var(--cinza-texto)">${branco}</div>
+      <div class="label">Em Branco</div>
+    </div>
+  `;
+
+  // Desempenho por área
+  const porArea = {};
+  const coresAT = { 'AT01':'#C0270F', 'AT02':'#BA7517', 'AT03':'#185FA5', 'AT04':'#27A05A', 'AT05':'#7F77DD',
+                    'AT1':'#C0270F', 'AT2':'#BA7517', 'AT3':'#185FA5', 'AT4':'#27A05A', 'AT5':'#7F77DD' };
+  respostas.forEach((r, i) => {
+    const at = (questoes[i].area || 'GERAL').toUpperCase();
+    if (!porArea[at]) porArea[at] = { acertos: 0, total: 0 };
+    porArea[at].total++;
+    if (r.oficial && r.oficial === r.gabaritoReal) porArea[at].acertos++;
+  });
+
+  const areaGrid = document.getElementById('res-area-grid');
+  areaGrid.innerHTML = '';
+  Object.keys(porArea).sort().forEach(at => {
+    const d = porArea[at];
+    const atPct = d.total > 0 ? Math.round((d.acertos / d.total) * 100) : 0;
+    const cor = coresAT[at] || '#888';
+    const corVal = atPct >= 70 ? '#7DD99A' : atPct >= 50 ? '#EF9F27' : '#F09595';
+    areaGrid.innerHTML += `
+      <div class="res-area-card">
+        <div class="at-num" style="color:${cor}">${at}</div>
+        <div class="at-score" style="color:${corVal}">${atPct}%</div>
+        <div class="at-detail">${d.acertos}/${d.total}</div>
+      </div>
+    `;
+  });
+
+  // Gabarito comparativo
+  const gabGrid = document.getElementById('res-gabarito-grid');
+  gabGrid.innerHTML = '';
+  respostas.forEach((r, i) => {
+    const marcou = r.oficial;
+    const correto = r.gabaritoReal;
+    const acertou = marcou && marcou === correto;
+    const cls = !marcou ? '' : (acertou ? 'ok' : 'err');
+    gabGrid.innerHTML += `
+      <div class="res-gab-item ${cls}">
+        <span class="num">${String(i + 1).padStart(2, '0')}</span>
+        <span class="marcou">${marcou || '—'}</span>
+        ${!acertou && correto ? `<span class="corr">→${correto}</span>` : ''}
+      </div>
+    `;
+  });
+
+  document.getElementById('tela-resultado').classList.add('ativo');
 }
 
 init();
