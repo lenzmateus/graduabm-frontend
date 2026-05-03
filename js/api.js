@@ -95,8 +95,9 @@ const GraduaBM = {
   },
 
   Progresso: {
-    desempenho() {
-      return request('/api/progresso/desempenho');
+    desempenho({ curso } = {}) {
+      const qs = curso ? `?curso=${encodeURIComponent(curso)}` : '';
+      return request('/api/progresso/desempenho' + qs);
     },
     errosPorLegislacao() {
       return request('/api/progresso/erros-por-legislacao');
