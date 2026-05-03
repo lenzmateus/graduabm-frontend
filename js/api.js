@@ -169,5 +169,82 @@ const GraduaBM = {
       },
     },
   },
+
+  Admin: {
+    assinaturas: {
+      stats() {
+        return request('/api/admin/assinaturas/stats', { headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+      listar(params = {}) {
+        const qs = new URLSearchParams(params).toString();
+        return request('/api/admin/assinaturas' + (qs ? '?' + qs : ''), { headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+      gerenciar(userId, body) {
+        return request(`/api/admin/assinaturas/${userId}`, { method: 'PATCH', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+      logs(userId) {
+        return request(`/api/admin/assinaturas/${userId}/logs`, { headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+    },
+    cupons: {
+      listar() {
+        return request('/api/admin/cupons', { headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+      criar(body) {
+        return request('/api/admin/cupons', { method: 'POST', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+      editar(id, body) {
+        return request(`/api/admin/cupons/${id}`, { method: 'PATCH', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+      desativar(id) {
+        return request(`/api/admin/cupons/${id}`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+    },
+  },
+
+  Cupons: {
+    validar(codigo) {
+      return request('/api/cupons/validar', { method: 'POST', body: JSON.stringify({ codigo }) });
+    },
+    aplicar(codigo) {
+      return request('/api/cupons/aplicar', { method: 'POST', body: JSON.stringify({ codigo }) });
+    },
+  },
+
+  SimuladoMensal: {
+    listar() {
+      return request('/api/simulados-mensais');
+    },
+    ativo() {
+      return request('/api/simulados-mensais/ativo');
+    },
+    proximo() {
+      return request('/api/simulados-mensais/proximo');
+    },
+    questoes(id) {
+      return request(`/api/simulados-mensais/${id}/questoes`);
+    },
+    participar(id) {
+      return request(`/api/simulados-mensais/${id}/participar`, { method: 'POST' });
+    },
+    entregar(id, respostas_cartao) {
+      return request(`/api/simulados-mensais/${id}/entregar`, {
+        method: 'PATCH',
+        body: JSON.stringify({ respostas_cartao }),
+      });
+    },
+    ranking(id) {
+      return request(`/api/simulados-mensais/${id}/ranking`);
+    },
+    gabarito(id) {
+      return request(`/api/simulados-mensais/${id}/gabarito`);
+    },
+    estatisticas(id) {
+      return request(`/api/simulados-mensais/${id}/estatisticas`);
+    },
+    minhaParticipacao(id) {
+      return request(`/api/simulados-mensais/${id}/minha-participacao`);
+    },
+  },
 };
 

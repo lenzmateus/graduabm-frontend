@@ -175,6 +175,10 @@
         Flashcards
       </a>
       <div class="nav-label">Alunos</div>
+      <a class="nav-item" href="/admin-assinaturas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Assinaturas
+      </a>
       <a class="nav-item" href="#denuncias" onclick="scrollToDenuncias()" style="justify-content:space-between;">
         <span style="display:flex;align-items:center;gap:10px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
@@ -269,32 +273,54 @@
         </div>
       </div>
 
-      <!-- GESTÃO DE CURSOS -->
+      <!-- GESTÃO DE ALUNOS -->
       <div class="secao-titulo">Gestão de alunos</div>
+      <div class="painel-card" style="margin-bottom:1rem;">
+        <div class="painel-card-titulo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Assinaturas e Cupons
+        </div>
+        <div class="painel-card-desc">Gerencie assinaturas dos alunos, aplique ações manuais e administre cupons de acesso trial.</div>
+        <div class="atalhos">
+          <a href="/admin-assinaturas" class="btn-acesso">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Gerenciar Assinaturas
+          </a>
+        </div>
+      </div>
       <div class="painel-card" id="painel-alunos">
         <div class="painel-card-titulo">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Migrar aluno entre cursos
+          Gerenciar aluno
         </div>
-        <div class="painel-card-desc">Busque o aluno pelo e-mail e altere o curso vinculado à conta.</div>
+        <div class="painel-card-desc">Busque pelo nome ou e-mail para alterar curso e status de acesso.</div>
         <div style="display:flex;gap:8px;margin-bottom:12px;">
-          <input id="aluno-email-input" type="email" placeholder="email@aluno.com" style="flex:1;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
+          <input id="aluno-busca-input" type="text" placeholder="Nome ou email@aluno.com" style="flex:1;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
           <button onclick="buscarAluno()" style="background:var(--roxo);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Buscar</button>
         </div>
+
+        <!-- Lista de resultados quando a busca retorna múltiplos -->
+        <div id="aluno-lista" style="display:none;margin-bottom:12px;border:1px solid var(--cinza-borda);border-radius:8px;overflow:hidden;"></div>
+
+        <!-- Card do aluno selecionado -->
         <div id="aluno-resultado" style="display:none;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:8px;padding:14px 16px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-            <div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+            <div style="flex:1;min-width:180px;">
               <div id="aluno-nome-res" style="font-size:14px;font-weight:500;color:var(--branco);"></div>
-              <div id="aluno-email-res" style="font-size:12px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;"></div>
+              <div id="aluno-email-res" style="font-size:12px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;margin-top:2px;"></div>
               <div style="margin-top:6px;font-size:11px;color:#555;">Curso atual: <span id="aluno-curso-res" style="color:#AFA9EC;font-weight:600;"></span></div>
+              <div style="margin-top:4px;font-size:11px;color:#555;">Acesso: <span id="aluno-ativo-res" style="font-weight:600;"></span></div>
             </div>
-            <div style="display:flex;align-items:center;gap:8px;">
-              <select id="aluno-novo-curso" style="background:var(--cinza-escuro);color:var(--branco);border:1px solid var(--cinza-borda);border-radius:6px;padding:7px 10px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
-                <option value="ctsp">CTSP — Sargento</option>
-                <option value="cba">CBA — Tenente</option>
-                <option value="">Sem restrição (Teste)</option>
-              </select>
-              <button onclick="migrarCurso()" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Salvar</button>
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <select id="aluno-novo-curso" style="background:var(--cinza-escuro);color:var(--branco);border:1px solid var(--cinza-borda);border-radius:6px;padding:7px 10px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
+                  <option value="ctsp">CTSP — Sargento</option>
+                  <option value="cba">CBA — Tenente</option>
+                  <option value="">Sem restrição (Teste)</option>
+                </select>
+                <button onclick="migrarCurso()" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Salvar curso</button>
+              </div>
+              <button id="btn-toggle-ativo" onclick="toggleAtivo()" style="border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;width:100%;"></button>
             </div>
           </div>
         </div>
@@ -410,26 +436,84 @@
   /* ── Gestão de alunos ── */
   let alunoAtual = null;
 
+  function renderizarAlunoSelecionado(aluno) {
+    alunoAtual = aluno;
+    document.getElementById('aluno-nome-res').textContent  = aluno.nome;
+    document.getElementById('aluno-email-res').textContent = aluno.email;
+    document.getElementById('aluno-curso-res').textContent = (aluno.curso || 'não definido').toUpperCase();
+    document.getElementById('aluno-novo-curso').value = aluno.curso || 'ctsp';
+
+    const ativoRes = document.getElementById('aluno-ativo-res');
+    const btnToggle = document.getElementById('btn-toggle-ativo');
+    if (aluno.ativo) {
+      ativoRes.textContent = 'Ativo';
+      ativoRes.style.color = '#27A05A';
+      btnToggle.textContent = 'Desativar acesso';
+      btnToggle.style.background = '#7A1A10';
+      btnToggle.style.color = '#fff';
+    } else {
+      ativoRes.textContent = 'Inativo';
+      ativoRes.style.color = '#E24B4A';
+      btnToggle.textContent = 'Ativar acesso';
+      btnToggle.style.background = '#27A05A';
+      btnToggle.style.color = '#fff';
+    }
+
+    document.getElementById('aluno-lista').style.display = 'none';
+    document.getElementById('aluno-resultado').style.display = 'block';
+    document.getElementById('aluno-msg').textContent = '';
+  }
+
   window.buscarAluno = async function() {
-    const email = document.getElementById('aluno-email-input').value.trim().toLowerCase();
+    const termo = document.getElementById('aluno-busca-input').value.trim();
     const msg = document.getElementById('aluno-msg');
     const resultado = document.getElementById('aluno-resultado');
-    if (!email) { msg.textContent = 'Informe um e-mail.'; msg.style.color = '#E24B4A'; return; }
-    msg.textContent = 'Buscando…'; msg.style.color = '#888';
+    const lista = document.getElementById('aluno-lista');
+    if (!termo || termo.length < 2) return;
     resultado.style.display = 'none';
+    lista.style.display = 'none';
     alunoAtual = null;
 
-    const r = await supaQuery(`/rest/v1/users?email=eq.${encodeURIComponent(email)}&select=id,nome,email,curso,ativo`);
+    // Detecta se é e-mail (contém @) ou nome
+    const ehEmail = termo.includes('@');
+    const query = ehEmail
+      ? `/rest/v1/users?email=ilike.${encodeURIComponent('%' + termo.toLowerCase() + '%')}&select=id,nome,email,curso,ativo&limit=10`
+      : `/rest/v1/users?nome=ilike.${encodeURIComponent('%' + termo + '%')}&select=id,nome,email,curso,ativo&limit=10`;
+
+    const r = await supaQuery(query);
     if (!r.ok || !r.data || r.data.length === 0) {
-      msg.textContent = 'Aluno não encontrado.'; msg.style.color = '#E24B4A'; return;
+      msg.textContent = 'Nenhum aluno encontrado.'; msg.style.color = '#555'; return;
     }
-    alunoAtual = r.data[0];
-    document.getElementById('aluno-nome-res').textContent  = alunoAtual.nome;
-    document.getElementById('aluno-email-res').textContent = alunoAtual.email;
-    document.getElementById('aluno-curso-res').textContent = (alunoAtual.curso || 'não definido').toUpperCase();
-    document.getElementById('aluno-novo-curso').value = alunoAtual.curso || 'ctsp';
-    resultado.style.display = 'block';
+
     msg.textContent = '';
+
+    if (r.data.length === 1) {
+      renderizarAlunoSelecionado(r.data[0]);
+      return;
+    }
+
+    // Múltiplos resultados — exibe lista para seleção
+    lista.innerHTML = r.data.map((a, i) => `
+      <div onclick="selecionarAluno(${i})" data-idx="${i}" style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--cinza-borda);font-size:13px;transition:background 0.12s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='transparent'">
+        <div>
+          <span style="color:var(--branco);font-weight:500;">${a.nome}</span>
+          <span style="color:#555;margin-left:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;">${a.email}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:10px;font-weight:600;color:#AFA9EC;">${(a.curso || '—').toUpperCase()}</span>
+          <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;${a.ativo ? 'background:#1A3D27;color:#27A05A;' : 'background:#3D1A1A;color:#E24B4A;'}">${a.ativo ? 'ATIVO' : 'INATIVO'}</span>
+        </div>
+      </div>
+    `).join('');
+    lista._dados = r.data;
+    lista.style.display = 'block';
+    msg.textContent = `${r.data.length} alunos encontrados. Clique para selecionar.`;
+    msg.style.color = '#888';
+  };
+
+  window.selecionarAluno = function(idx) {
+    const lista = document.getElementById('aluno-lista');
+    renderizarAlunoSelecionado(lista._dados[idx]);
   };
 
   window.migrarCurso = async function() {
@@ -454,6 +538,28 @@
     toast('Curso do aluno atualizado.', 'sucesso');
   };
 
+  window.toggleAtivo = async function() {
+    if (!alunoAtual) return;
+    const msg = document.getElementById('aluno-msg');
+    const novoAtivo = !alunoAtual.ativo;
+    msg.textContent = 'Salvando…'; msg.style.color = '#888';
+
+    const r = await supaQuery(
+      `/rest/v1/users?id=eq.${alunoAtual.id}`,
+      'return=representation',
+      'PATCH',
+      { ativo: novoAtivo }
+    );
+    if (!r.ok) {
+      msg.textContent = 'Erro ao atualizar acesso.'; msg.style.color = '#E24B4A'; return;
+    }
+    alunoAtual.ativo = novoAtivo;
+    renderizarAlunoSelecionado(alunoAtual);
+    msg.textContent = novoAtivo ? 'Acesso ativado com sucesso.' : 'Acesso desativado.';
+    msg.style.color = novoAtivo ? '#27A05A' : '#E24B4A';
+    toast(novoAtivo ? 'Aluno ativado.' : 'Aluno desativado.', novoAtivo ? 'sucesso' : 'erro');
+  };
+
   /* ── Data na topbar ── */
   try {
     document.getElementById('topbar-data').textContent =
@@ -474,6 +580,24 @@
   }
   atualizarTempo();
   setInterval(atualizarTempo, 30000);
+
+  /* ── Busca de alunos em tempo real (debounce 400ms) ── */
+  let _buscaTimer = null;
+  document.getElementById('aluno-busca-input').addEventListener('input', function() {
+    clearTimeout(_buscaTimer);
+    const v = this.value.trim();
+    if (!v) {
+      document.getElementById('aluno-lista').style.display = 'none';
+      document.getElementById('aluno-resultado').style.display = 'none';
+      document.getElementById('aluno-msg').textContent = '';
+      return;
+    }
+    if (v.length < 2) return;
+    _buscaTimer = setTimeout(buscarAluno, 400);
+  });
+  document.getElementById('aluno-busca-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { clearTimeout(_buscaTimer); buscarAluno(); }
+  });
 
   /* ── Chave Claude ── */
   function gerarChave() {

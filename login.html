@@ -68,11 +68,14 @@
   }
   .side-bg-grid {
     position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(192,39,15,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(192,39,15,0.05) 1px, transparent 1px);
-    background-size: 48px 48px;
     pointer-events: none;
+    overflow: hidden;
+  }
+  .side-bg-grid img {
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center top;
+    opacity: 0.35;
+    display: block;
   }
   .side-content { position: relative; z-index: 1; }
   .side-tag {
@@ -342,6 +345,114 @@
   }
   .btn-ver-senha:hover { color: var(--branco); }
 
+  /* ── Tooltip info ── */
+  .btn-info {
+    background: none; border: none; cursor: pointer;
+    color: var(--cinza-texto); padding: 0; line-height: 0;
+    transition: color 0.2s;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .btn-info:hover { color: var(--branco); }
+
+  .tooltip-box {
+    display: none;
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    top: calc(100% + 8px);
+    background: var(--cinza-medio);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--cinza-texto);
+    line-height: 1.55;
+    width: 240px;
+    z-index: 100;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    pointer-events: none;
+  }
+  .tooltip-box::before {
+    content: '';
+    position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
+    width: 8px; height: 8px;
+    background: var(--cinza-medio);
+    border-left: 1px solid var(--cinza-borda);
+    border-top: 1px solid var(--cinza-borda);
+    transform: translateX(-50%) rotate(45deg);
+  }
+  .tooltip-box.visivel { display: block; }
+
+  /* ── Aviso vencimento ── */
+  .aviso-vencimento {
+    display: none;
+    background: rgba(186,117,23,0.1);
+    border: 1px solid rgba(186,117,23,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #EF9F27;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .aviso-vencimento.visivel { display: block; }
+
+  /* ── Campo cupom ── */
+  .cupom-wrap {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .cupom-label {
+    font-size: 11px;
+    color: var(--cinza-texto);
+    margin-bottom: 8px;
+    display: block;
+  }
+  .cupom-row {
+    display: flex;
+    gap: 8px;
+  }
+  .cupom-input {
+    flex: 1;
+    background: var(--cinza-medio);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 7px;
+    padding: 9px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--branco);
+    outline: none;
+    text-transform: uppercase;
+    transition: border-color 0.2s;
+  }
+  .cupom-input::placeholder { color: #555; text-transform: none; }
+  .cupom-input:focus { border-color: var(--vermelho); }
+  .btn-cupom {
+    background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto);
+    border-radius: 7px;
+    padding: 9px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn-cupom:hover { border-color: var(--vermelho); color: var(--branco); }
+  .btn-cupom:disabled { opacity: 0.5; cursor: default; }
+  .cupom-msg {
+    font-size: 11px;
+    margin-top: 6px;
+    display: none;
+  }
+  .cupom-msg.erro { color: #F09595; display: block; }
+  .cupom-msg.sucesso { color: #7DD99A; display: block; }
+
   @media (max-width: 768px) {
     .main { grid-template-columns: 1fr; }
     .side-esquerdo { display: none; }
@@ -365,7 +476,7 @@
 
   <!-- LADO ESQUERDO -->
   <div class="side-esquerdo">
-    <div class="side-bg-grid"></div>
+    <div class="side-bg-grid"><img src="/images/banner-login.png" alt=""></div>
     <div class="side-content">
       <div class="side-tag">Processo seletivo intelectual</div>
       <h2 class="side-titulo">
@@ -416,11 +527,14 @@
 
         <!-- Assinatura ativa -->
         <div id="bloco-ativo" style="display:none;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
             <div class="painel-status status-ativo">
               <span class="status-dot"></span> Assinatura ativa
             </div>
             <span style="font-size:11px;color:var(--cinza-texto);" id="vencimento-txt"></span>
+          </div>
+          <div class="aviso-vencimento" id="aviso-vencimento">
+            <strong>Atenção:</strong> <span id="aviso-vencimento-txt"></span>
           </div>
           <button class="btn-submit" onclick="irParaEstudos()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -435,7 +549,65 @@
           </div>
           <div class="bloqueado-titulo">Acesso inativo</div>
           <div class="bloqueado-desc">Sua assinatura está encerrada. Assine para voltar a ter acesso ao conteúdo completo.</div>
-          <button class="btn-assinar" onclick="irParaAssinatura()">Assinar — R$19,90/mês</button>
+          <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
+            <button class="btn-assinar" onclick="irParaAssinatura('mensal')" style="width:100%;">Plano Mensal — R$29,90/mês</button>
+            <button class="btn-assinar" onclick="irParaAssinatura('trimestral')" style="width:100%;background:transparent;border:1px solid var(--vermelho);color:var(--vermelho);">Plano Trimestral — R$79,90 <span style="font-size:10px;opacity:0.8;">(~R$26,63/mês)</span></button>
+          </div>
+          <div class="cupom-wrap">
+            <span class="cupom-label">Tem um cupom de acesso?</span>
+            <div class="cupom-row">
+              <input class="cupom-input" type="text" id="cupom-codigo" placeholder="Digite o código" maxlength="30" autocomplete="off" oninput="this.value=this.value.toUpperCase().replace(/\s+/g,'')">
+              <button class="btn-cupom" id="btn-cupom" onclick="aplicarCupom()">Aplicar</button>
+            </div>
+            <div class="cupom-msg" id="cupom-msg"></div>
+          </div>
+        </div>
+
+        <!-- Alterar senha (expansível) -->
+        <div id="bloco-alterar-senha" style="display:none;margin-top:1rem;border-top:1px solid var(--cinza-borda);padding-top:1rem;">
+          <div class="msg" id="msg-alterar-senha" style="margin-bottom:0.75rem;"></div>
+          <div class="campo" style="margin-bottom:0.75rem;">
+            <label style="font-size:12px;">Senha atual</label>
+            <div class="campo-senha">
+              <input type="password" id="senha-atual" placeholder="••••••••">
+              <button type="button" class="btn-ver-senha" onclick="toggleSenha('senha-atual',this)" tabindex="-1">
+                <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="campo" style="margin-bottom:0.75rem;">
+            <label style="font-size:12px;">Nova senha</label>
+            <div class="campo-senha">
+              <input type="password" id="nova-senha" placeholder="Mínimo 8 caracteres">
+              <button type="button" class="btn-ver-senha" onclick="toggleSenha('nova-senha',this)" tabindex="-1">
+                <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="campo" style="margin-bottom:1rem;">
+            <label style="font-size:12px;">Confirmar nova senha</label>
+            <div class="campo-senha">
+              <input type="password" id="confirma-nova-senha" placeholder="Repita a nova senha">
+              <button type="button" class="btn-ver-senha" onclick="toggleSenha('confirma-nova-senha',this)" tabindex="-1">
+                <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-submit" id="btn-alterar-senha" onclick="fazerAlterarSenha()" style="flex:1;">
+              <span class="spinner" id="spin-alterar-senha"></span>
+              <span id="txt-alterar-senha">Salvar nova senha</span>
+            </button>
+            <button onclick="fecharAlterarSenha()" style="padding:0 16px;background:none;border:1px solid var(--cinza-borda);border-radius:6px;color:var(--cinza-texto);cursor:pointer;font-size:13px;">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Rodapé do painel -->
+        <div style="margin-top:1rem;padding-top:0.75rem;border-top:1px solid var(--cinza-borda);">
+          <button onclick="mostrarAlterarSenha()" style="background:none;border:none;color:var(--cinza-texto);font-size:12px;cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px;">Alterar senha</button>
         </div>
       </div>
 
@@ -499,6 +671,23 @@
           <div class="campo">
             <label>E-mail</label>
             <input type="email" id="cad-email" placeholder="seu@email.com">
+          </div>
+          <div class="campo">
+            <label style="display:flex;align-items:center;gap:6px;">
+              Codinome
+              <span style="font-size:10px;color:#555;font-weight:400;letter-spacing:0;">(opcional)</span>
+              <span class="tooltip-wrap" style="position:relative;display:inline-flex;">
+                <button type="button" class="btn-info" onclick="toggleTooltip(this)" title="O que é o codinome?">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                </button>
+                <div class="tooltip-box">
+                  Seu codinome é exibido publicamente no <strong>Ranking Geral</strong> no lugar do seu nome real.<br><br>
+                  Se não informar, você aparecerá como <strong>Anônimo</strong>.<br><br>
+                  Ex: Alpha01, Tigre_RS, BravoBM
+                </div>
+              </span>
+            </label>
+            <input type="text" id="cad-nickname" placeholder="Ex: Alpha01, Tigre_RS" maxlength="20" autocomplete="off">
           </div>
           <div class="campo">
             <label>Senha</label>
@@ -570,15 +759,38 @@
                 Revisão de erros e painel de desempenho
               </div>
             </div>
-            <div style="border-top:1px solid var(--cinza-borda);padding-top:10px;display:flex;align-items:baseline;gap:6px;">
-              <div style="font-size:22px;font-weight:500;color:var(--branco);font-family:'Bebas Neue',sans-serif;letter-spacing:0.03em;">R$ 19,90</div>
-              <span style="font-size:13px;color:var(--cinza-texto);">/ mês</span>
-              <span style="font-size:11px;color:#555;margin-left:auto;">Cancele quando quiser</span>
+            <div style="border-top:1px solid var(--cinza-borda);padding-top:10px;display:flex;flex-direction:column;gap:6px;">
+              <div style="display:flex;align-items:baseline;gap:6px;">
+                <div style="font-size:22px;font-weight:500;color:var(--branco);font-family:'Bebas Neue',sans-serif;letter-spacing:0.03em;">R$ 29,90</div>
+                <span style="font-size:13px;color:var(--cinza-texto);">/ mês</span>
+                <span style="font-size:11px;color:#555;margin-left:auto;">Cancele quando quiser</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;">
+                <span style="font-size:12px;color:#aaa;">ou</span>
+                <span style="font-size:13px;color:var(--cinza-texto);">R$ 79,90 / trimestral</span>
+                <span style="font-size:10px;background:rgba(192,39,15,0.15);color:#C0270F;border:1px solid rgba(192,39,15,0.3);border-radius:4px;padding:1px 5px;">economia de 11%</span>
+              </div>
             </div>
           </div>
 
           <div class="termos">
             Ao criar conta, você concorda com os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>.
+          </div>
+        </div>
+
+        <!-- FORM RECUPERAR SENHA -->
+        <div id="form-recuperar" style="display:none;">
+          <div class="msg" id="msg-recuperar"></div>
+          <div class="campo">
+            <label>E-mail da sua conta</label>
+            <input type="email" id="recuperar-email" placeholder="seu@email.com">
+          </div>
+          <button class="btn-submit" id="btn-recuperar" onclick="solicitarRecuperacao()" style="margin-top:0.25rem;">
+            <span class="spinner" id="spin-recuperar"></span>
+            <span id="txt-recuperar">Enviar link de recuperação</span>
+          </button>
+          <div style="margin-top:1rem;text-align:center;">
+            <a href="#" onclick="voltarParaLogin()" style="font-size:13px;color:var(--cinza-texto);text-decoration:underline;text-underline-offset:2px;">← Voltar para o login</a>
           </div>
         </div>
       </div>
@@ -612,9 +824,9 @@
   }
 
   function limparMsgs() {
-    ['msg-login','msg-cadastro'].forEach(id => {
+    ['msg-login','msg-cadastro','msg-recuperar','msg-alterar-senha'].forEach(id => {
       const el = document.getElementById(id);
-      el.className = 'msg'; el.textContent = '';
+      if (el) { el.className = 'msg'; el.textContent = ''; }
     });
   }
 
@@ -678,11 +890,24 @@
     });
   }
 
+  // ── Tooltip codinome ──────────────────────────────────────
+  function toggleTooltip(btn) {
+    const box = btn.closest('.tooltip-wrap').querySelector('.tooltip-box');
+    box.classList.toggle('visivel');
+    document.addEventListener('click', function handler(e) {
+      if (!btn.closest('.tooltip-wrap').contains(e.target)) {
+        box.classList.remove('visivel');
+        document.removeEventListener('click', handler);
+      }
+    }, { once: false });
+  }
+
   // ── Cadastro ──────────────────────────────────────────────
   async function fazerCadastro() {
     const nome     = document.getElementById('cad-nome').value.trim();
     const sobre    = document.getElementById('cad-sobrenome').value.trim();
     const email    = document.getElementById('cad-email').value.trim();
+    const nickname = document.getElementById('cad-nickname').value.trim().slice(0, 20) || null;
     const senha    = document.getElementById('cad-senha').value;
     const confirma = document.getElementById('cad-confirma').value;
 
@@ -703,7 +928,7 @@
     limparMsgs();
 
     try {
-      const data = await GraduaBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro });
+      const data = await GraduaBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro, nickname });
       mostrarPainel(data.usuario);
     } catch (err) {
       mostrarMsg('msg-cadastro', err.erro || err.message || 'Erro ao criar conta.', 'erro');
@@ -722,8 +947,19 @@
     document.getElementById('bloco-inativo').style.display = usuario.ativo ? 'none'  : 'block';
 
     if (usuario.ativo && usuario.vencimento) {
-      document.getElementById('vencimento-txt').textContent =
-        'Ativo até ' + new Date(usuario.vencimento).toLocaleDateString('pt-BR');
+      const venc = new Date(usuario.vencimento);
+      document.getElementById('vencimento-txt').textContent = 'Ativo até ' + venc.toLocaleDateString('pt-BR');
+
+      const diasRestantes = Math.ceil((venc.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+      const avisoEl = document.getElementById('aviso-vencimento');
+      const avisoTxt = document.getElementById('aviso-vencimento-txt');
+      if (diasRestantes <= 7 && diasRestantes > 0) {
+        avisoTxt.textContent = `Sua assinatura vence em ${diasRestantes} dia${diasRestantes !== 1 ? 's' : ''}. Renove para não perder o acesso.`;
+        avisoEl.classList.add('visivel');
+      } else if (diasRestantes <= 0) {
+        avisoTxt.textContent = 'Sua assinatura venceu. Renove para retomar o acesso.';
+        avisoEl.classList.add('visivel');
+      }
     }
   }
 
@@ -731,17 +967,108 @@
     GraduaBM.Auth.logout();
   }
 
+  // ── Recuperar senha ───────────────────────────────────────
   function esqueceuSenha() {
-    mostrarMsg('msg-login', 'Em breve: recuperação de senha por e-mail.', 'sucesso');
+    document.getElementById('form-login').classList.remove('visivel');
+    document.getElementById('form-cadastro').classList.remove('visivel');
+    document.getElementById('form-recuperar').style.display = 'block';
+    document.getElementById('form-titulo').textContent = 'Recuperar senha';
+    document.getElementById('form-sub').innerHTML = '';
+    document.querySelector('.tabs').style.display = 'none';
+    limparMsgs();
+  }
+
+  function voltarParaLogin() {
+    document.getElementById('form-recuperar').style.display = 'none';
+    document.querySelector('.tabs').style.display = '';
+    trocarTab('login');
+  }
+
+  async function solicitarRecuperacao() {
+    const email = document.getElementById('recuperar-email').value.trim();
+    if (!email) {
+      mostrarMsg('msg-recuperar', 'Informe o e-mail da sua conta.', 'erro');
+      return;
+    }
+
+    document.getElementById('btn-recuperar').disabled = true;
+    document.getElementById('spin-recuperar').style.display = 'block';
+    document.getElementById('txt-recuperar').textContent = '';
+    limparMsgs();
+
+    try {
+      await GraduaBM.Auth.esqueciSenha({ email });
+      mostrarMsg('msg-recuperar', 'Se o e-mail estiver cadastrado, você receberá um link em breve. Verifique também a caixa de spam.', 'sucesso');
+      document.getElementById('recuperar-email').value = '';
+    } catch (err) {
+      mostrarMsg('msg-recuperar', err.erro || 'Erro ao enviar. Tente novamente.', 'erro');
+    } finally {
+      document.getElementById('btn-recuperar').disabled = false;
+      document.getElementById('spin-recuperar').style.display = 'none';
+      document.getElementById('txt-recuperar').textContent = 'Enviar link de recuperação';
+    }
+  }
+
+  // ── Alterar senha (usuário logado) ────────────────────────
+  function mostrarAlterarSenha() {
+    const bloco = document.getElementById('bloco-alterar-senha');
+    bloco.style.display = bloco.style.display === 'none' ? 'block' : 'none';
+    if (bloco.style.display === 'none') return;
+    document.getElementById('senha-atual').value = '';
+    document.getElementById('nova-senha').value = '';
+    document.getElementById('confirma-nova-senha').value = '';
+    limparMsgs();
+  }
+
+  function fecharAlterarSenha() {
+    document.getElementById('bloco-alterar-senha').style.display = 'none';
+    limparMsgs();
+  }
+
+  async function fazerAlterarSenha() {
+    const senha_atual     = document.getElementById('senha-atual').value;
+    const nova_senha      = document.getElementById('nova-senha').value;
+    const confirma        = document.getElementById('confirma-nova-senha').value;
+
+    if (!senha_atual || !nova_senha || !confirma) {
+      mostrarMsg('msg-alterar-senha', 'Preencha todos os campos.', 'erro'); return;
+    }
+    if (nova_senha.length < 8) {
+      mostrarMsg('msg-alterar-senha', 'A nova senha deve ter pelo menos 8 caracteres.', 'erro'); return;
+    }
+    if (nova_senha !== confirma) {
+      mostrarMsg('msg-alterar-senha', 'As novas senhas não coincidem.', 'erro'); return;
+    }
+
+    document.getElementById('btn-alterar-senha').disabled = true;
+    document.getElementById('spin-alterar-senha').style.display = 'block';
+    document.getElementById('txt-alterar-senha').textContent = '';
+
+    try {
+      await GraduaBM.Auth.alterarSenha({ senha_atual, nova_senha });
+      mostrarMsg('msg-alterar-senha', 'Senha alterada com sucesso!', 'sucesso');
+      document.getElementById('senha-atual').value = '';
+      document.getElementById('nova-senha').value = '';
+      document.getElementById('confirma-nova-senha').value = '';
+    } catch (err) {
+      mostrarMsg('msg-alterar-senha', err.erro || 'Erro ao alterar senha.', 'erro');
+    } finally {
+      document.getElementById('btn-alterar-senha').disabled = false;
+      document.getElementById('spin-alterar-senha').style.display = 'none';
+      document.getElementById('txt-alterar-senha').textContent = 'Salvar nova senha';
+    }
   }
 
   function irParaEstudos() {
     window.location.href = '/dashboard';
   }
 
-  function irParaAssinatura() {
-    // URL do produto no Kiwify — substituir pelo link real
-    window.location.href = 'https://pay.kiwify.com.br/LINK-DO-PRODUTO';
+  function irParaAssinatura(plano) {
+    const links = {
+      mensal: 'https://pay.kiwify.com.br/ZraZE7k',
+      trimestral: 'https://pay.kiwify.com.br/Cxo6JhA',
+    };
+    window.location.href = links[plano] || links.mensal;
   }
 
   // ── Init: verificar se já logado mas inativo ──────────────
@@ -770,6 +1097,50 @@
       eyeEl.style.display    = '';
       eyeOffEl.style.display = 'none';
       btn.title = 'Mostrar senha';
+    }
+  }
+
+  // ── Cupom ─────────────────────────────────────────────────
+  async function aplicarCupom() {
+    const codigo = document.getElementById('cupom-codigo').value.trim();
+    const msgEl  = document.getElementById('cupom-msg');
+    const btnEl  = document.getElementById('btn-cupom');
+
+    msgEl.className = 'cupom-msg';
+    msgEl.textContent = '';
+
+    if (!codigo) {
+      msgEl.textContent = 'Digite um código de cupom.';
+      msgEl.className = 'cupom-msg erro';
+      return;
+    }
+
+    btnEl.disabled = true;
+    btnEl.textContent = '…';
+
+    try {
+      const data = await GraduaBM.Cupons.aplicar(codigo);
+      msgEl.textContent = data.mensagem || 'Acesso liberado!';
+      msgEl.className = 'cupom-msg sucesso';
+      // Atualiza o usuario no localStorage e recarrega o painel
+      setTimeout(async () => {
+        try {
+          const me = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
+          if (me.ok) {
+            const meData = await me.json();
+            if (meData.usuario) {
+              localStorage.setItem('usuario', JSON.stringify(meData.usuario));
+              mostrarPainel(meData.usuario);
+            }
+          }
+        } catch { window.location.reload(); }
+      }, 1500);
+    } catch (err) {
+      msgEl.textContent = err.erro || 'Cupom inválido ou expirado.';
+      msgEl.className = 'cupom-msg erro';
+    } finally {
+      btnEl.disabled = false;
+      btnEl.textContent = 'Aplicar';
     }
   }
 
