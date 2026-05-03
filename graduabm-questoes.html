@@ -355,6 +355,34 @@
   }
   .btn-erro:hover { border-color: #555; background: var(--cinza-medio); }
 
+  /* ── REPORTAR QUESTÃO ── */
+  .btn-reportar {
+    background: transparent;
+    border: none;
+    color: #555;
+    font-size: 11px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 0;
+    margin-top: 6px;
+    transition: color 0.15s;
+  }
+  .btn-reportar:hover { color: #888; }
+  .btn-reportar.enviado { color: #27A05A; cursor: default; }
+  .modal-denuncia-textarea {
+    width: 100%; min-height: 90px;
+    background: var(--cinza-medio); border: 1px solid var(--cinza-borda);
+    border-radius: 8px; padding: 10px 12px;
+    color: var(--branco); font-size: 13px; font-family: 'IBM Plex Sans', sans-serif;
+    resize: vertical; outline: none; line-height: 1.6;
+    transition: border-color 0.15s;
+    user-select: text; -webkit-user-select: text;
+  }
+  .modal-denuncia-textarea:focus { border-color: #555; }
+  .modal-denuncia-textarea::placeholder { color: #555; }
+  .modal-char { font-size: 11px; color: #555; text-align: right; margin-top: 4px; }
+
   /* ── CONFIRMAÇÃO SAÍDA ── */
   .modal-overlay {
     display: none; position: fixed; inset: 0;
@@ -514,6 +542,20 @@
   <a href="/selecao-legislacao" class="btn-erro">← Voltar e tentar outra seleção</a>
 </div>
 
+<!-- MODAL DENÚNCIA -->
+<div class="modal-overlay" id="modal-denuncia">
+  <div class="modal-card" style="max-width:440px;">
+    <div class="modal-titulo">Reportar questão</div>
+    <div class="modal-desc">Descreva o problema encontrado (erro no enunciado, gabarito incorreto, alternativas duplicadas, etc.).</div>
+    <textarea class="modal-denuncia-textarea" id="denuncia-comentario" placeholder="Descreva o problema…" maxlength="1000"></textarea>
+    <div class="modal-char"><span id="denuncia-char">0</span>/1000</div>
+    <div class="modal-acoes" style="margin-top:1.25rem;">
+      <button class="btn-modal btn-modal-cancel" onclick="fecharModalDenuncia()">Cancelar</button>
+      <button class="btn-modal" id="btn-enviar-denuncia" style="background:var(--cinza-texto);color:#fff;" onclick="enviarDenuncia()">Enviar</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL SAÍDA -->
 <div class="modal-overlay" id="modal-saida">
   <div class="modal-card">
@@ -549,6 +591,8 @@ const curso      = sessionStorage.getItem('graduabm_curso') || 'ctsp';
 const area       = sessionStorage.getItem('graduabm_at')    || 'AT1';
 const legsRaw    = sessionStorage.getItem('graduabm_legislacoes');
 const legislacoes = legsRaw ? JSON.parse(legsRaw) : [];
+const qtdPorLegRaw = sessionStorage.getItem('graduabm_qtd_por_leg');
+const qtdPorLeg  = qtdPorLegRaw ? JSON.parse(qtdPorLegRaw) : null;
 const qtd        = parseInt(sessionStorage.getItem('graduabm_qtd') || '20') || 20;
 
 // ── HELPERS DE ESTRUTURA ──
@@ -586,15 +630,35 @@ async function init() {
       await GraduaBM.protegerRota();
     }
 
-    const params = new URLSearchParams({ curso, area });
-    if (legislacoes.length) params.set('legislacoes', legislacoes.join(','));
-    if (qtd) params.set('quantidade', String(qtd));
-    
     const filtro = sessionStorage.getItem('graduabm_filtro');
-    if (filtro && filtro !== 'todas') params.set('filtro', filtro);
 
-    const dados = await GraduaBM.api.questoes.listar(params.toString());
-    questoes = Array.isArray(dados) ? dados : (dados.questoes || []);
+    if (qtdPorLeg && Object.keys(qtdPorLeg).length > 0) {
+      // Novo fluxo: buscar por legislação individualmente com sua quantidade
+      const resultados = await Promise.all(
+        Object.entries(qtdPorLeg).map(([leg, n]) => {
+          const p = new URLSearchParams({ curso, area, legislacoes: leg, quantidade: String(n) });
+          if (filtro && filtro !== 'todas') p.set('filtro', filtro);
+          return GraduaBM.api.questoes.listar(p.toString()).then(d =>
+            Array.isArray(d) ? d : (d.questoes || [])
+          );
+        })
+      );
+      // Mescla e embaralha
+      const merged = resultados.flat();
+      for (let i = merged.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [merged[i], merged[j]] = [merged[j], merged[i]];
+      }
+      questoes = merged;
+    } else {
+      // Fluxo legado
+      const params = new URLSearchParams({ curso, area });
+      if (legislacoes.length) params.set('legislacoes', legislacoes.join(','));
+      if (qtd) params.set('quantidade', String(qtd));
+      if (filtro && filtro !== 'todas') params.set('filtro', filtro);
+      const dados = await GraduaBM.api.questoes.listar(params.toString());
+      questoes = Array.isArray(dados) ? dados : (dados.questoes || []);
+    }
 
     try {
       const sessao = await GraduaBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
@@ -726,7 +790,11 @@ async function confirmarResposta() {
   fb.innerHTML =
     `<div class="feedback-titulo">${acertou ? '✓ Correto!' : '✗ Incorreto — Gabarito: alternativa ' + corretaDisplay}</div>` +
     (just ? `<div class="feedback-txt">${just}</div>` : '') +
-    (q.codigo ? `<div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.45">Cód. ${q.codigo}</div>` : '');
+    (q.codigo ? `<div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.45">Cód. ${q.codigo}</div>` : '') +
+    `<button class="btn-reportar" id="btn-reportar" onclick="abrirModalDenuncia()">
+       <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+       Reportar questão
+     </button>`;
 
   // registrar resposta na API
   if (sessaoId) {
@@ -815,6 +883,44 @@ function formatarTempo(s) {
   return String(m).padStart(2,'0') + ':' + String(sg).padStart(2,'0');
 }
 
+// ── DENÚNCIA ──
+function abrirModalDenuncia() {
+  const ta = document.getElementById('denuncia-comentario');
+  ta.value = '';
+  document.getElementById('denuncia-char').textContent = '0';
+  document.getElementById('btn-enviar-denuncia').textContent = 'Enviar';
+  document.getElementById('btn-enviar-denuncia').disabled = false;
+  document.getElementById('modal-denuncia').classList.add('visivel');
+  ta.focus();
+}
+function fecharModalDenuncia() {
+  document.getElementById('modal-denuncia').classList.remove('visivel');
+}
+async function enviarDenuncia() {
+  const ta = document.getElementById('denuncia-comentario');
+  const comentario = ta.value.trim();
+  if (!comentario) { ta.focus(); return; }
+
+  const q = questoes[idxAtual];
+  const btn = document.getElementById('btn-enviar-denuncia');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  try {
+    await GraduaBM.api.denuncias.reportar(q.id, comentario);
+    fecharModalDenuncia();
+    const btnReport = document.getElementById('btn-reportar');
+    if (btnReport) {
+      btnReport.classList.add('enviado');
+      btnReport.innerHTML = `<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Reportado`;
+      btnReport.onclick = null;
+    }
+  } catch {
+    btn.disabled = false;
+    btn.textContent = 'Tentar novamente';
+  }
+}
+
 // ── SAÍDA ──
 function confirmarSaida() { document.getElementById('modal-saida').classList.add('visivel'); }
 function fecharModal()    { document.getElementById('modal-saida').classList.remove('visivel'); }
@@ -840,6 +946,14 @@ document.addEventListener('keydown', e => {
     const alts = document.querySelectorAll('.alt');
     if (alts[idx]) alts[idx].click();
   }
+});
+
+// ── CONTADOR CARACTERES DENÚNCIA ──
+document.getElementById('denuncia-comentario').addEventListener('input', function () {
+  document.getElementById('denuncia-char').textContent = this.value.length;
+});
+document.getElementById('modal-denuncia').addEventListener('click', function (e) {
+  if (e.target === this) fecharModalDenuncia();
 });
 
 // ── PROTEÇÃO ANTI-CÓPIA ──

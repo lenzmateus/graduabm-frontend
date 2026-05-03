@@ -98,6 +98,29 @@
   .instrucoes-claude { background: var(--roxo-bg); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #AFA9EC; line-height: 1.7; }
   .instrucoes-claude strong { color: var(--branco); font-weight: 500; }
 
+  /* DENÚNCIAS */
+  .denuncia-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--cinza-borda); align-items: flex-start; }
+  .denuncia-item:last-child { border-bottom: none; }
+  .denuncia-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
+  .denuncia-status.pendente { background: #C0270F; box-shadow: 0 0 6px rgba(192,39,15,0.5); }
+  .denuncia-status.resolvida { background: #444; }
+  .denuncia-body { flex: 1; min-width: 0; }
+  .denuncia-questao { font-size: 12px; color: #888; font-family: 'IBM Plex Mono', monospace; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .denuncia-comentario { font-size: 13px; color: var(--branco); line-height: 1.5; margin-bottom: 6px; word-break: break-word; }
+  .denuncia-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .denuncia-aluno { font-size: 11px; color: var(--cinza-texto); }
+  .denuncia-data { font-size: 10px; color: #444; font-family: 'IBM Plex Mono', monospace; }
+  .denuncia-badges { display: flex; gap: 6px; }
+  .denuncia-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
+  .badge-area-d { background: rgba(192,39,15,0.1); border: 1px solid rgba(192,39,15,0.25); color: #E0866E; }
+  .btn-resolver { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
+  .btn-resolver:hover { border-color: var(--verde); color: #7DD99A; }
+  .btn-resolver.resolvendo { opacity: 0.5; cursor: default; }
+  #denuncias-filtro { display: flex; gap: 6px; margin-bottom: 1rem; }
+  .filtro-btn { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .filtro-btn:hover { border-color: #555; color: var(--branco); }
+  .filtro-btn.ativo { border-color: var(--roxo-borda); color: #AFA9EC; background: var(--roxo-bg); }
+
   /* TOAST */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
   .toast.visivel { transform: translateX(-50%) translateY(0); }
@@ -146,6 +169,18 @@
       <a class="nav-item" href="/admin-questoes">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         Questões
+      </a>
+      <a class="nav-item" href="/admin-flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+      <div class="nav-label">Alunos</div>
+      <a class="nav-item" href="#denuncias" onclick="scrollToDenuncias()" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Denúncias
+        </span>
+        <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
       </a>
       <div class="nav-label">Sistema</div>
       <a class="nav-item" href="/" target="_blank">
@@ -231,6 +266,55 @@
             <span class="status-pill pill-check"><span class="pill-dot"></span>Verificando</span>
             <span style="color:var(--cinza-texto);font-size:12px;font-family:'IBM Plex Mono',monospace;">Aguarde…</span>
           </div>
+        </div>
+      </div>
+
+      <!-- GESTÃO DE CURSOS -->
+      <div class="secao-titulo">Gestão de alunos</div>
+      <div class="painel-card" id="painel-alunos">
+        <div class="painel-card-titulo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Migrar aluno entre cursos
+        </div>
+        <div class="painel-card-desc">Busque o aluno pelo e-mail e altere o curso vinculado à conta.</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <input id="aluno-email-input" type="email" placeholder="email@aluno.com" style="flex:1;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
+          <button onclick="buscarAluno()" style="background:var(--roxo);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Buscar</button>
+        </div>
+        <div id="aluno-resultado" style="display:none;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:8px;padding:14px 16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+            <div>
+              <div id="aluno-nome-res" style="font-size:14px;font-weight:500;color:var(--branco);"></div>
+              <div id="aluno-email-res" style="font-size:12px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;"></div>
+              <div style="margin-top:6px;font-size:11px;color:#555;">Curso atual: <span id="aluno-curso-res" style="color:#AFA9EC;font-weight:600;"></span></div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <select id="aluno-novo-curso" style="background:var(--cinza-escuro);color:var(--branco);border:1px solid var(--cinza-borda);border-radius:6px;padding:7px 10px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
+                <option value="ctsp">CTSP — Sargento</option>
+                <option value="cba">CBA — Tenente</option>
+                <option value="">Sem restrição (Teste)</option>
+              </select>
+              <button onclick="migrarCurso()" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Salvar</button>
+            </div>
+          </div>
+        </div>
+        <div id="aluno-msg" style="font-size:12px;margin-top:8px;"></div>
+      </div>
+
+      <!-- DENÚNCIAS -->
+      <div class="secao-titulo" id="denuncias">Denúncias de questões</div>
+      <div class="painel-card" id="painel-denuncias">
+        <div class="painel-card-titulo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Relatos de alunos
+        </div>
+        <div id="denuncias-filtro">
+          <button class="filtro-btn ativo" onclick="filtrarDenuncias('pendente', this)">Pendentes</button>
+          <button class="filtro-btn" onclick="filtrarDenuncias('todas', this)">Todas</button>
+          <button class="filtro-btn" onclick="filtrarDenuncias('resolvida', this)">Resolvidas</button>
+        </div>
+        <div id="denuncias-lista">
+          <div style="font-size:13px;color:#555;padding:1rem 0;">Carregando…</div>
         </div>
       </div>
 
@@ -322,6 +406,53 @@
 
   /* Ao voltar para o painel admin, sai do preview */
   sessionStorage.removeItem('graduabm_preview_aluno');
+
+  /* ── Gestão de alunos ── */
+  let alunoAtual = null;
+
+  window.buscarAluno = async function() {
+    const email = document.getElementById('aluno-email-input').value.trim().toLowerCase();
+    const msg = document.getElementById('aluno-msg');
+    const resultado = document.getElementById('aluno-resultado');
+    if (!email) { msg.textContent = 'Informe um e-mail.'; msg.style.color = '#E24B4A'; return; }
+    msg.textContent = 'Buscando…'; msg.style.color = '#888';
+    resultado.style.display = 'none';
+    alunoAtual = null;
+
+    const r = await supaQuery(`/rest/v1/users?email=eq.${encodeURIComponent(email)}&select=id,nome,email,curso,ativo`);
+    if (!r.ok || !r.data || r.data.length === 0) {
+      msg.textContent = 'Aluno não encontrado.'; msg.style.color = '#E24B4A'; return;
+    }
+    alunoAtual = r.data[0];
+    document.getElementById('aluno-nome-res').textContent  = alunoAtual.nome;
+    document.getElementById('aluno-email-res').textContent = alunoAtual.email;
+    document.getElementById('aluno-curso-res').textContent = (alunoAtual.curso || 'não definido').toUpperCase();
+    document.getElementById('aluno-novo-curso').value = alunoAtual.curso || 'ctsp';
+    resultado.style.display = 'block';
+    msg.textContent = '';
+  };
+
+  window.migrarCurso = async function() {
+    if (!alunoAtual) return;
+    const novoCurso = document.getElementById('aluno-novo-curso').value;
+    const msg = document.getElementById('aluno-msg');
+    msg.textContent = 'Salvando…'; msg.style.color = '#888';
+
+    const cursoValor = novoCurso === '' ? null : novoCurso;
+    const r = await supaQuery(
+      `/rest/v1/users?id=eq.${alunoAtual.id}`,
+      'return=representation',
+      'PATCH',
+      { curso: cursoValor }
+    );
+    if (!r.ok) {
+      msg.textContent = 'Erro ao salvar.'; msg.style.color = '#E24B4A'; return;
+    }
+    alunoAtual.curso = cursoValor;
+    document.getElementById('aluno-curso-res').textContent = cursoValor ? cursoValor.toUpperCase() : 'Sem restrição';
+    msg.textContent = 'Curso atualizado com sucesso.'; msg.style.color = '#27A05A';
+    toast('Curso do aluno atualizado.', 'sucesso');
+  };
 
   /* ── Data na topbar ── */
   try {
@@ -444,9 +575,118 @@
     statEl.style.fontSize = '22px';
   }
 
+  /* ── Denúncias ── */
+  let denunciasCache = [];
+  let filtroDenuncias = 'pendente';
+
+  window.scrollToDenuncias = function() {
+    setTimeout(() => {
+      const el = document.getElementById('denuncias');
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 50);
+  };
+
+  window.filtrarDenuncias = function(filtro, btn) {
+    filtroDenuncias = filtro;
+    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
+    if (btn) btn.classList.add('ativo');
+    renderDenuncias();
+  };
+
+  function renderDenuncias() {
+    const lista = document.getElementById('denuncias-lista');
+    let itens = denunciasCache;
+    if (filtroDenuncias === 'pendente') itens = itens.filter(d => !d.resolvida);
+    else if (filtroDenuncias === 'resolvida') itens = itens.filter(d => d.resolvida);
+
+    if (!itens.length) {
+      lista.innerHTML = '<div style="font-size:13px;color:#555;padding:1rem 0;">' +
+        (filtroDenuncias === 'pendente' ? 'Nenhuma denúncia pendente.' : 'Nenhuma denúncia encontrada.') + '</div>';
+      return;
+    }
+
+    lista.innerHTML = itens.map(d => {
+      const questaoInfo = d.questoes;
+      const enunciado = questaoInfo?.enunciado || '';
+      const trecho = enunciado.length > 90 ? enunciado.slice(0, 90) + '…' : enunciado;
+      const area = questaoInfo?.area || '';
+      const leg = questaoInfo?.legislacao || '';
+      const aluno = d.users?.nome || d.users?.email || 'Aluno desconhecido';
+      const data = d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+      const resolvida = d.resolvida;
+
+      return `<div class="denuncia-item" id="denuncia-${d.id}">
+        <div class="denuncia-status ${resolvida ? 'resolvida' : 'pendente'}"></div>
+        <div class="denuncia-body">
+          <div class="denuncia-questao">
+            ${area ? `<span style="margin-right:6px;">${area}</span>` : ''}${leg ? `${leg} · ` : ''}${trecho || d.questao_id}
+          </div>
+          <div class="denuncia-comentario">${escHtml(d.comentario)}</div>
+          <div class="denuncia-meta">
+            <span class="denuncia-aluno">${escHtml(aluno)}</span>
+            <span class="denuncia-data">${data}</span>
+          </div>
+        </div>
+        ${!resolvida ? `<button class="btn-resolver" onclick="resolverDenuncia('${d.id}', this)">✓ Resolver</button>` : '<span style="font-size:11px;color:#444;font-family:\'IBM Plex Mono\',monospace;">resolvida</span>'}
+      </div>`;
+    }).join('');
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  async function carregarDenuncias() {
+    if (!ADMIN_TOKEN) return;
+    try {
+      const r = await supaQuery(
+        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,questoes(area,legislacao,enunciado),users(nome,email)&order=created_at.desc&limit=100'
+      );
+      if (!r.ok) return;
+      denunciasCache = Array.isArray(r.data) ? r.data : [];
+      renderDenuncias();
+
+      const pendentes = denunciasCache.filter(d => !d.resolvida).length;
+      const badge = document.getElementById('badge-denuncias');
+      if (pendentes > 0) {
+        badge.textContent = pendentes;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    } catch (e) {
+      document.getElementById('denuncias-lista').innerHTML =
+        '<div style="font-size:13px;color:#555;padding:1rem 0;">Erro ao carregar denúncias.</div>';
+    }
+  }
+
+  window.resolverDenuncia = async function(id, btn) {
+    btn.classList.add('resolvendo');
+    btn.textContent = '…';
+    try {
+      const r = await supaQuery(`/rest/v1/denuncias?id=eq.${id}`, 'return=minimal', 'PATCH', { resolvida: true });
+      if (!r.ok) throw new Error();
+      const idx = denunciasCache.findIndex(d => d.id === id);
+      if (idx !== -1) denunciasCache[idx].resolvida = true;
+      toast('Denúncia marcada como resolvida.', 'verde');
+      renderDenuncias();
+
+      const pendentes = denunciasCache.filter(d => !d.resolvida).length;
+      const badge = document.getElementById('badge-denuncias');
+      if (pendentes > 0) { badge.textContent = pendentes; badge.style.display = 'inline-block'; }
+      else { badge.style.display = 'none'; }
+    } catch {
+      btn.classList.remove('resolvendo');
+      btn.textContent = '✓ Resolver';
+      toast('Erro ao resolver denúncia.', 'erro');
+    }
+  };
+
   /* ── Iniciar ── */
   carregarStats();
   verificarServicos();
+  carregarDenuncias();
 }());
 </script>
 </body>

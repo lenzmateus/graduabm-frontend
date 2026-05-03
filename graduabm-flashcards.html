@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Flashcards</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; gap: 8px; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #7DD99A; letter-spacing: 0.04em; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; transition: background 0.12s, color 0.12s; border-left: 2px solid transparent; text-decoration: none; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: rgba(192,39,15,0.08); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; gap: 1rem; }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; }
+
+  .filtros-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.75rem; flex-wrap: wrap; }
+  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 7px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; cursor: pointer; outline: none; transition: border-color 0.15s; }
+  .filtro-select:focus { border-color: var(--vermelho); }
+  .filtro-select option { background: var(--cinza-medio); }
+  .count-badge { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-left: auto; }
+
+  .area-dots { display: flex; align-items: center; gap: 5px; }
+  .area-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cinza-borda); transition: background 0.2s, transform 0.2s; cursor: pointer; }
+  .area-dot.ativo { transform: scale(1.3); }
+  .area-dot[data-area="AT1"].ativo { background: #C0270F; }
+  .area-dot[data-area="AT2"].ativo { background: #BA7517; }
+  .area-dot[data-area="AT3"].ativo { background: #185FA5; }
+  .area-dot[data-area="AT4"].ativo { background: #27A05A; }
+  .area-dot[data-area="AT5"].ativo { background: #7F77DD; }
+
+  .card-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; min-height: 360px; }
+  .card-scene { width: 100%; max-width: 620px; height: 300px; perspective: 1200px; cursor: pointer; }
+  .card-inner { width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; position: relative; }
+  .card-inner.flipped { transform: rotateY(180deg); }
+  .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; padding: 2rem; display: flex; flex-direction: column; }
+  .card-front { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); }
+  .card-back { background: var(--cinza-escuro); transform: rotateY(180deg); }
+
+  .card-face-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px; }
+  .card-area-badge { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; }
+  .card-texto { flex: 1; display: flex; align-items: center; font-size: 16px; font-weight: 500; color: var(--branco); line-height: 1.65; }
+  .card-hint { margin-top: auto; font-size: 11px; color: #444; text-align: center; font-family: 'IBM Plex Mono', monospace; }
+  .card-ref { margin-top: auto; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; padding-top: 0.75rem; border-top: 1px solid var(--cinza-borda); line-height: 1.5; }
+  .card-back .card-face-label { color: var(--vermelho); }
+  .card-back .card-texto { font-size: 14px; font-weight: 400; align-items: flex-start; }
+
+  .area-AT1.card-back { border: 1px solid rgba(192,39,15,0.5); }
+  .area-AT1 .card-area-badge { background: rgba(192,39,15,0.12); color: #E0866E; border: 1px solid rgba(192,39,15,0.3); }
+  .area-AT2.card-back { border: 1px solid rgba(186,117,23,0.5); }
+  .area-AT2 .card-area-badge { background: rgba(186,117,23,0.12); color: #EF9F27; border: 1px solid rgba(186,117,23,0.3); }
+  .area-AT3.card-back { border: 1px solid rgba(24,95,165,0.5); }
+  .area-AT3 .card-area-badge { background: rgba(24,95,165,0.12); color: #85B7EB; border: 1px solid rgba(24,95,165,0.3); }
+  .area-AT4.card-back { border: 1px solid rgba(39,160,90,0.5); }
+  .area-AT4 .card-area-badge { background: rgba(39,160,90,0.12); color: #7DD99A; border: 1px solid rgba(39,160,90,0.3); }
+  .area-AT5.card-back { border: 1px solid rgba(127,119,221,0.5); }
+  .area-AT5 .card-area-badge { background: rgba(127,119,221,0.12); color: #AFA9EC; border: 1px solid rgba(127,119,221,0.3); }
+
+  .nav-bar { display: flex; align-items: center; gap: 1rem; width: 100%; max-width: 620px; }
+  .btn-nav { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .btn-nav:hover:not(:disabled) { border-color: #555; color: var(--branco); }
+  .btn-nav:disabled { opacity: 0.3; cursor: default; }
+  .nav-counter { flex: 1; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cinza-texto); }
+
+  .estado-vazio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: var(--cinza-texto); text-align: center; }
+  .estado-vazio-icon { font-size: 40px; opacity: 0.3; }
+  .estado-loading { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #444; font-family: 'IBM Plex Mono', monospace; }
+
+  .progress-bar-wrap { width: 100%; max-width: 620px; }
+  .progress-bar { height: 3px; background: var(--cinza-borda); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--vermelho); border-radius: 3px; transition: width 0.3s ease; }
+  .progress-txt { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; margin-top: 5px; text-align: right; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .card-scene { animation: fadeUp 0.3s ease both; }
+
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
+    .topbar { padding: 0 1rem; }
+    .conteudo { padding: 1rem; }
+    .card-scene { height: 260px; }
+    .card-face { padding: 1.25rem; }
+    .card-texto { font-size: 14px; }
+    .card-back .card-texto { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="preview-banner" style="display:none;background:#7F77DD;color:#fff;padding:7px 20px;font-size:12px;font-weight:600;align-items:center;justify-content:center;gap:16px;position:sticky;top:0;z-index:200;">
+  Modo Aluno ativo — você está vendo como um aluno vê
+  <a href="/admin" onclick="sessionStorage.removeItem('graduabm_preview_aluno')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <a href="/" class="logo-text">GRADUABM</a>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome" id="sidebar-nome">—</div>
+      <div class="usuario-status" id="sidebar-status">
+        <span class="status-dot"></span>
+        <span id="sidebar-status-txt">Carregando…</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item" href="/dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="/area-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Estudar Legislação
+      </a>
+      <a class="nav-item" href="/simulados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados Oficiais
+      </a>
+      <a class="nav-item" href="/ranking">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+        Ranking
+      </a>
+      <a class="nav-item ativo" href="/flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="handleSair()">Encerrar sessão</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Flashcards</span>
+      <span class="topbar-mono" id="topbar-info">Carregando…</span>
+    </div>
+
+    <div class="conteudo">
+      <div class="filtros-bar">
+        <select class="filtro-select" id="filtro-area" onchange="aplicarFiltro()">
+          <option value="">Todas as áreas</option>
+          <option value="AT1">AT1 — Segurança contra incêndios</option>
+          <option value="AT2">AT2 — Combate a incêndios</option>
+          <option value="AT3">AT3 — Buscas e salvamentos / APH</option>
+          <option value="AT4">AT4 — Direito institucional e militar</option>
+          <option value="AT5">AT5 — Normas e documentação técnica</option>
+        </select>
+        <div class="area-dots" id="area-dots"></div>
+        <span class="count-badge" id="count-badge"></span>
+      </div>
+
+      <div class="estado-loading" id="estado-loading">Carregando flashcards…</div>
+      <div class="estado-vazio" id="estado-vazio" style="display:none">
+        <div class="estado-vazio-icon">📋</div>
+        <div>Nenhum flashcard disponível para este filtro ainda.<br>Novos cards são adicionados diariamente.</div>
+      </div>
+
+      <div class="card-wrapper" id="card-wrapper" style="display:none">
+        <div class="progress-bar-wrap">
+          <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+          <div class="progress-txt" id="progress-txt"></div>
+        </div>
+
+        <div class="card-scene" id="card-scene" onclick="flipCard()" title="Clique para revelar">
+          <div class="card-inner" id="card-inner">
+            <div class="card-face card-front" id="card-front">
+              <div class="card-face-label">
+                <span>Frente</span>
+                <span class="card-area-badge" id="front-badge"></span>
+              </div>
+              <div class="card-texto" id="front-texto"></div>
+              <div class="card-hint">Clique no card ou pressione Espaço para revelar</div>
+            </div>
+            <div class="card-face card-back" id="card-back">
+              <div class="card-face-label">
+                <span>Resposta</span>
+                <span class="card-area-badge" id="back-badge"></span>
+              </div>
+              <div class="card-texto" id="back-texto"></div>
+              <div class="card-ref" id="back-ref"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="nav-bar">
+          <button class="btn-nav" id="btn-prev" onclick="navegar(-1)">← Anterior</button>
+          <div class="nav-counter" id="nav-counter"></div>
+          <button class="btn-nav" id="btn-next" onclick="navegar(1)">Próximo →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
+  <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
+</div>
+
+<script>
+const AREA_CORES = { AT1:'#C0270F', AT2:'#BA7517', AT3:'#185FA5', AT4:'#27A05A', AT5:'#7F77DD' };
+const AREA_NOMES = { AT1:'Segurança Incêndio', AT2:'Combate Incêndio', AT3:'Buscas / APH', AT4:'Direito Militar', AT5:'Normas Admin.' };
+
+let todosCards = [];
+let cardsFiltrados = [];
+let indiceAtual = 0;
+let virado = false;
+let cursoAluno = null;
+
+function aplicarFiltro() {
+  const area = document.getElementById('filtro-area').value;
+  cardsFiltrados = area ? todosCards.filter(c => c.area === area) : [...todosCards];
+  indiceAtual = 0;
+  virado = false;
+  renderEstado();
+}
+
+function renderEstado() {
+  document.getElementById('estado-loading').style.display = 'none';
+
+  if (cardsFiltrados.length === 0) {
+    document.getElementById('estado-vazio').style.display = 'flex';
+    document.getElementById('card-wrapper').style.display = 'none';
+  } else {
+    document.getElementById('estado-vazio').style.display = 'none';
+    document.getElementById('card-wrapper').style.display = 'flex';
+    renderCard();
+    renderDots();
+  }
+
+  const total = cardsFiltrados.length;
+  document.getElementById('count-badge').textContent = total ? total + ' card' + (total !== 1 ? 's' : '') : '';
+  document.getElementById('topbar-info').textContent = total ? total + ' flashcards' : 'Sem cards';
+}
+
+function renderCard() {
+  const card = cardsFiltrados[indiceAtual];
+  if (!card) return;
+
+  virado = false;
+  document.getElementById('card-inner').classList.remove('flipped');
+
+  document.getElementById('card-front').className = 'card-face card-front';
+  document.getElementById('card-back').className = 'card-face card-back area-' + card.area;
+
+  document.getElementById('front-badge').textContent = card.area;
+  document.getElementById('back-badge').textContent = card.area;
+  document.getElementById('front-texto').textContent = card.frente;
+  document.getElementById('back-texto').textContent = card.verso;
+
+  const refEl = document.getElementById('back-ref');
+  if (card.legislacao) {
+    refEl.textContent = card.legislacao;
+    refEl.style.display = 'block';
+  } else {
+    refEl.style.display = 'none';
+  }
+
+  const cor = AREA_CORES[card.area] || '#888';
+  const total = cardsFiltrados.length;
+  const pct = total > 1 ? ((indiceAtual + 1) / total * 100).toFixed(0) : 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-fill').style.background = cor;
+  document.getElementById('progress-txt').textContent = (indiceAtual + 1) + ' de ' + total;
+  document.getElementById('nav-counter').textContent = (indiceAtual + 1) + ' / ' + total;
+  document.getElementById('btn-prev').disabled = indiceAtual === 0;
+  document.getElementById('btn-next').disabled = indiceAtual === total - 1;
+}
+
+function renderDots() {
+  const container = document.getElementById('area-dots');
+  const contagem = {};
+  todosCards.forEach(c => { contagem[c.area] = (contagem[c.area] || 0) + 1; });
+  const filtroArea = document.getElementById('filtro-area').value;
+
+  container.innerHTML = ['AT1','AT2','AT3','AT4','AT5'].filter(a => contagem[a]).map(a => {
+    const ativo = filtroArea === a || filtroArea === '';
+    return '<div class="area-dot' + (ativo ? ' ativo' : '') + '" data-area="' + a + '" title="' + AREA_NOMES[a] + ': ' + contagem[a] + ' cards" onclick="selecionarAreaDot(\'' + a + '\')"></div>';
+  }).join('');
+}
+
+function selecionarAreaDot(area) {
+  const sel = document.getElementById('filtro-area');
+  sel.value = (sel.value === area) ? '' : area;
+  aplicarFiltro();
+}
+
+function flipCard() {
+  virado = !virado;
+  document.getElementById('card-inner').classList.toggle('flipped', virado);
+}
+
+function navegar(dir) {
+  const novo = indiceAtual + dir;
+  if (novo < 0 || novo >= cardsFiltrados.length) return;
+  indiceAtual = novo;
+  renderCard();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navegar(1);
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') navegar(-1);
+});
+
+function handleSair() {
+  if (GraduaBM.isAdmin()) {
+    sessionStorage.removeItem('graduabm_admin');
+    sessionStorage.removeItem('graduabm_admin_ts');
+    window.location.href = '/';
+  } else {
+    GraduaBM.Auth.logout();
+  }
+}
+
+async function iniciarApp() {
+  const isPreview = sessionStorage.getItem('graduabm_preview_aluno') === '1';
+  const isAdmin   = GraduaBM.isAdmin();
+
+  if (isAdmin && !isPreview) {
+    document.getElementById('sidebar-nome').textContent = 'Administrador';
+    document.getElementById('sidebar-status-txt').textContent = 'Admin';
+    document.querySelector('.status-dot').style.background = '#7F77DD';
+    document.getElementById('sidebar-status').style.color = '#AFA9EC';
+  } else {
+    if (!isAdmin) await GraduaBM.protegerRota();
+    const usuario = GraduaBM.getUsuario();
+    if (usuario) {
+      document.getElementById('sidebar-nome').textContent = usuario.nome;
+      document.getElementById('sidebar-status-txt').textContent = isPreview ? 'Modo Aluno (Preview)' : 'Assinatura ativa';
+      cursoAluno = usuario.curso || null;
+    }
+  }
+
+  if (isPreview) document.getElementById('preview-banner').style.display = 'flex';
+  if (sessionStorage.getItem('graduabm_admin') === '1') document.getElementById('btn-admin-float').style.display = 'block';
+
+  await carregarFlashcards();
+}
+
+async function carregarFlashcards() {
+  try {
+    const qs = cursoAluno ? 'curso=' + cursoAluno : '';
+    todosCards = await GraduaBM.api.flashcards.listar(qs);
+    for (let i = todosCards.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [todosCards[i], todosCards[j]] = [todosCards[j], todosCards[i]];
+    }
+    cardsFiltrados = [...todosCards];
+    renderEstado();
+  } catch (err) {
+    document.getElementById('estado-loading').textContent = 'Erro ao carregar flashcards.';
+    console.error(err);
+  }
+}
+</script>
+<script src="/js/api.js" onload="iniciarApp()"></script>
+</body>
+</html>

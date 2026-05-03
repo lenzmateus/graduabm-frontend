@@ -78,10 +78,10 @@ const GraduaBM = {
       if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
       return data;
     },
-    async cadastrar({ nome, email, senha }) {
+    async cadastrar({ nome, email, senha, curso, nickname }) {
       const data = await request('/api/auth/cadastro', {
         method: 'POST',
-        body: JSON.stringify({ nome, email, senha }),
+        body: JSON.stringify({ nome, email, senha, curso, nickname: nickname || undefined }),
       });
       if (data.token) localStorage.setItem('token', data.token);
       if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
@@ -91,6 +91,24 @@ const GraduaBM = {
       localStorage.removeItem('token');
       localStorage.removeItem('usuario');
       window.location.href = '/login';
+    },
+    async esqueciSenha({ email }) {
+      return request('/api/auth/esqueci-senha', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+    },
+    async redefinirSenha({ token, nova_senha }) {
+      return request('/api/auth/redefinir-senha', {
+        method: 'POST',
+        body: JSON.stringify({ token, nova_senha }),
+      });
+    },
+    async alterarSenha({ senha_atual, nova_senha }) {
+      return request('/api/auth/alterar-senha', {
+        method: 'POST',
+        body: JSON.stringify({ senha_atual, nova_senha }),
+      });
     },
   },
 
@@ -108,6 +126,12 @@ const GraduaBM = {
     evolucaoSemanal() {
       return request('/api/progresso/evolucao-semanal');
     }
+  },
+
+  Ranking: {
+    listar() {
+      return request('/api/ranking');
+    },
   },
 
   // API unificada — questões e sessões
@@ -132,6 +156,16 @@ const GraduaBM = {
       },
       encerrar(id) {
         return request('/api/sessoes/' + id + '/encerrar', { method: 'PATCH' });
+      },
+    },
+    denuncias: {
+      reportar(questao_id, comentario) {
+        return request('/api/denuncias', { method: 'POST', body: JSON.stringify({ questao_id, comentario }) });
+      },
+    },
+    flashcards: {
+      listar(qs = '') {
+        return request('/api/flashcards' + (qs ? '?' + qs : ''));
       },
     },
   },

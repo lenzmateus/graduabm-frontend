@@ -115,6 +115,26 @@
   }
   .btn-sair:hover { border-color: #555; color: var(--branco); }
 
+  /* ── RANK BADGE ── */
+  .rank-badge {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .rank-badge svg { flex-shrink: 0; opacity: 0.85; }
+  .rank-badge-info { min-width: 0; }
+  .rank-badge-titulo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #555; line-height: 1.3;
+  }
+  .rank-badge-nome {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px; letter-spacing: 0.06em;
+    line-height: 1.2;
+  }
+
   /* ── CONTEÚDO PRINCIPAL ── */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
@@ -258,10 +278,28 @@
   }
 
   @media (max-width: 768px) {
-    .dash-grid { grid-template-columns: 1fr; }
-    .header-actions { flex-direction: column; align-items: flex-start; gap: 15px; }
-    .sessao-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+    .layout { flex-direction: column; }
+    .sidebar {
+      width: 100%; flex-direction: row;
+      align-items: center; justify-content: space-between;
+      border-right: none; border-bottom: 1px solid var(--cinza-borda);
+      padding: 0 1rem; height: 52px; flex-shrink: 0;
+    }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav, .rank-badge { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
+    .topbar { padding: 0 1rem; }
+    .topbar-mono { display: none; }
+    .conteudo { padding: 1rem; }
+    .dash-grid { grid-template-columns: 1fr 1fr; }
+    .header-actions { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .btn-iniciar { width: 100%; justify-content: center; }
+    .sessao-item { flex-direction: column; align-items: flex-start; gap: 8px; }
     .chart-container { height: 220px; }
+  }
+  @media (max-width: 480px) {
+    .dash-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -294,6 +332,14 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Simulados Oficiais
       </a>
+      <a class="nav-item" href="/ranking">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+        Ranking
+      </a>
+      <a class="nav-item" href="/flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
     </nav>
     <div class="sidebar-footer">
       <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
@@ -310,6 +356,7 @@
     </div>
 
     <div class="conteudo">
+      <img src="/images/banner-dashboard.png" alt="Bem-vindo, Guerreiro!" style="width:100%;border-radius:12px;margin-bottom:1.5rem;display:block;">
       <div class="header-actions">
         <h2 style="font-size: 20px; font-weight: 500;">Visão Geral</h2>
         <a href="/area-estudos" class="btn-iniciar">
@@ -354,6 +401,18 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="/js/api.js"></script>
 <script>
+function renderRankBadge(curso) {
+  const el = document.getElementById('rank-badge');
+  if (!el) return;
+  const isCba = curso === 'cba';
+  const cor = isCba ? '#185FA5' : '#C0270F';
+  const icon = isCba
+    ? `<svg width="44" height="22" viewBox="0 0 56 28" fill="none" stroke="${cor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="14,2 16.8,9.6 24,9.6 18.4,14.6 20.6,22 14,17.4 7.4,22 9.6,14.6 4,9.6 11.2,9.6"/><polygon points="42,2 44.8,9.6 52,9.6 46.4,14.6 48.6,22 42,17.4 35.4,22 37.6,14.6 32,9.6 39.2,9.6"/></svg>`
+    : `<svg width="36" height="24" viewBox="0 0 48 32" fill="none" stroke="${cor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,28 24,20 44,28"/><polyline points="4,21 24,13 44,21"/><polyline points="4,14 24,6 44,14"/></svg>`;
+  const nome = isCba ? '1º Tenente' : '2º Sargento';
+  el.innerHTML = `<div class="rank-badge">${icon}<div class="rank-badge-info"><div class="rank-badge-titulo">Objetivo</div><div class="rank-badge-nome" style="color:${cor}">${nome}</div></div></div>`;
+}
+
 let chartInstance = null;
 
 async function carregarGrafico() {
@@ -479,7 +538,10 @@ async function init() {
   await GraduaBM.protegerRota();
 
   const user = GraduaBM.getUsuario();
-  if (user) document.getElementById('user-nome').textContent = user.nome;
+  if (user) {
+    document.getElementById('user-nome').textContent = user.nome;
+    renderRankBadge(user.curso);
+  }
 
   const dataOpts = { weekday: 'long', day: '2-digit', month: 'long' };
   document.getElementById('topbar-data').textContent = new Date().toLocaleDateString('pt-BR', dataOpts);

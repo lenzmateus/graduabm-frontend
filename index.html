@@ -396,6 +396,22 @@
   .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.04em; color: #444; }
   .footer-txt { font-size: 11px; color: #444; }
 
+  /* ── BRASÃO HERO ── */
+  .hero-crest {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 420px; height: 420px;
+    opacity: 0.055;
+    pointer-events: none;
+    color: var(--vermelho);
+  }
+  .hero-crest svg { width: 100%; height: 100%; }
+
+  /* ── AREA ICONS ── */
+  .area-icon { line-height: 0; }
+  .area-icon svg { width: 28px; height: 28px; stroke-width: 1.2; display: block; }
+
   /* ── ANIM ── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(18px); }
@@ -480,6 +496,16 @@
   </div>
 
   <div class="hero-right">
+    <div class="hero-crest">
+      <svg viewBox="0 0 200 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M100 6 L194 46 L194 148 L100 234 L6 148 L6 46 Z" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M100 20 L180 58 L180 144 L100 220 L20 144 L20 58 Z" stroke="currentColor" stroke-width="1.5" opacity="0.7"/>
+        <line x1="20" y1="104" x2="180" y2="104" stroke="currentColor" stroke-width="1.5" opacity="0.6"/>
+        <path d="M100 32 L103.8 43.6 L116 43.6 L106.1 51 L109.9 62.6 L100 55.2 L90.1 62.6 L93.9 51 L84 43.6 L96.2 43.6 Z" stroke="currentColor" stroke-width="1.5" opacity="0.9"/>
+        <path d="M100 188 C88 173 83 156 88 140 C92 128 100 122 100 122 C100 122 108 128 112 140 C117 156 112 173 100 188 Z" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M100 176 C93 165 91 153 95 143 C97 138 100 135 100 135 C100 135 103 138 105 143 C109 153 107 165 100 176 Z" stroke="currentColor" stroke-width="1" opacity="0.6"/>
+      </svg>
+    </div>
     <div class="preview-card">
       <div class="preview-header">
         <span class="preview-label">graduabm.com.br</span>
@@ -533,6 +559,7 @@
 
   <div class="areas-grid">
     <div class="area-card">
+      <div class="area-icon" style="color:#C0270F;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L21 7V13C21 17.5 17 21.5 12 22C7 21.5 3 17.5 3 13V7Z"/><path d="M12 18C10 15.5 9.2 12.5 10.5 10.5C11.2 9.3 12 8.5 12 8.5C12 8.5 12.8 9.3 13.5 10.5C14.8 12.5 14 15.5 12 18Z"/></svg></div>
       <div class="area-num-big" style="color:#C0270F;">01</div>
       <div class="area-q" style="background:rgba(192,39,15,0.12);color:#E0866E;">14 questões</div>
       <div class="area-nome">Segurança contra incêndios</div>
@@ -540,6 +567,7 @@
       <div class="area-bar"><div class="area-bar-fill" style="background:#C0270F;"></div></div>
     </div>
     <div class="area-card">
+      <div class="area-icon" style="color:#BA7517;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18H22"/><path d="M5 18C5 13 8 9 12 8C16 9 19 13 19 18"/><path d="M9 8L9 5H15L15 8"/><line x1="12" y1="5" x2="12" y2="3"/></svg></div>
       <div class="area-num-big" style="color:#BA7517;">02</div>
       <div class="area-q" style="background:rgba(186,117,23,0.12);color:#EF9F27;">8 questões</div>
       <div class="area-nome">Combate a incêndios</div>
@@ -547,6 +575,7 @@
       <div class="area-bar"><div class="area-bar-fill" style="background:#BA7517;"></div></div>
     </div>
     <div class="area-card">
+      <div class="area-icon" style="color:#185FA5;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H15V9H21V15H15V21H9V15H3V9H9Z"/></svg></div>
       <div class="area-num-big" style="color:#185FA5;">03</div>
       <div class="area-q" style="background:rgba(24,95,165,0.12);color:#85B7EB;">14 questões</div>
       <div class="area-nome">Buscas e salvamentos / APH</div>
@@ -554,6 +583,7 @@
       <div class="area-bar"><div class="area-bar-fill" style="background:#185FA5;"></div></div>
     </div>
     <div class="area-card">
+      <div class="area-icon" style="color:#27A05A;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="20"/><line x1="5" y1="7" x2="19" y2="7"/><path d="M5 7L2 14C2 16.5 3.5 17 5 17C6.5 17 8 16.5 8 14Z"/><path d="M19 7L22 14C22 16.5 20.5 17 19 17C17.5 17 16 16.5 16 14Z"/><line x1="9" y1="20" x2="15" y2="20"/></svg></div>
       <div class="area-num-big" style="color:#27A05A;">04</div>
       <div class="area-q" style="background:rgba(39,160,90,0.12);color:#7DD99A;">12 questões</div>
       <div class="area-nome">Direito institucional, constitucional e militar</div>
@@ -561,6 +591,7 @@
       <div class="area-bar"><div class="area-bar-fill" style="background:#27A05A;"></div></div>
     </div>
     <div class="area-card">
+      <div class="area-icon" style="color:#7F77DD;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6A2 2 0 0 0 4 4V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="8" y1="18" x2="12" y2="18"/></svg></div>
       <div class="area-num-big" style="color:#7F77DD;">05</div>
       <div class="area-q" style="background:rgba(127,119,221,0.12);color:#AFA9EC;">12 questões</div>
       <div class="area-nome">Normas administrativas e documentação técnica</div>

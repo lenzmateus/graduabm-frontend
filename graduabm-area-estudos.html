@@ -245,6 +245,28 @@
     border-right: 1px solid var(--cinza-borda);
     padding: 14px 0;
   }
+  .area-num-icon { line-height: 0; }
+  .area-num-icon svg { width: 18px; height: 18px; display: block; }
+
+  /* ── RANK BADGE ── */
+  .rank-badge {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 10px; padding-top: 10px;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .rank-badge svg { flex-shrink: 0; opacity: 0.85; }
+  .rank-badge-info { min-width: 0; }
+  .rank-badge-titulo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: #555; line-height: 1.3;
+  }
+  .rank-badge-nome {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px; letter-spacing: 0.06em;
+    line-height: 1.2;
+  }
   .area-num-label {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 9px; color: #555; letter-spacing: 0.06em;
@@ -359,10 +381,29 @@
     .area-acoes { min-width: 100px; }
     .area-legislacao { white-space: normal; }
   }
+  .btn-estudar-mobile {
+    display: none;
+  }
   @media (max-width: 480px) {
     .stats-row { grid-template-columns: 1fr 1fr; }
     .area-acoes { display: none; }
     .area-item { cursor: pointer; }
+    .btn-estudar-mobile {
+      display: block;
+      margin: 0 16px 14px;
+      padding: 9px 0;
+      text-align: center;
+      background: var(--vermelho);
+      color: #fff;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: 'IBM Plex Sans', sans-serif;
+      border: none;
+      cursor: pointer;
+      width: calc(100% - 32px);
+    }
+    .btn-estudar-mobile.cba-btn { background: var(--cba); }
   }
 </style>
 </head>
@@ -403,6 +444,14 @@
       <a class="nav-item" href="/simulados">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Simulados Oficiais
+      </a>
+      <a class="nav-item" href="/ranking">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+        Ranking
+      </a>
+      <a class="nav-item" href="/flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
       </a>
     </nav>
 
@@ -611,6 +660,26 @@ const dados = {
   }
 };
 
+function renderRankBadge(curso) {
+  const el = document.getElementById('rank-badge');
+  if (!el) return;
+  const isCba = curso === 'cba';
+  const cor = isCba ? '#185FA5' : '#C0270F';
+  const icon = isCba
+    ? `<svg width="44" height="22" viewBox="0 0 56 28" fill="none" stroke="${cor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="14,2 16.8,9.6 24,9.6 18.4,14.6 20.6,22 14,17.4 7.4,22 9.6,14.6 4,9.6 11.2,9.6"/><polygon points="42,2 44.8,9.6 52,9.6 46.4,14.6 48.6,22 42,17.4 35.4,22 37.6,14.6 32,9.6 39.2,9.6"/></svg>`
+    : `<svg width="36" height="24" viewBox="0 0 48 32" fill="none" stroke="${cor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,28 24,20 44,28"/><polyline points="4,21 24,13 44,21"/><polyline points="4,14 24,6 44,14"/></svg>`;
+  const nome = isCba ? '1º Tenente' : '2º Sargento';
+  el.innerHTML = `<div class="rank-badge">${icon}<div class="rank-badge-info"><div class="rank-badge-titulo">Objetivo</div><div class="rank-badge-nome" style="color:${cor}">${nome}</div></div></div>`;
+}
+
+const AREA_ICONS = {
+  '01': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L21 7V13C21 17.5 17 21.5 12 22C7 21.5 3 17.5 3 13V7Z"/><path d="M12 18C10 15.5 9.2 12.5 10.5 10.5C11.2 9.3 12 8.5 12 8.5C12 8.5 12.8 9.3 13.5 10.5C14.8 12.5 14 15.5 12 18Z"/></svg>`,
+  '02': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18H22"/><path d="M5 18C5 13 8 9 12 8C16 9 19 13 19 18"/><path d="M9 8L9 5H15L15 8"/><line x1="12" y1="5" x2="12" y2="3"/></svg>`,
+  '03': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H15V9H21V15H15V21H9V15H3V9H9Z"/></svg>`,
+  '04': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="3" x2="12" y2="20"/><line x1="5" y1="7" x2="19" y2="7"/><path d="M5 7L2 14C2 16.5 3.5 17 5 17C6.5 17 8 16.5 8 14Z"/><path d="M19 7L22 14C22 16.5 20.5 17 19 17C17.5 17 16 16.5 16 14Z"/><line x1="9" y1="20" x2="15" y2="20"/></svg>`,
+  '05': `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6A2 2 0 0 0 4 4V20A2 2 0 0 0 6 22H18A2 2 0 0 0 20 20V8Z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="8" y1="18" x2="12" y2="18"/></svg>`,
+};
+
 let cursoAtual = 'ctsp';
 
 function selecionarCurso(curso) {
@@ -654,6 +723,7 @@ function renderAreas() {
     div.innerHTML = `
       <div class="area-header">
         <div class="area-num">
+          <span class="area-num-icon" style="color:${area.cor}">${AREA_ICONS[area.num] || ''}</span>
           <span class="area-num-label">AT</span>
           <span class="area-num-val" style="color:${area.cor}">${area.num}</span>
         </div>
@@ -670,6 +740,7 @@ function renderAreas() {
           </div>
         </div>
       </div>
+      <button class="btn-estudar-mobile ${isCba ? 'cba-btn' : ''}" onclick="iniciarEstudo('${area.num}')">Estudar →</button>
     `;
 
     lista.appendChild(div);
@@ -719,9 +790,22 @@ async function iniciarApp() {
     document.getElementById('sidebar-nome').textContent = usuario.nome;
     document.getElementById('sidebar-status-txt').textContent =
       isPreview ? 'Modo Aluno (Preview)' : 'Assinatura ativa';
+    if (!isPreview) renderRankBadge(usuario.curso);
     if (isPreview) {
       document.querySelector('.status-dot').style.background = '#7F77DD';
       document.getElementById('sidebar-status').style.color = '#AFA9EC';
+    }
+
+    // Para alunos reais, bloqueia o seletor de curso ao curso do perfil
+    if (!isPreview && !isAdmin && usuario.curso) {
+      cursoAtual = usuario.curso;
+      selecionarCurso(cursoAtual);
+      const seletor = document.querySelector('.curso-seletor');
+      const secTitulo = seletor ? seletor.previousElementSibling : null;
+      if (seletor) seletor.style.pointerEvents = 'none';
+      if (secTitulo && secTitulo.classList.contains('secao-titulo')) {
+        secTitulo.textContent = 'Seu curso';
+      }
     }
   }
 

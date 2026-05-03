@@ -8,7 +8,10 @@
     { "source": "/checkout-sucesso", "destination": "/graduabm-checkout-sucesso" },
     { "source": "/questoes", "destination": "/graduabm-questoes" },
     { "source": "/simulados", "destination": "/graduabm-simulados" },
-    { "source": "/simulado-prova", "destination": "/graduabm-simulado-prova" }
+    { "source": "/simulado-prova", "destination": "/graduabm-simulado-prova" },
+    { "source": "/redefinir-senha", "destination": "/redefinir-senha" },
+    { "source": "/ranking", "destination": "/graduabm-ranking" },
+    { "source": "/flashcards", "destination": "/graduabm-flashcards" }
   ],
   "headers": [
     {

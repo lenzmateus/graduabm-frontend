@@ -521,6 +521,24 @@
             </div>
           </div>
 
+          <div class="campo">
+            <label>Curso</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
+              <div id="card-ctsp" onclick="selecionarCursoCad('ctsp')" style="border-radius:8px;padding:12px 14px;border:1px solid var(--cinza-borda);background:var(--cinza-escuro);cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--vermelho);opacity:0.5;"></div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.04em;color:var(--branco);">CTSP</div>
+                <div style="font-size:11px;color:var(--cinza-texto);">Curso Técnico de Segurança Pública</div>
+                <div style="font-size:10px;color:#555;margin-top:4px;font-family:'IBM Plex Mono',monospace;">SARGENTO · 60 QUESTÕES</div>
+              </div>
+              <div id="card-cba" onclick="selecionarCursoCad('cba')" style="border-radius:8px;padding:12px 14px;border:1px solid var(--cinza-borda);background:var(--cinza-escuro);cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;">
+                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#185FA5;opacity:0.5;"></div>
+                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.04em;color:var(--branco);">CBA</div>
+                <div style="font-size:11px;color:var(--cinza-texto);">Curso Básico de Administração</div>
+                <div style="font-size:10px;color:#555;margin-top:4px;font-family:'IBM Plex Mono',monospace;">TENENTE · 40 QUESTÕES</div>
+              </div>
+            </div>
+          </div>
+
           <button class="btn-submit" id="btn-cadastro" onclick="fazerCadastro()" style="margin-top:0.5rem;">
             <span class="spinner" id="spin-cadastro"></span>
             <span id="txt-cadastro">Criar conta</span>
@@ -641,6 +659,25 @@
     }
   }
 
+  // ── Seleção de curso no cadastro ─────────────────────────
+  let cursoCadastro = '';
+
+  function selecionarCursoCad(c) {
+    cursoCadastro = c;
+    const cores = { ctsp: { borda: 'var(--vermelho)', bg: 'rgba(192,39,15,0.08)' }, cba: { borda: '#185FA5', bg: 'rgba(24,95,165,0.08)' } };
+    ['ctsp', 'cba'].forEach(id => {
+      const el = document.getElementById('card-' + id);
+      if (!el) return;
+      if (id === c) {
+        el.style.borderColor = cores[id].borda;
+        el.style.background  = cores[id].bg;
+      } else {
+        el.style.borderColor = 'var(--cinza-borda)';
+        el.style.background  = 'var(--cinza-escuro)';
+      }
+    });
+  }
+
   // ── Cadastro ──────────────────────────────────────────────
   async function fazerCadastro() {
     const nome     = document.getElementById('cad-nome').value.trim();
@@ -651,6 +688,9 @@
 
     if (!nome || !sobre || !email || !senha || !confirma) {
       mostrarMsg('msg-cadastro', 'Preencha todos os campos.', 'erro'); return;
+    }
+    if (!cursoCadastro) {
+      mostrarMsg('msg-cadastro', 'Selecione o curso para o qual está se inscrevendo.', 'erro'); return;
     }
     if (senha.length < 8) {
       mostrarMsg('msg-cadastro', 'A senha precisa ter no mínimo 8 caracteres.', 'erro'); return;
@@ -663,8 +703,7 @@
     limparMsgs();
 
     try {
-      const data = await GraduaBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha });
-      // Cadastro feito — usuário inativo até pagar
+      const data = await GraduaBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro });
       mostrarPainel(data.usuario);
     } catch (err) {
       mostrarMsg('msg-cadastro', err.erro || err.message || 'Erro ao criar conta.', 'erro');

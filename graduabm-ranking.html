@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Ranking Geral</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --branco-suave: #EFEFEA;
+    --ouro: #F5C842;
+    --prata: #A0A0B0;
+    --bronze: #C87941;
+    --ctsp: #C0270F;
+    --cba: #185FA5;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .layout { display: flex; min-height: 100vh; }
+
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column;
+  }
+  .sidebar-logo {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.05em;
+    color: var(--branco); text-decoration: none;
+  }
+  .sidebar-usuario {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 500; color: #7DD99A; letter-spacing: 0.04em;
+  }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: #555; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px;
+  }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto);
+    cursor: pointer; transition: background 0.12s, color 0.12s;
+    border-left: 2px solid transparent; text-decoration: none;
+  }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo {
+    color: var(--branco); border-left-color: var(--vermelho);
+    background: rgba(192,39,15,0.08);
+  }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .sidebar-footer {
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .btn-sair {
+    width: 100%; background: transparent;
+    border: 1px solid var(--cinza-borda); color: var(--cinza-texto);
+    border-radius: 6px; padding: 7px 0; font-size: 12px;
+    cursor: pointer; transition: all 0.15s;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* ── MAIN ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar {
+    height: 56px; flex-shrink: 0;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+  }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 2rem 2rem 1.75rem;
+    margin-bottom: 1.5rem;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg-grid {
+    position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(192,39,15,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(192,39,15,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .hero-content { position: relative; z-index: 1; }
+  .hero-tag {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--vermelho); letter-spacing: 0.12em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+  .hero-tag::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--vermelho); animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px; letter-spacing: 0.04em; color: var(--branco);
+    line-height: 1; margin-bottom: 8px;
+  }
+  .hero-titulo span { color: var(--vermelho); }
+  .hero-sub { font-size: 13px; color: var(--cinza-texto); margin-bottom: 1.5rem; }
+
+  .stats-strip {
+    display: flex; gap: 0;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px; overflow: hidden;
+  }
+  .stat-bloco {
+    flex: 1; padding: 12px 16px;
+    border-right: 1px solid var(--cinza-borda);
+  }
+  .stat-bloco:last-child { border-right: none; }
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 0.05em;
+    color: var(--branco); line-height: 1; margin-bottom: 3px;
+  }
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--cinza-texto);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  /* ── CONTROLES ── */
+  .controles {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin-bottom: 1.5rem; flex-wrap: wrap;
+  }
+  .tab-group {
+    display: flex; gap: 0;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 7px; overflow: hidden;
+  }
+  .tab-btn {
+    padding: 7px 16px; font-size: 12px; font-weight: 500;
+    background: transparent; border: none; cursor: pointer;
+    color: var(--cinza-texto);
+    transition: background 0.15s, color 0.15s;
+    font-family: 'IBM Plex Sans', sans-serif;
+    border-right: 1px solid var(--cinza-borda);
+  }
+  .tab-btn:last-child { border-right: none; }
+  .tab-btn.ativo { background: var(--vermelho); color: #fff; }
+  .tab-btn:not(.ativo):hover { background: var(--cinza-medio); color: var(--branco); }
+
+  .sort-label { font-size: 11px; color: var(--cinza-texto); white-space: nowrap; }
+  .sort-group { display: flex; align-items: center; gap: 8px; }
+
+  /* ── PÓDIO ── */
+  .podio {
+    display: grid; grid-template-columns: 1fr 1.1fr 1fr;
+    gap: 12px; margin-bottom: 2rem; align-items: end;
+  }
+  .podio-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1.25rem 1rem 1rem;
+    text-align: center;
+    position: relative; overflow: hidden;
+    transition: border-color 0.2s;
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .podio-card.pos-1 {
+    border-color: rgba(245,200,66,0.4);
+    background: linear-gradient(160deg, rgba(245,200,66,0.06) 0%, var(--cinza-escuro) 60%);
+  }
+  .podio-card.pos-2 {
+    border-color: rgba(160,160,176,0.35);
+    background: linear-gradient(160deg, rgba(160,160,176,0.05) 0%, var(--cinza-escuro) 60%);
+  }
+  .podio-card.pos-3 {
+    border-color: rgba(200,121,65,0.35);
+    background: linear-gradient(160deg, rgba(200,121,65,0.05) 0%, var(--cinza-escuro) 60%);
+  }
+
+  .podio-medal {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .pos-1 .podio-medal { background: rgba(245,200,66,0.15); color: var(--ouro); border: 1px solid rgba(245,200,66,0.4); }
+  .pos-2 .podio-medal { background: rgba(160,160,176,0.12); color: var(--prata); border: 1px solid rgba(160,160,176,0.35); }
+  .pos-3 .podio-medal { background: rgba(200,121,65,0.12); color: var(--bronze); border: 1px solid rgba(200,121,65,0.35); }
+
+  .podio-nome {
+    font-size: 13px; font-weight: 600; color: var(--branco);
+    margin-bottom: 4px; max-width: 120px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .podio-anonimo { color: var(--cinza-texto); font-style: italic; }
+  .curso-badge {
+    display: inline-block;
+    padding: 2px 8px; border-radius: 20px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 500; letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .curso-ctsp { background: rgba(192,39,15,0.15); color: #E0745A; border: 1px solid rgba(192,39,15,0.3); }
+  .curso-cba  { background: rgba(24,95,165,0.15); color: #6AAEE0; border: 1px solid rgba(24,95,165,0.3); }
+
+  .podio-metric-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 0.04em; color: var(--branco); line-height: 1;
+  }
+  .pos-1 .podio-metric-val { color: var(--ouro); }
+  .pos-2 .podio-metric-val { color: var(--prata); }
+  .pos-3 .podio-metric-val { color: var(--bronze); }
+  .podio-metric-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--cinza-texto);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-top: 3px;
+  }
+  .podio-sub-stats {
+    display: flex; gap: 12px; margin-top: 10px;
+    padding-top: 10px; border-top: 1px solid var(--cinza-borda);
+    width: 100%;
+    justify-content: center;
+  }
+  .podio-sub-item { text-align: center; }
+  .podio-sub-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; font-weight: 500; color: var(--branco); display: block;
+  }
+  .podio-sub-key {
+    font-size: 9px; color: var(--cinza-texto);
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+
+  .podio-sou-eu {
+    position: absolute; top: 8px; right: 8px;
+    font-size: 9px; font-weight: 500; letter-spacing: 0.06em;
+    padding: 2px 6px; border-radius: 4px;
+    background: rgba(192,39,15,0.2); color: #E0745A;
+    border: 1px solid rgba(192,39,15,0.4);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* ── TABELA ── */
+  .ranking-section {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+  .ranking-header {
+    display: grid;
+    grid-template-columns: 52px 1fr 80px 110px 100px 100px 90px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--cinza-borda);
+    background: rgba(0,0,0,0.2);
+  }
+  .ranking-col-header {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--cinza-texto);
+    text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .ranking-col-header.sortable { cursor: pointer; transition: color 0.15s; }
+  .ranking-col-header.sortable:hover { color: var(--branco); }
+  .ranking-col-header.sort-ativo { color: var(--vermelho); }
+
+  .ranking-row {
+    display: grid;
+    grid-template-columns: 52px 1fr 80px 110px 100px 100px 90px;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--cinza-borda);
+    align-items: center;
+    transition: background 0.1s;
+  }
+  .ranking-row:last-child { border-bottom: none; }
+  .ranking-row:hover { background: rgba(255,255,255,0.02); }
+  .ranking-row.sou-eu {
+    background: rgba(192,39,15,0.06);
+    border-left: 2px solid var(--vermelho);
+  }
+  .ranking-row.sou-eu:hover { background: rgba(192,39,15,0.09); }
+
+  .rank-pos {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px; font-weight: 500; color: var(--cinza-texto);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .rank-pos.top-1 { color: var(--ouro); }
+  .rank-pos.top-2 { color: var(--prata); }
+  .rank-pos.top-3 { color: var(--bronze); }
+
+  .medal-icon { font-size: 14px; }
+
+  .rank-usuario { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .rank-nome {
+    font-size: 13px; font-weight: 500; color: var(--branco);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .rank-anonimo { color: var(--cinza-texto); font-style: italic; font-weight: 400; }
+
+  .rank-eu-badge {
+    font-size: 9px; font-weight: 500; letter-spacing: 0.05em;
+    padding: 1px 5px; border-radius: 3px;
+    background: rgba(192,39,15,0.2); color: #E0745A;
+    border: 1px solid rgba(192,39,15,0.4);
+    font-family: 'IBM Plex Mono', monospace;
+    white-space: nowrap;
+  }
+
+  .rank-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--branco);
+  }
+  .rank-taxa {
+    display: flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--branco);
+  }
+  .taxa-bar-wrap { flex: 1; height: 3px; background: var(--cinza-borda); border-radius: 2px; min-width: 40px; }
+  .taxa-bar { height: 100%; border-radius: 2px; background: var(--vermelho); }
+
+  .rank-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 0.04em; color: var(--vermelho);
+  }
+
+  /* ── SUA POSIÇÃO ── */
+  .minha-pos {
+    background: var(--cinza-escuro);
+    border: 1px solid rgba(192,39,15,0.35);
+    border-radius: 12px; padding: 1.25rem 1.5rem;
+    display: none;
+  }
+  .minha-pos.visivel { display: block; }
+  .minha-pos-header {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 1rem;
+  }
+  .minha-pos-titulo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .minha-pos-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 0.04em; color: var(--vermelho);
+    line-height: 1;
+  }
+  .minha-pos-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  .minha-pos-item {
+    background: rgba(0,0,0,0.2); border: 1px solid var(--cinza-borda);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .minha-pos-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.04em; color: var(--branco);
+    line-height: 1; margin-bottom: 3px;
+  }
+  .minha-pos-key {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--cinza-texto);
+    text-transform: uppercase; letter-spacing: 0.08em;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center; padding: 4rem 2rem;
+    color: var(--cinza-texto); font-size: 13px;
+  }
+  .empty-state svg { margin-bottom: 16px; opacity: 0.3; }
+  .empty-state p { margin-bottom: 12px; }
+
+  /* ── SKELETON ── */
+  .skeleton {
+    height: 48px; background: linear-gradient(90deg, var(--cinza-borda) 25%, #3A3A3A 50%, var(--cinza-borda) 75%);
+    background-size: 200% 100%; animation: shimmer 1.5s infinite;
+    border-radius: 4px; margin-bottom: 2px;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .ranking-header, .ranking-row {
+      grid-template-columns: 44px 1fr 70px 90px 90px 90px 80px;
+    }
+  }
+  @media (max-width: 900px) {
+    .podio { grid-template-columns: 1fr; }
+    .podio .pos-1 { order: 0; }
+    .podio .pos-2 { order: 1; }
+    .podio .pos-3 { order: 2; }
+    .ranking-header { display: none; }
+    .ranking-row { grid-template-columns: 44px 1fr auto; }
+    .ranking-row > *:nth-child(3),
+    .ranking-row > *:nth-child(5),
+    .ranking-row > *:nth-child(6) { display: none; }
+    .stats-strip { flex-wrap: wrap; }
+    .stat-bloco { min-width: 33%; }
+    .minha-pos-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .conteudo { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/dashboard" class="logo-text">GraduaBM</a>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome" id="sb-nome">—</div>
+      <div class="usuario-status"><span class="status-dot"></span><span id="sb-curso">—</span></div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item" href="/dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="/area-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Estudar Legislação
+      </a>
+      <a class="nav-item" href="/simulados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados Oficiais
+      </a>
+      <a class="nav-item ativo" href="/ranking">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+        Ranking
+      </a>
+      <a class="nav-item" href="/flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="GraduaBM.Auth.logout()">Sair</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Ranking Geral</span>
+      <span class="topbar-mono" id="topbar-atualizado"></span>
+    </div>
+
+    <div class="conteudo">
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-bg-grid"></div>
+        <div class="hero-content">
+          <div class="hero-tag">Gamificação · CBMRS</div>
+          <h1 class="hero-titulo">HALL DA <span>FAMA</span></h1>
+          <p class="hero-sub">Desempenho acumulado de todos os cadetes com assinatura ativa.</p>
+          <div class="stats-strip" id="stats-strip">
+            <div class="stat-bloco">
+              <div class="stat-val" id="stat-alunos">—</div>
+              <div class="stat-label">Cadetes</div>
+            </div>
+            <div class="stat-bloco">
+              <div class="stat-val" id="stat-questoes">—</div>
+              <div class="stat-label">Questões respondidas</div>
+            </div>
+            <div class="stat-bloco">
+              <div class="stat-val" id="stat-acerto">—</div>
+              <div class="stat-label">Média de acerto</div>
+            </div>
+            <div class="stat-bloco">
+              <div class="stat-val" id="stat-horas">—</div>
+              <div class="stat-label">Horas de estudo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTROLES -->
+      <div class="controles">
+        <div class="tab-group" id="tabs-curso">
+          <button class="tab-btn ativo" data-curso="">Todos</button>
+          <button class="tab-btn" data-curso="ctsp">CTSP</button>
+          <button class="tab-btn" data-curso="cba">CBA</button>
+        </div>
+        <div class="sort-group">
+          <span class="sort-label">Ordenar por:</span>
+          <div class="tab-group" id="tabs-sort">
+            <button class="tab-btn ativo" data-sort="score">Score</button>
+            <button class="tab-btn" data-sort="questoes_respondidas">Questões</button>
+            <button class="tab-btn" data-sort="taxa_acerto">Acerto</button>
+            <button class="tab-btn" data-sort="tempo_minutos">Tempo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PÓDIO -->
+      <div class="podio" id="podio">
+        <div class="skeleton" style="height:200px;border-radius:10px;"></div>
+        <div class="skeleton" style="height:220px;border-radius:10px;"></div>
+        <div class="skeleton" style="height:200px;border-radius:10px;"></div>
+      </div>
+
+      <!-- TABELA -->
+      <div class="ranking-section">
+        <div class="ranking-header">
+          <div class="ranking-col-header">#</div>
+          <div class="ranking-col-header">Cadete</div>
+          <div class="ranking-col-header">Curso</div>
+          <div class="ranking-col-header sortable sort-ativo" data-sort="questoes_respondidas">Questões</div>
+          <div class="ranking-col-header sortable" data-sort="taxa_acerto">Acerto %</div>
+          <div class="ranking-col-header sortable" data-sort="tempo_minutos">Tempo</div>
+          <div class="ranking-col-header sortable sort-ativo" data-sort="score">Score</div>
+        </div>
+        <div id="ranking-body">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+      </div>
+
+      <!-- MINHA POSIÇÃO -->
+      <div class="minha-pos" id="minha-pos">
+        <div class="minha-pos-header">
+          <div>
+            <div class="minha-pos-titulo">Sua posição no ranking</div>
+            <div class="minha-pos-num" id="mp-pos">—</div>
+          </div>
+        </div>
+        <div class="minha-pos-grid">
+          <div class="minha-pos-item">
+            <div class="minha-pos-val" id="mp-questoes">—</div>
+            <div class="minha-pos-key">Questões</div>
+          </div>
+          <div class="minha-pos-item">
+            <div class="minha-pos-val" id="mp-acerto">—</div>
+            <div class="minha-pos-key">Taxa de acerto</div>
+          </div>
+          <div class="minha-pos-item">
+            <div class="minha-pos-val" id="mp-tempo">—</div>
+            <div class="minha-pos-key">Tempo de estudo</div>
+          </div>
+          <div class="minha-pos-item">
+            <div class="minha-pos-val" id="mp-score">—</div>
+            <div class="minha-pos-key">Score</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+  GraduaBM.protegerRota();
+
+  const usuario = GraduaBM.getUsuario();
+  if (usuario) {
+    document.getElementById('sb-nome').textContent = usuario.nome;
+    document.getElementById('sb-curso').textContent = usuario.curso?.toUpperCase() || '—';
+  }
+
+  // ── Estado ──────────────────────────────────────────────────
+  let rankingOriginal = [];
+  let filtroCurso = '';
+  let sortCampo = 'score';
+
+  // ── Score ────────────────────────────────────────────────────
+  function calcScore(r) {
+    return Math.round(r.questoes_respondidas * (r.taxa_acerto / 100) * 10 + r.tempo_minutos * 0.5);
+  }
+
+  // ── Formatadores ─────────────────────────────────────────────
+  function fmtTempo(min) {
+    if (min < 60) return min + 'min';
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return m > 0 ? `${h}h${m}min` : `${h}h`;
+  }
+
+  function fmtNum(n) {
+    return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n);
+  }
+
+  function nomeCadete(entry) {
+    return entry.nome || null;
+  }
+
+  function renderNome(entry, grande) {
+    if (entry.nome) {
+      const base = `<span class="rank-nome${entry.sou_eu ? '' : ''}">${entry.nome}</span>`;
+      return entry.sou_eu ? base + ' <span class="rank-eu-badge">você</span>' : base;
+    }
+    const anon = `<span class="rank-nome rank-anonimo">Anônimo</span>`;
+    return entry.sou_eu ? anon + ' <span class="rank-eu-badge">você</span>' : anon;
+  }
+
+  // ── Dados filtrados e ordenados ───────────────────────────────
+  function getRankingFiltrado() {
+    let lista = rankingOriginal.filter(r => filtroCurso === '' || r.curso === filtroCurso);
+    lista = lista.map(r => ({ ...r, score: calcScore(r) }));
+    lista.sort((a, b) => b[sortCampo] - a[sortCampo]);
+    // Recalcula posições após filtragem
+    lista.forEach((r, i) => { r.posicao_filtrada = i + 1; });
+    return lista;
+  }
+
+  // ── Estatísticas do hero ─────────────────────────────────────
+  function renderStats(lista) {
+    const comDados = lista.filter(r => r.questoes_respondidas > 0);
+    const totalQ = lista.reduce((s, r) => s + r.questoes_respondidas, 0);
+    const mediaAcerto = comDados.length > 0
+      ? (comDados.reduce((s, r) => s + r.taxa_acerto, 0) / comDados.length).toFixed(1)
+      : '0';
+    const totalHoras = Math.floor(lista.reduce((s, r) => s + r.tempo_minutos, 0) / 60);
+
+    document.getElementById('stat-alunos').textContent = fmtNum(lista.length);
+    document.getElementById('stat-questoes').textContent = fmtNum(totalQ);
+    document.getElementById('stat-acerto').textContent = mediaAcerto + '%';
+    document.getElementById('stat-horas').textContent = fmtNum(totalHoras) + 'h';
+  }
+
+  // ── Pódio ────────────────────────────────────────────────────
+  function renderPodio(lista) {
+    const top3 = lista.slice(0, 3);
+    const podio = document.getElementById('podio');
+
+    if (top3.length === 0) {
+      podio.innerHTML = '';
+      return;
+    }
+
+    const classes = ['pos-2', 'pos-1', 'pos-3'];
+    const labels  = ['2º', '1º', '3º'];
+    const order   = [1, 0, 2]; // centro primeiro na tela
+
+    const cards = [null, null, null];
+    order.forEach((idx, visual) => {
+      const r = top3[idx];
+      if (!r) { cards[visual] = ''; return; }
+
+      const score = r.score ?? calcScore(r);
+      const metricLabel = sortCampo === 'questoes_respondidas' ? 'questões'
+        : sortCampo === 'taxa_acerto' ? '% acerto'
+        : sortCampo === 'tempo_minutos' ? 'minutos'
+        : 'score';
+      const metricVal = sortCampo === 'questoes_respondidas' ? r.questoes_respondidas
+        : sortCampo === 'taxa_acerto' ? r.taxa_acerto + '%'
+        : sortCampo === 'tempo_minutos' ? fmtTempo(r.tempo_minutos)
+        : score;
+
+      const cursoClass = r.curso === 'ctsp' ? 'curso-ctsp' : 'curso-cba';
+
+      cards[visual] = `
+        <div class="podio-card ${classes[visual]}">
+          ${r.sou_eu ? '<span class="podio-sou-eu">VOCÊ</span>' : ''}
+          <div class="podio-medal">${labels[visual]}</div>
+          <div class="podio-nome ${r.nome ? '' : 'podio-anonimo'}">${r.nome || 'Anônimo'}</div>
+          <div class="curso-badge ${cursoClass}">${r.curso?.toUpperCase()}</div>
+          <div class="podio-metric-val">${metricVal}</div>
+          <div class="podio-metric-label">${metricLabel}</div>
+          <div class="podio-sub-stats">
+            <div class="podio-sub-item">
+              <span class="podio-sub-val">${r.questoes_respondidas}</span>
+              <span class="podio-sub-key">questões</span>
+            </div>
+            <div class="podio-sub-item">
+              <span class="podio-sub-val">${r.taxa_acerto}%</span>
+              <span class="podio-sub-key">acerto</span>
+            </div>
+            <div class="podio-sub-item">
+              <span class="podio-sub-val">${fmtTempo(r.tempo_minutos)}</span>
+              <span class="podio-sub-key">estudo</span>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    podio.innerHTML = cards.join('');
+  }
+
+  // ── Tabela ───────────────────────────────────────────────────
+  function renderTabela(lista) {
+    const tbody = document.getElementById('ranking-body');
+
+    if (lista.length === 0) {
+      tbody.innerHTML = `
+        <div class="empty-state">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+          <p>Nenhum cadete encontrado com este filtro.</p>
+          <p>Seja o primeiro a aparecer aqui!</p>
+        </div>`;
+      return;
+    }
+
+    const medalhas = { 1: '🥇', 2: '🥈', 3: '🥉' };
+
+    tbody.innerHTML = lista.map(r => {
+      const posClass = r.posicao_filtrada <= 3 ? `top-${r.posicao_filtrada}` : '';
+      const rowClass = r.sou_eu ? 'sou-eu' : '';
+      const score = r.score ?? calcScore(r);
+      const cursoClass = r.curso === 'ctsp' ? 'curso-ctsp' : 'curso-cba';
+      const taxaBarW = Math.min(100, r.taxa_acerto);
+      const medalha = medalhas[r.posicao_filtrada] || '';
+
+      return `
+        <div class="ranking-row ${rowClass}">
+          <div class="rank-pos ${posClass}">
+            ${medalha ? `<span class="medal-icon">${medalha}</span>` : r.posicao_filtrada}
+          </div>
+          <div class="rank-usuario">
+            ${renderNome(r, false)}
+          </div>
+          <div>
+            <span class="curso-badge ${cursoClass}">${r.curso?.toUpperCase()}</span>
+          </div>
+          <div class="rank-num">${r.questoes_respondidas}</div>
+          <div class="rank-taxa">
+            <span>${r.taxa_acerto}%</span>
+            <div class="taxa-bar-wrap"><div class="taxa-bar" style="width:${taxaBarW}%"></div></div>
+          </div>
+          <div class="rank-num">${fmtTempo(r.tempo_minutos)}</div>
+          <div class="rank-score">${score}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Minha posição ─────────────────────────────────────────────
+  function renderMinhaPos(lista) {
+    const meu = lista.find(r => r.sou_eu);
+    const bloco = document.getElementById('minha-pos');
+    if (!meu) { bloco.classList.remove('visivel'); return; }
+
+    // Se já aparece no top 10 visível, não precisa repetir
+    bloco.classList.add('visivel');
+    document.getElementById('mp-pos').textContent = `#${meu.posicao_filtrada}`;
+    document.getElementById('mp-questoes').textContent = meu.questoes_respondidas;
+    document.getElementById('mp-acerto').textContent = meu.taxa_acerto + '%';
+    document.getElementById('mp-tempo').textContent = fmtTempo(meu.tempo_minutos);
+    document.getElementById('mp-score').textContent = meu.score ?? calcScore(meu);
+  }
+
+  // ── Render completo ───────────────────────────────────────────
+  function renderAll() {
+    const lista = getRankingFiltrado();
+    renderStats(lista);
+    renderPodio(lista);
+    renderTabela(lista);
+    renderMinhaPos(lista);
+
+    // Atualiza headers de ordenação
+    document.querySelectorAll('.ranking-col-header.sortable').forEach(el => {
+      el.classList.toggle('sort-ativo', el.dataset.sort === sortCampo);
+    });
+  }
+
+  // ── Controles ─────────────────────────────────────────────────
+  document.getElementById('tabs-curso').addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    document.querySelectorAll('#tabs-curso .tab-btn').forEach(b => b.classList.remove('ativo'));
+    btn.classList.add('ativo');
+    filtroCurso = btn.dataset.curso;
+    renderAll();
+  });
+
+  document.getElementById('tabs-sort').addEventListener('click', e => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+    document.querySelectorAll('#tabs-sort .tab-btn').forEach(b => b.classList.remove('ativo'));
+    btn.classList.add('ativo');
+    sortCampo = btn.dataset.sort;
+    renderAll();
+  });
+
+  // Clique nos headers da tabela também ordena
+  document.querySelectorAll('.ranking-col-header.sortable').forEach(el => {
+    el.addEventListener('click', () => {
+      sortCampo = el.dataset.sort;
+      document.querySelectorAll('#tabs-sort .tab-btn').forEach(b => {
+        b.classList.toggle('ativo', b.dataset.sort === sortCampo);
+      });
+      renderAll();
+    });
+  });
+
+  // ── Carregar dados ────────────────────────────────────────────
+  async function carregar() {
+    try {
+      const { ranking } = await GraduaBM.Ranking.listar();
+      rankingOriginal = ranking || [];
+
+      const agora = new Date();
+      document.getElementById('topbar-atualizado').textContent =
+        'Atualizado às ' + agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+      renderAll();
+    } catch (err) {
+      document.getElementById('ranking-body').innerHTML = `
+        <div class="empty-state">
+          <p>Erro ao carregar o ranking. Tente novamente.</p>
+        </div>`;
+      document.getElementById('podio').innerHTML = '';
+    }
+  }
+
+  carregar();
+</script>
+</body>
+</html>
