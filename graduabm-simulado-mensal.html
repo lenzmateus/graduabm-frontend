@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Simulado Mensal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F; --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F; --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A; --cinza-borda: #333;
+    --cinza-texto: #888; --branco: #F8F6F2;
+    --verde: #7DD99A; --bg-verde: rgba(125,217,154,0.1);
+    --dourado: #F0C050;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; }
+
+  .layout { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+  .topbar {
+    height: 60px; flex-shrink: 0; background: var(--cinza-escuro); border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
+  }
+  .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--branco); letter-spacing: 0.05em; text-decoration: none; }
+  .topbar-info { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); text-align: center; line-height: 1.4; }
+  .topbar-info strong { color: var(--dourado); }
+
+  .timer-box {
+    display: flex; align-items: center; gap: 10px; background: var(--cinza-medio);
+    border: 1px solid var(--cinza-borda); padding: 6px 16px; border-radius: 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600;
+  }
+  .timer-box.alerta { color: #F09595; border-color: #F09595; animation: pisca 1s infinite; }
+  @keyframes pisca { 50% { opacity: 0.5; } }
+
+  .btn-finalizar {
+    background: var(--vermelho); color: #fff; border: none; padding: 8px 16px;
+    border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+  .btn-finalizar:hover { background: var(--vermelho-escuro); }
+
+  .main-area { flex: 1; display: flex; overflow: hidden; }
+
+  .nav-sidebar {
+    width: 250px; flex-shrink: 0; background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column;
+  }
+  .nav-header { padding: 1rem; border-bottom: 1px solid var(--cinza-borda); font-size: 13px; font-weight: 600; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; }
+  .nav-grid { padding: 1rem; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; overflow-y: auto; flex: 1; }
+  .nav-btn {
+    aspect-ratio: 1; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 6px;
+    color: var(--branco); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
+  }
+  .nav-btn.ativo { border-color: var(--dourado); background: rgba(240,192,80,0.1); }
+  .nav-btn.marcada { background: rgba(255,255,255,0.08); border-color: #555; }
+
+  .questao-container { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; }
+  .q-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem; border-bottom: 1px solid var(--cinza-borda); padding-bottom: 1rem; }
+  .q-num { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--branco); line-height: 1; }
+  .q-area { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cinza-texto); text-transform: uppercase; }
+
+  .enunciado { font-size: 16px; line-height: 1.8; color: var(--branco); margin-bottom: 2rem; white-space: pre-wrap; }
+
+  .alts-lista { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; }
+  .alt {
+    display: flex; align-items: center; gap: 16px; padding: 1rem;
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+    border-radius: 8px; cursor: pointer; transition: 0.15s;
+  }
+  .alt:hover { border-color: #555; background: var(--cinza-medio); }
+  .alt.selecionada { border-color: var(--dourado); background: rgba(240,192,80,0.05); }
+  .alt-letra {
+    width: 32px; height: 32px; flex-shrink: 0; border: 1px solid var(--cinza-borda); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-weight: 600;
+  }
+  .alt.selecionada .alt-letra { background: var(--dourado); border-color: var(--dourado); color: var(--carvao); }
+  .alt-texto { font-size: 15px; color: var(--branco); line-height: 1.5; }
+
+  .q-actions { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 2rem; }
+  .btn-nav { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 10px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: 0.2s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-nav:hover:not(:disabled) { background: var(--cinza-medio); }
+  .btn-nav:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  /* ── CARTÃO RESPOSTA ── */
+  .gabarito-overlay {
+    position: fixed; top: 60px; left: 0; right: 0; bottom: 0; background: var(--carvao); z-index: 100;
+    display: none; flex-direction: column;
+  }
+  .gabarito-overlay.ativo { display: flex; }
+  .gab-header { padding: 1.5rem 3rem; border-bottom: 1px solid var(--cinza-borda); display: flex; justify-content: space-between; align-items: center; background: var(--cinza-escuro); }
+  .gab-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.05em; }
+  .gab-aviso { font-size: 13px; color: var(--cinza-texto); max-width: 500px; line-height: 1.4; }
+  .gab-content { display: flex; flex: 1; overflow: hidden; }
+  .gab-col { flex: 1; padding: 2rem 3rem; overflow-y: auto; }
+  .gab-col-left { border-right: 1px solid var(--cinza-borda); background: rgba(255,255,255,0.01); }
+  .gab-subtitle { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--cinza-texto); margin-bottom: 1.5rem; font-family: 'IBM Plex Mono', monospace; font-weight: 600; }
+  .gab-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .gab-grid { grid-template-columns: 1fr; } }
+  .gab-item { display: flex; align-items: center; gap: 15px; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .gab-num { width: 30px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--cinza-texto); }
+  .rascunho-val { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--branco); font-size: 16px; }
+  .rascunho-vazio { color: #555; font-style: italic; font-size: 13px; }
+  .bolinhas-wrap { display: flex; gap: 8px; }
+  .bolinha {
+    width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--cinza-texto);
+    display: flex; align-items: center; justify-content: center; font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace; color: var(--cinza-texto); cursor: pointer; transition: 0.1s; background: transparent;
+  }
+  .bolinha:hover { border-color: var(--branco); color: var(--branco); }
+  .bolinha.preenchida { background: var(--branco); color: var(--carvao); border-color: var(--branco); font-weight: 600; }
+  .gab-footer { padding: 1.5rem 3rem; background: var(--cinza-escuro); border-top: 1px solid var(--cinza-borda); display: flex; justify-content: flex-end; gap: 15px; }
+
+  /* ── LOADING ── */
+  .tela-cheia {
+    position: fixed; inset: 0; background: var(--carvao); z-index: 999;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  }
+  .loader { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--dourado); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── RESULTADO ── */
+  .resultado-overlay {
+    position: fixed; inset: 0; background: var(--carvao); z-index: 998;
+    display: none; flex-direction: column; overflow-y: auto;
+  }
+  .resultado-overlay.ativo { display: flex; }
+  .resultado-topbar {
+    height: 60px; flex-shrink: 0; background: var(--cinza-escuro); border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
+  }
+  .resultado-body {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 3rem 1.5rem 4rem; max-width: 820px; width: 100%; margin: 0 auto;
+  }
+  .res-hero { text-align: center; margin-bottom: 2.5rem; animation: fadeUp 0.4s ease both; }
+  .res-hero-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 0.04em; line-height: 1; margin-bottom: 6px; }
+  .res-hero-sub { font-size: 14px; color: var(--cinza-texto); }
+  .res-ranking-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(240,192,80,0.1); border: 1px solid rgba(240,192,80,0.4);
+    border-radius: 8px; padding: 10px 20px; margin-top: 16px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--dourado);
+    animation: fadeUp 0.4s ease 0.05s both;
+  }
+  .res-score-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s ease 0.1s both;
+  }
+  .res-score-card {
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem; text-align: center;
+  }
+  .res-score-card .val { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 0.04em; line-height: 1; margin-bottom: 4px; }
+  .res-score-card .label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.06em; }
+  .res-area-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; width: 100%; margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s ease 0.2s both;
+  }
+  .res-area-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 0.75rem; text-align: center; }
+  .res-area-card .at-num { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); margin-bottom: 4px; }
+  .res-area-card .at-score { font-family: 'Bebas Neue', sans-serif; font-size: 26px; line-height: 1; margin-bottom: 2px; }
+  .res-area-card .at-detail { font-size: 10px; color: var(--cinza-texto); }
+  .res-section-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    animation: fadeUp 0.4s ease 0.3s both;
+  }
+  .res-section-title::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+  .res-gabarito-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 6px; width: 100%; margin-bottom: 2.5rem;
+    animation: fadeUp 0.4s ease 0.35s both;
+  }
+  .res-gab-item {
+    display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: 6px;
+    font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+  }
+  .res-gab-item .num { color: var(--cinza-texto); min-width: 22px; }
+  .res-gab-item .marcou { font-weight: 600; }
+  .res-gab-item.ok { border-color: rgba(125,217,154,0.3); }
+  .res-gab-item.ok .marcou { color: #7DD99A; }
+  .res-gab-item.err { border-color: rgba(240,149,149,0.2); }
+  .res-gab-item.err .marcou { color: #F09595; }
+  .res-gab-item .corr { color: #7DD99A; font-size: 10px; }
+  .res-acoes {
+    display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    width: 100%; animation: fadeUp 0.4s ease 0.4s both;
+  }
+  .res-btn {
+    padding: 13px 28px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; transition: all 0.15s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .res-btn-primary { background: var(--vermelho); color: #fff; border: none; }
+  .res-btn-primary:hover { background: var(--vermelho-escuro); }
+  .res-btn-gold { background: rgba(240,192,80,0.15); color: var(--dourado); border: 1px solid rgba(240,192,80,0.4); }
+  .res-btn-gold:hover { background: rgba(240,192,80,0.25); }
+  .res-btn-secondary { background: transparent; border: 1px solid var(--cinza-borda); color: var(--branco); }
+  .res-btn-secondary:hover { background: var(--cinza-medio); border-color: #555; }
+
+  /* Mobile toggle nav */
+  .btn-toggle-nav {
+    display: none; background: var(--cinza-medio); border: 1px solid var(--cinza-borda);
+    color: var(--branco); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 500;
+    font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; align-items: center; gap: 6px; white-space: nowrap;
+  }
+  .nav-drawer-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200; }
+  .nav-drawer-overlay.ativo { display: block; }
+  .nav-drawer {
+    position: fixed; bottom: 0; left: 0; right: 0; background: var(--cinza-escuro);
+    border-top: 1px solid var(--cinza-borda); border-radius: 16px 16px 0 0; z-index: 201;
+    max-height: 60vh; display: flex; flex-direction: column;
+    transform: translateY(100%); transition: transform 0.25s ease;
+  }
+  .nav-drawer-overlay.ativo .nav-drawer { transform: translateY(0); }
+  .nav-drawer-header {
+    padding: 1rem; border-bottom: 1px solid var(--cinza-borda);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-weight: 600; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .nav-drawer-close { background: none; border: none; color: var(--cinza-texto); font-size: 20px; cursor: pointer; line-height: 1; padding: 0 4px; }
+  .nav-drawer-grid { padding: 1rem; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; overflow-y: auto; flex: 1; }
+
+  @media (max-width: 768px) {
+    .topbar { padding: 0 1rem; gap: 8px; }
+    .btn-toggle-nav { display: inline-flex; }
+    .nav-sidebar { display: none; }
+    .questao-container { padding: 1.25rem 1rem; }
+    .q-num { font-size: 22px; }
+    .enunciado { font-size: 15px; margin-bottom: 1.25rem; }
+    .alt { gap: 12px; padding: 10px 12px; }
+    .alt-texto { font-size: 14px; }
+    .timer-box { font-size: 16px; padding: 5px 10px; }
+    .btn-finalizar { padding: 7px 12px; font-size: 13px; }
+    .gab-header { padding: 1rem; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .gab-titulo { font-size: 22px; }
+    .gab-content { flex-direction: column; overflow-y: auto; }
+    .gab-col { padding: 1rem; }
+    .gab-col-left { border-right: none; border-bottom: 1px solid var(--cinza-borda); }
+    .gab-grid { grid-template-columns: 1fr; }
+    .bolinhas-wrap { gap: 6px; }
+    .bolinha { width: 32px; height: 32px; font-size: 12px; }
+    .gab-footer { padding: 1rem; gap: 10px; flex-direction: column; }
+    .gab-footer .btn-finalizar, .gab-footer .btn-nav { width: 100%; text-align: center; padding: 13px; }
+    .res-score-grid { grid-template-columns: repeat(2, 1fr); }
+    .res-area-grid { grid-template-columns: repeat(3, 1fr); }
+    .res-gabarito-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+    .res-hero-titulo { font-size: 36px; }
+    .res-acoes { flex-direction: column; }
+    .res-btn { width: 100%; justify-content: center; }
+    .resultado-body { padding: 1.5rem 1rem 3rem; }
+    .topbar-info { display: none; }
+  }
+  @media (max-width: 480px) {
+    .res-area-grid { grid-template-columns: repeat(2, 1fr); }
+    .nav-drawer-grid { grid-template-columns: repeat(5, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="tela-cheia" id="tela-loading">
+  <div class="loader"></div>
+  <div style="font-size:14px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">CARREGANDO SIMULADO MENSAL...</div>
+</div>
+
+<div class="layout">
+
+  <header class="topbar">
+    <a href="/simulados" class="topbar-logo">GRADUABM</a>
+    <div class="topbar-info" id="topbar-titulo">SIMULADO MENSAL</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div class="timer-box" id="timer">04:00:00</div>
+      <button class="btn-toggle-nav" onclick="abrirDrawerNav()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Questões
+      </button>
+      <button class="btn-finalizar" onclick="abrirGabarito()">Cartão Resposta</button>
+    </div>
+  </header>
+
+  <main class="main-area">
+    <aside class="nav-sidebar">
+      <div class="nav-header">Caderno de Questões</div>
+      <div class="nav-grid" id="nav-grid"></div>
+    </aside>
+
+    <div class="questao-container">
+      <div class="q-header">
+        <div class="q-num" id="q-num">Q. 01</div>
+        <div class="q-area" id="q-area"></div>
+      </div>
+      <div class="enunciado" id="q-enunciado">Carregando...</div>
+      <div class="alts-lista" id="alts-lista"></div>
+      <div class="q-actions">
+        <button class="btn-nav" id="btn-prev" onclick="navegar(-1)">← Anterior</button>
+        <button class="btn-nav" id="btn-next" onclick="navegar(1)">Próxima →</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- DRAWER MOBILE -->
+  <div class="nav-drawer-overlay" id="nav-drawer-overlay" onclick="fecharDrawerNav(event)">
+    <div class="nav-drawer">
+      <div class="nav-drawer-header">
+        <span>Caderno de Questões</span>
+        <button class="nav-drawer-close" onclick="fecharDrawerNavBtn()">×</button>
+      </div>
+      <div class="nav-drawer-grid" id="nav-drawer-grid"></div>
+    </div>
+  </div>
+
+  <!-- CARTÃO RESPOSTA -->
+  <div class="gabarito-overlay" id="tela-gabarito">
+    <div class="gab-header">
+      <div>
+        <h2 class="gab-titulo">Cartão Resposta Oficial</h2>
+        <p class="gab-aviso">ATENÇÃO: Apenas as bolinhas preenchidas à direita serão pontuadas. Transcreva com cuidado. Você tem somente 1 tentativa neste simulado.</p>
+      </div>
+      <button class="btn-nav" onclick="fecharGabarito()">Voltar para a Prova</button>
+    </div>
+    <div class="gab-content">
+      <div class="gab-col gab-col-left">
+        <div class="gab-subtitle">Suas marcações no Caderno</div>
+        <div class="gab-grid" id="gab-rascunho-list"></div>
+      </div>
+      <div class="gab-col">
+        <div class="gab-subtitle">Cartão Resposta (PREENCHA AQUI)</div>
+        <div class="gab-grid" id="gab-oficial-list"></div>
+      </div>
+    </div>
+    <div class="gab-footer">
+      <button class="btn-nav" onclick="fecharGabarito()">Continuar Revisando</button>
+      <button class="btn-finalizar" onclick="entregarProva(false)" style="padding:12px 24px;">Entregar Definitivamente</button>
+    </div>
+  </div>
+
+  <!-- RESULTADO -->
+  <div class="resultado-overlay" id="tela-resultado">
+    <div class="resultado-topbar">
+      <span class="topbar-logo">GRADUABM</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cinza-texto);" id="res-tempo-info"></span>
+    </div>
+    <div class="resultado-body">
+      <div class="res-hero">
+        <div class="res-hero-titulo">Simulado Entregue</div>
+        <div class="res-hero-sub" id="res-subtitulo">Confira seu desempenho</div>
+        <div class="res-ranking-badge" id="res-ranking-badge" style="display:none;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+          <span id="res-ranking-texto"></span>
+        </div>
+      </div>
+
+      <div class="res-score-grid" id="res-score-grid"></div>
+
+      <div class="res-section-title">Desempenho por Área Temática</div>
+      <div class="res-area-grid" id="res-area-grid"></div>
+
+      <div class="res-section-title">Gabarito do Cartão Resposta</div>
+      <div class="res-gabarito-grid" id="res-gabarito-grid"></div>
+
+      <div class="res-acoes">
+        <a id="btn-ver-ranking" href="#" class="res-btn res-btn-gold" style="display:none;">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+          Ver Ranking Completo
+        </a>
+        <a href="/simulados" class="res-btn res-btn-primary">← Voltar aos Simulados</a>
+        <a href="/dashboard" class="res-btn res-btn-secondary">Dashboard</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('copy', e => { e.clipboardData.setData('text/plain', 'Conteúdo protegido.'); e.preventDefault(); });
+
+let questoes = [];
+let sessaoId = null;
+let participacaoId = null;
+let simuladoId = null;
+let simuladoTitulo = '';
+let simuladoEncerramento = null;
+let currentIndex = 0;
+let respostas = [];
+let tempoRestante = 14400;
+let timerInterval = null;
+let tempoInicio = Date.now();
+
+async function init() {
+  GraduaBM.protegerRota();
+
+  simuladoId = sessionStorage.getItem('graduabm_simulado_mensal_id');
+  if (!simuladoId) { window.location.href = '/simulados'; return; }
+
+  try {
+    // Verifica participação existente
+    const partExist = await GraduaBM.SimuladoMensal.minhaParticipacao(simuladoId).catch(() => null);
+    if (partExist?.entregue) {
+      window.location.href = '/simulado-mensal-ranking?id=' + simuladoId;
+      return;
+    }
+
+    // Carrega questões (valida janela no backend)
+    const res = await GraduaBM.SimuladoMensal.questoes(simuladoId);
+    questoes = res.questoes || [];
+    simuladoTitulo = res.simulado?.titulo || 'Simulado Mensal';
+    simuladoEncerramento = res.simulado?.encerramento;
+
+    if (questoes.length === 0) {
+      alert('Nenhuma questão disponível para este simulado.');
+      window.location.href = '/simulados';
+      return;
+    }
+
+    document.getElementById('topbar-titulo').innerHTML = `<strong style="color:var(--dourado);">SIMULADO MENSAL</strong><br>${simuladoTitulo}`;
+
+    // Registra participação (cria sessão no backend)
+    if (partExist) {
+      sessaoId = partExist.sessao_id;
+      participacaoId = partExist.id;
+    } else {
+      const part = await GraduaBM.SimuladoMensal.participar(simuladoId);
+      sessaoId = part.sessao_id;
+      participacaoId = part.participacao_id;
+    }
+
+    respostas = questoes.map(q => ({ questao_id: q.id, rascunho: null, oficial: null }));
+
+    // Ajusta timer para não ultrapassar encerramento do simulado
+    if (simuladoEncerramento) {
+      const msAteEncerramento = Math.floor((new Date(simuladoEncerramento) - new Date()) / 1000);
+      if (msAteEncerramento > 0 && msAteEncerramento < tempoRestante) {
+        tempoRestante = msAteEncerramento;
+      }
+    }
+
+    document.getElementById('tela-loading').style.display = 'none';
+    iniciarCronometro();
+    renderizarNav();
+    carregarQuestao(0);
+
+  } catch (err) {
+    console.error(err);
+    const msg = err?.erro || err?.message || 'Erro ao carregar simulado.';
+    if (err?.codigo === 'JA_ENTREGUE') {
+      window.location.href = '/simulado-mensal-ranking?id=' + simuladoId;
+      return;
+    }
+    if (err?.codigo === 'ENCERRADO') {
+      alert('Este simulado já foi encerrado.');
+      window.location.href = '/simulados';
+      return;
+    }
+    if (err?.codigo === 'NAO_ABERTO') {
+      alert('Este simulado ainda não está aberto.');
+      window.location.href = '/simulados';
+      return;
+    }
+    alert(msg);
+    window.location.href = '/simulados';
+  }
+}
+
+function iniciarCronometro() {
+  const el = document.getElementById('timer');
+  timerInterval = setInterval(() => {
+    tempoRestante--;
+    const h = String(Math.floor(tempoRestante / 3600)).padStart(2, '0');
+    const m = String(Math.floor((tempoRestante % 3600) / 60)).padStart(2, '0');
+    const s = String(tempoRestante % 60).padStart(2, '0');
+    el.textContent = `${h}:${m}:${s}`;
+    if (tempoRestante <= 300) el.classList.add('alerta');
+    if (tempoRestante <= 0) { clearInterval(timerInterval); entregarProva(true); }
+  }, 1000);
+}
+
+function renderizarNav() {
+  ['nav-grid', 'nav-drawer-grid'].forEach(id => {
+    const grid = document.getElementById(id);
+    if (!grid) return;
+    grid.innerHTML = '';
+    questoes.forEach((_, i) => {
+      const btn = document.createElement('button');
+      btn.className = `nav-btn ${i === currentIndex ? 'ativo' : ''} ${respostas[i].rascunho ? 'marcada' : ''}`;
+      btn.textContent = i + 1;
+      btn.onclick = () => { carregarQuestao(i); fecharDrawerNavBtn(); };
+      grid.appendChild(btn);
+    });
+  });
+}
+
+function carregarQuestao(index) {
+  currentIndex = index;
+  renderizarNav();
+  const q = questoes[index];
+  document.getElementById('q-num').textContent = `Q. ${String(index + 1).padStart(2, '0')}`;
+  document.getElementById('q-area').textContent = (q.area_tematica || 'GERAL').toUpperCase();
+  document.getElementById('q-enunciado').textContent = q.enunciado || '';
+
+  const lista = document.getElementById('alts-lista');
+  lista.innerHTML = '';
+  ['a','b','c','d','e'].forEach(l => {
+    const texto = q['alternativa_' + l];
+    if (!texto) return;
+    const letra = l.toUpperCase();
+    const div = document.createElement('div');
+    div.className = `alt ${respostas[index].rascunho === letra ? 'selecionada' : ''}`;
+    div.onclick = () => marcarRascunho(index, letra);
+    div.innerHTML = `<div class="alt-letra">${letra}</div><div class="alt-texto">${texto}</div>`;
+    lista.appendChild(div);
+  });
+
+  document.getElementById('btn-prev').disabled = index === 0;
+  document.getElementById('btn-next').disabled = index === questoes.length - 1;
+}
+
+function marcarRascunho(index, letra) {
+  respostas[index].rascunho = respostas[index].rascunho === letra ? null : letra;
+  carregarQuestao(index);
+}
+
+function navegar(dir) {
+  const ni = currentIndex + dir;
+  if (ni >= 0 && ni < questoes.length) carregarQuestao(ni);
+}
+
+function abrirGabarito() {
+  const rascGEl = document.getElementById('gab-rascunho-list');
+  const oficGEl = document.getElementById('gab-oficial-list');
+  rascGEl.innerHTML = '';
+  oficGEl.innerHTML = '';
+  questoes.forEach((_, i) => {
+    const n = i + 1;
+    const rasc = respostas[i].rascunho;
+    // Rascunho
+    const ri = document.createElement('div');
+    ri.className = 'gab-item';
+    ri.innerHTML = `<span class="gab-num">${String(n).padStart(2,'0')}</span>
+      ${rasc ? `<span class="rascunho-val">${rasc}</span>` : `<span class="rascunho-vazio">—</span>`}`;
+    rascGEl.appendChild(ri);
+    // Oficial
+    const oi = document.createElement('div');
+    oi.className = 'gab-item';
+    const bolinhas = ['A','B','C','D','E'].map(l =>
+      `<button class="bolinha ${respostas[i].oficial === l ? 'preenchida' : ''}"
+        onclick="marcarOficial(${i},'${l}')">${l}</button>`
+    ).join('');
+    oi.innerHTML = `<span class="gab-num">${String(n).padStart(2,'0')}</span>
+      <div class="bolinhas-wrap">${bolinhas}</div>`;
+    oficGEl.appendChild(oi);
+  });
+  document.getElementById('tela-gabarito').classList.add('ativo');
+}
+
+function marcarOficial(index, letra) {
+  respostas[index].oficial = respostas[index].oficial === letra ? null : letra;
+  // Atualiza bolinhas sem reabrir tudo
+  const oficGEl = document.getElementById('gab-oficial-list');
+  const items = oficGEl.querySelectorAll('.gab-item');
+  if (items[index]) {
+    const bolinhas = items[index].querySelectorAll('.bolinha');
+    bolinhas.forEach(b => {
+      b.classList.toggle('preenchida', b.textContent === letra && respostas[index].oficial === letra);
+    });
+  }
+}
+
+function fecharGabarito() {
+  document.getElementById('tela-gabarito').classList.remove('ativo');
+}
+
+function abrirDrawerNav() {
+  renderizarNav();
+  document.getElementById('nav-drawer-overlay').classList.add('ativo');
+}
+function fecharDrawerNav(e) {
+  if (e.target === document.getElementById('nav-drawer-overlay')) fecharDrawerNavBtn();
+}
+function fecharDrawerNavBtn() {
+  document.getElementById('nav-drawer-overlay').classList.remove('ativo');
+}
+
+async function entregarProva(porTempo) {
+  clearInterval(timerInterval);
+  if (!porTempo) {
+    const nOficial = respostas.filter(r => r.oficial).length;
+    const nTotal = questoes.length;
+    if (nOficial < nTotal) {
+      const ok = confirm(`Você preencheu ${nOficial} de ${nTotal} bolinhas no Cartão Resposta. Questões sem bolinha marcada serão contadas como erradas.\n\nDeseja entregar mesmo assim?`);
+      if (!ok) { iniciarCronometro(); return; }
+    }
+  }
+
+  document.getElementById('tela-gabarito').classList.remove('ativo');
+  document.getElementById('tela-loading').style.display = 'flex';
+  document.querySelector('#tela-loading div:last-child').textContent = 'PROCESSANDO GABARITO...';
+
+  const respostas_cartao = {};
+  respostas.forEach(r => { respostas_cartao[r.questao_id] = r.oficial || null; });
+
+  try {
+    const resultado = await GraduaBM.SimuladoMensal.entregar(simuladoId, respostas_cartao);
+    document.getElementById('tela-loading').style.display = 'none';
+    mostrarResultado(resultado);
+  } catch (err) {
+    console.error(err);
+    document.getElementById('tela-loading').style.display = 'none';
+    if (err?.erro?.includes('já entregue')) {
+      window.location.href = '/simulado-mensal-ranking?id=' + simuladoId;
+      return;
+    }
+    alert('Erro ao processar a entrega. Tente novamente.');
+    iniciarCronometro();
+  }
+}
+
+function mostrarResultado(resultado) {
+  const { acertos, total, percentual, posicao } = resultado;
+  const erros = respostas.filter(r => r.oficial && r.oficial !== null).length - acertos;
+  const emBranco = respostas.filter(r => !r.oficial).length;
+  const tempoUsadoSeg = Math.floor((Date.now() - tempoInicio) / 1000);
+  const th = String(Math.floor(tempoUsadoSeg / 3600)).padStart(2,'0');
+  const tm = String(Math.floor((tempoUsadoSeg % 3600) / 60)).padStart(2,'0');
+  const ts = String(tempoUsadoSeg % 60).padStart(2,'0');
+
+  document.getElementById('res-tempo-info').textContent = `Tempo: ${th}:${tm}:${ts}`;
+
+  // Badge de ranking
+  if (posicao) {
+    document.getElementById('res-ranking-badge').style.display = 'inline-flex';
+    document.getElementById('res-ranking-texto').textContent = `Sua posição: #${posicao} no ranking`;
+  }
+
+  // Score cards
+  const cor = percentual >= 70 ? '#7DD99A' : percentual >= 50 ? '#F0C050' : '#F09595';
+  document.getElementById('res-score-grid').innerHTML = `
+    <div class="res-score-card"><div class="val" style="color:${cor}">${percentual.toFixed(1)}%</div><div class="label">Aproveitamento</div></div>
+    <div class="res-score-card"><div class="val" style="color:#7DD99A">${acertos}</div><div class="label">Acertos</div></div>
+    <div class="res-score-card"><div class="val" style="color:#F09595">${erros}</div><div class="label">Erros</div></div>
+    <div class="res-score-card"><div class="val" style="color:var(--cinza-texto)">${emBranco}</div><div class="label">Em Branco</div></div>`;
+
+  // Desempenho por área
+  const areas = ['AT1','AT2','AT3','AT4','AT5'];
+  const areaStats = {};
+  areas.forEach(a => { areaStats[a] = { acertos: 0, total: 0 }; });
+
+  // Gabarito comparativo (usando respostas do cartão vs gabarito do backend não disponível aqui ainda)
+  // Mostramos apenas o que foi marcado no cartão
+  const gabGrid = document.getElementById('res-gabarito-grid');
+  gabGrid.innerHTML = respostas.map((r, i) => {
+    const marcou = r.oficial || '—';
+    return `<div class="res-gab-item">
+      <span class="num">${String(i+1).padStart(2,'0')}</span>
+      <span class="marcou">${marcou}</span>
+    </div>`;
+  }).join('');
+
+  // Por área (estimativa local)
+  document.getElementById('res-area-grid').innerHTML = areas.map(a => `
+    <div class="res-area-card">
+      <div class="at-num">${a}</div>
+      <div class="at-score" style="color:var(--cinza-texto)">—</div>
+      <div class="at-detail">Disponível após encerramento</div>
+    </div>`).join('');
+
+  // Botão ranking
+  if (posicao) {
+    const btn = document.getElementById('btn-ver-ranking');
+    if (simuladoEncerramento && new Date() > new Date(simuladoEncerramento)) {
+      btn.href = '/simulado-mensal-ranking?id=' + simuladoId;
+      btn.style.display = 'inline-flex';
+    } else {
+      document.getElementById('res-subtitulo').textContent = `Ranking disponível após o encerramento do simulado`;
+    }
+  }
+
+  document.getElementById('tela-resultado').classList.add('ativo');
+}
+
+init();
+</script>
+</body>
+</html>

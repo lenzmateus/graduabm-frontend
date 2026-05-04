@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Simulados Mensais</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F; --carvao: #0F0F0F; --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A; --cinza-borda: #333; --cinza-texto: #888;
+    --branco: #F8F6F2; --verde: #7DD99A; --dourado: #F0C050;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; min-height: 100vh; }
+
+  .topbar { height: 56px; background: var(--cinza-escuro); border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 50; }
+  .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--branco); letter-spacing: 0.05em; text-decoration: none; }
+  .topbar-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); border: 1px solid var(--cinza-borda); padding: 2px 8px; border-radius: 4px; }
+  .topbar-nav { display: flex; gap: 8px; align-items: center; }
+  .btn-sm { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; border: 1px solid var(--cinza-borda); background: transparent; color: var(--cinza-texto); transition: all 0.15s; text-decoration: none; }
+  .btn-sm:hover { color: var(--branco); border-color: #555; }
+  .btn-primary { background: var(--vermelho); color: #fff; border-color: var(--vermelho); }
+  .btn-primary:hover { background: #8B1A08; border-color: #8B1A08; color: #fff; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+  /* Seção topo */
+  .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 12px; }
+  .page-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.04em; }
+  .page-sub { font-size: 13px; color: var(--cinza-texto); margin-top: 4px; }
+
+  /* Cards de simulados */
+  .simulados-grid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 3rem; }
+  .sim-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; overflow: hidden; }
+  .sim-card-header { display: flex; align-items: center; gap: 12px; padding: 1rem 1.25rem; cursor: pointer; }
+  .sim-curso { font-family: 'Bebas Neue', sans-serif; font-size: 24px; min-width: 56px; text-align: center; }
+  .sim-curso.ctsp { color: var(--vermelho); }
+  .sim-curso.cba { color: #185FA5; }
+  .sim-info { flex: 1; }
+  .sim-titulo { font-size: 14px; font-weight: 600; color: var(--branco); margin-bottom: 2px; }
+  .sim-datas { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .sim-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 20px; letter-spacing: 0.06em; }
+  .status-aberto { background: rgba(192,39,15,0.15); color: #E8866E; border: 1px solid rgba(192,39,15,0.3); }
+  .status-aguardando { background: rgba(240,192,80,0.1); color: var(--dourado); border: 1px solid rgba(240,192,80,0.3); }
+  .status-encerrado { background: rgba(125,217,154,0.1); color: var(--verde); border: 1px solid rgba(125,217,154,0.3); }
+  .sim-acoes { display: flex; gap: 6px; }
+  .sim-corpo { display: none; border-top: 1px solid var(--cinza-borda); padding: 1.25rem; }
+  .sim-corpo.aberto { display: block; }
+
+  /* Questões do simulado */
+  .questoes-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .questoes-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.1em; }
+  .questoes-lista { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; max-height: 300px; overflow-y: auto; }
+  .questao-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 10px; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 6px; }
+  .q-ord { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); min-width: 24px; }
+  .q-area-tag { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 1px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid var(--cinza-borda); color: var(--cinza-texto); flex-shrink: 0; }
+  .q-enun { font-size: 12px; color: var(--branco); flex: 1; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .btn-remover { background: none; border: 1px solid #333; color: var(--cinza-texto); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
+  .btn-remover:hover { border-color: #E24B4A; color: #E24B4A; }
+
+  /* Busca para adicionar questões */
+  .adicionar-section { border-top: 1px solid var(--cinza-borda); padding-top: 1rem; margin-top: 1rem; }
+  .adicionar-titulo { font-size: 12px; color: var(--cinza-texto); margin-bottom: 10px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; }
+  .busca-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .select-sm { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; }
+  .busca-result { display: flex; flex-direction: column; gap: 4px; max-height: 240px; overflow-y: auto; }
+  .busca-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; border: 1px solid var(--cinza-borda); border-radius: 6px; cursor: pointer; transition: background 0.1s; }
+  .busca-item:hover { background: rgba(255,255,255,0.04); }
+  .busca-item.selecionado { border-color: var(--vermelho); background: rgba(192,39,15,0.05); }
+  .busca-item input[type=checkbox] { margin-top: 2px; accent-color: var(--vermelho); }
+  .busca-item-info { flex: 1; }
+  .busca-item-enun { font-size: 12px; color: var(--branco); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .busca-item-meta { font-size: 10px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; margin-top: 2px; }
+
+  .adicionar-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .selecionados-count { font-size: 12px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; }
+
+  /* Formulário novo simulado */
+  .form-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; display: none; }
+  .form-card.visivel { display: block; }
+  .form-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label { font-size: 11px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; }
+  .form-input { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 8px 12px; border-radius: 6px; font-size: 13px; font-family: 'IBM Plex Sans', sans-serif; }
+  .form-input:focus { outline: none; border-color: var(--vermelho); }
+  .form-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 18px;
+    font-size: 13px; z-index: 999; opacity: 0; transition: opacity 0.3s;
+    max-width: 320px;
+  }
+  .toast.visivel { opacity: 1; }
+  .toast.ok { border-color: rgba(125,217,154,0.4); color: var(--verde); }
+  .toast.err { border-color: rgba(240,149,149,0.4); color: #F09595; }
+
+  @media (max-width: 768px) {
+    .container { padding: 1rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .page-header { flex-direction: column; }
+    .busca-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/admin.html" class="topbar-logo">GRADUABM <span class="topbar-badge">ADMIN</span></a>
+  <div class="topbar-nav">
+    <a href="/admin.html" class="btn-sm">← Painel Principal</a>
+    <a href="/admin-questoes.html" class="btn-sm">Questões</a>
+  </div>
+</div>
+
+<div class="container">
+  <div class="page-header">
+    <div>
+      <div class="page-titulo">Simulados Mensais</div>
+      <div class="page-sub">Gerencie simulados exclusivos, questões e acompanhe participações.</div>
+    </div>
+    <button class="btn-sm btn-primary" onclick="toggleFormNovo()">+ Novo Simulado</button>
+  </div>
+
+  <!-- FORMULÁRIO NOVO SIMULADO -->
+  <div class="form-card" id="form-novo">
+    <div class="form-titulo">Criar Novo Simulado Mensal</div>
+    <div class="form-row">
+      <div class="form-group full">
+        <div class="form-label">Título</div>
+        <input class="form-input" id="f-titulo" type="text" placeholder="Ex: Simulado Mensal CTSP — Junho 2025">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Curso</div>
+        <select class="form-input" id="f-curso">
+          <option value="ctsp">CTSP</option>
+          <option value="cba">CBA</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Abertura (sexta 12:00 BRT = 15:00 UTC)</div>
+        <input class="form-input" id="f-abertura" type="datetime-local">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Encerramento (domingo 23:59 BRT = segunda 02:59 UTC)</div>
+        <input class="form-input" id="f-encerramento" type="datetime-local">
+      </div>
+    </div>
+    <div class="form-footer">
+      <button class="btn-sm" onclick="toggleFormNovo()">Cancelar</button>
+      <button class="btn-sm btn-primary" onclick="criarSimulado()">Criar Simulado</button>
+    </div>
+  </div>
+
+  <!-- LISTA DE SIMULADOS -->
+  <div class="simulados-grid" id="simulados-grid">
+    <div style="color:var(--cinza-texto);text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:13px;">Carregando...</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ADMIN_TOKEN = localStorage.getItem('admin_token') || prompt('Token de administrador:');
+if (!ADMIN_TOKEN) { alert('Token necessário.'); history.back(); }
+localStorage.setItem('admin_token', ADMIN_TOKEN);
+
+const API = 'https://graduabm-backend-production.up.railway.app';
+
+async function req(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN, ...opts.headers };
+  const res = await fetch(API + path, { ...opts, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw { status: res.status, ...data };
+  return data;
+}
+
+function toast(msg, tipo = 'ok') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${tipo} visivel`;
+  setTimeout(() => el.classList.remove('visivel'), 3500);
+}
+
+function formatarData(iso) {
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function getStatus(sim) {
+  const now = new Date().toISOString();
+  if (now < sim.abertura) return { cls: 'status-aguardando', label: 'AGUARDANDO' };
+  if (now <= sim.encerramento) return { cls: 'status-aberto', label: 'ABERTO' };
+  return { cls: 'status-encerrado', label: 'ENCERRADO' };
+}
+
+function toggleFormNovo() {
+  const f = document.getElementById('form-novo');
+  f.classList.toggle('visivel');
+}
+
+async function criarSimulado() {
+  const titulo = document.getElementById('f-titulo').value.trim();
+  const curso = document.getElementById('f-curso').value;
+  const aberturaLocal = document.getElementById('f-abertura').value;
+  const encerramentoLocal = document.getElementById('f-encerramento').value;
+  if (!titulo || !aberturaLocal || !encerramentoLocal) { toast('Preencha todos os campos.', 'err'); return; }
+  // Converte para UTC (o input datetime-local está em horário local do navegador)
+  const abertura = new Date(aberturaLocal).toISOString();
+  const encerramento = new Date(encerramentoLocal).toISOString();
+  try {
+    await req('/api/simulados-mensais/admin/criar', {
+      method: 'POST', body: JSON.stringify({ titulo, curso, abertura, encerramento }),
+    });
+    toast('Simulado criado com sucesso!');
+    toggleFormNovo();
+    carregarSimulados();
+  } catch (err) { toast(err.erro || 'Erro ao criar.', 'err'); }
+}
+
+// Estado das questões carregadas por simulado
+const questoesSimulado = {};
+const questoesDisponiveis = {};
+const selecionadosPorSimulado = {};
+const painelAberto = {};
+
+async function carregarSimulados() {
+  const grid = document.getElementById('simulados-grid');
+  try {
+    const data = await req('/api/simulados-mensais/admin/listar');
+    if (!data.length) { grid.innerHTML = '<div style="color:var(--cinza-texto);text-align:center;padding:2rem;font-family:\'IBM Plex Mono\',monospace;font-size:13px;">Nenhum simulado criado ainda.</div>'; return; }
+    grid.innerHTML = data.map(sim => {
+      const st = getStatus(sim);
+      return `
+        <div class="sim-card" id="sim-card-${sim.id}">
+          <div class="sim-card-header" onclick="toggleSimulado('${sim.id}')">
+            <div class="sim-curso ${sim.curso}">${sim.curso.toUpperCase()}</div>
+            <div class="sim-info">
+              <div class="sim-titulo">${sim.titulo}</div>
+              <div class="sim-datas">${formatarData(sim.abertura)} → ${formatarData(sim.encerramento)}</div>
+            </div>
+            <span class="sim-status ${st.cls}">${st.label}</span>
+            <div class="sim-acoes">
+              ${st.label === 'ENCERRADO' && !sim.questoes_incorporadas
+                ? `<button class="btn-sm" onclick="event.stopPropagation();incorporar('${sim.id}')">Incorporar Questões</button>` : ''}
+              <button class="btn-sm" onclick="event.stopPropagation();verRanking('${sim.id}')">Ranking</button>
+              <button class="btn-sm" onclick="event.stopPropagation();toggleAtivo('${sim.id}',${!sim.ativo})">${sim.ativo ? 'Desativar' : 'Ativar'}</button>
+            </div>
+          </div>
+          <div class="sim-corpo" id="corpo-${sim.id}">
+            <div class="questoes-header">
+              <div class="questoes-titulo">Questões vinculadas</div>
+              <button class="btn-sm btn-primary" onclick="adicionarQuestoes('${sim.id}','${sim.curso}')">+ Adicionar Questões</button>
+            </div>
+            <div class="questoes-lista" id="qlista-${sim.id}">
+              <div style="color:var(--cinza-texto);font-size:12px;font-family:'IBM Plex Mono',monospace;">Abrindo...</div>
+            </div>
+            <div class="adicionar-section" id="adicionar-sec-${sim.id}" style="display:none;">
+              <div class="adicionar-titulo">Buscar questões para adicionar</div>
+              <div class="busca-row">
+                <select class="select-sm" id="filtro-area-${sim.id}" onchange="buscarQuestoes('${sim.id}','${sim.curso}')">
+                  <option value="">Todas as Áreas</option>
+                  <option value="AT1">AT1 — Segurança contra Incêndios</option>
+                  <option value="AT2">AT2 — Combate a Incêndios</option>
+                  <option value="AT3">AT3 — Buscas, Salvamentos e APH</option>
+                  <option value="AT4">AT4 — Direito Militar</option>
+                  <option value="AT5">AT5 — Normas Administrativas</option>
+                </select>
+                <button class="btn-sm" onclick="buscarQuestoes('${sim.id}','${sim.curso}')">Buscar</button>
+                <button class="btn-sm" onclick="fecharAdicionar('${sim.id}')">Fechar</button>
+              </div>
+              <div class="busca-result" id="busca-result-${sim.id}"></div>
+              <div class="adicionar-footer">
+                <span class="selecionados-count" id="sel-count-${sim.id}">0 selecionadas</span>
+                <button class="btn-sm btn-primary" onclick="confirmarAdicao('${sim.id}')">Adicionar Selecionadas</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (err) { grid.innerHTML = `<div style="color:#F09595;padding:2rem;">${err.erro || 'Erro ao carregar.'}</div>`; }
+}
+
+function toggleSimulado(id) {
+  const corpo = document.getElementById(`corpo-${id}`);
+  const aberto = corpo.classList.toggle('aberto');
+  if (aberto && !questoesSimulado[id]) carregarQuestoesDoSimulado(id);
+}
+
+async function carregarQuestoesDoSimulado(id) {
+  const lista = document.getElementById(`qlista-${id}`);
+  try {
+    const data = await req(`/api/simulados-mensais/admin/${id}/questoes`);
+    questoesSimulado[id] = data;
+    renderizarQuestoesDo(id);
+  } catch (err) { lista.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro || 'Erro'}</div>`; }
+}
+
+function renderizarQuestoesDo(id) {
+  const lista = document.getElementById(`qlista-${id}`);
+  const data = questoesSimulado[id] || [];
+  if (!data.length) { lista.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:8px 0;">Nenhuma questão vinculada ainda.</div>'; return; }
+  lista.innerHTML = data.map(({ ordem, questoes: q }) => `
+    <div class="questao-item">
+      <span class="q-ord">${ordem}</span>
+      <span class="q-area-tag">${q.area_tematica || '—'}</span>
+      <span class="q-enun">${q.enunciado || ''}</span>
+      <button class="btn-remover" onclick="removerQuestao('${id}','${q.id}')">Remover</button>
+    </div>`).join('');
+}
+
+async function removerQuestao(simId, questaoId) {
+  if (!confirm('Remover esta questão do simulado e reativá-la no banco regular?')) return;
+  try {
+    await req(`/api/simulados-mensais/admin/${simId}/questoes/${questaoId}`, { method: 'DELETE' });
+    delete questoesSimulado[simId];
+    carregarQuestoesDoSimulado(simId);
+    toast('Questão removida e reativada no banco.');
+  } catch (err) { toast(err.erro || 'Erro ao remover.', 'err'); }
+}
+
+function adicionarQuestoes(simId, curso) {
+  const sec = document.getElementById(`adicionar-sec-${simId}`);
+  sec.style.display = sec.style.display === 'none' ? 'block' : 'none';
+  if (sec.style.display === 'block' && !questoesDisponiveis[simId]) {
+    buscarQuestoes(simId, curso);
+  }
+}
+
+function fecharAdicionar(simId) {
+  document.getElementById(`adicionar-sec-${simId}`).style.display = 'none';
+}
+
+async function buscarQuestoes(simId, curso) {
+  const area = document.getElementById(`filtro-area-${simId}`)?.value || '';
+  const el = document.getElementById(`busca-result-${simId}`);
+  el.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:8px;">Buscando...</div>';
+  try {
+    const qs = new URLSearchParams({ curso });
+    if (area) qs.set('area', area);
+    const data = await req(`/api/simulados-mensais/admin/questoes-disponiveis?${qs}`);
+    questoesDisponiveis[simId] = data;
+    selecionadosPorSimulado[simId] = new Set();
+    renderizarBuscaResult(simId);
+  } catch (err) { el.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro || 'Erro'}</div>`; }
+}
+
+function renderizarBuscaResult(simId) {
+  const el = document.getElementById(`busca-result-${simId}`);
+  const data = questoesDisponiveis[simId] || [];
+  // Exclui questões já vinculadas
+  const jaVinculados = new Set((questoesSimulado[simId] || []).map(({ questoes: q }) => q.id));
+  const filtradas = data.filter(q => !jaVinculados.has(q.id));
+  if (!filtradas.length) { el.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;padding:8px;">Nenhuma questão disponível para este filtro.</div>'; return; }
+  el.innerHTML = filtradas.map(q => `
+    <div class="busca-item ${selecionadosPorSimulado[simId]?.has(q.id) ? 'selecionado' : ''}" onclick="toggleSelecionado('${simId}','${q.id}')">
+      <input type="checkbox" ${selecionadosPorSimulado[simId]?.has(q.id) ? 'checked' : ''} onclick="event.stopPropagation();" onchange="toggleSelecionado('${simId}','${q.id}')">
+      <div class="busca-item-info">
+        <div class="busca-item-enun">${q.enunciado || ''}</div>
+        <div class="busca-item-meta">${q.area_tematica || '—'} · ${q.legislacao_nome || '—'} · ${q.ativa ? 'ativa' : '<span style="color:#F09595">inativa</span>'}</div>
+      </div>
+    </div>`).join('');
+  atualizarContador(simId);
+}
+
+function toggleSelecionado(simId, questaoId) {
+  const sel = selecionadosPorSimulado[simId] || new Set();
+  if (sel.has(questaoId)) sel.delete(questaoId); else sel.add(questaoId);
+  selecionadosPorSimulado[simId] = sel;
+  renderizarBuscaResult(simId);
+}
+
+function atualizarContador(simId) {
+  const el = document.getElementById(`sel-count-${simId}`);
+  const n = selecionadosPorSimulado[simId]?.size || 0;
+  if (el) el.textContent = `${n} selecionada${n !== 1 ? 's' : ''}`;
+}
+
+async function confirmarAdicao(simId) {
+  const ids = [...(selecionadosPorSimulado[simId] || [])];
+  if (!ids.length) { toast('Selecione ao menos uma questão.', 'err'); return; }
+  try {
+    const res = await req(`/api/simulados-mensais/admin/${simId}/questoes`, {
+      method: 'POST', body: JSON.stringify({ questao_ids: ids }),
+    });
+    toast(`${res.inseridas} questão(ões) adicionada(s) ao simulado. Marcadas como inativas no banco.`);
+    selecionadosPorSimulado[simId] = new Set();
+    delete questoesSimulado[simId];
+    fecharAdicionar(simId);
+    carregarQuestoesDoSimulado(simId);
+  } catch (err) { toast(err.erro || 'Erro ao adicionar.', 'err'); }
+}
+
+async function incorporar(simId) {
+  if (!confirm('Incorporar as questões deste simulado ao banco regular (ativa = true)?')) return;
+  try {
+    const res = await req(`/api/simulados-mensais/admin/${simId}/incorporar`, { method: 'POST' });
+    toast(`${res.incorporadas} questão(ões) incorporadas ao banco.`);
+    carregarSimulados();
+  } catch (err) { toast(err.erro || 'Erro.', 'err'); }
+}
+
+function verRanking(simId) {
+  window.open(`/simulado-mensal-ranking?id=${simId}`, '_blank');
+}
+
+async function toggleAtivo(simId, novoAtivo) {
+  try {
+    await req(`/api/simulados-mensais/admin/${simId}`, {
+      method: 'PATCH', body: JSON.stringify({ ativo: novoAtivo }),
+    });
+    toast(novoAtivo ? 'Simulado ativado.' : 'Simulado desativado.');
+    carregarSimulados();
+  } catch (err) { toast(err.erro || 'Erro.', 'err'); }
+}
+
+carregarSimulados();
+</script>
+</body>
+</html>

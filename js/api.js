@@ -1,7 +1,7 @@
 const API_URL = 'https://graduabm-backend-production.up.railway.app';
 
 async function request(path, options = {}) {
-  const token = localStorage.getItem('token');
+  const token = sessionStorage.getItem('token');
   const headers = { 'Content-Type': 'application/json', ...options.headers };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -21,7 +21,7 @@ async function request(path, options = {}) {
 
   if (res.status === 401 && data.erro && data.erro.includes('Sessão encerrada')) {
     alert(data.erro);
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     localStorage.removeItem('usuario');
     window.location.href = '/login';
     throw new Error('Sessão encerrada');
@@ -41,6 +41,14 @@ const GraduaBM = {
     return sessionStorage.getItem('graduabm_admin') === '1';
   },
 
+  isGestor() {
+    return sessionStorage.getItem('graduabm_gestor') === '1';
+  },
+
+  isStaff() {
+    return GraduaBM.isAdmin() || GraduaBM.isGestor();
+  },
+
   async protegerRota() {
     if (GraduaBM.isAdmin()) return;
 
@@ -55,7 +63,7 @@ const GraduaBM = {
         window.location.href = '/login';
       }
     } catch {
-      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       localStorage.removeItem('usuario');
       window.location.href = '/login';
     }
@@ -63,7 +71,7 @@ const GraduaBM = {
 
   Auth: {
     estaLogado() {
-      return !!localStorage.getItem('token');
+      return !!sessionStorage.getItem('token');
     },
     usuarioAtivo() {
       const u = GraduaBM.getUsuario();
@@ -74,7 +82,7 @@ const GraduaBM = {
         method: 'POST',
         body: JSON.stringify({ email, senha }),
       });
-      if (data.token) localStorage.setItem('token', data.token);
+      if (data.token) sessionStorage.setItem('token', data.token);
       if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
       return data;
     },
@@ -83,12 +91,12 @@ const GraduaBM = {
         method: 'POST',
         body: JSON.stringify({ nome, email, senha, curso, nickname: nickname || undefined }),
       });
-      if (data.token) localStorage.setItem('token', data.token);
+      if (data.token) sessionStorage.setItem('token', data.token);
       if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
       return data;
     },
     logout() {
-      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
       localStorage.removeItem('usuario');
       window.location.href = '/login';
     },
@@ -170,6 +178,26 @@ const GraduaBM = {
     },
   },
 
+  Gestor: {
+    getToken() {
+      return sessionStorage.getItem('graduabm_gestor_token') || '';
+    },
+    logout() {
+      ['graduabm_gestor','graduabm_gestor_token','graduabm_gestor_nome','graduabm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
+      window.location.href = '/gestor-login';
+    },
+    query(path, prefer, method, body) {
+      return fetch(API_URL + '/api/gestor/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${GraduaBM.Gestor.getToken()}`,
+        },
+        body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
+      }).then(r => r.json());
+    },
+  },
+
   Admin: {
     assinaturas: {
       stats() {
@@ -198,6 +226,9 @@ const GraduaBM = {
       },
       desativar(id) {
         return request(`/api/admin/cupons/${id}`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+      },
+      excluir(id) {
+        return request(`/api/admin/cupons/${id}/excluir`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
       },
     },
   },

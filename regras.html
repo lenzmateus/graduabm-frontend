@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Regras e Informações</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  .topnav {
+    height: 56px;
+    background: var(--cinza-escuro);
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 8px;
+    text-decoration: none;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.05em;
+    color: var(--branco);
+  }
+  .nav-links { display: flex; align-items: center; gap: 16px; }
+  .nav-links a {
+    font-size: 13px; color: var(--cinza-texto);
+    text-decoration: none; transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--branco); }
+  .btn-dashboard {
+    background: var(--vermelho);
+    color: #fff; border: none; border-radius: 6px;
+    padding: 6px 14px; font-size: 13px; font-weight: 500;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer; text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-dashboard:hover { background: var(--vermelho-escuro); }
+
+  /* ── HERO ── */
+  .hero {
+    background: var(--cinza-escuro);
+    border-bottom: 1px solid var(--cinza-borda);
+    padding: 3rem 2rem;
+    text-align: center;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--vermelho);
+    background: rgba(192,39,15,0.1);
+    border: 1px solid rgba(192,39,15,0.25);
+    border-radius: 20px; padding: 3px 12px;
+    margin-bottom: 1rem;
+  }
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(32px, 6vw, 52px);
+    letter-spacing: 0.04em; line-height: 1.1;
+    color: var(--branco); margin-bottom: 1rem;
+  }
+  .hero p {
+    color: var(--cinza-texto);
+    font-size: 15px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* ── ÍNDICE ── */
+  .indice {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.5rem 2rem;
+    margin: 2rem auto;
+    max-width: 860px;
+  }
+  .indice-titulo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--cinza-texto); margin-bottom: 12px;
+  }
+  .indice-lista {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 4px 24px; list-style: none;
+  }
+  .indice-lista a {
+    font-size: 13px; color: var(--cinza-texto);
+    text-decoration: none; transition: color 0.15s;
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 0;
+  }
+  .indice-lista a::before {
+    content: '→'; font-size: 11px; color: var(--vermelho);
+  }
+  .indice-lista a:hover { color: var(--branco); }
+
+  /* ── CONTEÚDO ── */
+  .page-content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  .section {
+    margin-bottom: 3rem;
+    scroll-margin-top: 72px;
+  }
+  .section-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+    color: var(--vermelho);
+    background: rgba(192,39,15,0.1);
+    border: 1px solid rgba(192,39,15,0.2);
+    border-radius: 4px; padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .section h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.04em;
+    color: var(--branco);
+  }
+
+  .content-block { margin-bottom: 1.25rem; }
+  .content-block p {
+    color: var(--cinza-texto);
+    font-size: 14px; line-height: 1.75;
+    margin-bottom: 0.75rem;
+  }
+  .content-block p:last-child { margin-bottom: 0; }
+  .content-block strong { color: var(--branco); font-weight: 500; }
+
+  .info-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 12px; margin: 1.25rem 0;
+  }
+  .info-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .info-card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--cinza-texto); margin-bottom: 6px;
+  }
+  .info-card-valor {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 0.04em;
+    color: var(--branco); line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .info-card-desc { font-size: 12px; color: var(--cinza-texto); }
+
+  .rule-list {
+    list-style: none; margin: 1rem 0;
+  }
+  .rule-list li {
+    display: flex; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 14px; color: var(--cinza-texto);
+    line-height: 1.6;
+  }
+  .rule-list li:last-child { border-bottom: none; }
+  .rule-list li::before {
+    content: '—'; color: var(--vermelho);
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .rule-list li strong { color: var(--branco); font-weight: 500; }
+
+  .alert-box {
+    background: rgba(192,39,15,0.06);
+    border: 1px solid rgba(192,39,15,0.2);
+    border-left: 3px solid var(--vermelho);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+  }
+  .alert-box p { color: var(--cinza-texto); font-size: 13px; }
+
+  .info-box {
+    background: rgba(133,183,235,0.05);
+    border: 1px solid rgba(133,183,235,0.15);
+    border-left: 3px solid #85B7EB;
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+  }
+  .info-box p { color: var(--cinza-texto); font-size: 13px; }
+
+  .table-wrap { overflow-x: auto; margin: 1.25rem 0; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    background: var(--cinza-escuro);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--cinza-texto); font-weight: 500;
+    padding: 10px 12px; text-align: left;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  tbody td {
+    padding: 10px 12px; color: var(--cinza-texto);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  tbody td:first-child { color: var(--branco); font-weight: 500; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--cinza-escuro);
+    border-top: 1px solid var(--cinza-borda);
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+  footer p { font-size: 12px; color: var(--cinza-texto); }
+  footer a { color: var(--cinza-texto); text-decoration: underline; }
+
+  @media (max-width: 640px) {
+    .topnav { padding: 0 1rem; }
+    .hero { padding: 2rem 1rem; }
+    .indice { margin: 1.5rem 1rem; padding: 1.25rem; }
+    .indice-lista { grid-template-columns: 1fr; }
+    .page-content { padding: 0 1rem 3rem; }
+    .info-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+  <a href="/" class="nav-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    <span class="logo-text">GRADUABM</span>
+  </a>
+  <div class="nav-links">
+    <a href="/#features">Funcionalidades</a>
+    <a href="/regras">Regras</a>
+    <a href="mailto:contato@graduabm.com.br">Contato</a>
+  </div>
+  <a href="/dashboard" class="btn-dashboard">Acessar Plataforma</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">Regras & Informações</div>
+  <h1>Tudo que você precisa saber<br>antes de começar</h1>
+  <p>Entenda como funciona a plataforma, as regras de uso e o compromisso com sua preparação para o CBMRS.</p>
+</div>
+
+<!-- ÍNDICE -->
+<div class="indice">
+  <div class="indice-titulo">Índice</div>
+  <ul class="indice-lista">
+    <li><a href="#produto">O que é o GraduaBM</a></li>
+    <li><a href="#acesso">Acesso e conta</a></li>
+    <li><a href="#cursos">Cursos disponíveis</a></li>
+    <li><a href="#modo-estudo">Modo Estudo</a></li>
+    <li><a href="#simulado">Simulado Oficial</a></li>
+    <li><a href="#banco">Banco de questões</a></li>
+    <li><a href="#assinatura">Assinatura</a></li>
+    <li><a href="#conduta">Código de conduta</a></li>
+    <li><a href="#privacidade">Privacidade e dados</a></li>
+    <li><a href="#contato">Contato e suporte</a></li>
+  </ul>
+</div>
+
+<!-- CONTEÚDO -->
+<div class="page-content">
+
+  <!-- 01 O QUE É -->
+  <section class="section" id="produto">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2>O que é o GraduaBM</h2>
+    </div>
+    <div class="content-block">
+      <p>O <strong>GraduaBM</strong> é uma plataforma de preparação para os concursos do <strong>Corpo de Bombeiros Militar do Rio Grande do Sul (CBMRS)</strong>. O conteúdo é estruturado com base nos editais oficiais vigentes e atende dois processos seletivos:</p>
+    </div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label">CTSP — Sargentos</div>
+        <div class="info-card-valor" style="color:#C0270F;">60</div>
+        <div class="info-card-desc">Questões por prova — Curso Técnico de Segurança Pública</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">CBA — Tenentes</div>
+        <div class="info-card-valor" style="color:#185FA5;">40</div>
+        <div class="info-card-desc">Questões por prova — Curso Básico de Administração</div>
+      </div>
+    </div>
+    <div class="content-block">
+      <p>A plataforma oferece <strong>estudo por legislação</strong>, <strong>simulados cronometrados</strong>, acompanhamento de desempenho, ranking anônimo e flashcards. Todo o conteúdo é baseado nas portarias e normas do edital oficial.</p>
+    </div>
+  </section>
+
+  <!-- 02 ACESSO -->
+  <section class="section" id="acesso">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2>Acesso e conta</h2>
+    </div>
+    <ul class="rule-list">
+      <li>Cada aluno possui uma <strong>conta individual</strong> vinculada ao seu e-mail de cadastro.</li>
+      <li>O acesso à plataforma está condicionado a uma <strong>assinatura ativa</strong>. Contas inativas podem visualizar a tela de login, mas não acessam o conteúdo.</li>
+      <li>É permitido apenas <strong>um dispositivo logado por vez</strong>. Se outra sessão for iniciada, a sessão anterior é encerrada automaticamente.</li>
+      <li>Credenciais são de <strong>uso pessoal e intransferível</strong>. Compartilhar o acesso viola os termos de uso e pode resultar em suspensão da conta.</li>
+      <li>O aluno é responsável por manter sua <strong>senha segura</strong>. Em caso de acesso não autorizado, entre em contato imediatamente pelo suporte.</li>
+    </ul>
+    <div class="alert-box">
+      <p><strong>Importante:</strong> Contas utilizadas por mais de uma pessoa serão suspensas sem reembolso. Cada conta é individual.</p>
+    </div>
+  </section>
+
+  <!-- 03 CURSOS -->
+  <section class="section" id="cursos">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2>Cursos disponíveis</h2>
+    </div>
+    <div class="content-block">
+      <p>No cadastro, o aluno seleciona o <strong>curso de destino</strong> (CTSP ou CBA). Essa escolha define qual banco de questões e qual distribuição de simulado serão utilizados.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Área</th>
+            <th>Tema</th>
+            <th>CTSP (60Q)</th>
+            <th>CBA (40Q)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>AT1</td><td>Segurança contra incêndios</td><td>14 questões</td><td>7 questões</td></tr>
+          <tr><td>AT2</td><td>Combate a incêndios</td><td>8 questões</td><td>5 questões</td></tr>
+          <tr><td>AT3</td><td>Buscas, salvamentos e APH</td><td>14 questões</td><td>9 questões</td></tr>
+          <tr><td>AT4</td><td>Direito institucional e militar</td><td>12 questões</td><td>8 questões</td></tr>
+          <tr><td>AT5</td><td>Normas administrativas</td><td>12 questões</td><td>11 questões</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="info-box">
+      <p>Distribuição extraída das portarias oficiais de abertura de concurso do CBMRS. Sujeita a alteração conforme novos editais.</p>
+    </div>
+  </section>
+
+  <!-- 04 MODO ESTUDO -->
+  <section class="section" id="modo-estudo">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2>Modo Estudo</h2>
+    </div>
+    <div class="content-block">
+      <p>O Modo Estudo é o ambiente principal de aprendizagem. Nele, o aluno escolhe uma <strong>área temática</strong> e as <strong>legislações específicas</strong> que deseja revisar.</p>
+    </div>
+    <ul class="rule-list">
+      <li><strong>Feedback imediato:</strong> após cada resposta, o sistema indica se a alternativa está correta ou errada e exibe a justificativa.</li>
+      <li><strong>Filtros disponíveis:</strong> todas as questões, somente inéditas (não respondidas ainda) ou somente erradas anteriormente.</li>
+      <li><strong>Quantidade configurável:</strong> o aluno define quantas questões quer responder por sessão.</li>
+      <li><strong>Timer Pomodoro opcional:</strong> ferramenta flutuante com intervalos de foco e pausa configuráveis.</li>
+      <li><strong>Sessão registrada:</strong> cada sessão concluída é salva e exibida no Dashboard com aproveitamento e data.</li>
+      <li><strong>Denúncia de questão:</strong> o aluno pode sinalizar questões com erro de enunciado ou gabarito para revisão pelo administrador.</li>
+    </ul>
+  </section>
+
+  <!-- 05 SIMULADO -->
+  <section class="section" id="simulado">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2>Simulado Oficial</h2>
+    </div>
+    <div class="content-block">
+      <p>O Simulado replica as condições reais da prova do CBMRS. Leia com atenção as regras antes de iniciar:</p>
+    </div>
+    <ul class="rule-list">
+      <li><strong>Cronômetro de 4 horas:</strong> o tempo começa ao iniciar o simulado e não pode ser pausado. Nos últimos 5 minutos, o cronômetro pisca em vermelho.</li>
+      <li><strong>Sem feedback imediato:</strong> diferente do Modo Estudo, as alternativas são marcadas sem indicação de certo ou errado durante a prova.</li>
+      <li><strong>Cartão Resposta (folha óptica):</strong> ao finalizar, o aluno preenche o Cartão Resposta oficial. Somente o que estiver no cartão é computado na nota — o rascunho no caderno não conta.</li>
+      <li><strong>Navegação livre:</strong> é possível pular entre questões livremente usando o painel lateral numérico.</li>
+      <li><strong>Entrega automática:</strong> se o tempo zerar sem entrega manual, o sistema submete automaticamente o estado atual do Cartão Resposta.</li>
+      <li><strong>Questões inéditas:</strong> as questões do simulado são sorteadas aleatoriamente respeitando o quantitativo exato de cada AT conforme o edital.</li>
+      <li><strong>Resultado detalhado:</strong> após a entrega, o aluno vê aproveitamento total, acertos por área temática e o gabarito comparativo.</li>
+    </ul>
+    <div class="alert-box">
+      <p><strong>Atenção:</strong> não é possível pausar ou continuar um simulado em andamento. Uma vez iniciado, o cronômetro não para. Certifique-se de ter 4 horas disponíveis antes de começar.</p>
+    </div>
+  </section>
+
+  <!-- 06 BANCO DE QUESTÕES -->
+  <section class="section" id="banco">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2>Banco de questões</h2>
+    </div>
+    <ul class="rule-list">
+      <li>As questões são elaboradas com base nas legislações e normas previstas no edital oficial do CBMRS.</li>
+      <li>Cada questão possui <strong>justificativa</strong> indicando o dispositivo legal de referência.</li>
+      <li>O banco é continuamente atualizado com novas questões. Questões marcadas como inativas não aparecem para o aluno.</li>
+      <li>Questões com erros podem ser denunciadas pelo aluno e revisadas pela equipe do GraduaBM em até 48 horas.</li>
+      <li>O GraduaBM não se responsabiliza por mudanças de gabarito decorrentes de atualizações legislativas após a publicação da questão. Atualizações são feitas periodicamente.</li>
+    </ul>
+  </section>
+
+  <!-- 07 ASSINATURA -->
+  <section class="section" id="assinatura">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <h2>Assinatura</h2>
+    </div>
+    <ul class="rule-list">
+      <li>O acesso à plataforma é concedido mediante <strong>assinatura paga</strong> processada pela plataforma Kiwify.</li>
+      <li>Após a confirmação do pagamento, o acesso é ativado automaticamente em até <strong>24 horas úteis</strong>.</li>
+      <li>Em caso de demora na ativação, entre em contato pelo suporte informando o comprovante de compra.</li>
+      <li><strong>Política de reembolso:</strong> solicitações de reembolso devem ser feitas em até 7 dias corridos após a compra, conforme o Código de Defesa do Consumidor (Art. 49). Após esse prazo, não há reembolso.</li>
+      <li>O cancelamento da assinatura encerra o acesso ao conteúdo ao fim do período já pago, sem cobrança adicional.</li>
+    </ul>
+    <div class="info-box">
+      <p>Dúvidas sobre pagamento ou ativação? Fale com o suporte em <a href="mailto:contato@graduabm.com.br" style="color:#85B7EB;">contato@graduabm.com.br</a></p>
+    </div>
+  </section>
+
+  <!-- 08 CONDUTA -->
+  <section class="section" id="conduta">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <h2>Código de conduta</h2>
+    </div>
+    <div class="content-block">
+      <p>O GraduaBM é uma plataforma de uso individual para fins educacionais. São <strong>expressamente proibidos</strong>:</p>
+    </div>
+    <ul class="rule-list">
+      <li>Compartilhar login e senha com terceiros.</li>
+      <li>Reproduzir, copiar ou redistribuir questões, conteúdos ou imagens da plataforma sem autorização por escrito.</li>
+      <li>Usar ferramentas automatizadas (bots, scripts) para acessar ou extrair conteúdo da plataforma.</li>
+      <li>Tentar burlar mecanismos de segurança, controle de sessão ou limites de acesso.</li>
+      <li>Inserir informações falsas no cadastro ou no ranking.</li>
+    </ul>
+    <div class="alert-box">
+      <p>O descumprimento das regras pode resultar em <strong>suspensão imediata da conta</strong> sem direito a reembolso, além de responsabilização civil e penal, quando aplicável.</p>
+    </div>
+  </section>
+
+  <!-- 09 PRIVACIDADE -->
+  <section class="section" id="privacidade">
+    <div class="section-header">
+      <span class="section-num">09</span>
+      <h2>Privacidade e dados</h2>
+    </div>
+    <ul class="rule-list">
+      <li>Os dados coletados (nome, e-mail, curso, desempenho) são usados exclusivamente para operar a plataforma e personalizar a experiência de estudo.</li>
+      <li>Não compartilhamos dados pessoais com terceiros, exceto para processar pagamentos (Kiwify) e hospedagem de infraestrutura (Supabase, Railway, Vercel).</li>
+      <li>O aluno pode solicitar a <strong>exclusão da sua conta e dados</strong> a qualquer momento via e-mail de suporte.</li>
+      <li>O ranking pode exibir um apelido (nickname) anônimo em vez do nome real, conforme escolha no cadastro.</li>
+      <li>Dados de desempenho são armazenados para gerar estatísticas individuais e não são públicos além do que o próprio aluno autorizar no ranking.</li>
+    </ul>
+  </section>
+
+  <!-- 10 CONTATO -->
+  <section class="section" id="contato">
+    <div class="section-header">
+      <span class="section-num">10</span>
+      <h2>Contato e suporte</h2>
+    </div>
+    <div class="content-block">
+      <p>Para dúvidas, solicitações ou problemas técnicos, entre em contato pelos canais abaixo. Respondemos em até <strong>48 horas úteis</strong>.</p>
+    </div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label">E-mail</div>
+        <div style="font-size:14px;color:var(--branco);margin-top:4px;">contato@graduabm.com.br</div>
+        <div class="info-card-desc" style="margin-top:6px;">Suporte geral, ativação de conta, cancelamento</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Dentro da plataforma</div>
+        <div style="font-size:14px;color:var(--branco);margin-top:4px;">Botão "Denunciar questão"</div>
+        <div class="info-card-desc" style="margin-top:6px;">Para reportar erros em questões específicas</div>
+      </div>
+    </div>
+    <div class="content-block" style="margin-top:1.5rem;">
+      <p style="font-size:13px; color:#555;">GraduaBM — Plataforma de preparação para o CBMRS. Desenvolvido por alunos, para alunos.<br>
+      Última atualização destas informações: maio de 2025.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 GraduaBM · <a href="/">Início</a> · <a href="/regras">Regras</a> · <a href="mailto:contato@graduabm.com.br">Contato</a></p>
+</footer>
+
+</body>
+</html>

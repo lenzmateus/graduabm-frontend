@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Redefinir senha</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --erro: #E24B4A;
+    --sucesso: #2D7D46;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; padding: 0 2rem; height: 56px;
+    border-bottom: 1px solid var(--cinza-borda);
+    background: var(--carvao);
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.05em;
+    color: var(--branco); text-decoration: none;
+  }
+  .card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 420px;
+    margin-top: 56px;
+  }
+  .titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+  }
+  .subtitulo {
+    font-size: 13px; color: var(--cinza-texto);
+    margin-bottom: 1.75rem; line-height: 1.5;
+  }
+  .campo { margin-bottom: 1rem; }
+  .campo label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 6px; color: #bbb; }
+  .campo-senha { position: relative; }
+  .campo-senha input { padding-right: 44px !important; }
+  .btn-ver-senha {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; padding: 4px; cursor: pointer;
+    color: var(--cinza-texto); display: flex; align-items: center;
+  }
+  input[type="password"], input[type="text"] {
+    width: 100%; padding: 11px 14px;
+    background: #111; border: 1px solid var(--cinza-borda);
+    border-radius: 6px; color: var(--branco);
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+    outline: none; transition: border-color 0.15s;
+  }
+  input:focus { border-color: var(--vermelho); }
+  .btn-submit {
+    width: 100%; padding: 13px;
+    background: var(--vermelho);
+    color: #fff; border: none; border-radius: 6px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: opacity 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 0.5rem;
+  }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+  .spinner {
+    display: none; width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .msg {
+    border-radius: 6px; padding: 10px 14px;
+    font-size: 13px; line-height: 1.5;
+    margin-bottom: 1rem; display: none;
+  }
+  .msg.erro   { display: block; background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.3); color: #f09595; }
+  .msg.sucesso { display: block; background: rgba(45,125,70,0.12); border: 1px solid rgba(45,125,70,0.3); color: #6dcea0; }
+  .voltar { display: block; text-align: center; margin-top: 1.25rem; font-size: 13px; color: var(--cinza-texto); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; background: none; border: none; }
+  .voltar:hover { color: var(--branco); }
+  .estado-invalido { text-align: center; padding: 2rem 0; }
+  .estado-invalido svg { margin-bottom: 1rem; }
+  .estado-invalido p { color: var(--cinza-texto); font-size: 14px; line-height: 1.6; margin-bottom: 1.5rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="logo-text">GraduaBM</a>
+</nav>
+
+<div class="card">
+  <div id="estado-valido">
+    <div class="titulo">Nova senha</div>
+    <p class="subtitulo">Escolha uma senha com pelo menos 8 caracteres.</p>
+
+    <div class="msg" id="msg-redef"></div>
+
+    <div class="campo">
+      <label>Nova senha</label>
+      <div class="campo-senha">
+        <input type="password" id="nova-senha" placeholder="Mínimo 8 caracteres">
+        <button type="button" class="btn-ver-senha" onclick="toggleSenha('nova-senha',this)" tabindex="-1">
+          <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="campo">
+      <label>Confirmar nova senha</label>
+      <div class="campo-senha">
+        <input type="password" id="confirma-senha" placeholder="Repita a senha">
+        <button type="button" class="btn-ver-senha" onclick="toggleSenha('confirma-senha',this)" tabindex="-1">
+          <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <button class="btn-submit" id="btn-redef" onclick="redefinir()">
+      <span class="spinner" id="spin-redef"></span>
+      <span id="txt-redef">Salvar nova senha</span>
+    </button>
+
+    <button class="voltar" onclick="window.location.href='/login'">Voltar para o login</button>
+  </div>
+
+  <div id="estado-invalido" style="display:none;" class="estado-invalido">
+    <svg width="40" height="40" fill="none" stroke="#888" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p>Este link é inválido ou já foi utilizado.<br>Solicite um novo link de recuperação.</p>
+    <button class="btn-submit" onclick="window.location.href='/login'" style="max-width:240px;margin:0 auto;">Ir para o login</button>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+  const token = new URLSearchParams(window.location.search).get('token');
+
+  if (!token) {
+    document.getElementById('estado-valido').style.display = 'none';
+    document.getElementById('estado-invalido').style.display = 'block';
+  }
+
+  function toggleSenha(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const eyeEl    = btn.querySelector('.icon-eye');
+    const eyeOffEl = btn.querySelector('.icon-eye-off');
+    if (input.type === 'password') {
+      input.type = 'text';
+      eyeEl.style.display    = 'none';
+      eyeOffEl.style.display = '';
+    } else {
+      input.type = 'password';
+      eyeEl.style.display    = '';
+      eyeOffEl.style.display = 'none';
+    }
+  }
+
+  function mostrarMsg(texto, tipo) {
+    const el = document.getElementById('msg-redef');
+    el.textContent = texto;
+    el.className = 'msg ' + tipo;
+  }
+
+  async function redefinir() {
+    const nova_senha = document.getElementById('nova-senha').value;
+    const confirma   = document.getElementById('confirma-senha').value;
+
+    if (!nova_senha || !confirma) {
+      mostrarMsg('Preencha os dois campos.', 'erro'); return;
+    }
+    if (nova_senha.length < 8) {
+      mostrarMsg('A senha deve ter pelo menos 8 caracteres.', 'erro'); return;
+    }
+    if (nova_senha !== confirma) {
+      mostrarMsg('As senhas não coincidem.', 'erro'); return;
+    }
+
+    document.getElementById('btn-redef').disabled = true;
+    document.getElementById('spin-redef').style.display = 'block';
+    document.getElementById('txt-redef').textContent = '';
+
+    try {
+      await GraduaBM.Auth.redefinirSenha({ token, nova_senha });
+      mostrarMsg('Senha redefinida com sucesso! Redirecionando...', 'sucesso');
+      setTimeout(() => { window.location.href = '/login'; }, 2000);
+    } catch (err) {
+      if (err.status === 400) {
+        document.getElementById('estado-valido').style.display = 'none';
+        document.getElementById('estado-invalido').style.display = 'block';
+      } else {
+        mostrarMsg(err.erro || 'Erro ao redefinir senha. Tente novamente.', 'erro');
+        document.getElementById('btn-redef').disabled = false;
+        document.getElementById('spin-redef').style.display = 'none';
+        document.getElementById('txt-redef').textContent = 'Salvar nova senha';
+      }
+    }
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !document.getElementById('btn-redef').disabled) redefinir();
+  });
+</script>
+</body>
+</html>

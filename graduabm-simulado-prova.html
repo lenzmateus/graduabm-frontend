@@ -240,13 +240,107 @@
   .res-btn-secondary { background: transparent; border: 1px solid var(--cinza-borda); color: var(--branco); }
   .res-btn-secondary:hover { background: var(--cinza-medio); border-color: #555; }
 
+  /* ── BOTÃO TOGGLE NAV (mobile only) ── */
+  .btn-toggle-nav {
+    display: none;
+    background: var(--cinza-medio);
+    border: 1px solid var(--cinza-borda);
+    color: var(--branco);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+  }
+
+  /* ── DRAWER MOBILE (nav-sidebar como overlay) ── */
+  .nav-drawer-overlay {
+    display: none;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 200;
+  }
+  .nav-drawer-overlay.ativo { display: block; }
+  .nav-drawer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--cinza-escuro);
+    border-top: 1px solid var(--cinza-borda);
+    border-radius: 16px 16px 0 0;
+    z-index: 201;
+    max-height: 60vh;
+    display: flex; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform 0.25s ease;
+  }
+  .nav-drawer-overlay.ativo .nav-drawer {
+    transform: translateY(0);
+  }
+  .nav-drawer-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-weight: 600; color: var(--cinza-texto);
+    text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .nav-drawer-close {
+    background: none; border: none; color: var(--cinza-texto);
+    font-size: 20px; cursor: pointer; line-height: 1; padding: 0 4px;
+  }
+  .nav-drawer-grid {
+    padding: 1rem; display: grid; grid-template-columns: repeat(6, 1fr);
+    gap: 8px; overflow-y: auto; flex: 1;
+  }
+
   @media (max-width: 768px) {
+    /* Topbar */
+    .topbar { padding: 0 1rem; gap: 8px; }
+    .btn-toggle-nav { display: inline-flex; }
+
+    /* Esconde sidebar lateral */
+    .nav-sidebar { display: none; }
+
+    /* Questão ocupa tudo */
+    .questao-container { padding: 1.25rem 1rem; }
+    .q-num { font-size: 22px; }
+    .enunciado { font-size: 15px; margin-bottom: 1.25rem; }
+    .alt { gap: 12px; padding: 10px 12px; }
+    .alt-texto { font-size: 14px; }
+    .q-actions { padding-top: 1.25rem; gap: 8px; }
+    .btn-nav { padding: 10px 14px; font-size: 13px; }
+
+    /* Timer e botão finalizar menores */
+    .timer-box { font-size: 16px; padding: 5px 10px; }
+    .btn-finalizar { padding: 7px 12px; font-size: 13px; }
+
+    /* Cartão Resposta: colunas empilhadas */
+    .gab-header { padding: 1rem; flex-direction: column; align-items: flex-start; gap: 10px; }
+    .gab-titulo { font-size: 22px; }
+    .gab-aviso { font-size: 12px; }
+    .gab-content { flex-direction: column; overflow-y: auto; }
+    .gab-col { padding: 1rem; }
+    .gab-col-left { border-right: none; border-bottom: 1px solid var(--cinza-borda); }
+    .gab-grid { grid-template-columns: 1fr; }
+    .bolinhas-wrap { gap: 6px; }
+    .bolinha { width: 32px; height: 32px; font-size: 12px; }
+    .gab-footer { padding: 1rem; gap: 10px; flex-direction: column; }
+    .gab-footer .btn-finalizar { width: 100%; padding: 13px; }
+    .gab-footer .btn-nav { width: 100%; text-align: center; padding: 10px; }
+
+    /* Resultado */
     .res-score-grid { grid-template-columns: repeat(2, 1fr); }
     .res-area-grid { grid-template-columns: repeat(3, 1fr); }
     .res-gabarito-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
     .res-hero-titulo { font-size: 36px; }
     .res-acoes { flex-direction: column; }
     .res-btn { width: 100%; justify-content: center; }
+    .resultado-body { padding: 1.5rem 1rem 3rem; }
+  }
+  @media (max-width: 480px) {
+    .res-area-grid { grid-template-columns: repeat(2, 1fr); }
+    .topbar-logo { font-size: 18px; }
+    .nav-drawer-grid { grid-template-columns: repeat(5, 1fr); }
   }
 
 </style>
@@ -263,7 +357,13 @@
   <header class="topbar">
     <a href="/dashboard" class="topbar-logo">GRADUABM</a>
     <div class="timer-box" id="timer">04:00:00</div>
-    <button class="btn-finalizar" onclick="abrirGabarito()">Ir para o Gabarito</button>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <button class="btn-toggle-nav" onclick="abrirDrawerNav()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        Questões
+      </button>
+      <button class="btn-finalizar" onclick="abrirGabarito()">Gabarito</button>
+    </div>
   </header>
 
   <main class="main-area">
@@ -294,6 +394,17 @@
     </div>
 
   </main>
+
+  <!-- DRAWER NAVEGAÇÃO MOBILE -->
+  <div class="nav-drawer-overlay" id="nav-drawer-overlay" onclick="fecharDrawerNav(event)">
+    <div class="nav-drawer">
+      <div class="nav-drawer-header">
+        <span>Caderno de Questões</span>
+        <button class="nav-drawer-close" onclick="fecharDrawerNavBtn()">×</button>
+      </div>
+      <div class="nav-drawer-grid" id="nav-drawer-grid"></div>
+    </div>
+  </div>
 
   <!-- CARTÃO RESPOSTA OVERLAY -->
   <div class="gabarito-overlay" id="tela-gabarito">
@@ -461,7 +572,7 @@ function carregarQuestao(index) {
   
   const q = questoes[index];
   document.getElementById('q-num').textContent = `Q. ${String(index + 1).padStart(2, '0')}`;
-  document.getElementById('q-area').textContent = (q.area || 'GERAL').toUpperCase();
+  document.getElementById('q-area').textContent = (q.area_tematica || q.area || 'GERAL').toUpperCase();
   document.getElementById('q-enunciado').textContent = q.enunciado || q.texto || q.questao || '';
 
   const lista = document.getElementById('alts-lista');
@@ -499,6 +610,27 @@ function marcarRascunho(index, letra) {
 function navegar(dir) {
   const n = currentIndex + dir;
   if (n >= 0 && n < questoes.length) carregarQuestao(n);
+}
+
+// ── DRAWER DE NAVEGAÇÃO MOBILE ──
+function abrirDrawerNav() {
+  const overlay = document.getElementById('nav-drawer-overlay');
+  const grid = document.getElementById('nav-drawer-grid');
+  grid.innerHTML = '';
+  questoes.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.className = `nav-btn ${i === currentIndex ? 'ativo' : ''} ${respostas[i].rascunho ? 'marcada' : ''}`;
+    btn.textContent = i + 1;
+    btn.onclick = () => { carregarQuestao(i); fecharDrawerNavBtn(); };
+    grid.appendChild(btn);
+  });
+  overlay.classList.add('ativo');
+}
+function fecharDrawerNav(e) {
+  if (e.target === document.getElementById('nav-drawer-overlay')) fecharDrawerNavBtn();
+}
+function fecharDrawerNavBtn() {
+  document.getElementById('nav-drawer-overlay').classList.remove('ativo');
 }
 
 // ── LÓGICA DO GABARITO ──
@@ -654,7 +786,7 @@ function mostrarResultado() {
   const coresAT = { 'AT01':'#C0270F', 'AT02':'#BA7517', 'AT03':'#185FA5', 'AT04':'#27A05A', 'AT05':'#7F77DD',
                     'AT1':'#C0270F', 'AT2':'#BA7517', 'AT3':'#185FA5', 'AT4':'#27A05A', 'AT5':'#7F77DD' };
   respostas.forEach((r, i) => {
-    const at = (questoes[i].area || 'GERAL').toUpperCase();
+    const at = (questoes[i].area_tematica || questoes[i].area || 'GERAL').toUpperCase();
     if (!porArea[at]) porArea[at] = { acertos: 0, total: 0 };
     porArea[at].total++;
     if (r.oficial && r.oficial === r.gabaritoReal) porArea[at].acertos++;

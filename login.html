@@ -53,8 +53,9 @@
 
   /* ── LAYOUT PRINCIPAL ── */
   .main {
-    flex: 1; display: grid;
+    display: grid;
     grid-template-columns: 1fr 1fr;
+    height: calc(100vh - 56px);
   }
 
   /* ── LADO ESQUERDO — decorativo ── */
@@ -120,12 +121,14 @@
   /* ── LADO DIREITO — formulário ── */
   .side-direito {
     display: flex; flex-direction: column;
-    justify-content: center; align-items: center;
-    padding: 4rem 3rem;
+    align-items: center;
+    padding: 3rem;
+    overflow-y: auto;
   }
 
   .form-container {
     width: 100%; max-width: 380px;
+    margin: auto;
     animation: fadeUp 0.5s ease both;
   }
   @keyframes fadeUp {
@@ -538,7 +541,7 @@
           </div>
           <button class="btn-submit" onclick="irParaEstudos()">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            Começar a estudar
+            Começar a papirar
           </button>
         </div>
 
@@ -547,8 +550,8 @@
           <div class="bloqueado-icon">
             <svg width="16" height="16" fill="none" stroke="#F09595" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </div>
-          <div class="bloqueado-titulo">Acesso inativo</div>
-          <div class="bloqueado-desc">Sua assinatura está encerrada. Assine para voltar a ter acesso ao conteúdo completo.</div>
+          <div class="bloqueado-titulo" id="bloqueado-titulo">Acesso inativo</div>
+          <div class="bloqueado-desc" id="bloqueado-desc">Assine para ter acesso ao conteúdo completo.</div>
           <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
             <button class="btn-assinar" onclick="irParaAssinatura('mensal')" style="width:100%;">Plano Mensal — R$29,90/mês</button>
             <button class="btn-assinar" onclick="irParaAssinatura('trimestral')" style="width:100%;background:transparent;border:1px solid var(--vermelho);color:var(--vermelho);">Plano Trimestral — R$79,90 <span style="font-size:10px;opacity:0.8;">(~R$26,63/mês)</span></button>
@@ -945,6 +948,14 @@
 
     document.getElementById('bloco-ativo').style.display   = usuario.ativo ? 'block' : 'none';
     document.getElementById('bloco-inativo').style.display = usuario.ativo ? 'none'  : 'block';
+
+    if (!usuario.ativo) {
+      const jaTeveAcesso = !!usuario.vencimento;
+      document.getElementById('bloqueado-titulo').textContent = jaTeveAcesso ? 'Assinatura encerrada' : 'Conta aguardando ativação';
+      document.getElementById('bloqueado-desc').textContent   = jaTeveAcesso
+        ? 'Sua assinatura está encerrada. Assine para voltar a ter acesso ao conteúdo completo.'
+        : 'Sua conta foi criada com sucesso. Assine um plano ou aplique um cupom para liberar o acesso.';
+    }
 
     if (usuario.ativo && usuario.vencimento) {
       const venc = new Date(usuario.vencimento);

@@ -115,6 +115,17 @@
   }
   .btn-sair:hover { border-color: #555; color: var(--branco); }
 
+  .btn-logout-top {
+    display: flex; align-items: center; gap: 6px;
+    background: transparent; border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 5px 12px; font-size: 12px; cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .btn-logout-top:hover { border-color: #E24B4A; color: #E24B4A; }
+  .btn-logout-top svg { width: 13px; height: 13px; }
+
   /* ── CONTEÚDO PRINCIPAL ── */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
@@ -253,6 +264,127 @@
   }
   .btn-iniciar:hover { background: var(--vermelho-escuro); }
 
+  /* ── SIMULADO MENSAL BANNER ── */
+  .mensal-banner {
+    border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    position: relative; overflow: hidden;
+    border: 1px solid var(--cinza-borda);
+    background: var(--cinza-escuro);
+  }
+  .mensal-banner::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--vermelho), #E8601A);
+  }
+  .mensal-banner.aberto { border-color: rgba(192,39,15,0.4); background: rgba(192,39,15,0.04); }
+  .mensal-banner.aguardando { border-color: rgba(255,200,50,0.3); }
+  .mensal-banner.encerrado { border-color: rgba(125,217,154,0.3); background: rgba(125,217,154,0.03); }
+
+  .mensal-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
+  }
+  .badge-aberto { background: rgba(192,39,15,0.15); color: #E8866E; border: 1px solid rgba(192,39,15,0.4); }
+  .badge-aberto .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #E8866E; animation: pisca 1.2s infinite; }
+  @keyframes pisca { 50% { opacity: 0.3; } }
+  .badge-aguardando { background: rgba(255,200,50,0.1); color: #F0C050; border: 1px solid rgba(255,200,50,0.3); }
+  .badge-encerrado { background: rgba(125,217,154,0.1); color: #7DD99A; border: 1px solid rgba(125,217,154,0.3); }
+
+  .mensal-titulo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 26px;
+    letter-spacing: 0.04em; color: var(--branco); margin-bottom: 4px;
+  }
+  .mensal-sub { font-size: 13px; color: var(--cinza-texto); margin-bottom: 1rem; }
+
+  .mensal-meta {
+    display: flex; align-items: center; gap: 20px;
+    flex-wrap: wrap;
+  }
+  .mensal-info {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--cinza-texto);
+  }
+  .mensal-info strong { color: var(--branco); }
+
+  .countdown-grid {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .countdown-bloco {
+    text-align: center; min-width: 48px;
+  }
+  .countdown-num {
+    font-family: 'Bebas Neue', sans-serif; font-size: 28px;
+    color: var(--branco); line-height: 1;
+  }
+  .countdown-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    color: var(--cinza-texto); text-transform: uppercase;
+  }
+  .countdown-sep { font-size: 20px; color: #555; margin-top: -8px; }
+
+  .mensal-acoes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.25rem; }
+  .btn-mensal-primary {
+    background: var(--vermelho); color: #fff; border: none;
+    border-radius: 6px; padding: 10px 20px; font-weight: 600;
+    font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: background 0.2s;
+  }
+  .btn-mensal-primary:hover { background: var(--vermelho-escuro); }
+  .btn-mensal-secondary {
+    background: transparent; color: var(--branco);
+    border: 1px solid var(--cinza-borda); border-radius: 6px;
+    padding: 10px 20px; font-size: 14px; font-weight: 500;
+    font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.15s;
+  }
+  .btn-mensal-secondary:hover { background: var(--cinza-medio); border-color: #555; }
+
+  /* Já participou */
+  .mensal-participou {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(125,217,154,0.08);
+    border: 1px solid rgba(125,217,154,0.2);
+    border-radius: 8px; padding: 10px 16px;
+    font-size: 13px; color: #7DD99A;
+    margin-top: 1rem;
+  }
+
+  /* ── HISTÓRICO ── */
+  .historico-section { margin-top: 2.5rem; }
+  .historico-titulo {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .historico-titulo::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+
+  .historico-lista { display: flex; flex-direction: column; gap: 8px; }
+  .historico-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 12px 16px; border-radius: 8px;
+    border: 1px solid var(--cinza-borda); background: var(--cinza-escuro);
+    text-decoration: none; transition: background 0.12s;
+  }
+  .historico-item:hover { background: var(--cinza-medio); }
+  .historico-curso {
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+    min-width: 48px; text-align: center;
+  }
+  .historico-curso.ctsp { color: var(--ctsp); }
+  .historico-curso.cba { color: var(--cba); }
+  .historico-info { flex: 1; }
+  .historico-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .historico-data { font-size: 11px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; }
+  .historico-stats { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); text-align: right; }
+  .historico-seta { color: var(--cinza-texto); font-size: 16px; }
+  .historico-vazio { color: var(--cinza-texto); font-size: 13px; text-align: center; padding: 1.5rem 0; }
+
   @media (max-width: 768px) {
     .layout { flex-direction: column; }
     .sidebar {
@@ -269,6 +401,8 @@
     .conteudo { padding: 1rem; max-width: 100%; }
     .curso-seletor { grid-template-columns: 1fr; }
     .simulado-titulo { font-size: 24px; }
+    .mensal-meta { gap: 12px; }
+    .countdown-num { font-size: 22px; }
   }
 
 </style>
@@ -296,7 +430,7 @@
       </a>
       <a class="nav-item" href="/area-estudos">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Estudar Legislação
+        Papirar
       </a>
       <a class="nav-item ativo" href="/simulados">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -318,11 +452,19 @@
 
   <!-- MAIN -->
   <div class="main">
-    <div class="topbar">
+    <div class="topbar" style="justify-content:space-between;">
       <span class="topbar-titulo">Simulados Oficiais</span>
+      <button class="btn-logout-top" id="btn-logout-top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sair
+      </button>
     </div>
 
     <div class="conteudo">
+
+      <!-- BANNER SIMULADO MENSAL -->
+      <div id="mensal-banner-wrap"></div>
+
       <img src="/images/banner-simulados.png" alt="Simulados Oficiais" style="width:100%;border-radius:12px;margin-bottom:1.5rem;display:block;">
       <div class="simulado-header">
         <h1 class="simulado-titulo">Simulado Modo Edital</h1>
@@ -367,6 +509,12 @@
         Gerar Simulado Inédito
       </button>
 
+      <!-- HISTÓRICO DE SIMULADOS MENSAIS -->
+      <div class="historico-section" id="historico-section" style="display:none;">
+        <div class="historico-titulo">Simulados Mensais Anteriores</div>
+        <div class="historico-lista" id="historico-lista"></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -374,6 +522,7 @@
 <script src="/js/api.js"></script>
 <script>
 let cursoSelecionado = 'ctsp';
+let countdownInterval = null;
 
 function selecionarCurso(c) {
   cursoSelecionado = c;
@@ -382,7 +531,6 @@ function selecionarCurso(c) {
     const check = el.querySelector('.curso-check');
     if(check) check.innerHTML = '';
   });
-
   const card = document.querySelector(`.curso-card.${c}`);
   if(card) {
     card.classList.add('selecionado');
@@ -397,13 +545,124 @@ function iniciarSimulado() {
   window.location.href = '/simulado-prova';
 }
 
+function formatarData(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function formatarCountdown(ms) {
+  if (ms <= 0) return { d: '00', h: '00', m: '00', s: '00' };
+  const totalSeg = Math.floor(ms / 1000);
+  const d = Math.floor(totalSeg / 86400);
+  const h = Math.floor((totalSeg % 86400) / 3600);
+  const m = Math.floor((totalSeg % 3600) / 60);
+  const s = totalSeg % 60;
+  return {
+    d: String(d).padStart(2, '0'),
+    h: String(h).padStart(2, '0'),
+    m: String(m).padStart(2, '0'),
+    s: String(s).padStart(2, '0'),
+  };
+}
+
+function atualizarCountdown(targetIso, prefix) {
+  const diff = new Date(targetIso) - new Date();
+  const { d, h, m, s } = formatarCountdown(diff);
+  const el = document.getElementById('countdown-display');
+  if (!el) return;
+  if (diff <= 0) { clearInterval(countdownInterval); location.reload(); return; }
+  el.innerHTML = `
+    ${prefix}
+    <div class="countdown-grid">
+      ${d !== '00' ? `<div class="countdown-bloco"><div class="countdown-num">${d}</div><div class="countdown-label">dias</div></div><span class="countdown-sep">:</span>` : ''}
+      <div class="countdown-bloco"><div class="countdown-num">${h}</div><div class="countdown-label">horas</div></div>
+      <span class="countdown-sep">:</span>
+      <div class="countdown-bloco"><div class="countdown-num">${m}</div><div class="countdown-label">min</div></div>
+      <span class="countdown-sep">:</span>
+      <div class="countdown-bloco"><div class="countdown-num">${s}</div><div class="countdown-label">seg</div></div>
+    </div>`;
+}
+
+async function carregarSimuladoMensal() {
+  const wrap = document.getElementById('mensal-banner-wrap');
+  try {
+    // Verifica ativo, depois próximo, depois histórico
+    const [ativo, proximo, todos] = await Promise.all([
+      GraduaBM.SimuladoMensal.ativo().catch(() => null),
+      GraduaBM.SimuladoMensal.proximo().catch(() => null),
+      GraduaBM.SimuladoMensal.listar().catch(() => []),
+    ]);
+
+    // Banner
+    if (ativo) {
+      const part = await GraduaBM.SimuladoMensal.minhaParticipacao(ativo.id).catch(() => null);
+      const jaEntregou = part?.entregue;
+      const cursoLabel = ativo.curso.toUpperCase();
+      wrap.innerHTML = `
+        <div class="mensal-banner aberto">
+          <div class="mensal-badge badge-aberto"><span class="badge-dot"></span>Simulado Mensal Aberto</div>
+          <div class="mensal-titulo">${ativo.titulo}</div>
+          <div class="mensal-sub">Curso ${cursoLabel} — Encerra ${formatarData(ativo.encerramento)} às 23:59</div>
+          <div id="countdown-display" class="mensal-meta" style="font-size:13px;color:var(--cinza-texto);">Calculando tempo restante...</div>
+          ${jaEntregou ? `
+            <div class="mensal-participou">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+              Você já entregou este simulado.
+              <a href="/simulado-mensal-ranking?id=${ativo.id}" style="color:#7DD99A;margin-left:8px;font-weight:600;">Ver Resultado →</a>
+            </div>` : `
+            <div class="mensal-acoes">
+              <button class="btn-mensal-primary" onclick="irParaSimuladoMensal('${ativo.id}')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                Participar do Simulado Mensal
+              </button>
+            </div>`}
+        </div>`;
+      countdownInterval = setInterval(() => atualizarCountdown(ativo.encerramento, 'Encerra em '), 1000);
+      atualizarCountdown(ativo.encerramento, 'Encerra em ');
+    } else if (proximo) {
+      wrap.innerHTML = `
+        <div class="mensal-banner aguardando">
+          <div class="mensal-badge badge-aguardando">Próximo Simulado Mensal</div>
+          <div class="mensal-titulo">${proximo.titulo}</div>
+          <div class="mensal-sub">Curso ${proximo.curso.toUpperCase()} — Abre ${formatarData(proximo.abertura)} às 12:00</div>
+          <div id="countdown-display" class="mensal-meta" style="font-size:13px;color:var(--cinza-texto);">Calculando...</div>
+        </div>`;
+      countdownInterval = setInterval(() => atualizarCountdown(proximo.abertura, 'Abre em '), 1000);
+      atualizarCountdown(proximo.abertura, 'Abre em ');
+    }
+
+    // Histórico (encerrados)
+    const encerrados = todos.filter(s => s.status === 'encerrado');
+    if (encerrados.length > 0) {
+      const secao = document.getElementById('historico-section');
+      const lista = document.getElementById('historico-lista');
+      secao.style.display = 'block';
+      lista.innerHTML = encerrados.map(s => `
+        <a class="historico-item" href="/simulado-mensal-ranking?id=${s.id}">
+          <div class="historico-curso ${s.curso}">${s.curso.toUpperCase()}</div>
+          <div class="historico-info">
+            <div class="historico-nome">${s.titulo}</div>
+            <div class="historico-data">${formatarData(s.abertura)} – ${formatarData(s.encerramento)}</div>
+          </div>
+          <div class="historico-stats">Ranking & Gabarito</div>
+          <div class="historico-seta">›</div>
+        </a>`).join('');
+    }
+  } catch (e) {
+    console.warn('Simulado mensal indisponível:', e);
+  }
+}
+
+function irParaSimuladoMensal(id) {
+  sessionStorage.setItem('graduabm_simulado_mensal_id', id);
+  window.location.href = '/simulado-mensal';
+}
+
 function init() {
   GraduaBM.protegerRota();
   const user = GraduaBM.getUsuario();
   if (user) {
     document.getElementById('user-nome').textContent = user.nome;
-
-    // Aluno real: bloqueia no curso do perfil e oculta o seletor
     if (!GraduaBM.isAdmin() && user.curso) {
       selecionarCurso(user.curso);
       const h2 = document.querySelector('.conteudo h2');
@@ -413,6 +672,8 @@ function init() {
     }
   }
   document.getElementById('btn-sair').addEventListener('click', () => GraduaBM.Auth.logout());
+  document.getElementById('btn-logout-top').addEventListener('click', () => GraduaBM.Auth.logout());
+  carregarSimuladoMensal();
 }
 
 init();

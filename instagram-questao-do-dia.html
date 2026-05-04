@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>GraduaBM — Questão do Dia · Instagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #181818;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 56px;
+    padding: 56px 40px;
+    font-family: 'IBM Plex Sans', sans-serif;
+  }
+
+  .slide-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #555;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    align-self: flex-start;
+    margin-bottom: -40px;
+  }
+
+  /* ── SLIDE BASE ── */
+  .slide {
+    width: 1080px;
+    height: 1080px;
+    background: #0F0F0F;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* faixa vermelha topo */
+  .top-bar {
+    width: 100%;
+    height: 6px;
+    background: #C0270F;
+    flex-shrink: 0;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 36px 64px 0;
+    flex-shrink: 0;
+  }
+
+  .at-badge {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .at-tag {
+    background: #C0270F;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 21px;
+    color: #fff;
+    padding: 5px 16px 3px;
+    letter-spacing: 1px;
+  }
+
+  .at-nome {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #707070;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .brand-top {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: #3A3A3A;
+    letter-spacing: 3px;
+  }
+  .brand-top em { color: #C0270F; font-style: normal; }
+
+  /* ── SEPARADOR ── */
+  .sep {
+    margin: 28px 64px 0;
+    height: 1px;
+    background: #1E1E1E;
+    flex-shrink: 0;
+  }
+
+  .sep-red {
+    flex-shrink: 0;
+    margin: 0 64px;
+    height: 1px;
+    background: linear-gradient(to right, #C0270F 0%, rgba(192,39,15,0) 100%);
+  }
+
+  /* ── QUESTÃO LABEL ── */
+  .questao-label {
+    padding: 20px 64px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #3A3A3A;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  /* ── ENUNCIADO ── */
+  .enunciado {
+    padding: 18px 64px 0;
+    flex-shrink: 0;
+  }
+
+  .enunciado p {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 27px;
+    font-weight: 400;
+    color: #DCDCDC;
+    line-height: 1.6;
+  }
+
+  /* ── SEPARADOR RED ── */
+  .sep-mid {
+    margin: 26px 64px 0;
+    height: 1px;
+    background: linear-gradient(to right, #C0270F, rgba(192,39,15,0.1));
+    flex-shrink: 0;
+  }
+
+  /* ── ALTERNATIVAS ── */
+  .alternativas {
+    padding: 22px 64px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .alt {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    background: #141414;
+    border: 1px solid #1C1C1C;
+  }
+
+  .alt-letra {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid #2C2C2C;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 19px;
+    color: #505050;
+    flex-shrink: 0;
+  }
+
+  .alt-texto {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 21px;
+    color: #B0B0B0;
+    line-height: 1.4;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: auto;
+    border-top: 1px solid #1A1A1A;
+    padding: 18px 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: #E0E0E0;
+    letter-spacing: 3px;
+  }
+  .footer-brand em { color: #C0270F; font-style: normal; }
+
+  .footer-url {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #404040;
+    letter-spacing: 1px;
+  }
+
+  .footer-cta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #C0270F;
+    border: 1px solid #C0270F;
+    padding: 7px 16px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  /* ── SLIDE 2 — GABARITO ── */
+  .gab-body {
+    padding: 48px 64px 0;
+    flex-shrink: 0;
+  }
+
+  .gab-super {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #C0270F;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .gab-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 108px;
+    line-height: 0.9;
+    color: #F0F0F0;
+    letter-spacing: 2px;
+  }
+  .gab-titulo em { color: #C0270F; font-style: normal; }
+
+  .gab-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #3A3A3A;
+    letter-spacing: 3px;
+    margin-top: 10px;
+  }
+
+  .resposta-box {
+    margin: 36px 64px 0;
+    background: #141414;
+    border-left: 5px solid #C0270F;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    flex-shrink: 0;
+  }
+
+  .resp-letra {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 100px;
+    color: #C0270F;
+    line-height: 1;
+    flex-shrink: 0;
+    min-width: 80px;
+    text-align: center;
+  }
+
+  .resp-info {}
+
+  .resp-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #C0270F;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .resp-texto {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 25px;
+    font-weight: 600;
+    color: #F0F0F0;
+    line-height: 1.4;
+  }
+
+  .embasamento {
+    margin: 28px 64px 0;
+    border: 1px solid #222;
+    padding: 22px 26px;
+    flex-shrink: 0;
+  }
+
+  .emb-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #C0270F;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .emb-artigo {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #E0E0E0;
+    margin-bottom: 8px;
+    letter-spacing: 0.3px;
+  }
+
+  .emb-texto {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    color: #787878;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .justif {
+    margin: 20px 64px 0;
+    flex-shrink: 0;
+  }
+
+  .justif-texto {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 18px;
+    color: #585858;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 1 — QUESTÃO
+════════════════════════════════════════════ -->
+<div class="slide-label">▶ SLIDE 1 — QUESTÃO</div>
+<div class="slide">
+  <div class="top-bar"></div>
+
+  <div class="header">
+    <div class="at-badge">
+      <div class="at-tag">AT4</div>
+      <div class="at-nome">Direito Institucional e Militar</div>
+    </div>
+    <div class="brand-top">GRADUA<em>BM</em></div>
+  </div>
+
+  <div class="questao-label">QUESTÃO DO DIA</div>
+  <div class="sep"></div>
+
+  <div class="enunciado">
+    <p>De acordo com a Constituição Federal de 1988, os Corpos de Bombeiros Militares dos Estados são classificados como:</p>
+  </div>
+
+  <div class="sep-mid"></div>
+
+  <div class="alternativas">
+    <div class="alt">
+      <div class="alt-letra">A</div>
+      <div class="alt-texto">Órgãos federais mantidos pela União e organizados pelos Estados.</div>
+    </div>
+    <div class="alt">
+      <div class="alt-letra">B</div>
+      <div class="alt-texto">Forças auxiliares e reserva do Exército, subordinados aos Governadores dos Estados.</div>
+    </div>
+    <div class="alt">
+      <div class="alt-letra">C</div>
+      <div class="alt-texto">Órgãos exclusivos de defesa civil, vedada qualquer atividade de segurança pública.</div>
+    </div>
+    <div class="alt">
+      <div class="alt-letra">D</div>
+      <div class="alt-texto">Subordinados ao Ministério da Defesa em situações de grave perturbação da ordem.</div>
+    </div>
+    <div class="alt">
+      <div class="alt-letra">E</div>
+      <div class="alt-texto">Forças municipais criadas por lei estadual, com financiamento tripartite.</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">GRADUA<em>BM</em></div>
+    <div class="footer-url">graduabm.com.br</div>
+    <div class="footer-cta">Responda nos comentários</div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════
+     SLIDE 2 — GABARITO
+════════════════════════════════════════════ -->
+<div class="slide-label">▶ SLIDE 2 — GABARITO</div>
+<div class="slide">
+  <div class="top-bar"></div>
+
+  <div class="header">
+    <div class="at-badge">
+      <div class="at-tag">AT4</div>
+      <div class="at-nome">Direito Institucional e Militar</div>
+    </div>
+    <div class="brand-top">GRADUA<em>BM</em></div>
+  </div>
+
+  <div class="sep"></div>
+
+  <div class="gab-body">
+    <div class="gab-super">Questão do Dia · Resultado</div>
+    <div class="gab-titulo">GABA<em>RITO</em></div>
+    <div class="gab-sub">AT4 · DIREITO INSTITUCIONAL E MILITAR</div>
+  </div>
+
+  <div class="resposta-box">
+    <div class="resp-letra">B</div>
+    <div class="resp-info">
+      <div class="resp-label">Alternativa correta</div>
+      <div class="resp-texto">Forças auxiliares e reserva do Exército, subordinados aos Governadores dos Estados.</div>
+    </div>
+  </div>
+
+  <div class="embasamento">
+    <div class="emb-label">Embasamento Legal</div>
+    <div class="emb-artigo">Art. 144, § 6º — Constituição Federal de 1988</div>
+    <div class="emb-texto">"As polícias militares e corpos de bombeiros militares, forças auxiliares e reserva do Exército, subordinam-se, juntamente com as polícias civis e as polícias penais estaduais e distrital, aos Governadores dos Estados, do Distrito Federal e dos Territórios."</div>
+  </div>
+
+  <div class="justif">
+    <div class="justif-texto">Os CBMs possuem duplo vínculo constitucional: são forças auxiliares do Exército Federal, mas subordinados hierarquicamente ao Governador do Estado — não à União nem ao Ministério da Defesa.</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">GRADUA<em>BM</em></div>
+    <div class="footer-url">graduabm.com.br</div>
+    <div class="footer-cta">Treine no site</div>
+  </div>
+</div>
+
+</body>
+</html>

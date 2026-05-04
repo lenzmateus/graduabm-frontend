@@ -640,6 +640,7 @@
           <div class="acoes">
             <button class="btn-acao" onclick="abrirEditarCupom(${JSON.stringify(c).replace(/"/g,'&quot;')})">Editar</button>
             ${c.ativo ? `<button class="btn-acao vermelho" onclick="desativarCupom('${c.id}')">Desativar</button>` : ''}
+            <button class="btn-acao vermelho" onclick="excluirCupom('${c.id}', '${esc(c.codigo)}')">Excluir</button>
           </div>
         </td>
       </tr>`;
@@ -726,6 +727,17 @@
       carregarCupons();
     } catch (err) {
       toast(err.erro || 'Erro ao desativar cupom.', 'erro');
+    }
+  }
+
+  async function excluirCupom(id, codigo) {
+    if (!confirm(`Excluir permanentemente o cupom "${codigo}"?\n\nEsta ação não pode ser desfeita.`)) return;
+    try {
+      await GraduaBM.Admin.cupons.excluir(id);
+      toast('Cupom excluído.', 'verde');
+      carregarCupons();
+    } catch (err) {
+      toast(err.erro || 'Erro ao excluir cupom.', 'erro');
     }
   }
 

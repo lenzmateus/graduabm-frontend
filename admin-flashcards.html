@@ -30,6 +30,8 @@
   .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
   .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
   .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
+  .gestor-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: rgba(39,160,90,0.1); border: 1px solid rgba(39,160,90,0.3); color: #7DD99A; }
+  .nav-item.ativo-g { color: var(--branco); border-left-color: var(--verde); background: var(--verde-bg); }
   .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
   .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
   .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #AFA9EC; letter-spacing: 0.04em; }
@@ -128,45 +130,15 @@
 <body>
 
 <script>
-if (sessionStorage.getItem('graduabm_admin') !== '1') window.location.href = '/admin-login';
-const ADMIN_TOKEN = sessionStorage.getItem('graduabm_admin_token');
+const _isAdmin  = sessionStorage.getItem('graduabm_admin') === '1';
+const _isGestor = sessionStorage.getItem('graduabm_gestor') === '1';
+if (!_isAdmin && !_isGestor) window.location.href = '/admin-login';
+const ADMIN_TOKEN  = _isAdmin  ? sessionStorage.getItem('graduabm_admin_token')  : null;
+const GESTOR_TOKEN = _isGestor ? sessionStorage.getItem('graduabm_gestor_token') : null;
 </script>
 
 <div class="layout">
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <a href="/admin" class="logo-text">GraduaBM</a>
-      <span class="admin-chip">ADMIN</span>
-    </div>
-    <div class="sidebar-usuario">
-      <div class="usuario-nome">Administrador</div>
-      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-label">Painel</div>
-      <a class="nav-item" href="/admin">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Dashboard
-      </a>
-      <div class="nav-label">Conteúdo</div>
-      <a class="nav-item" href="/admin-questoes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Questões
-      </a>
-      <a class="nav-item ativo" href="/admin-flashcards">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-        Flashcards
-      </a>
-      <div class="nav-label">Sistema</div>
-      <a class="nav-item" href="/area-estudos" id="link-modo-aluno">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-        Modo Aluno
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
-    </div>
-  </aside>
+  <aside class="sidebar" id="sidebar"></aside>
 
   <div class="main">
     <div class="topbar">
@@ -302,9 +274,13 @@ let todosCards = [];
 let deleteId = null;
 
 async function supaFetch(path, method = 'GET', body = null) {
-  const res = await fetch('/api/admin/query', {
+  const queryUrl   = GESTOR_TOKEN ? '/api/gestor/query' : '/api/admin/query';
+  const authHeader = GESTOR_TOKEN
+    ? { 'Authorization': 'Bearer ' + GESTOR_TOKEN }
+    : { 'x-admin-token': ADMIN_TOKEN || '' };
+  const res = await fetch(queryUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN || '' },
+    headers: { 'Content-Type': 'application/json', ...authHeader },
     body: JSON.stringify({ path, method, body: body || undefined, prefer: 'return=representation' }),
   });
   const txt = await res.text();
@@ -362,7 +338,7 @@ function renderLista(cards) {
       <div><span class="card-status ${c.ativa ? 'status-ativa' : 'status-inativa'}">${c.ativa ? 'Ativo' : 'Inativo'}</span></div>
       <div class="card-acoes">
         <button class="btn-mini edit" data-action="editar" data-id="${c.id}">Editar</button>
-        <button class="btn-mini danger" data-action="deletar" data-id="${c.id}" data-preview="${frenteEsc}">Excluir</button>
+        ${_isAdmin ? `<button class="btn-mini danger" data-action="deletar" data-id="${c.id}" data-preview="${frenteEsc}">Excluir</button>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -472,11 +448,50 @@ async function confirmarDelete() {
   await carregarCards();
 }
 
+/* ── Sidebar dinâmico por role ── */
+(function buildSidebar() {
+  const svgDash  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>`;
+  const svgQ     = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+  const svgFlash = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
+  const svgAluno = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
+  const svgGest  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`;
+  if (_isGestor) {
+    const nome = sessionStorage.getItem('graduabm_gestor_nome') || 'Gestor';
+    document.getElementById('sidebar').innerHTML = `
+      <div class="sidebar-logo"><a href="/gestor-painel" class="logo-text">GraduaBM</a><span class="gestor-chip">GESTOR</span></div>
+      <div class="sidebar-usuario"><div class="usuario-nome">${nome}</div><div class="usuario-status" style="color:#7DD99A"><span class="status-dot" style="background:#27A05A"></span>Gestor ativo</div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-label">Conteúdo</div>
+        <a class="nav-item" href="/admin-questoes">${svgQ} Questões</a>
+        <a class="nav-item ativo-g" href="/admin-flashcards">${svgFlash} Flashcards</a>
+        <div class="nav-label">Alunos</div>
+        <a class="nav-item" href="/gestor-painel">${svgGest} Gestão de Alunos</a>
+      </nav>
+      <div class="sidebar-footer"><button class="btn-sair" id="btn-sair">Sair</button></div>`;
+  } else {
+    document.getElementById('sidebar').innerHTML = `
+      <div class="sidebar-logo"><a href="/admin" class="logo-text">GraduaBM</a><span class="admin-chip">ADMIN</span></div>
+      <div class="sidebar-usuario"><div class="usuario-nome">Administrador</div><div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div></div>
+      <nav class="sidebar-nav">
+        <div class="nav-label">Painel</div>
+        <a class="nav-item" href="/admin">${svgDash} Dashboard</a>
+        <div class="nav-label">Conteúdo</div>
+        <a class="nav-item" href="/admin-questoes">${svgQ} Questões</a>
+        <a class="nav-item ativo" href="/admin-flashcards">${svgFlash} Flashcards</a>
+        <div class="nav-label">Gestão</div>
+        <a class="nav-item" href="/admin-assinaturas">${svgAluno} Assinaturas</a>
+        <div class="nav-label">Sistema</div>
+        <a class="nav-item" href="/area-estudos" id="link-modo-aluno">${svgAluno} Modo Aluno</a>
+      </nav>
+      <div class="sidebar-footer"><button class="btn-sair" id="btn-sair">Encerrar sessão</button></div>`;
+  }
+})();
+
 document.getElementById('btn-sair').addEventListener('click', function() {
-  ['graduabm_admin','graduabm_admin_ts','graduabm_admin_token'].forEach(k => sessionStorage.removeItem(k));
+  ['graduabm_admin','graduabm_admin_ts','graduabm_admin_token','graduabm_gestor','graduabm_gestor_token','graduabm_gestor_nome','graduabm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
   localStorage.removeItem('usuario');
   localStorage.removeItem('token');
-  window.location.href = '/';
+  window.location.href = _isGestor ? '/gestor-login' : '/';
 });
 document.getElementById('btn-novo').addEventListener('click', abrirModalNova);
 document.getElementById('btn-fechar-modal').addEventListener('click', fecharModal);

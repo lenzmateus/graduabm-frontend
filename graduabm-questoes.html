@@ -439,6 +439,128 @@
     -ms-user-select: none;
     user-select: none;
   }
+
+  /* ── POMODORO FLUTUANTE ── */
+  #pom-float {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    z-index: 9999;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+    min-width: 240px;
+    user-select: none;
+    transition: box-shadow 0.15s;
+  }
+  #pom-float.dragging { box-shadow: 0 16px 48px rgba(0,0,0,0.7); }
+  #pom-float-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px 8px 14px;
+    cursor: grab;
+    border-bottom: 1px solid var(--cinza-borda);
+    border-radius: 12px 12px 0 0;
+  }
+  #pom-float-bar:active { cursor: grabbing; }
+  #pom-float.minimizado {
+    min-width: 0;
+    width: auto;
+    border-radius: 20px;
+  }
+  #pom-float.minimizado #pom-float-bar {
+    border-bottom: none;
+    border-radius: 20px;
+    padding: 5px 10px 5px 9px;
+    cursor: pointer;
+    gap: 0;
+  }
+  #pom-float-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.08em;
+    color: var(--cinza-texto); text-transform: uppercase;
+    display: flex; align-items: center; gap: 7px;
+    white-space: nowrap;
+  }
+  #pom-time-mini {
+    display: none;
+    font-size: 13px; letter-spacing: 0.06em;
+    color: var(--branco); font-weight: 600;
+  }
+  #pom-float.minimizado #pom-time-mini { display: inline; font-size: 12px; }
+  #pom-float.minimizado #pom-title-text { display: none; }
+  #pom-float.minimizado #pom-float-actions { display: none; }
+  #pom-float.minimizado .pom-dot { width: 6px; height: 6px; margin-right: 6px; }
+  .pom-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--cinza-borda); flex-shrink: 0; transition: background 0.25s;
+  }
+  .pom-dot.rodando { background: var(--cor-area, var(--vermelho)); }
+  #pom-float-actions { display: flex; gap: 2px; }
+  .pom-win-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--cinza-texto); padding: 3px 6px;
+    border-radius: 5px; font-size: 14px; line-height: 1;
+    transition: color 0.1s, background 0.1s;
+  }
+  .pom-win-btn:hover { color: var(--branco); background: rgba(255,255,255,0.07); }
+  #pom-float-body { padding: 14px 16px 16px; }
+  #pom-float.minimizado #pom-float-body { display: none; }
+  .pomodoro-wrap { display: flex; align-items: center; gap: 12px; }
+  .pomodoro-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px; letter-spacing: 0.06em;
+    color: var(--branco); line-height: 1;
+    min-width: 95px; text-align: center;
+  }
+  .pomodoro-display.rodando { color: var(--cor-area, var(--vermelho)); }
+  .pomodoro-display.pausado { color: var(--cinza-texto); }
+  .pomodoro-controls { display: flex; gap: 6px; }
+  .pom-btn {
+    background: var(--cinza-medio);
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.12s;
+    flex-shrink: 0;
+  }
+  .pom-btn:hover { border-color: #555; color: var(--branco); }
+  .pom-btn svg { width: 12px; height: 12px; }
+  .pom-presets { display: flex; gap: 4px; flex-wrap: wrap; }
+  .pom-preset {
+    background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto);
+    border-radius: 5px; padding: 3px 8px;
+    font-size: 11px; cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: all 0.12s;
+  }
+  .pom-preset:hover { border-color: #555; color: var(--branco); }
+  .pom-preset.ativo { border-color: var(--cor-area, var(--vermelho)); color: var(--branco); }
+  input[type=number]:focus { border-color: var(--cor-area, var(--vermelho)) !important; }
+  input[type=number]::-webkit-inner-spin-button,
+  input[type=number]::-webkit-outer-spin-button { opacity: 0.4; }
+  #pom-reabrir {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    z-index: 9999;
+    display: none;
+    align-items: center; gap: 6px;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 20px;
+    padding: 5px 12px 5px 10px;
+    cursor: pointer;
+    color: var(--cinza-texto);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.06em;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    transition: color 0.12s, border-color 0.12s;
+    user-select: none;
+  }
+  #pom-reabrir:hover { color: var(--branco); border-color: #555; }
+  #pom-reabrir .pom-dot { flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -448,6 +570,11 @@
   <a href="/" class="logo-text">GraduaBM</a>
   <div class="spinner-grande" id="spinner"></div>
   <div class="loading-txt" id="loading-txt">Preparando questões…</div>
+</div>
+
+<!-- BANNER DE ERRO DE SESSÃO -->
+<div id="banner-erro-sessao" style="display:none;background:#C0270F;color:#fff;padding:12px 20px;text-align:center;font-size:14px;position:fixed;top:0;left:0;right:0;z-index:9999;">
+  ⚠ Sessão não sincronizada — seu progresso pode não ser salvo. Verifique sua conexão.
 </div>
 
 <!-- QUESTÃO -->
@@ -524,7 +651,7 @@
   <div class="resultado-acoes">
     <a href="/selecao-legislacao" class="btn-resultado primario">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-      Estudar de novo
+      Papirar de novo
     </a>
     <a href="/area-estudos" class="btn-resultado secundario">← Voltar às áreas</a>
   </div>
@@ -619,6 +746,14 @@ function getRespostaCorreta(q) {
 function getJustificativa(q) {
   return q.justificativa || q.gabarito_comentado || q.explicacao || q.comentario || '';
 }
+function remapearLetrasJustificativa(texto, mapa) {
+  if (!texto || !mapa) return texto;
+  // Substitui padrões como "alternativa C", "letra B", "opção D", "item A"
+  return texto.replace(/\b(alternativa|letra|opção|opcao|item)\s+([A-Ea-e])\b/g, (_, prefixo, letra) => {
+    const orig = letra.toUpperCase();
+    return prefixo + ' ' + (mapa[orig] || orig);
+  });
+}
 function getLegislacao(q) {
   return q.legislacao || q.referencia || q.lei || '';
 }
@@ -663,7 +798,10 @@ async function init() {
     try {
       const sessao = await GraduaBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
       sessaoId = sessao.id;
-    } catch { }
+    } catch (err) {
+      console.error('[GraduaBM] Falha ao criar sessão:', err);
+      document.getElementById('banner-erro-sessao').style.display = 'block';
+    }
 
     if (!questoes.length) {
       mostrarErro('Nenhuma questão cadastrada para as legislações selecionadas. Tente outra combinação.');
@@ -699,7 +837,7 @@ function mostrarQuestao() {
 
   const q    = questoes[idxAtual];
   const alts = getAlternativas(q);
-  
+
   // Embaralhar as alternativas
   const shuffledAlts = [...alts].sort(() => Math.random() - 0.5);
   const displayLetters = ['A', 'B', 'C', 'D', 'E'];
@@ -769,11 +907,13 @@ async function confirmarResposta() {
   if (acertou) acertos++; else erros++;
   historicoRespostas.push({ q, escolhida: selecionada, correta, acertou });
 
-  // visual
+  // visual + mapa orig→display para remapear justificativa
   let corretaDisplay = correta;
+  const origParaDisplay = {};
   document.querySelectorAll('.alt').forEach(alt => {
     const origL = alt.dataset.originalLetra;
     const dispL = alt.dataset.displayLetra;
+    origParaDisplay[origL] = dispL;
     alt.classList.add('bloqueada');
     if (origL === correta) {
       alt.classList.add('correta');
@@ -783,7 +923,7 @@ async function confirmarResposta() {
   });
 
   // feedback
-  const just = getJustificativa(q);
+  const just = remapearLetrasJustificativa(getJustificativa(q), origParaDisplay);
   const fb   = document.getElementById('feedback');
   fb.style.display = 'block';
   fb.className = 'feedback ' + (acertou ? 'feedback-acerto' : 'feedback-erro');
@@ -799,7 +939,7 @@ async function confirmarResposta() {
   // registrar resposta na API
   if (sessaoId) {
     GraduaBM.api.sessoes.responder(sessaoId, { questao_id: q.id, resposta_escolhida: selecionada, correta: acertou })
-      .catch(() => {});
+      .catch(err => { console.error('[GraduaBM] Falha ao registrar resposta:', err); });
   }
 
   // atualizar botão
@@ -823,7 +963,10 @@ async function proximaQuestao() {
 
 async function encerrarSessao() {
   if (sessaoId) {
-    GraduaBM.api.sessoes.encerrar(sessaoId).catch(() => {});
+    try { await GraduaBM.api.sessoes.encerrar(sessaoId); }
+    catch (err) { console.error('[GraduaBM] Falha ao encerrar sessão:', err); }
+  } else {
+    console.warn('[GraduaBM] Sessão não registrada — progresso não foi salvo.');
   }
   pararTimer();
   mostrarResultados();
@@ -925,7 +1068,10 @@ async function enviarDenuncia() {
 function confirmarSaida() { document.getElementById('modal-saida').classList.add('visivel'); }
 function fecharModal()    { document.getElementById('modal-saida').classList.remove('visivel'); }
 async function sairSessao() {
-  if (sessaoId) GraduaBM.api.sessoes.encerrar(sessaoId).catch(() => {});
+  if (sessaoId) {
+    try { await GraduaBM.api.sessoes.encerrar(sessaoId); }
+    catch (err) { console.error('[GraduaBM] Falha ao encerrar sessão ao sair:', err); }
+  }
   pararTimer();
   window.location.href = '/selecao-legislacao';
 }
@@ -965,6 +1111,356 @@ document.addEventListener('copy', e => {
 });
 
 init();
+</script>
+
+<button id="pom-reabrir" onclick="reabrirPomodoro()" title="Abrir Temporizador">
+  <span class="pom-dot" id="pom-dot-reabrir"></span>
+  Temporizador
+</button>
+
+<!-- ── POMODORO FLUTUANTE ── -->
+<div id="pom-float">
+  <div id="pom-float-bar">
+    <div id="pom-float-title">
+      <span class="pom-dot" id="pom-dot"></span>
+      <span id="pom-title-text">Temporizador</span>
+      <span id="pom-time-mini">25:00</span>
+    </div>
+    <div id="pom-float-actions">
+      <button class="pom-win-btn" onclick="toggleMinimizarPom()" title="Minimizar / Expandir" id="pom-min-btn">&#8722;</button>
+      <button class="pom-win-btn" onclick="fecharPomodoro()" title="Fechar">&#215;</button>
+    </div>
+  </div>
+  <div id="pom-float-body">
+    <div class="pomodoro-wrap">
+      <div>
+        <div class="pom-presets" style="margin-bottom:8px;">
+          <button class="pom-preset ativo" onclick="setPomodoro(25, this)">25min</button>
+          <button class="pom-preset" onclick="setPomodoro(45, this)">45min</button>
+          <button class="pom-preset" onclick="setPomodoro(60, this)">60min</button>
+          <button class="pom-preset" onclick="setPomodoro(0, this)">Livre</button>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+          <span style="font-size:11px;color:var(--cinza-texto);">Personalizado:</span>
+          <input
+            type="number" id="pom-custom-min" min="1" max="300"
+            placeholder="min"
+            oninput="setPomodoroCostum(this)"
+            style="
+              width:60px; background:var(--cinza-medio);
+              border:1px solid var(--cinza-borda); border-radius:6px;
+              padding:3px 8px; font-size:12px; color:var(--branco);
+              font-family:'IBM Plex Mono',monospace;
+              outline:none; transition:border-color 0.15s;
+            "
+          >
+          <span style="font-size:11px;color:var(--cinza-texto);">min</span>
+        </div>
+        <div class="pom-sessoes" id="pom-sessoes" style="font-size:11px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">Sessões hoje: 0</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <div class="pomodoro-display pausado" id="pom-display">25:00</div>
+        <div class="pomodoro-controls">
+          <button class="pom-btn" id="pom-play" onclick="togglePomodoro()" title="Iniciar / Pausar">
+            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button class="pom-btn" onclick="resetPomodoro()" title="Reiniciar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── POMODORO ──
+let pomMinutos  = 25;
+let pomSegundos = 0;
+let pomRodando  = false;
+let pomInterval = null;
+let pomSessoes  = 0;
+let pomLivre    = false;
+
+function padZ(n) { return n < 10 ? '0' + n : '' + n; }
+
+function atualizarDisplayPom() {
+  const tempo = padZ(pomMinutos) + ':' + padZ(pomSegundos);
+  const el = document.getElementById('pom-display');
+  el.textContent = tempo;
+  el.className = 'pomodoro-display ' + (pomRodando ? 'rodando' : 'pausado');
+  const dot = document.getElementById('pom-dot');
+  if (dot) dot.className = 'pom-dot' + (pomRodando ? ' rodando' : '');
+  const mini = document.getElementById('pom-time-mini');
+  if (mini) {
+    mini.textContent = tempo;
+    mini.style.color = pomRodando ? 'var(--cor-area, var(--vermelho))' : 'var(--cinza-texto)';
+  }
+}
+
+function setPomodoro(min, btn) {
+  pausarPomodoro();
+  pomLivre    = (min === 0);
+  pomMinutos  = pomLivre ? 99 : min;
+  pomSegundos = 0;
+  document.querySelectorAll('.pom-preset').forEach(b => b.classList.remove('ativo'));
+  btn.classList.add('ativo');
+  atualizarDisplayPom();
+}
+
+function togglePomodoro() {
+  if (pomRodando) { pausarPomodoro(); } else { iniciarPomodoro(); }
+}
+
+function iniciarPomodoro() {
+  if (pomLivre) {
+    pomRodando = true;
+    atualizarDisplayPom();
+    updatePlayBtn();
+    pomInterval = setInterval(() => {
+      pomSegundos++;
+      if (pomSegundos === 60) { pomSegundos = 0; pomMinutos++; }
+      atualizarDisplayPom();
+    }, 1000);
+    return;
+  }
+  if (pomMinutos === 0 && pomSegundos === 0) resetPomodoro();
+  pomRodando = true;
+  atualizarDisplayPom();
+  updatePlayBtn();
+  pomInterval = setInterval(() => {
+    if (pomSegundos === 0) {
+      if (pomMinutos === 0) {
+        clearInterval(pomInterval);
+        pomRodando = false;
+        pomSessoes++;
+        document.getElementById('pom-sessoes').textContent = 'Sessões hoje: ' + pomSessoes;
+        document.getElementById('pom-display').className = 'pomodoro-display pausado';
+        updatePlayBtn();
+        try {
+          const ctx = new AudioContext();
+          [[0, 880, 0.18], [0.25, 880, 0.18], [0.5, 1100, 0.35]].forEach(([t, freq, dur]) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.35, ctx.currentTime + t);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + dur);
+            osc.start(ctx.currentTime + t);
+            osc.stop(ctx.currentTime + t + dur);
+          });
+        } catch(e) {}
+        return;
+      }
+      pomMinutos--;
+      pomSegundos = 59;
+    } else {
+      pomSegundos--;
+    }
+    atualizarDisplayPom();
+  }, 1000);
+}
+
+function pausarPomodoro() {
+  clearInterval(pomInterval);
+  pomRodando = false;
+  atualizarDisplayPom();
+  updatePlayBtn();
+}
+
+function resetPomodoro() {
+  clearInterval(pomInterval);
+  pomRodando = false;
+  const ativo = document.querySelector('.pom-preset.ativo');
+  if (ativo) {
+    const txt = ativo.textContent;
+    pomMinutos  = pomLivre ? 0 : parseInt(txt);
+    pomSegundos = 0;
+  }
+  atualizarDisplayPom();
+  updatePlayBtn();
+}
+
+function updatePlayBtn() {
+  const btn = document.getElementById('pom-play');
+  btn.innerHTML = pomRodando
+    ? '<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+}
+
+function setPomodoroCostum(input) {
+  const val = parseInt(input.value);
+  if (!val || val < 1) return;
+  pausarPomodoro();
+  pomLivre    = false;
+  pomMinutos  = val;
+  pomSegundos = 0;
+  document.querySelectorAll('.pom-preset').forEach(b => b.classList.remove('ativo'));
+  atualizarDisplayPom();
+}
+
+function toggleMinimizarPom() {
+  const win = document.getElementById('pom-float');
+  win.classList.toggle('minimizado');
+  document.getElementById('pom-min-btn').innerHTML = '&#8722;';
+}
+
+function fecharPomodoro() {
+  pausarPomodoro();
+  document.getElementById('pom-float').style.display = 'none';
+  document.getElementById('pom-reabrir').style.display = 'flex';
+}
+
+function reabrirPomodoro() {
+  document.getElementById('pom-float').style.display = '';
+  document.getElementById('pom-reabrir').style.display = 'none';
+}
+
+document.getElementById('pom-float-bar').addEventListener('click', function(e) {
+  const win = document.getElementById('pom-float');
+  if (win.classList.contains('minimizado') && !e.target.closest('#pom-float-actions')) {
+    toggleMinimizarPom();
+  }
+});
+
+// ── POMODORO: DRAG ──
+(function() {
+  const win = document.getElementById('pom-float');
+  const bar = document.getElementById('pom-float-bar');
+  let startX = 0, startY = 0, dragging = false;
+
+  bar.addEventListener('mousedown', function(e) {
+    if (e.target.closest('.pom-win-btn')) return;
+    dragging = true;
+    const rect = win.getBoundingClientRect();
+    startX = e.clientX - rect.left;
+    startY = e.clientY - rect.top;
+    win.classList.add('dragging');
+    win.style.right = 'auto'; win.style.bottom = 'auto';
+    win.style.left = rect.left + 'px'; win.style.top = rect.top + 'px';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function(e) {
+    if (!dragging) return;
+    let nx = Math.max(0, Math.min(window.innerWidth  - win.offsetWidth,  e.clientX - startX));
+    let ny = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, e.clientY - startY));
+    win.style.left = nx + 'px'; win.style.top = ny + 'px';
+  });
+  document.addEventListener('mouseup', function() {
+    if (dragging) { dragging = false; win.classList.remove('dragging'); }
+  });
+  bar.addEventListener('touchstart', function(e) {
+    if (e.target.closest('.pom-win-btn')) return;
+    const t = e.touches[0];
+    const rect = win.getBoundingClientRect();
+    startX = t.clientX - rect.left; startY = t.clientY - rect.top;
+    dragging = true;
+    win.style.right = 'auto'; win.style.bottom = 'auto';
+    win.style.left = rect.left + 'px'; win.style.top = rect.top + 'px';
+  }, { passive: true });
+  document.addEventListener('touchmove', function(e) {
+    if (!dragging) return;
+    const t = e.touches[0];
+    let nx = Math.max(0, Math.min(window.innerWidth  - win.offsetWidth,  t.clientX - startX));
+    let ny = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, t.clientY - startY));
+    win.style.left = nx + 'px'; win.style.top = ny + 'px';
+  }, { passive: true });
+  document.addEventListener('touchend', function() { dragging = false; });
+})();
+
+// ── POMODORO: RESTAURAR ESTADO DA PÁGINA ANTERIOR ──
+(function restaurarPomodoro() {
+  const tsStr = sessionStorage.getItem('pom_ts');
+  let minutos  = parseInt(sessionStorage.getItem('pom_minutos'))  || 25;
+  let segundos = parseInt(sessionStorage.getItem('pom_segundos')) || 0;
+  const rodando    = sessionStorage.getItem('pom_rodando')    === '1';
+  const livre      = sessionStorage.getItem('pom_livre')      === '1';
+  const sessoes    = parseInt(sessionStorage.getItem('pom_sessoes')) || 0;
+  const preset     = sessionStorage.getItem('pom_preset')     || '25min';
+  const custom     = sessionStorage.getItem('pom_custom')     || '';
+  const minimizado = sessionStorage.getItem('pom_minimizado') === '1';
+  const fechado    = sessionStorage.getItem('pom_fechado')    === '1';
+  const posLeft    = sessionStorage.getItem('pom_pos_left')   || '';
+  const posTop     = sessionStorage.getItem('pom_pos_top')    || '';
+  const posRight   = sessionStorage.getItem('pom_pos_right')  || '';
+  const posBottom  = sessionStorage.getItem('pom_pos_bottom') || '';
+
+  // Se estava rodando, descontar o tempo de navegação
+  if (rodando && tsStr) {
+    const elapsed = Math.floor((Date.now() - parseInt(tsStr)) / 1000);
+    if (!livre) {
+      let totalSeg = minutos * 60 + segundos - elapsed;
+      if (totalSeg <= 0) {
+        minutos = 0; segundos = 0;
+      } else {
+        minutos  = Math.floor(totalSeg / 60);
+        segundos = totalSeg % 60;
+      }
+    } else {
+      let totalSeg = minutos * 60 + segundos + elapsed;
+      minutos  = Math.floor(totalSeg / 60);
+      segundos = totalSeg % 60;
+    }
+  }
+
+  pomMinutos  = minutos;
+  pomSegundos = segundos;
+  pomLivre    = livre;
+  pomSessoes  = sessoes;
+
+  // Restaurar preset ativo
+  document.querySelectorAll('.pom-preset').forEach(b => b.classList.remove('ativo'));
+  const presetBtns = document.querySelectorAll('.pom-preset');
+  let presetEncontrado = false;
+  presetBtns.forEach(b => {
+    if (b.textContent.trim() === preset) { b.classList.add('ativo'); presetEncontrado = true; }
+  });
+  if (!presetEncontrado && presetBtns[0]) presetBtns[0].classList.add('ativo');
+
+  if (custom) document.getElementById('pom-custom-min').value = custom;
+
+  document.getElementById('pom-sessoes').textContent = 'Sessões hoje: ' + pomSessoes;
+
+  // Restaurar posição, estado minimizado e fechado
+  const pomWin = document.getElementById('pom-float');
+  if (fechado) {
+    pomWin.style.display = 'none';
+    document.getElementById('pom-reabrir').style.display = 'flex';
+  }
+  if (minimizado) pomWin.classList.add('minimizado');
+  if (posLeft)   { pomWin.style.left   = posLeft;   pomWin.style.right  = 'auto'; }
+  if (posTop)    { pomWin.style.top    = posTop;    pomWin.style.bottom = 'auto'; }
+  if (!posLeft && posRight)  pomWin.style.right  = posRight;
+  if (!posTop  && posBottom) pomWin.style.bottom = posBottom;
+
+  atualizarDisplayPom();
+  updatePlayBtn();
+
+  if (rodando && !(minutos === 0 && segundos === 0 && !livre)) {
+    iniciarPomodoro();
+  }
+})();
+
+// Salvar estado ao sair da página
+window.addEventListener('beforeunload', function() {
+  sessionStorage.setItem('pom_minutos', pomMinutos);
+  sessionStorage.setItem('pom_segundos', pomSegundos);
+  sessionStorage.setItem('pom_rodando', pomRodando ? '1' : '0');
+  sessionStorage.setItem('pom_livre', pomLivre ? '1' : '0');
+  sessionStorage.setItem('pom_sessoes', pomSessoes);
+  if (pomRodando) sessionStorage.setItem('pom_ts', Date.now());
+  else sessionStorage.removeItem('pom_ts');
+  const presetAtivo = document.querySelector('.pom-preset.ativo');
+  sessionStorage.setItem('pom_preset', presetAtivo ? presetAtivo.textContent.trim() : '25min');
+  sessionStorage.setItem('pom_custom', document.getElementById('pom-custom-min').value || '');
+  const pomWin = document.getElementById('pom-float');
+  sessionStorage.setItem('pom_minimizado', pomWin.classList.contains('minimizado') ? '1' : '0');
+  sessionStorage.setItem('pom_fechado', pomWin.style.display === 'none' ? '1' : '0');
+  sessionStorage.setItem('pom_pos_left',   pomWin.style.left   || '');
+  sessionStorage.setItem('pom_pos_top',    pomWin.style.top    || '');
+  sessionStorage.setItem('pom_pos_right',  pomWin.style.right  || '');
+  sessionStorage.setItem('pom_pos_bottom', pomWin.style.bottom || '');
+});
 </script>
 </body>
 </html>

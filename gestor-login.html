@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Acesso Gestor</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --roxo: #7F77DD;
+    --roxo-bg: rgba(127,119,221,0.08);
+    --roxo-borda: rgba(127,119,221,0.3);
+    --verde: #27A05A;
+    --erro: #E24B4A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+
+  .card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 14px; padding: 2.5rem; width: 100%; max-width: 400px; }
+
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.06em; color: var(--branco); text-align: center; margin-bottom: 4px; }
+  .subtitulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #AFA9EC; letter-spacing: 0.08em; text-align: center; margin-bottom: 2.5rem; text-transform: uppercase; }
+
+  .campo { margin-bottom: 1.25rem; }
+  label { display: block; font-size: 11px; font-weight: 500; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  input { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 10px 14px; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.15s; }
+  input:focus { border-color: var(--roxo); }
+
+  .btn { width: 100%; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s; margin-top: 0.5rem; }
+  .btn:hover { background: #6960C8; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .msg { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 13px; display: none; }
+  .msg.erro { background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.3); color: #F09595; display: block; }
+  .msg.sucesso { background: rgba(39,160,90,0.1); border: 1px solid rgba(39,160,90,0.3); color: #7DD99A; display: block; }
+
+  .rodape { text-align: center; margin-top: 1.5rem; font-size: 12px; color: #555; }
+  .rodape a { color: var(--roxo); text-decoration: none; }
+  .rodape a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">GraduaBM</div>
+  <div class="subtitulo">Painel de Gestor</div>
+
+  <form id="form-login">
+    <div class="campo">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="seu@email.com" autocomplete="username" required>
+    </div>
+    <div class="campo">
+      <label for="senha">Senha</label>
+      <input type="password" id="senha" placeholder="••••••••" autocomplete="current-password" required>
+    </div>
+    <button class="btn" type="submit" id="btn-login">Entrar</button>
+    <div class="msg" id="msg"></div>
+  </form>
+
+  <div class="rodape">
+    <a href="/">Voltar ao início</a>
+  </div>
+</div>
+
+<script>
+const API = 'https://graduabm-backend-production.up.railway.app';
+
+document.getElementById('form-login').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const btn = document.getElementById('btn-login');
+  const msg = document.getElementById('msg');
+  msg.className = 'msg';
+  msg.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Entrando…';
+
+  const email = document.getElementById('email').value.trim();
+  const senha = document.getElementById('senha').value;
+
+  try {
+    const res = await fetch(API + '/api/gestor/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, senha }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      msg.className = 'msg erro';
+      msg.textContent = data.erro || 'Erro ao fazer login.';
+      btn.disabled = false;
+      btn.textContent = 'Entrar';
+      return;
+    }
+
+    sessionStorage.setItem('graduabm_gestor', '1');
+    sessionStorage.setItem('graduabm_gestor_token', data.token);
+    sessionStorage.setItem('graduabm_gestor_nome', data.gestor.nome);
+    sessionStorage.setItem('graduabm_gestor_email', data.gestor.email);
+
+    window.location.href = '/gestor-painel';
+  } catch {
+    msg.className = 'msg erro';
+    msg.textContent = 'Sem conexão com o servidor.';
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+});
+</script>
+</body>
+</html>

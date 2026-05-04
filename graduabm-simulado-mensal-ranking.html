@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GraduaBM — Ranking do Simulado Mensal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F; --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F; --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A; --cinza-borda: #333;
+    --cinza-texto: #888; --branco: #F8F6F2;
+    --verde: #7DD99A; --dourado: #F0C050;
+    --ctsp: #C0270F; --cba: #185FA5;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  .layout { display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; gap: 8px; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #7DD99A; letter-spacing: 0.04em; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; transition: background 0.12s, color 0.12s; border-left: 2px solid transparent; text-decoration: none; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: rgba(192,39,15,0.08); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .btn-logout-top { display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .btn-logout-top:hover { border-color: #E24B4A; color: #E24B4A; }
+  .btn-logout-top svg { width: 13px; height: 13px; }
+
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; max-width: 900px; }
+
+  /* Loading */
+  .loader-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4rem; }
+  .loader { width: 36px; height: 36px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--dourado); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Aguardando encerramento */
+  .aguardando-card {
+    background: var(--cinza-escuro); border: 1px solid rgba(240,192,80,0.3);
+    border-radius: 12px; padding: 2rem; text-align: center; margin-bottom: 2rem;
+  }
+  .aguardando-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--dourado); letter-spacing: 0.04em; margin-bottom: 8px; }
+  .aguardando-sub { color: var(--cinza-texto); font-size: 14px; margin-bottom: 1.5rem; }
+  .countdown-inline { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 1rem; }
+  .cd-bloco { text-align: center; min-width: 56px; }
+  .cd-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--branco); line-height: 1; }
+  .cd-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--cinza-texto); text-transform: uppercase; }
+  .cd-sep { font-size: 28px; color: #555; line-height: 1.4; }
+
+  /* Hero resultado */
+  .hero { text-align: center; margin-bottom: 2rem; animation: fadeUp 0.4s ease both; }
+  .hero-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.04em; color: var(--branco); margin-bottom: 4px; }
+  .hero-sub { font-size: 13px; color: var(--cinza-texto); }
+  .hero-curso { display: inline-flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
+  .hero-curso.ctsp { background: rgba(192,39,15,0.1); color: #E8866E; border: 1px solid rgba(192,39,15,0.3); }
+  .hero-curso.cba { background: rgba(24,95,165,0.1); color: #85B7EB; border: 1px solid rgba(24,95,165,0.3); }
+
+  /* Minha posição */
+  .minha-posicao {
+    background: rgba(240,192,80,0.08); border: 1px solid rgba(240,192,80,0.3);
+    border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
+    display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+    animation: fadeUp 0.4s ease 0.1s both;
+  }
+  .pos-numero { font-family: 'Bebas Neue', sans-serif; font-size: 64px; color: var(--dourado); line-height: 1; min-width: 80px; text-align: center; }
+  .pos-info-titulo { font-size: 16px; font-weight: 600; color: var(--branco); margin-bottom: 4px; }
+  .pos-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+  .pos-stat { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+  .pos-stat .val { font-size: 20px; font-weight: 700; font-family: 'Bebas Neue', sans-serif; }
+  .pos-stat .lbl { color: var(--cinza-texto); font-size: 10px; display: block; text-transform: uppercase; letter-spacing: 0.06em; }
+
+  /* Abas */
+  .abas { display: flex; gap: 0; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 1.5rem; animation: fadeUp 0.4s ease 0.2s both; }
+  .aba { padding: 10px 20px; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-bottom: 2px solid transparent; transition: 0.15s; background: none; border-top: none; border-left: none; border-right: none; font-family: 'IBM Plex Sans', sans-serif; }
+  .aba:hover { color: var(--branco); }
+  .aba.ativa { color: var(--branco); border-bottom-color: var(--vermelho); }
+
+  /* Ranking */
+  .ranking-lista { display: flex; flex-direction: column; gap: 6px; animation: fadeUp 0.4s ease 0.25s both; }
+  .ranking-item {
+    display: grid; grid-template-columns: 40px 1fr auto auto; align-items: center;
+    gap: 12px; padding: 10px 16px; border-radius: 8px;
+    border: 1px solid var(--cinza-borda); background: var(--cinza-escuro);
+    transition: background 0.12s;
+  }
+  .ranking-item.eu { border-color: rgba(240,192,80,0.4); background: rgba(240,192,80,0.05); }
+  .ranking-item.top3 { border-color: rgba(240,192,80,0.2); }
+  .ranking-pos { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--cinza-texto); text-align: center; }
+  .ranking-pos.ouro { color: #FFD700; }
+  .ranking-pos.prata { color: #C0C0C0; }
+  .ranking-pos.bronze { color: #CD7F32; }
+  .ranking-nome { font-size: 13px; font-weight: 500; color: var(--branco); }
+  .ranking-nome-sub { font-size: 11px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; }
+  .ranking-acertos { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cinza-texto); text-align: right; }
+  .ranking-pct { font-family: 'Bebas Neue', sans-serif; font-size: 22px; text-align: right; min-width: 60px; }
+
+  /* Gabarito */
+  .gabarito-wrap { animation: fadeUp 0.4s ease 0.25s both; }
+  .gab-filtro { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+  .gab-filtro-btn { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; cursor: pointer; border: 1px solid var(--cinza-borda); background: transparent; color: var(--cinza-texto); transition: 0.15s; }
+  .gab-filtro-btn:hover { color: var(--branco); border-color: #555; }
+  .gab-filtro-btn.ativo { background: var(--cinza-medio); color: var(--branco); border-color: #555; }
+
+  .gab-questao-card {
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+    border-radius: 10px; padding: 1.25rem; margin-bottom: 10px;
+  }
+  .gab-questao-card.acertei { border-color: rgba(125,217,154,0.3); }
+  .gab-questao-card.errei { border-color: rgba(240,149,149,0.2); }
+  .gab-questao-card.embranco { border-color: rgba(255,255,255,0.1); }
+  .gab-q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+  .gab-q-num { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .gab-q-area { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); padding: 2px 8px; border: 1px solid var(--cinza-borda); border-radius: 20px; }
+  .gab-q-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 10px; border-radius: 20px; }
+  .gab-q-status.ok { background: rgba(125,217,154,0.1); color: #7DD99A; }
+  .gab-q-status.err { background: rgba(240,149,149,0.1); color: #F09595; }
+  .gab-q-status.blank { background: rgba(255,255,255,0.05); color: var(--cinza-texto); }
+  .gab-enunciado { font-size: 14px; color: var(--branco); line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
+  .gab-alts { display: flex; flex-direction: column; gap: 6px; }
+  .gab-alt { display: flex; gap: 10px; padding: 6px 10px; border-radius: 6px; font-size: 13px; }
+  .gab-alt.correta { background: rgba(125,217,154,0.08); border: 1px solid rgba(125,217,154,0.3); }
+  .gab-alt.errada { background: rgba(240,149,149,0.05); border: 1px solid rgba(240,149,149,0.15); }
+  .gab-alt.neutra { border: 1px solid rgba(255,255,255,0.05); }
+  .gab-alt-letra { font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 20px; }
+  .gab-alt-letra.verde { color: #7DD99A; }
+  .gab-alt-letra.vermelho { color: #F09595; }
+  .gab-justificativa { margin-top: 10px; padding: 10px 12px; background: rgba(125,217,154,0.05); border-left: 2px solid rgba(125,217,154,0.4); font-size: 13px; color: var(--cinza-texto); line-height: 1.6; border-radius: 0 6px 6px 0; }
+
+  /* Estatísticas */
+  .stats-wrap { animation: fadeUp 0.4s ease 0.25s both; }
+  .stats-header { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+  .stat-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.25rem; text-align: center; }
+  .stat-card .val { font-family: 'Bebas Neue', sans-serif; font-size: 38px; line-height: 1; margin-bottom: 4px; }
+  .stat-card .lbl { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-destaque-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 1.5rem; }
+  .stat-destaque { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1rem; }
+  .stat-destaque-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .stat-destaque-pct { font-family: 'Bebas Neue', sans-serif; font-size: 32px; line-height: 1; margin-bottom: 4px; }
+  .stat-destaque-desc { font-size: 12px; color: var(--cinza-texto); line-height: 1.4; }
+
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
+    .topbar { padding: 0 1rem; }
+    .conteudo { padding: 1rem; max-width: 100%; }
+    .minha-posicao { gap: 1rem; }
+    .pos-numero { font-size: 48px; }
+    .ranking-item { grid-template-columns: 32px 1fr auto; }
+    .ranking-acertos { display: none; }
+    .stats-header { grid-template-columns: 1fr 1fr; }
+    .stat-destaque-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <a href="/" class="logo-text">GRADUABM</a>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome" id="user-nome">Carregando…</div>
+      <div class="usuario-status"><div class="status-dot"></div>ALUNO PRO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item" href="/dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="/area-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Papirar
+      </a>
+      <a class="nav-item ativo" href="/simulados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados Oficiais
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo" id="topbar-titulo">Simulado Mensal — Ranking</span>
+      <button class="btn-logout-top" id="btn-logout-top">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Sair
+      </button>
+    </div>
+
+    <div class="conteudo" id="conteudo-principal">
+      <div class="loader-wrap">
+        <div class="loader"></div>
+        <div style="font-size:13px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">CARREGANDO...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+let simuladoId = null;
+let dadosRanking = null;
+let dadosGabarito = null;
+let dadosEstatisticas = null;
+let abaAtiva = 'ranking';
+let gabFiltro = 'todos';
+let countdownInterval = null;
+
+function getSimuladoId() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id');
+}
+
+function formatarData(iso) {
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function formatarHora(iso) {
+  return new Date(iso).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function atualizarCountdownAguardando(targetIso) {
+  const diff = new Date(targetIso) - new Date();
+  if (diff <= 0) { clearInterval(countdownInterval); location.reload(); return; }
+  const totalSeg = Math.floor(diff / 1000);
+  const d = Math.floor(totalSeg / 86400);
+  const h = Math.floor((totalSeg % 86400) / 3600);
+  const m = Math.floor((totalSeg % 3600) / 60);
+  const s = totalSeg % 60;
+  const p = n => String(n).padStart(2,'0');
+  const el = document.getElementById('countdown-aguardando');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="countdown-inline">
+      ${d > 0 ? `<div class="cd-bloco"><div class="cd-num">${p(d)}</div><div class="cd-label">dias</div></div><span class="cd-sep">:</span>` : ''}
+      <div class="cd-bloco"><div class="cd-num">${p(h)}</div><div class="cd-label">horas</div></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-bloco"><div class="cd-num">${p(m)}</div><div class="cd-label">min</div></div>
+      <span class="cd-sep">:</span>
+      <div class="cd-bloco"><div class="cd-num">${p(s)}</div><div class="cd-label">seg</div></div>
+    </div>`;
+}
+
+async function init() {
+  GraduaBM.protegerRota();
+  const user = GraduaBM.getUsuario();
+  if (user) document.getElementById('user-nome').textContent = user.nome;
+  document.getElementById('btn-sair').addEventListener('click', () => GraduaBM.Auth.logout());
+  document.getElementById('btn-logout-top').addEventListener('click', () => GraduaBM.Auth.logout());
+
+  simuladoId = getSimuladoId();
+  if (!simuladoId) { window.location.href = '/simulados'; return; }
+
+  // Tenta carregar ranking (pode ser 403 se ainda não encerrou)
+  try {
+    const res = await GraduaBM.SimuladoMensal.ranking(simuladoId);
+    dadosRanking = res;
+    document.getElementById('topbar-titulo').textContent = res.simulado.titulo + ' — Ranking';
+
+    // Carrega gabarito e estatísticas em paralelo
+    const [gab, stats] = await Promise.allSettled([
+      GraduaBM.SimuladoMensal.gabarito(simuladoId),
+      GraduaBM.SimuladoMensal.estatisticas(simuladoId),
+    ]);
+    if (gab.status === 'fulfilled') dadosGabarito = gab.value;
+    if (stats.status === 'fulfilled') dadosEstatisticas = stats.value;
+
+    renderizarPagina();
+
+  } catch (err) {
+    if (err?.codigo === 'AGUARDANDO' || err?.status === 403) {
+      renderizarAguardando(err.encerramento);
+    } else {
+      document.getElementById('conteudo-principal').innerHTML = `
+        <div style="color:var(--cinza-texto);text-align:center;padding:3rem;">
+          Simulado não encontrado ou indisponível.<br><br>
+          <a href="/simulados" style="color:var(--vermelho);">← Voltar aos Simulados</a>
+        </div>`;
+    }
+  }
+}
+
+function renderizarAguardando(encerramento) {
+  const el = document.getElementById('conteudo-principal');
+  el.innerHTML = `
+    <div class="aguardando-card">
+      <div class="aguardando-titulo">Ranking em Breve</div>
+      <div class="aguardando-sub">O ranking e o gabarito comentado serão liberados após o encerramento do simulado.</div>
+      ${encerramento ? `<div id="countdown-aguardando"></div>
+        <div style="margin-top:1rem;font-size:12px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">Encerra em ${formatarData(encerramento)} às ${formatarHora(encerramento)}</div>` : ''}
+    </div>
+    <div style="text-align:center;margin-top:1rem;">
+      <a href="/simulados" style="color:var(--cinza-texto);font-size:13px;">← Voltar aos Simulados</a>
+    </div>`;
+  if (encerramento) {
+    atualizarCountdownAguardando(encerramento);
+    countdownInterval = setInterval(() => atualizarCountdownAguardando(encerramento), 1000);
+  }
+}
+
+function renderizarPagina() {
+  const sim = dadosRanking.simulado;
+  const ranking = dadosRanking.ranking || [];
+  const minhaPos = dadosRanking.minha_posicao;
+  const eu = ranking.find(r => r.sou_eu);
+
+  let html = `
+    <div class="hero">
+      <div class="hero-curso ${sim.curso}">${sim.curso.toUpperCase()}</div>
+      <div class="hero-titulo">${sim.titulo}</div>
+      <div class="hero-sub">${formatarData(sim.abertura || '')} — ${ranking.length} participante${ranking.length !== 1 ? 's' : ''}</div>
+    </div>`;
+
+  if (eu) {
+    const cor = eu.percentual >= 70 ? '#7DD99A' : eu.percentual >= 50 ? '#F0C050' : '#F09595';
+    const posLabel = minhaPos === 1 ? '🥇 1º' : minhaPos === 2 ? '🥈 2º' : minhaPos === 3 ? '🥉 3º' : `#${minhaPos}`;
+    html += `
+      <div class="minha-posicao">
+        <div class="pos-numero" style="color:${cor}">${posLabel}</div>
+        <div>
+          <div class="pos-info-titulo">Sua posição no ranking</div>
+          <div class="pos-stats">
+            <div class="pos-stat">
+              <span class="val" style="color:#7DD99A">${eu.acertos}</span>
+              <span class="lbl">Acertos</span>
+            </div>
+            <div class="pos-stat">
+              <span class="val" style="color:${cor}">${eu.percentual?.toFixed(1)}%</span>
+              <span class="lbl">Aproveitamento</span>
+            </div>
+            <div class="pos-stat">
+              <span class="val" style="color:var(--cinza-texto)">${eu.total - eu.acertos}</span>
+              <span class="lbl">Erros/Branco</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // Abas
+  const abas = [
+    { id: 'ranking', label: 'Ranking' },
+    ...(dadosGabarito ? [{ id: 'gabarito', label: 'Gabarito Comentado' }] : []),
+    ...(dadosEstatisticas ? [{ id: 'estatisticas', label: 'Estatísticas' }] : []),
+  ];
+
+  html += `<div class="abas">${abas.map(a =>
+    `<button class="aba ${a.id === abaAtiva ? 'ativa' : ''}" onclick="trocarAba('${a.id}')">${a.label}</button>`
+  ).join('')}</div>`;
+
+  html += `<div id="conteudo-aba"></div>`;
+  document.getElementById('conteudo-principal').innerHTML = html;
+  renderizarAba();
+}
+
+function trocarAba(id) {
+  abaAtiva = id;
+  document.querySelectorAll('.aba').forEach(el => el.classList.toggle('ativa', el.textContent.toLowerCase().startsWith(id)));
+  renderizarAba();
+}
+
+function renderizarAba() {
+  const el = document.getElementById('conteudo-aba');
+  if (!el) return;
+  if (abaAtiva === 'ranking') el.innerHTML = renderRanking();
+  else if (abaAtiva === 'gabarito') el.innerHTML = renderGabarito();
+  else if (abaAtiva === 'estatisticas') el.innerHTML = renderEstatisticas();
+}
+
+function renderRanking() {
+  const ranking = dadosRanking.ranking || [];
+  if (ranking.length === 0) return `<div style="text-align:center;color:var(--cinza-texto);padding:2rem;">Nenhum participante registrado ainda.</div>`;
+
+  return `<div class="ranking-lista">${ranking.map(p => {
+    const cor = p.percentual >= 70 ? '#7DD99A' : p.percentual >= 50 ? '#F0C050' : '#F09595';
+    const posClass = p.posicao === 1 ? 'ouro' : p.posicao === 2 ? 'prata' : p.posicao === 3 ? 'bronze' : '';
+    return `
+      <div class="ranking-item ${p.sou_eu ? 'eu' : ''} ${p.posicao <= 3 ? 'top3' : ''}">
+        <div class="ranking-pos ${posClass}">${p.posicao}º</div>
+        <div>
+          <div class="ranking-nome">${p.nome}${p.sou_eu ? ' <span style="font-size:10px;color:var(--dourado);">← você</span>' : ''}</div>
+          <div class="ranking-nome-sub">Entregou às ${formatarHora(p.entregue_em)}</div>
+        </div>
+        <div class="ranking-acertos" style="color:var(--cinza-texto);">${p.acertos}/${p.total}</div>
+        <div class="ranking-pct" style="color:${cor}">${p.percentual?.toFixed(1)}%</div>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function renderGabarito() {
+  if (!dadosGabarito) return '<div style="color:var(--cinza-texto);padding:2rem;">Gabarito indisponível.</div>';
+
+  const filtros = [
+    { id: 'todos', label: 'Todas' },
+    { id: 'acertei', label: 'Acertei' },
+    { id: 'errei', label: 'Errei' },
+    { id: 'embranco', label: 'Em Branco' },
+  ];
+
+  let questoesFiltradas = dadosGabarito;
+  if (gabFiltro === 'acertei') questoesFiltradas = questoesFiltradas.filter(q => q.acertei === true);
+  else if (gabFiltro === 'errei') questoesFiltradas = questoesFiltradas.filter(q => q.acertei === false && q.minha_resposta);
+  else if (gabFiltro === 'embranco') questoesFiltradas = questoesFiltradas.filter(q => !q.minha_resposta);
+
+  const btnsFiltro = filtros.map(f =>
+    `<button class="gab-filtro-btn ${gabFiltro === f.id ? 'ativo' : ''}" onclick="trocarGabFiltro('${f.id}')">${f.label}</button>`
+  ).join('');
+
+  const cards = questoesFiltradas.map((q, i) => {
+    const global_i = dadosGabarito.indexOf(q);
+    const status = q.acertei === true ? 'acertei' : q.minha_resposta ? 'errei' : 'embranco';
+    const statusLabel = status === 'acertei' ? 'ACERTOU' : status === 'errei' ? 'ERROU' : 'EM BRANCO';
+    const statusClass = status === 'acertei' ? 'ok' : status === 'errei' ? 'err' : 'blank';
+    const alts = ['a','b','c','d','e'].filter(l => q['alternativa_' + l]);
+    const altCards = alts.map(l => {
+      const letra = l.toUpperCase();
+      const isCorreta = letra === q.resposta_correta;
+      const isMinha = letra === q.minha_resposta;
+      const cls = isCorreta ? 'correta' : (isMinha && !isCorreta) ? 'errada' : 'neutra';
+      const letraStyle = isCorreta ? 'verde' : (isMinha && !isCorreta) ? 'vermelho' : '';
+      return `<div class="gab-alt ${cls}">
+        <span class="gab-alt-letra ${letraStyle}">${letra}</span>
+        <span style="font-size:13px;color:var(--branco);">${q['alternativa_' + l]}</span>
+        ${isCorreta ? '<span style="margin-left:auto;font-size:10px;color:#7DD99A;font-family:\'IBM Plex Mono\',monospace;">✓ CORRETA</span>' : ''}
+        ${isMinha && !isCorreta ? '<span style="margin-left:auto;font-size:10px;color:#F09595;font-family:\'IBM Plex Mono\',monospace;">← SUA RESPOSTA</span>' : ''}
+      </div>`;
+    }).join('');
+
+    return `
+      <div class="gab-questao-card ${status}">
+        <div class="gab-q-header">
+          <span class="gab-q-num">QUESTÃO ${global_i + 1}</span>
+          <span class="gab-q-area">${(q.area_tematica || '').toUpperCase()}</span>
+          <span class="gab-q-status ${statusClass}">${statusLabel}</span>
+        </div>
+        <div class="gab-enunciado">${q.enunciado || ''}</div>
+        <div class="gab-alts">${altCards}</div>
+        ${q.justificativa ? `<div class="gab-justificativa">${q.justificativa}</div>` : ''}
+      </div>`;
+  }).join('');
+
+  return `<div class="gabarito-wrap">
+    <div class="gab-filtro">${btnsFiltro}</div>
+    ${cards || '<div style="color:var(--cinza-texto);padding:2rem;text-align:center;">Nenhuma questão nesta categoria.</div>'}
+  </div>`;
+}
+
+function renderEstatisticas() {
+  if (!dadosEstatisticas) return '<div style="color:var(--cinza-texto);padding:2rem;">Estatísticas indisponíveis.</div>';
+  const { total_participantes, mais_dificil, mais_facil } = dadosEstatisticas;
+
+  // Calcula média de acertos do ranking
+  const ranking = dadosRanking.ranking || [];
+  const mediaGeral = ranking.length > 0
+    ? (ranking.reduce((s, p) => s + (p.percentual || 0), 0) / ranking.length).toFixed(1)
+    : '—';
+
+  const destaqueDificil = mais_dificil
+    ? `${mais_dificil.percentual}% de acerto (${mais_dificil.acertos}/${mais_dificil.total} participantes)`
+    : '—';
+  const destaqueFacil = mais_facil
+    ? `${mais_facil.percentual}% de acerto (${mais_facil.acertos}/${mais_facil.total} participantes)`
+    : '—';
+
+  return `<div class="stats-wrap">
+    <div class="stats-header">
+      <div class="stat-card">
+        <div class="val" style="color:var(--dourado)">${total_participantes}</div>
+        <div class="lbl">Participantes</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" style="color:var(--verde)">${mediaGeral}%</div>
+        <div class="lbl">Média Geral</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" style="color:var(--cinza-texto)">${dadosGabarito?.length || '—'}</div>
+        <div class="lbl">Questões</div>
+      </div>
+    </div>
+    <div class="stat-destaque-grid">
+      <div class="stat-destaque">
+        <div class="stat-destaque-label">Questão mais difícil</div>
+        <div class="stat-destaque-pct" style="color:#F09595">${mais_dificil ? mais_dificil.percentual + '%' : '—'}</div>
+        <div class="stat-destaque-desc">${destaqueDificil}</div>
+      </div>
+      <div class="stat-destaque">
+        <div class="stat-destaque-label">Questão mais fácil</div>
+        <div class="stat-destaque-pct" style="color:#7DD99A">${mais_facil ? mais_facil.percentual + '%' : '—'}</div>
+        <div class="stat-destaque-desc">${destaqueFacil}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function trocarGabFiltro(filtro) {
+  gabFiltro = filtro;
+  document.getElementById('conteudo-aba').innerHTML = renderGabarito();
+}
+
+init();
+</script>
+</body>
+</html>

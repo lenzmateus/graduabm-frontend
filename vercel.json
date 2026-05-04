@@ -17,14 +17,20 @@
     { "source": "/simulado-mensal", "destination": "/graduabm-simulado-mensal" },
     { "source": "/simulado-mensal-ranking", "destination": "/graduabm-simulado-mensal-ranking" },
     { "source": "/admin-simulados-mensais", "destination": "/admin-simulados-mensais" },
-    { "source": "/admin-assinaturas", "destination": "/admin-assinaturas" }
+    { "source": "/admin-assinaturas", "destination": "/admin-assinaturas" },
+    { "source": "/gestor-login", "destination": "/gestor-login" },
+    { "source": "/gestor-cadastro", "destination": "/gestor-cadastro" },
+    { "source": "/gestor-painel", "destination": "/gestor-painel" }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" }
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; connect-src 'self' https://graduabm-backend-production.up.railway.app; img-src 'self' data:" },
+        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
   ]
