@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Entrar</title>
+<title>Protocolo Bravo Mike — Entrar</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -471,7 +471,7 @@
 <body>
 
 <nav>
-  <a href="/" class="logo-text">GraduaBM</a>
+  <a href="/" class="logo-text">Protocolo Bravo Mike</a>
   <a href="/" class="nav-link">← Voltar ao início</a>
 </nav>
 
@@ -807,7 +807,7 @@
 <script>
   // ── Se já está logado e ativo, vai direto para estudos ──
   (function() {
-    if (GraduaBM.Auth.estaLogado() && GraduaBM.Auth.usuarioAtivo()) {
+    if (PBM.Auth.estaLogado() && PBM.Auth.usuarioAtivo()) {
       window.location.href = '/dashboard';
     }
   })();
@@ -859,7 +859,7 @@
     limparMsgs();
 
     try {
-      const data = await GraduaBM.Auth.login({ email, senha });
+      const data = await PBM.Auth.login({ email, senha });
       mostrarPainel(data.usuario);
     } catch (err) {
       if (err.codigo === 'ASSINATURA_INATIVA' && err.usuario) {
@@ -931,7 +931,7 @@
     limparMsgs();
 
     try {
-      const data = await GraduaBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro, nickname });
+      const data = await PBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro, nickname });
       mostrarPainel(data.usuario);
     } catch (err) {
       mostrarMsg('msg-cadastro', err.erro || err.message || 'Erro ao criar conta.', 'erro');
@@ -975,7 +975,7 @@
   }
 
   function logout() {
-    GraduaBM.Auth.logout();
+    PBM.Auth.logout();
   }
 
   // ── Recuperar senha ───────────────────────────────────────
@@ -1008,7 +1008,7 @@
     limparMsgs();
 
     try {
-      await GraduaBM.Auth.esqueciSenha({ email });
+      await PBM.Auth.esqueciSenha({ email });
       mostrarMsg('msg-recuperar', 'Se o e-mail estiver cadastrado, você receberá um link em breve. Verifique também a caixa de spam.', 'sucesso');
       document.getElementById('recuperar-email').value = '';
     } catch (err) {
@@ -1056,7 +1056,7 @@
     document.getElementById('txt-alterar-senha').textContent = '';
 
     try {
-      await GraduaBM.Auth.alterarSenha({ senha_atual, nova_senha });
+      await PBM.Auth.alterarSenha({ senha_atual, nova_senha });
       mostrarMsg('msg-alterar-senha', 'Senha alterada com sucesso!', 'sucesso');
       document.getElementById('senha-atual').value = '';
       document.getElementById('nova-senha').value = '';
@@ -1084,8 +1084,8 @@
 
   // ── Init: verificar se já logado mas inativo ──────────────
   (function() {
-    const u = GraduaBM.getUsuario();
-    if (u && GraduaBM.Auth.estaLogado()) mostrarPainel(u);
+    const u = PBM.getUsuario();
+    if (u && PBM.Auth.estaLogado()) mostrarPainel(u);
 
     // Seleciona a tab correta se houver hash na URL
     if (window.location.hash === '#cadastro') {
@@ -1130,7 +1130,7 @@
     btnEl.textContent = '…';
 
     try {
-      const data = await GraduaBM.Cupons.aplicar(codigo);
+      const data = await PBM.Cupons.aplicar(codigo);
       msgEl.textContent = data.mensagem || 'Acesso liberado!';
       msgEl.className = 'cupom-msg sucesso';
       // Atualiza o usuario no localStorage e recarrega o painel

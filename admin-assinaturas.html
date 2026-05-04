@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Assinaturas</title>
+<title>Protocolo Bravo Mike — Assinaturas</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -170,7 +170,7 @@
 <div class="layout">
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="/" class="logo-text">GraduaBM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
       <span class="admin-chip">ADMIN</span>
     </div>
     <div class="sidebar-usuario">
@@ -404,11 +404,11 @@
 <script src="/js/api.js"></script>
 <script>
   // ── Auth admin ─────────────────────────────────────────────
-  if (sessionStorage.getItem('graduabm_admin') !== '1') {
+  if (sessionStorage.getItem('pbm_admin') !== '1') {
     window.location.href = '/admin-login';
   }
 
-  const ADMIN_TOKEN = sessionStorage.getItem('graduabm_admin_token');
+  const ADMIN_TOKEN = sessionStorage.getItem('pbm_admin_token');
 
   // ── Estado ─────────────────────────────────────────────────
   let paginaAtual = 1;
@@ -426,7 +426,7 @@
   // ── Stats ──────────────────────────────────────────────────
   async function carregarStats() {
     try {
-      const data = await GraduaBM.Admin.assinaturas.stats();
+      const data = await PBM.Admin.assinaturas.stats();
       document.getElementById('stat-ativos').textContent   = data.ativos;
       document.getElementById('stat-inativos').textContent = data.inativos;
       document.getElementById('stat-venc7').textContent    = data.vencendo_7_dias;
@@ -462,7 +462,7 @@
     if (busca) params.busca = busca;
 
     try {
-      const data = await GraduaBM.Admin.assinaturas.listar(params);
+      const data = await PBM.Admin.assinaturas.listar(params);
       totalAlunos = data.total || 0;
       renderizarAlunos(data.alunos || []);
       atualizarPaginacao();
@@ -565,7 +565,7 @@
 
     document.getElementById('btn-modal-ok-acao').disabled = true;
     try {
-      await GraduaBM.Admin.assinaturas.gerenciar(userId, body);
+      await PBM.Admin.assinaturas.gerenciar(userId, body);
       fecharModalAcao();
       toast('Ação aplicada com sucesso!', 'verde');
       carregarAlunos();
@@ -584,7 +584,7 @@
     document.getElementById('modal-logs').style.display = 'flex';
 
     try {
-      const data = await GraduaBM.Admin.assinaturas.logs(userId);
+      const data = await PBM.Admin.assinaturas.logs(userId);
       const lista = document.getElementById('modal-logs-lista');
       if (!data.logs || data.logs.length === 0) {
         lista.innerHTML = '<div class="log-item" style="color:var(--cinza-texto);">Nenhum evento encontrado.</div>';
@@ -610,7 +610,7 @@
     const tbody = document.getElementById('tbody-cupons');
     tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Carregando…</td></tr>';
     try {
-      const data = await GraduaBM.Admin.cupons.listar();
+      const data = await PBM.Admin.cupons.listar();
       renderizarCupons(data.cupons || []);
     } catch {
       tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Erro ao carregar cupons.</td></tr>';
@@ -671,7 +671,7 @@
     if (!dias || dias < 1) return toast('Informe quantos dias de acesso.', 'erro');
 
     try {
-      await GraduaBM.Admin.cupons.criar({
+      await PBM.Admin.cupons.criar({
         codigo,
         valor_dias: dias,
         max_usos: maxUsos ? parseInt(maxUsos) : null,
@@ -706,7 +706,7 @@
     const descricao = document.getElementById('editar-descricao').value.trim();
 
     try {
-      await GraduaBM.Admin.cupons.editar(id, {
+      await PBM.Admin.cupons.editar(id, {
         max_usos: maxUsos ? parseInt(maxUsos) : null,
         validade: validade || null,
         descricao: descricao || null,
@@ -722,7 +722,7 @@
   async function desativarCupom(id) {
     if (!confirm('Desativar este cupom?')) return;
     try {
-      await GraduaBM.Admin.cupons.desativar(id);
+      await PBM.Admin.cupons.desativar(id);
       toast('Cupom desativado.', 'verde');
       carregarCupons();
     } catch (err) {
@@ -733,7 +733,7 @@
   async function excluirCupom(id, codigo) {
     if (!confirm(`Excluir permanentemente o cupom "${codigo}"?\n\nEsta ação não pode ser desfeita.`)) return;
     try {
-      await GraduaBM.Admin.cupons.excluir(id);
+      await PBM.Admin.cupons.excluir(id);
       toast('Cupom excluído.', 'verde');
       carregarCupons();
     } catch (err) {
@@ -763,7 +763,7 @@
   }
 
   function encerrarSessao() {
-    ['graduabm_admin', 'graduabm_admin_ts', 'graduabm_admin_token'].forEach(k => sessionStorage.removeItem(k));
+    ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_token'].forEach(k => sessionStorage.removeItem(k));
     window.location.href = '/admin-login';
   }
 </script>

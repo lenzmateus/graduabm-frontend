@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Área de Estudos</title>
+<title>Protocolo Bravo Mike — Área de Estudos</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -421,7 +421,7 @@
 
 <div id="preview-banner" style="display:none;background:#7F77DD;color:#fff;padding:7px 20px;font-size:12px;font-weight:600;align-items:center;justify-content:center;gap:16px;position:sticky;top:0;z-index:200;">
   🎓 Modo Aluno ativo — você está vendo como um aluno vê
-  <a href="/admin" onclick="sessionStorage.removeItem('graduabm_preview_aluno')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>
+  <a href="/admin" onclick="sessionStorage.removeItem('Protocolo Bravo Mike_preview_aluno')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>
 </div>
 
 <div class="layout">
@@ -430,7 +430,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <a href="/" class="logo-text">GRADUABM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
     </div>
 
     <div class="sidebar-usuario">
@@ -762,20 +762,20 @@ function renderAreas() {
 }
 
 function iniciarEstudo(num) {
-  sessionStorage.setItem('graduabm_at', 'AT' + parseInt(num, 10));
-  sessionStorage.setItem('graduabm_curso', cursoAtual);
+  sessionStorage.setItem('Protocolo Bravo Mike_at', 'AT' + parseInt(num, 10));
+  sessionStorage.setItem('Protocolo Bravo Mike_curso', cursoAtual);
   window.location.href = '/selecao-legislacao';
 }
 
 renderAreas();
 
 function handleSair() {
-  if (GraduaBM.isAdmin()) {
-    sessionStorage.removeItem('graduabm_admin');
-    sessionStorage.removeItem('graduabm_admin_ts');
+  if (PBM.isAdmin()) {
+    sessionStorage.removeItem('pbm_admin');
+    sessionStorage.removeItem('pbm_admin_ts');
     window.location.href = '/';
   } else {
-    GraduaBM.Auth.logout();
+    PBM.Auth.logout();
   }
 }
 
@@ -783,8 +783,8 @@ document.getElementById('btn-logout-top').addEventListener('click', handleSair);
 
 // ── Proteção de rota + dados reais do usuário ─────────────
 async function iniciarApp() {
-  const isPreview = sessionStorage.getItem('graduabm_preview_aluno') === '1';
-  const isAdmin   = GraduaBM.isAdmin();
+  const isPreview = sessionStorage.getItem('Protocolo Bravo Mike_preview_aluno') === '1';
+  const isAdmin   = PBM.isAdmin();
 
   // Admin navegando como admin puro (sem preview)
   if (isAdmin && !isPreview) {
@@ -797,11 +797,11 @@ async function iniciarApp() {
 
   // Aluno real — protege a rota via backend
   if (!isAdmin) {
-    await GraduaBM.protegerRota();
+    await PBM.protegerRota();
   }
 
   // Preenche nome na sidebar — lê localStorage (preview ou aluno real)
-  const usuario = GraduaBM.getUsuario();
+  const usuario = PBM.getUsuario();
   if (usuario) {
     document.getElementById('sidebar-nome').textContent = usuario.nome;
     document.getElementById('sidebar-status-txt').textContent =
@@ -834,7 +834,7 @@ async function iniciarApp() {
   // Dados de desempenho só para alunos reais (backend funcionando)
   if (!isPreview && !isAdmin) {
     try {
-      const data = await GraduaBM.Progresso.desempenho({ curso: cursoAtual });
+      const data = await PBM.Progresso.desempenho({ curso: cursoAtual });
       if (data?.totais?.total_respondidas > 0) {
         const bv = document.getElementById('banner-bv');
         if (bv) bv.style.display = 'none';
@@ -874,6 +874,6 @@ async function iniciarApp() {
 <div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
   <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
 </div>
-<script>if(sessionStorage.getItem('graduabm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
+<script>if(sessionStorage.getItem('pbm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
 </body>
 </html>

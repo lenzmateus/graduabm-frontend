@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Ranking do Simulado Mensal</title>
+<title>Protocolo Bravo Mike — Ranking do Simulado Mensal</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -182,7 +182,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <a href="/" class="logo-text">GRADUABM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
     </div>
     <div class="sidebar-usuario">
       <div class="usuario-nome" id="user-nome">Carregando…</div>
@@ -272,25 +272,25 @@ function atualizarCountdownAguardando(targetIso) {
 }
 
 async function init() {
-  GraduaBM.protegerRota();
-  const user = GraduaBM.getUsuario();
+  PBM.protegerRota();
+  const user = PBM.getUsuario();
   if (user) document.getElementById('user-nome').textContent = user.nome;
-  document.getElementById('btn-sair').addEventListener('click', () => GraduaBM.Auth.logout());
-  document.getElementById('btn-logout-top').addEventListener('click', () => GraduaBM.Auth.logout());
+  document.getElementById('btn-sair').addEventListener('click', () => PBM.Auth.logout());
+  document.getElementById('btn-logout-top').addEventListener('click', () => PBM.Auth.logout());
 
   simuladoId = getSimuladoId();
   if (!simuladoId) { window.location.href = '/simulados'; return; }
 
   // Tenta carregar ranking (pode ser 403 se ainda não encerrou)
   try {
-    const res = await GraduaBM.SimuladoMensal.ranking(simuladoId);
+    const res = await PBM.SimuladoMensal.ranking(simuladoId);
     dadosRanking = res;
     document.getElementById('topbar-titulo').textContent = res.simulado.titulo + ' — Ranking';
 
     // Carrega gabarito e estatísticas em paralelo
     const [gab, stats] = await Promise.allSettled([
-      GraduaBM.SimuladoMensal.gabarito(simuladoId),
-      GraduaBM.SimuladoMensal.estatisticas(simuladoId),
+      PBM.SimuladoMensal.gabarito(simuladoId),
+      PBM.SimuladoMensal.estatisticas(simuladoId),
     ]);
     if (gab.status === 'fulfilled') dadosGabarito = gab.value;
     if (stats.status === 'fulfilled') dadosEstatisticas = stats.value;

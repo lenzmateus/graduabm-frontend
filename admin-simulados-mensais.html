@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -110,7 +110,7 @@
 <body>
 
 <div class="topbar">
-  <a href="/admin.html" class="topbar-logo">GRADUABM <span class="topbar-badge">ADMIN</span></a>
+  <a href="/admin.html" class="topbar-logo">Protocolo Bravo Mike <span class="topbar-badge">ADMIN</span></a>
   <div class="topbar-nav">
     <a href="/admin.html" class="btn-sm">← Painel Principal</a>
     <a href="/admin-questoes.html" class="btn-sm">Questões</a>
@@ -169,7 +169,7 @@ const ADMIN_TOKEN = localStorage.getItem('admin_token') || prompt('Token de admi
 if (!ADMIN_TOKEN) { alert('Token necessário.'); history.back(); }
 localStorage.setItem('admin_token', ADMIN_TOKEN);
 
-const API = 'https://graduabm-backend-production.up.railway.app';
+const API = 'https://Protocolo Bravo Mike-backend-production.up.railway.app';
 
 async function req(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN, ...opts.headers };

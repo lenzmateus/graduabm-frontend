@@ -31,28 +31,28 @@ async function request(path, options = {}) {
   return data;
 }
 
-const GraduaBM = {
+const PBM = {
   getUsuario() {
     try { return JSON.parse(localStorage.getItem('usuario')); }
     catch { return null; }
   },
 
   isAdmin() {
-    return sessionStorage.getItem('graduabm_admin') === '1';
+    return sessionStorage.getItem('pbm_admin') === '1';
   },
 
   isGestor() {
-    return sessionStorage.getItem('graduabm_gestor') === '1';
+    return sessionStorage.getItem('pbm_gestor') === '1';
   },
 
   isStaff() {
-    return GraduaBM.isAdmin() || GraduaBM.isGestor();
+    return PBM.isAdmin() || PBM.isGestor();
   },
 
   async protegerRota() {
-    if (GraduaBM.isAdmin()) return;
+    if (PBM.isAdmin()) return;
 
-    if (!GraduaBM.Auth.estaLogado()) {
+    if (!PBM.Auth.estaLogado()) {
       window.location.href = '/login';
       return;
     }
@@ -74,7 +74,7 @@ const GraduaBM = {
       return !!sessionStorage.getItem('token');
     },
     usuarioAtivo() {
-      const u = GraduaBM.getUsuario();
+      const u = PBM.getUsuario();
       return u?.ativo === true;
     },
     async login({ email, senha }) {
@@ -180,10 +180,10 @@ const GraduaBM = {
 
   Gestor: {
     getToken() {
-      return sessionStorage.getItem('graduabm_gestor_token') || '';
+      return sessionStorage.getItem('pbm_gestor_token') || '';
     },
     logout() {
-      ['graduabm_gestor','graduabm_gestor_token','graduabm_gestor_nome','graduabm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
+      ['pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
       window.location.href = '/gestor-login';
     },
     query(path, prefer, method, body) {
@@ -191,7 +191,7 @@ const GraduaBM = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${GraduaBM.Gestor.getToken()}`,
+          'Authorization': `Bearer ${PBM.Gestor.getToken()}`,
         },
         body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
       }).then(r => r.json());
@@ -201,34 +201,34 @@ const GraduaBM = {
   Admin: {
     assinaturas: {
       stats() {
-        return request('/api/admin/assinaturas/stats', { headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request('/api/admin/assinaturas/stats', { headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
       listar(params = {}) {
         const qs = new URLSearchParams(params).toString();
-        return request('/api/admin/assinaturas' + (qs ? '?' + qs : ''), { headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request('/api/admin/assinaturas' + (qs ? '?' + qs : ''), { headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
       gerenciar(userId, body) {
-        return request(`/api/admin/assinaturas/${userId}`, { method: 'PATCH', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request(`/api/admin/assinaturas/${userId}`, { method: 'PATCH', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
       logs(userId) {
-        return request(`/api/admin/assinaturas/${userId}/logs`, { headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request(`/api/admin/assinaturas/${userId}/logs`, { headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
     },
     cupons: {
       listar() {
-        return request('/api/admin/cupons', { headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request('/api/admin/cupons', { headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
       criar(body) {
-        return request('/api/admin/cupons', { method: 'POST', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request('/api/admin/cupons', { method: 'POST', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
       editar(id, body) {
-        return request(`/api/admin/cupons/${id}`, { method: 'PATCH', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request(`/api/admin/cupons/${id}`, { method: 'PATCH', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
       desativar(id) {
-        return request(`/api/admin/cupons/${id}`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request(`/api/admin/cupons/${id}`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
       excluir(id) {
-        return request(`/api/admin/cupons/${id}/excluir`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('graduabm_admin_token') || '' } });
+        return request(`/api/admin/cupons/${id}/excluir`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
       },
     },
   },
@@ -279,3 +279,5 @@ const GraduaBM = {
   },
 };
 
+window.PBM = PBM;
+window.GraduaBM = PBM; // alias temporário — remover após 30 dias

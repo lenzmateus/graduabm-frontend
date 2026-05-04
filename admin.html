@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Painel Admin</title>
+<title>Protocolo Bravo Mike — Painel Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -152,7 +152,7 @@
 <div class="layout">
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="/" class="logo-text">GraduaBM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
       <span class="admin-chip">ADMIN</span>
     </div>
     <div class="sidebar-usuario">
@@ -409,7 +409,7 @@
         </div>
         <div class="instrucoes-claude">
           <strong>Como usar:</strong> Cole a chave no início da conversa com Claude Code.<br>
-          Exemplo: <em>"Chave admin: [CHAVE] — pode editar o projeto graduabm-frontend."</em>
+          Exemplo: <em>"Chave admin: [CHAVE] — pode editar o projeto Protocolo Bravo Mike-frontend."</em>
         </div>
       </div>
     </div>
@@ -423,12 +423,12 @@
   'use strict';
 
   /* ── Auth guard ── */
-  if (sessionStorage.getItem('graduabm_admin') !== '1') {
+  if (sessionStorage.getItem('pbm_admin') !== '1') {
     window.location.href = '/admin-login';
     return;
   }
 
-  const ADMIN_TOKEN = sessionStorage.getItem('graduabm_admin_token');
+  const ADMIN_TOKEN = sessionStorage.getItem('pbm_admin_token');
 
   async function supaQuery(path, prefer, method, body) {
     const res = await fetch('/api/admin/query', {
@@ -452,7 +452,7 @@
 
   /* ── Logout ── */
   document.getElementById('btn-sair').addEventListener('click', function () {
-    ['graduabm_admin', 'graduabm_admin_ts', 'graduabm_admin_token'].forEach(k => sessionStorage.removeItem(k));
+    ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_token'].forEach(k => sessionStorage.removeItem(k));
     localStorage.removeItem('usuario');
     localStorage.removeItem('token');
     window.location.href = '/';
@@ -462,7 +462,7 @@
   window.ativarPreview = function() {
     const cursoSel = document.getElementById('preview-curso');
     if (cursoSel) {
-      sessionStorage.setItem('graduabm_curso', cursoSel.value);
+      sessionStorage.setItem('Protocolo Bravo Mike_curso', cursoSel.value);
     }
     localStorage.setItem('usuario', JSON.stringify({
       nome: 'Aluno Teste',
@@ -471,7 +471,7 @@
       plano: 'mensal'
     }));
     localStorage.setItem('token', 'admin-preview-token');
-    sessionStorage.setItem('graduabm_preview_aluno', '1');
+    sessionStorage.setItem('Protocolo Bravo Mike_preview_aluno', '1');
   };
 
   document.getElementById('btn-modo-aluno').addEventListener('click', function () {
@@ -480,7 +480,7 @@
   });
 
   /* Ao voltar para o painel admin, sai do preview */
-  sessionStorage.removeItem('graduabm_preview_aluno');
+  sessionStorage.removeItem('Protocolo Bravo Mike_preview_aluno');
 
   /* ── Gestão de alunos ── */
   let alunoAtual = null;
@@ -618,7 +618,7 @@
   /* ── Tempo de sessão (atualiza a cada 30s) ── */
   function atualizarTempo() {
     try {
-      const ts = parseInt(sessionStorage.getItem('graduabm_admin_ts') || '0');
+      const ts = parseInt(sessionStorage.getItem('pbm_admin_ts') || '0');
       if (!ts) return;
       const diff = Math.floor((Date.now() - ts) / 60000);
       const el = document.getElementById('stat-tempo');
@@ -728,7 +728,7 @@
     try {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 7000);
-      const r = await fetch('https://graduabm-backend-production.up.railway.app/api/auth/me', { signal: ctrl.signal });
+      const r = await fetch('https://Protocolo Bravo Mike-backend-production.up.railway.app/api/auth/me', { signal: ctrl.signal });
       clearTimeout(timer);
       backOk = r.status < 500; backStatus = String(r.status);
     } catch (e) { backStatus = e.name === 'AbortError' ? 'TIMEOUT' : 'ERRO'; }

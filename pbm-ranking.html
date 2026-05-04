@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Ranking Geral</title>
+<title>Protocolo Bravo Mike — Ranking Geral</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -457,7 +457,7 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="/dashboard" class="logo-text">GraduaBM</a>
+      <a href="/dashboard" class="logo-text">Protocolo Bravo Mike</a>
     </div>
     <div class="sidebar-usuario">
       <div class="usuario-nome" id="sb-nome">—</div>
@@ -487,7 +487,7 @@
       </a>
     </nav>
     <div class="sidebar-footer">
-      <button class="btn-sair" onclick="GraduaBM.Auth.logout()">Sair</button>
+      <button class="btn-sair" onclick="PBM.Auth.logout()">Sair</button>
     </div>
   </aside>
 
@@ -607,9 +607,9 @@
 
 <script src="/js/api.js"></script>
 <script>
-  GraduaBM.protegerRota();
+  PBM.protegerRota();
 
-  const usuario = GraduaBM.getUsuario();
+  const usuario = PBM.getUsuario();
   if (usuario) {
     document.getElementById('sb-nome').textContent = usuario.nome;
     document.getElementById('sb-curso').textContent = usuario.curso?.toUpperCase() || '—';
@@ -842,7 +842,7 @@
   // ── Carregar dados ────────────────────────────────────────────
   async function carregar() {
     try {
-      const { ranking } = await GraduaBM.Ranking.listar();
+      const { ranking } = await PBM.Ranking.listar();
       rankingOriginal = ranking || [];
 
       const agora = new Date();

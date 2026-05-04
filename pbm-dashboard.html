@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Dashboard</title>
+<title>Protocolo Bravo Mike — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -320,7 +320,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <a href="/" class="logo-text">GRADUABM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
     </div>
     
     <div class="sidebar-usuario">
@@ -433,7 +433,7 @@ let chartInstance = null;
 
 async function carregarGrafico() {
   try {
-    const dados = await GraduaBM.Progresso.evolucaoSemanal();
+    const dados = await PBM.Progresso.evolucaoSemanal();
     
     if (!Array.isArray(dados) || dados.length === 0) {
       document.getElementById('chart-container').innerHTML = '<div class="chart-empty">Complete sessões de estudo para ver sua evolução aqui.</div>';
@@ -551,9 +551,9 @@ async function carregarGrafico() {
 }
 
 async function init() {
-  await GraduaBM.protegerRota();
+  await PBM.protegerRota();
 
-  const user = GraduaBM.getUsuario();
+  const user = PBM.getUsuario();
   if (user) {
     document.getElementById('user-nome').textContent = user.nome;
     renderRankBadge(user.curso);
@@ -562,11 +562,11 @@ async function init() {
   const dataOpts = { weekday: 'long', day: '2-digit', month: 'long' };
   document.getElementById('topbar-data').textContent = new Date().toLocaleDateString('pt-BR', dataOpts);
 
-  document.getElementById('btn-sair').addEventListener('click', () => GraduaBM.Auth.logout());
-  document.getElementById('btn-logout-top').addEventListener('click', () => GraduaBM.Auth.logout());
+  document.getElementById('btn-sair').addEventListener('click', () => PBM.Auth.logout());
+  document.getElementById('btn-logout-top').addEventListener('click', () => PBM.Auth.logout());
 
   try {
-    const desempenho = await GraduaBM.Progresso.desempenho();
+    const desempenho = await PBM.Progresso.desempenho();
     if (desempenho) {
       document.getElementById('stat-resolvidas').textContent = desempenho.total_questoes || 0;
       document.getElementById('stat-acertos').textContent = (desempenho.taxa_acerto ? Number(desempenho.taxa_acerto).toFixed(1) : 0) + '%';
@@ -576,7 +576,7 @@ async function init() {
     // Carregar gráfico de evolução
     carregarGrafico();
 
-    const sessoes = await GraduaBM.Progresso.sessoesRecentes();
+    const sessoes = await PBM.Progresso.sessoesRecentes();
     const list = document.getElementById('sessoes-list');
     
     if (Array.isArray(sessoes) && sessoes.length > 0) {

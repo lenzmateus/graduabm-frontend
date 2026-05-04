@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Admin</title>
+<title>Protocolo Bravo Mike — Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -218,7 +218,7 @@
 <body>
 
 <nav>
-  <a href="/" class="logo-text">GraduaBM</a>
+  <a href="/" class="logo-text">Protocolo Bravo Mike</a>
   <span class="nav-badge">ACESSO RESTRITO</span>
 </nav>
 
@@ -230,7 +230,7 @@
       <div class="side-tag">Painel de administração</div>
       <h2 class="side-titulo">
         Admin<br>
-        <span>GraduaBM</span>
+        <span>Protocolo Bravo Mike</span>
       </h2>
       <p class="side-desc">
         Acesso restrito ao painel de administração. Use suas credenciais de administrador para entrar.
@@ -284,7 +284,7 @@
 const EMAIL_HASH = 'f4e74563d8181446dae5c536e7b52b71947f03666e459e5b6e4fc65f97d959e0';
 const SENHA_HASH = '082984dd01b7bc67ef8990cf569e6522bfbde5913c069b21090bcded8f1a7b34';
 
-if (sessionStorage.getItem('graduabm_admin') === '1') {
+if (sessionStorage.getItem('pbm_admin') === '1') {
   window.location.href = '/admin';
 }
 
@@ -308,9 +308,9 @@ async function fazerLoginAdmin() {
   const [eHash, sHash] = await Promise.all([sha256(email), sha256(senha)]);
 
   if (eHash === EMAIL_HASH && sHash === SENHA_HASH) {
-    sessionStorage.setItem('graduabm_admin', '1');
-    sessionStorage.setItem('graduabm_admin_ts', Date.now().toString());
-    sessionStorage.setItem('graduabm_admin_token', sHash);
+    sessionStorage.setItem('pbm_admin', '1');
+    sessionStorage.setItem('pbm_admin_ts', Date.now().toString());
+    sessionStorage.setItem('pbm_admin_token', sHash);
     window.location.href = '/admin';
   } else {
     mostrarMsg('E-mail ou senha incorretos.');

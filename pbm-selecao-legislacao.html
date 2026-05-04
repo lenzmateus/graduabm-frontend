@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Selecionar legislação</title>
+<title>Protocolo Bravo Mike — Selecionar legislação</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -648,7 +648,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <a href="/" class="logo-text">GRADUABM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-label">Menu</div>
@@ -1136,8 +1136,8 @@ const AREAS = {
 AREAS.at3.cba.grupos = AREAS.at3.ctsp.grupos;
 
 // ── ESTADO GLOBAL — lido do sessionStorage ──
-const _atParam    = sessionStorage.getItem('graduabm_at');
-const _cursoParam = sessionStorage.getItem('graduabm_curso');
+const _atParam    = sessionStorage.getItem('Protocolo Bravo Mike_at');
+const _cursoParam = sessionStorage.getItem('Protocolo Bravo Mike_curso');
 let areaAtual  = _atParam  ? _atParam.toLowerCase().replace(/at0?(\d)/, 'at$1')  : 'at1';
 let cursoAtual = _cursoParam || 'ctsp';
 let selecionados = new Set();
@@ -1415,7 +1415,7 @@ async function carregarContagensReais() {
   try {
     const token = localStorage.getItem('token') || '';
     const resp = await fetch(
-      `https://graduabm-backend-production.up.railway.app/api/questoes/legislacoes?curso=${encodeURIComponent(cursoAtual)}`,
+      `https://Protocolo Bravo Mike-backend-production.up.railway.app/api/questoes/legislacoes?curso=${encodeURIComponent(cursoAtual)}`,
       { headers: token ? { Authorization: 'Bearer ' + token } : {} }
     );
     if (!resp.ok) return;
@@ -1429,8 +1429,8 @@ async function carregarContagensReais() {
 // ── CARREGAR PROGRESSO DO ALUNO POR LEGISLAÇÃO ──
 async function carregarProgressoLeg() {
   try {
-    if (typeof GraduaBM === 'undefined') return;
-    const dados = await GraduaBM.Progresso.errosPorLegislacao();
+    if (typeof Protocolo Bravo Mike === 'undefined') return;
+    const dados = await PBM.Progresso.errosPorLegislacao();
     if (!dados || !Array.isArray(dados)) return;
     dados.forEach(d => {
       if (d.legislacao) {
@@ -1646,12 +1646,12 @@ function setFiltro(val, btn) {
 }
 
 function iniciarQuestoes() {
-  sessionStorage.setItem('graduabm_at', areaAtual.toUpperCase());
-  sessionStorage.setItem('graduabm_curso', cursoAtual);
-  sessionStorage.setItem('graduabm_legislacoes', JSON.stringify([...selecionados]));
-  sessionStorage.setItem('graduabm_qtd_por_leg', JSON.stringify(qtdPorLeg));
-  sessionStorage.removeItem('graduabm_qtd');
-  sessionStorage.setItem('graduabm_filtro', filtroConfig);
+  sessionStorage.setItem('Protocolo Bravo Mike_at', areaAtual.toUpperCase());
+  sessionStorage.setItem('Protocolo Bravo Mike_curso', cursoAtual);
+  sessionStorage.setItem('Protocolo Bravo Mike_legislacoes', JSON.stringify([...selecionados]));
+  sessionStorage.setItem('Protocolo Bravo Mike_qtd_por_leg', JSON.stringify(qtdPorLeg));
+  sessionStorage.removeItem('Protocolo Bravo Mike_qtd');
+  sessionStorage.setItem('Protocolo Bravo Mike_filtro', filtroConfig);
 
   // Persistir estado do Pomodoro para a página de questões
   sessionStorage.setItem('pom_minutos', pomMinutos);
@@ -1676,12 +1676,12 @@ function iniciarQuestoes() {
 }
 
 function handleSair() {
-  if (sessionStorage.getItem('graduabm_admin') === '1') {
-    sessionStorage.removeItem('graduabm_admin');
-    sessionStorage.removeItem('graduabm_admin_ts');
+  if (sessionStorage.getItem('pbm_admin') === '1') {
+    sessionStorage.removeItem('pbm_admin');
+    sessionStorage.removeItem('pbm_admin_ts');
     window.location.href = '/';
-  } else if (typeof GraduaBM !== 'undefined') {
-    GraduaBM.Auth.logout();
+  } else if (typeof Protocolo Bravo Mike !== 'undefined') {
+    PBM.Auth.logout();
   } else {
     localStorage.removeItem('token');
     localStorage.removeItem('usuario');
@@ -1693,7 +1693,7 @@ document.getElementById('btn-logout-top').addEventListener('click', handleSair);
 
 // ── PROTEÇÃO DE ROTA ──
 (function() {
-  if (sessionStorage.getItem('graduabm_admin') === '1') return;
+  if (sessionStorage.getItem('pbm_admin') === '1') return;
   if (!localStorage.getItem('token')) {
     window.location.href = '/login';
   }
@@ -1706,10 +1706,10 @@ document.querySelectorAll('.view-tab').forEach(function(t) {
   t.classList.toggle('ativo', t.textContent.trim().toLowerCase() === areaAtual);
 });
 
-if (sessionStorage.getItem('graduabm_preview_aluno') === '1') {
+if (sessionStorage.getItem('Protocolo Bravo Mike_preview_aluno') === '1') {
   const b = document.createElement('div');
   b.style.cssText = 'background:#7F77DD;color:#fff;padding:7px 20px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:16px;position:sticky;top:0;z-index:200;';
-  b.innerHTML = '🎓 Modo Aluno ativo — você está vendo como um aluno vê <a href="/admin" onclick="sessionStorage.removeItem(\'graduabm_preview_aluno\')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>';
+  b.innerHTML = '🎓 Modo Aluno ativo — você está vendo como um aluno vê <a href="/admin" onclick="sessionStorage.removeItem(\'Protocolo Bravo Mike_preview_aluno\')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>';
   document.body.insertBefore(b, document.body.firstChild);
 }
 
@@ -1807,6 +1807,6 @@ function reabrirPomodoro() {
 <div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
   <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
 </div>
-<script>if(sessionStorage.getItem('graduabm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
+<script>if(sessionStorage.getItem('pbm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
 </body>
 </html>

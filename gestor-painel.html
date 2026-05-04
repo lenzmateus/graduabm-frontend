@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Painel Gestor</title>
+<title>Protocolo Bravo Mike — Painel Gestor</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -122,15 +122,15 @@
 <body>
 
 <script>
-if (sessionStorage.getItem('graduabm_gestor') !== '1') window.location.href = '/gestor-login';
-const GESTOR_TOKEN = sessionStorage.getItem('graduabm_gestor_token');
-const GESTOR_NOME  = sessionStorage.getItem('graduabm_gestor_nome') || 'Gestor';
+if (sessionStorage.getItem('pbm_gestor') !== '1') window.location.href = '/gestor-login';
+const GESTOR_TOKEN = sessionStorage.getItem('pbm_gestor_token');
+const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
 </script>
 
 <div class="layout">
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="/gestor-painel" class="logo-text">GraduaBM</a>
+      <a href="/gestor-painel" class="logo-text">Protocolo Bravo Mike</a>
       <span class="gestor-chip">GESTOR</span>
     </div>
     <div class="sidebar-usuario">
@@ -272,7 +272,7 @@ const GESTOR_NOME  = sessionStorage.getItem('graduabm_gestor_nome') || 'Gestor';
       new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   } catch (e) {}
 
-  const API = 'https://graduabm-backend-production.up.railway.app';
+  const API = 'https://Protocolo Bravo Mike-backend-production.up.railway.app';
 
   function gestorHeaders() {
     return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GESTOR_TOKEN };
@@ -299,7 +299,7 @@ const GESTOR_NOME  = sessionStorage.getItem('graduabm_gestor_nome') || 'Gestor';
 
   /* ── Logout ── */
   document.getElementById('btn-sair').addEventListener('click', function () {
-    ['graduabm_gestor','graduabm_gestor_token','graduabm_gestor_nome','graduabm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
+    ['pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
     window.location.href = '/gestor-login';
   });
 

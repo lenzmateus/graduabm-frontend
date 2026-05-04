@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Simulados Oficiais</title>
+<title>Protocolo Bravo Mike — Simulados Oficiais</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -414,7 +414,7 @@
   <aside class="sidebar">
     <div class="sidebar-logo">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <a href="/" class="logo-text">GRADUABM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
     </div>
     
     <div class="sidebar-usuario">
@@ -540,8 +540,8 @@ function selecionarCurso(c) {
 }
 
 function iniciarSimulado() {
-  sessionStorage.setItem('graduabm_modo', 'simulado');
-  sessionStorage.setItem('graduabm_simulado_curso', cursoSelecionado);
+  sessionStorage.setItem('Protocolo Bravo Mike_modo', 'simulado');
+  sessionStorage.setItem('pbm_simulado_curso', cursoSelecionado);
   window.location.href = '/simulado-prova';
 }
 
@@ -588,14 +588,14 @@ async function carregarSimuladoMensal() {
   try {
     // Verifica ativo, depois próximo, depois histórico
     const [ativo, proximo, todos] = await Promise.all([
-      GraduaBM.SimuladoMensal.ativo().catch(() => null),
-      GraduaBM.SimuladoMensal.proximo().catch(() => null),
-      GraduaBM.SimuladoMensal.listar().catch(() => []),
+      PBM.SimuladoMensal.ativo().catch(() => null),
+      PBM.SimuladoMensal.proximo().catch(() => null),
+      PBM.SimuladoMensal.listar().catch(() => []),
     ]);
 
     // Banner
     if (ativo) {
-      const part = await GraduaBM.SimuladoMensal.minhaParticipacao(ativo.id).catch(() => null);
+      const part = await PBM.SimuladoMensal.minhaParticipacao(ativo.id).catch(() => null);
       const jaEntregou = part?.entregue;
       const cursoLabel = ativo.curso.toUpperCase();
       wrap.innerHTML = `
@@ -654,16 +654,16 @@ async function carregarSimuladoMensal() {
 }
 
 function irParaSimuladoMensal(id) {
-  sessionStorage.setItem('graduabm_simulado_mensal_id', id);
+  sessionStorage.setItem('pbm_simulado_mensal_id', id);
   window.location.href = '/simulado-mensal';
 }
 
 function init() {
-  GraduaBM.protegerRota();
-  const user = GraduaBM.getUsuario();
+  PBM.protegerRota();
+  const user = PBM.getUsuario();
   if (user) {
     document.getElementById('user-nome').textContent = user.nome;
-    if (!GraduaBM.isAdmin() && user.curso) {
+    if (!PBM.isAdmin() && user.curso) {
       selecionarCurso(user.curso);
       const h2 = document.querySelector('.conteudo h2');
       const seletor = document.querySelector('.conteudo .curso-seletor');
@@ -671,8 +671,8 @@ function init() {
       if (seletor) seletor.style.display = 'none';
     }
   }
-  document.getElementById('btn-sair').addEventListener('click', () => GraduaBM.Auth.logout());
-  document.getElementById('btn-logout-top').addEventListener('click', () => GraduaBM.Auth.logout());
+  document.getElementById('btn-sair').addEventListener('click', () => PBM.Auth.logout());
+  document.getElementById('btn-logout-top').addEventListener('click', () => PBM.Auth.logout());
   carregarSimuladoMensal();
 }
 

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Questões</title>
+<title>Protocolo Bravo Mike — Questões</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -567,7 +567,7 @@
 
 <!-- LOADING -->
 <div id="tela-loading">
-  <a href="/" class="logo-text">GraduaBM</a>
+  <a href="/" class="logo-text">Protocolo Bravo Mike</a>
   <div class="spinner-grande" id="spinner"></div>
   <div class="loading-txt" id="loading-txt">Preparando questões…</div>
 </div>
@@ -581,7 +581,7 @@
 <div id="tela-questao">
   <header class="quiz-header">
     <div class="header-left">
-      <a href="/" class="logo-text">GraduaBM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
       <span class="header-sep">·</span>
       <span class="header-contexto" id="hdr-contexto">—</span>
     </div>
@@ -623,7 +623,7 @@
 <!-- RESULTADOS -->
 <div id="tela-resultados">
   <div class="resultado-header">
-    <div class="resultado-logo">GraduaBM</div>
+    <div class="resultado-logo">Protocolo Bravo Mike</div>
     <div class="resultado-titulo" id="res-titulo">Sessão encerrada</div>
     <div class="resultado-sub" id="res-sub">—</div>
   </div>
@@ -699,7 +699,7 @@
 <div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
   <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
 </div>
-<script>if(sessionStorage.getItem('graduabm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
+<script>if(sessionStorage.getItem('pbm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
 <script>
 // ── ESTADO ──
 let questoes   = [];
@@ -714,13 +714,13 @@ let timerInterval = null;
 let timerSeg  = 0;
 
 // ── PARAMS (vindos da tela anterior) ──
-const curso      = sessionStorage.getItem('graduabm_curso') || 'ctsp';
-const area       = sessionStorage.getItem('graduabm_at')    || 'AT1';
-const legsRaw    = sessionStorage.getItem('graduabm_legislacoes');
+const curso      = sessionStorage.getItem('Protocolo Bravo Mike_curso') || 'ctsp';
+const area       = sessionStorage.getItem('Protocolo Bravo Mike_at')    || 'AT1';
+const legsRaw    = sessionStorage.getItem('Protocolo Bravo Mike_legislacoes');
 const legislacoes = legsRaw ? JSON.parse(legsRaw) : [];
-const qtdPorLegRaw = sessionStorage.getItem('graduabm_qtd_por_leg');
+const qtdPorLegRaw = sessionStorage.getItem('Protocolo Bravo Mike_qtd_por_leg');
 const qtdPorLeg  = qtdPorLegRaw ? JSON.parse(qtdPorLegRaw) : null;
-const qtd        = parseInt(sessionStorage.getItem('graduabm_qtd') || '20') || 20;
+const qtd        = parseInt(sessionStorage.getItem('Protocolo Bravo Mike_qtd') || '20') || 20;
 
 // ── HELPERS DE ESTRUTURA ──
 function getEnunciado(q) {
@@ -761,11 +761,11 @@ function getLegislacao(q) {
 // ── INIT ──
 async function init() {
   try {
-    if (!GraduaBM.isAdmin()) {
-      await GraduaBM.protegerRota();
+    if (!PBM.isAdmin()) {
+      await PBM.protegerRota();
     }
 
-    const filtro = sessionStorage.getItem('graduabm_filtro');
+    const filtro = sessionStorage.getItem('Protocolo Bravo Mike_filtro');
 
     if (qtdPorLeg && Object.keys(qtdPorLeg).length > 0) {
       // Novo fluxo: buscar por legislação individualmente com sua quantidade
@@ -773,7 +773,7 @@ async function init() {
         Object.entries(qtdPorLeg).map(([leg, n]) => {
           const p = new URLSearchParams({ curso, area, legislacoes: leg, quantidade: String(n) });
           if (filtro && filtro !== 'todas') p.set('filtro', filtro);
-          return GraduaBM.api.questoes.listar(p.toString()).then(d =>
+          return PBM.api.questoes.listar(p.toString()).then(d =>
             Array.isArray(d) ? d : (d.questoes || [])
           );
         })
@@ -791,15 +791,15 @@ async function init() {
       if (legislacoes.length) params.set('legislacoes', legislacoes.join(','));
       if (qtd) params.set('quantidade', String(qtd));
       if (filtro && filtro !== 'todas') params.set('filtro', filtro);
-      const dados = await GraduaBM.api.questoes.listar(params.toString());
+      const dados = await PBM.api.questoes.listar(params.toString());
       questoes = Array.isArray(dados) ? dados : (dados.questoes || []);
     }
 
     try {
-      const sessao = await GraduaBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
+      const sessao = await PBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
       sessaoId = sessao.id;
     } catch (err) {
-      console.error('[GraduaBM] Falha ao criar sessão:', err);
+      console.error('[Protocolo Bravo Mike] Falha ao criar sessão:', err);
       document.getElementById('banner-erro-sessao').style.display = 'block';
     }
 
@@ -938,8 +938,8 @@ async function confirmarResposta() {
 
   // registrar resposta na API
   if (sessaoId) {
-    GraduaBM.api.sessoes.responder(sessaoId, { questao_id: q.id, resposta_escolhida: selecionada, correta: acertou })
-      .catch(err => { console.error('[GraduaBM] Falha ao registrar resposta:', err); });
+    PBM.api.sessoes.responder(sessaoId, { questao_id: q.id, resposta_escolhida: selecionada, correta: acertou })
+      .catch(err => { console.error('[Protocolo Bravo Mike] Falha ao registrar resposta:', err); });
   }
 
   // atualizar botão
@@ -963,10 +963,10 @@ async function proximaQuestao() {
 
 async function encerrarSessao() {
   if (sessaoId) {
-    try { await GraduaBM.api.sessoes.encerrar(sessaoId); }
-    catch (err) { console.error('[GraduaBM] Falha ao encerrar sessão:', err); }
+    try { await PBM.api.sessoes.encerrar(sessaoId); }
+    catch (err) { console.error('[Protocolo Bravo Mike] Falha ao encerrar sessão:', err); }
   } else {
-    console.warn('[GraduaBM] Sessão não registrada — progresso não foi salvo.');
+    console.warn('[Protocolo Bravo Mike] Sessão não registrada — progresso não foi salvo.');
   }
   pararTimer();
   mostrarResultados();
@@ -1050,7 +1050,7 @@ async function enviarDenuncia() {
   btn.textContent = 'Enviando…';
 
   try {
-    await GraduaBM.api.denuncias.reportar(q.id, comentario);
+    await PBM.api.denuncias.reportar(q.id, comentario);
     fecharModalDenuncia();
     const btnReport = document.getElementById('btn-reportar');
     if (btnReport) {
@@ -1069,8 +1069,8 @@ function confirmarSaida() { document.getElementById('modal-saida').classList.add
 function fecharModal()    { document.getElementById('modal-saida').classList.remove('visivel'); }
 async function sairSessao() {
   if (sessaoId) {
-    try { await GraduaBM.api.sessoes.encerrar(sessaoId); }
-    catch (err) { console.error('[GraduaBM] Falha ao encerrar sessão ao sair:', err); }
+    try { await PBM.api.sessoes.encerrar(sessaoId); }
+    catch (err) { console.error('[Protocolo Bravo Mike] Falha ao encerrar sessão ao sair:', err); }
   }
   pararTimer();
   window.location.href = '/selecao-legislacao';

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Flashcards (Admin)</title>
+<title>Protocolo Bravo Mike — Flashcards (Admin)</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -130,11 +130,11 @@
 <body>
 
 <script>
-const _isAdmin  = sessionStorage.getItem('graduabm_admin') === '1';
-const _isGestor = sessionStorage.getItem('graduabm_gestor') === '1';
+const _isAdmin  = sessionStorage.getItem('pbm_admin') === '1';
+const _isGestor = sessionStorage.getItem('pbm_gestor') === '1';
 if (!_isAdmin && !_isGestor) window.location.href = '/admin-login';
-const ADMIN_TOKEN  = _isAdmin  ? sessionStorage.getItem('graduabm_admin_token')  : null;
-const GESTOR_TOKEN = _isGestor ? sessionStorage.getItem('graduabm_gestor_token') : null;
+const ADMIN_TOKEN  = _isAdmin  ? sessionStorage.getItem('pbm_admin_token')  : null;
+const GESTOR_TOKEN = _isGestor ? sessionStorage.getItem('pbm_gestor_token') : null;
 </script>
 
 <div class="layout">
@@ -456,9 +456,9 @@ async function confirmarDelete() {
   const svgAluno = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
   const svgGest  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`;
   if (_isGestor) {
-    const nome = sessionStorage.getItem('graduabm_gestor_nome') || 'Gestor';
+    const nome = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
     document.getElementById('sidebar').innerHTML = `
-      <div class="sidebar-logo"><a href="/gestor-painel" class="logo-text">GraduaBM</a><span class="gestor-chip">GESTOR</span></div>
+      <div class="sidebar-logo"><a href="/gestor-painel" class="logo-text">Protocolo Bravo Mike</a><span class="gestor-chip">GESTOR</span></div>
       <div class="sidebar-usuario"><div class="usuario-nome">${nome}</div><div class="usuario-status" style="color:#7DD99A"><span class="status-dot" style="background:#27A05A"></span>Gestor ativo</div></div>
       <nav class="sidebar-nav">
         <div class="nav-label">Conteúdo</div>
@@ -470,7 +470,7 @@ async function confirmarDelete() {
       <div class="sidebar-footer"><button class="btn-sair" id="btn-sair">Sair</button></div>`;
   } else {
     document.getElementById('sidebar').innerHTML = `
-      <div class="sidebar-logo"><a href="/admin" class="logo-text">GraduaBM</a><span class="admin-chip">ADMIN</span></div>
+      <div class="sidebar-logo"><a href="/admin" class="logo-text">Protocolo Bravo Mike</a><span class="admin-chip">ADMIN</span></div>
       <div class="sidebar-usuario"><div class="usuario-nome">Administrador</div><div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div></div>
       <nav class="sidebar-nav">
         <div class="nav-label">Painel</div>
@@ -488,7 +488,7 @@ async function confirmarDelete() {
 })();
 
 document.getElementById('btn-sair').addEventListener('click', function() {
-  ['graduabm_admin','graduabm_admin_ts','graduabm_admin_token','graduabm_gestor','graduabm_gestor_token','graduabm_gestor_nome','graduabm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
+  ['pbm_admin','pbm_admin_ts','pbm_admin_token','pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
   localStorage.removeItem('usuario');
   localStorage.removeItem('token');
   window.location.href = _isGestor ? '/gestor-login' : '/';
@@ -514,7 +514,7 @@ const linkModoAluno = document.getElementById('link-modo-aluno');
 if (linkModoAluno) {
   linkModoAluno.addEventListener('click', function(e) {
     e.preventDefault();
-    localStorage.setItem('usuario', JSON.stringify({ nome: 'Aluno Teste', email: 'teste@graduabm.com.br', ativo: true, plano: 'mensal' }));
+    localStorage.setItem('usuario', JSON.stringify({ nome: 'Aluno Teste', email: 'teste@protocolobravomike.com.br', ativo: true, plano: 'mensal' }));
     localStorage.setItem('token', 'admin-preview-token');
     window.location.href = '/area-estudos';
   });

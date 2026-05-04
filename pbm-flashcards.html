@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Flashcards</title>
+<title>Protocolo Bravo Mike — Flashcards</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -124,14 +124,14 @@
 
 <div id="preview-banner" style="display:none;background:#7F77DD;color:#fff;padding:7px 20px;font-size:12px;font-weight:600;align-items:center;justify-content:center;gap:16px;position:sticky;top:0;z-index:200;">
   Modo Aluno ativo — você está vendo como um aluno vê
-  <a href="/admin" onclick="sessionStorage.removeItem('graduabm_preview_aluno')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>
+  <a href="/admin" onclick="sessionStorage.removeItem('Protocolo Bravo Mike_preview_aluno')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>
 </div>
 
 <div class="layout">
   <aside class="sidebar">
     <div class="sidebar-logo">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <a href="/" class="logo-text">GRADUABM</a>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
     </div>
     <div class="sidebar-usuario">
       <div class="usuario-nome" id="sidebar-nome">—</div>
@@ -343,18 +343,18 @@ document.addEventListener('keydown', function(e) {
 });
 
 function handleSair() {
-  if (GraduaBM.isAdmin()) {
-    sessionStorage.removeItem('graduabm_admin');
-    sessionStorage.removeItem('graduabm_admin_ts');
+  if (PBM.isAdmin()) {
+    sessionStorage.removeItem('pbm_admin');
+    sessionStorage.removeItem('pbm_admin_ts');
     window.location.href = '/';
   } else {
-    GraduaBM.Auth.logout();
+    PBM.Auth.logout();
   }
 }
 
 async function iniciarApp() {
-  const isPreview = sessionStorage.getItem('graduabm_preview_aluno') === '1';
-  const isAdmin   = GraduaBM.isAdmin();
+  const isPreview = sessionStorage.getItem('Protocolo Bravo Mike_preview_aluno') === '1';
+  const isAdmin   = PBM.isAdmin();
 
   if (isAdmin && !isPreview) {
     document.getElementById('sidebar-nome').textContent = 'Administrador';
@@ -362,8 +362,8 @@ async function iniciarApp() {
     document.querySelector('.status-dot').style.background = '#7F77DD';
     document.getElementById('sidebar-status').style.color = '#AFA9EC';
   } else {
-    if (!isAdmin) await GraduaBM.protegerRota();
-    const usuario = GraduaBM.getUsuario();
+    if (!isAdmin) await PBM.protegerRota();
+    const usuario = PBM.getUsuario();
     if (usuario) {
       document.getElementById('sidebar-nome').textContent = usuario.nome;
       document.getElementById('sidebar-status-txt').textContent = isPreview ? 'Modo Aluno (Preview)' : 'Assinatura ativa';
@@ -372,7 +372,7 @@ async function iniciarApp() {
   }
 
   if (isPreview) document.getElementById('preview-banner').style.display = 'flex';
-  if (sessionStorage.getItem('graduabm_admin') === '1') document.getElementById('btn-admin-float').style.display = 'block';
+  if (sessionStorage.getItem('pbm_admin') === '1') document.getElementById('btn-admin-float').style.display = 'block';
 
   await carregarFlashcards();
 }
@@ -380,7 +380,7 @@ async function iniciarApp() {
 async function carregarFlashcards() {
   try {
     const qs = cursoAluno ? 'curso=' + cursoAluno : '';
-    todosCards = await GraduaBM.api.flashcards.listar(qs);
+    todosCards = await PBM.api.flashcards.listar(qs);
     for (let i = todosCards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [todosCards[i], todosCards[j]] = [todosCards[j], todosCards[i]];

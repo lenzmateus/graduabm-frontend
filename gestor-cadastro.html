@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Cadastro de Gestor</title>
+<title>Protocolo Bravo Mike — Cadastro de Gestor</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -55,7 +55,7 @@
 </head>
 <body>
 <div class="card">
-  <div class="logo">GraduaBM</div>
+  <div class="logo">Protocolo Bravo Mike</div>
   <div class="subtitulo">Cadastro de Gestor</div>
 
   <div id="conteudo-loading" style="text-align:center;color:#555;font-size:13px;padding:1rem 0;">Verificando convite…</div>
@@ -66,7 +66,7 @@
 
   <form id="form-cadastro" style="display:none">
     <div class="aviso-convite">
-      Você foi convidado para gerenciar o <strong>GraduaBM</strong> como gestor. Preencha seus dados para criar sua conta.
+      Você foi convidado para gerenciar o <strong>Protocolo Bravo Mike</strong> como gestor. Preencha seus dados para criar sua conta.
     </div>
     <div class="campo">
       <label for="email">Email</label>
@@ -92,7 +92,7 @@
 </div>
 
 <script>
-const API = 'https://graduabm-backend-production.up.railway.app';
+const API = 'https://Protocolo Bravo Mike-backend-production.up.railway.app';
 
 const params = new URLSearchParams(window.location.search);
 const tokenConvite = params.get('token');
@@ -148,10 +148,10 @@ document.getElementById('form-cadastro').addEventListener('submit', async functi
       return;
     }
 
-    sessionStorage.setItem('graduabm_gestor', '1');
-    sessionStorage.setItem('graduabm_gestor_token', data.token);
-    sessionStorage.setItem('graduabm_gestor_nome', data.gestor.nome);
-    sessionStorage.setItem('graduabm_gestor_email', data.gestor.email);
+    sessionStorage.setItem('pbm_gestor', '1');
+    sessionStorage.setItem('pbm_gestor_token', data.token);
+    sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
+    sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
 
     msg.className = 'msg sucesso';
     msg.textContent = 'Conta criada com sucesso! Redirecionando…';

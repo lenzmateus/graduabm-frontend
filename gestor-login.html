@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Acesso Gestor</title>
+<title>Protocolo Bravo Mike — Acesso Gestor</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -48,7 +48,7 @@
 </head>
 <body>
 <div class="card">
-  <div class="logo">GraduaBM</div>
+  <div class="logo">Protocolo Bravo Mike</div>
   <div class="subtitulo">Painel de Gestor</div>
 
   <form id="form-login">
@@ -70,7 +70,7 @@
 </div>
 
 <script>
-const API = 'https://graduabm-backend-production.up.railway.app';
+const API = 'https://Protocolo Bravo Mike-backend-production.up.railway.app';
 
 document.getElementById('form-login').addEventListener('submit', async function(e) {
   e.preventDefault();
@@ -100,10 +100,10 @@ document.getElementById('form-login').addEventListener('submit', async function(
       return;
     }
 
-    sessionStorage.setItem('graduabm_gestor', '1');
-    sessionStorage.setItem('graduabm_gestor_token', data.token);
-    sessionStorage.setItem('graduabm_gestor_nome', data.gestor.nome);
-    sessionStorage.setItem('graduabm_gestor_email', data.gestor.email);
+    sessionStorage.setItem('pbm_gestor', '1');
+    sessionStorage.setItem('pbm_gestor_token', data.token);
+    sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
+    sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
 
     window.location.href = '/gestor-painel';
   } catch {

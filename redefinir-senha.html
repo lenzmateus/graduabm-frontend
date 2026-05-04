@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GraduaBM — Redefinir senha</title>
+<title>Protocolo Bravo Mike — Redefinir senha</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -110,7 +110,7 @@
 <body>
 
 <nav>
-  <a href="/" class="logo-text">GraduaBM</a>
+  <a href="/" class="logo-text">Protocolo Bravo Mike</a>
 </nav>
 
 <div class="card">
@@ -206,7 +206,7 @@
     document.getElementById('txt-redef').textContent = '';
 
     try {
-      await GraduaBM.Auth.redefinirSenha({ token, nova_senha });
+      await PBM.Auth.redefinirSenha({ token, nova_senha });
       mostrarMsg('Senha redefinida com sucesso! Redirecionando...', 'sucesso');
       setTimeout(() => { window.location.href = '/login'; }, 2000);
     } catch (err) {
