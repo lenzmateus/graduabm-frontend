@@ -1,8 +1,10 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/(.*)", "has": [{ "type": "host", "value": "graduabm.com.br" }], "destination": "https://protocolobravomike.com.br/$1", "permanent": true }
+  ],
   "rewrites": [
-    { "source": "/(.*)", "has": [{ "type": "host", "value": "graduabm.com.br" }], "destination": "https://protocolobravomike.com.br/$1", "permanent": true },
     { "source": "/api/:path*", "destination": "https://graduabm-backend-production.up.railway.app/api/:path*" },
     { "source": "/dashboard", "destination": "/pbm-dashboard" },
     { "source": "/area-estudos", "destination": "/pbm-area-estudos" },
