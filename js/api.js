@@ -370,6 +370,33 @@ const PBM = {
         return request(`/api/admin/cupons/${id}/excluir`, { method: 'DELETE', headers: PBM.Admin._authHeader() });
       },
     },
+    aprovacoes: {
+      resumo() { return PBM.Admin.req('/api/admin/aprovacoes/resumo'); },
+      questoesIa: {
+        listar()         { return PBM.Admin.req('/api/admin/aprovacoes/questoes-ia'); },
+        aprovar(id, obs) { return PBM.Admin.req(`/api/admin/aprovacoes/questoes-ia/${id}/aprovar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
+        rejeitar(id, obs){ return PBM.Admin.req(`/api/admin/aprovacoes/questoes-ia/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
+        editar(id, body) { return PBM.Admin.req(`/api/admin/aprovacoes/questoes-ia/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
+      },
+      flashcards: {
+        listar()         { return PBM.Admin.req('/api/admin/aprovacoes/flashcards'); },
+        aprovar(id)      { return PBM.Admin.req(`/api/admin/aprovacoes/flashcards/${id}/aprovar`, { method: 'POST' }); },
+        rejeitar(id, obs){ return PBM.Admin.req(`/api/admin/aprovacoes/flashcards/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
+        editar(id, body) { return PBM.Admin.req(`/api/admin/aprovacoes/flashcards/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
+      },
+      instagram: {
+        listar()           { return PBM.Admin.req('/api/admin/aprovacoes/instagram'); },
+        publicar(id)       { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/publicar`, { method: 'POST' }); },
+        rejeitar(id, obs)  { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
+        editar(id, caption){ return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}`, { method: 'PATCH', body: JSON.stringify({ caption }) }); },
+      },
+      simulados: {
+        listar()         { return PBM.Admin.req('/api/admin/aprovacoes/simulados-mensais'); },
+        aprovar(id)      { return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}/aprovar`, { method: 'POST' }); },
+        rejeitar(id, obs){ return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
+        editar(id, body) { return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
+      },
+    },
   },
 
   Cupons: {

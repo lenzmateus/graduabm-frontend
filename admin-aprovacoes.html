@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Aprovações IA (Admin)</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --roxo: #7F77DD;
+    --roxo-bg: rgba(127,119,221,0.08);
+    --verde: #27A05A;
+    --verde-bg: rgba(39,160,90,0.08);
+    --verde-borda: rgba(39,160,90,0.3);
+    --amarelo: #D4A017;
+    --amarelo-bg: rgba(212,160,23,0.08);
+    --erro: #E24B4A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ── */
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; background: rgba(192,39,15,0.15); color: var(--vermelho); border: 1px solid rgba(192,39,15,0.3); border-radius: 4px; padding: 2px 6px; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 600; color: var(--branco); }
+  .usuario-status { font-size: 11px; color: var(--cinza-texto); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+  .status-dot { width: 6px; height: 6px; background: var(--verde); border-radius: 50%; }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: rgba(192,39,15,0.08); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* ── Main ── */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { padding: 1rem 2rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
+  .topbar-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.05em; }
+  .content { flex: 1; overflow-y: auto; padding: 2rem; }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 1.5rem; }
+  .tab-btn { background: transparent; border: none; color: var(--cinza-texto); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; padding: 10px 18px; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; display: flex; align-items: center; gap: 8px; margin-bottom: -1px; }
+  .tab-btn:hover { color: var(--branco); }
+  .tab-btn.ativo { color: var(--branco); border-bottom-color: var(--vermelho); }
+  .tab-badge { background: var(--vermelho); color: #fff; font-size: 10px; font-family: 'IBM Plex Mono', monospace; font-weight: 600; padding: 1px 7px; border-radius: 20px; min-width: 20px; text-align: center; display: none; }
+  .tab-badge.visivel { display: inline; }
+
+  /* ── Empty state ── */
+  .empty { text-align: center; color: var(--cinza-texto); padding: 3rem 1rem; font-size: 14px; }
+  .empty svg { width: 40px; height: 40px; margin-bottom: 1rem; opacity: 0.3; }
+
+  /* ── Cards ── */
+  .cards-list { display: flex; flex-direction: column; gap: 1rem; }
+  .card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; overflow: hidden; }
+  .card-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+  .card-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
+  .tag-area { background: rgba(192,39,15,0.1); border: 1px solid rgba(192,39,15,0.25); color: #E0866E; }
+  .tag-curso { background: rgba(127,119,221,0.1); border: 1px solid rgba(127,119,221,0.3); color: #9B96E8; }
+  .tag-data { background: rgba(136,136,136,0.1); border: 1px solid rgba(136,136,136,0.2); color: var(--cinza-texto); }
+  .card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn { border: none; border-radius: 6px; font-size: 12px; font-family: 'Inter', sans-serif; font-weight: 500; padding: 6px 14px; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 6px; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-aprovar { background: var(--verde); color: #fff; }
+  .btn-aprovar:hover:not(:disabled) { background: #22904e; }
+  .btn-rejeitar { background: rgba(226,75,74,0.15); color: var(--erro); border: 1px solid rgba(226,75,74,0.3); }
+  .btn-rejeitar:hover:not(:disabled) { background: rgba(226,75,74,0.25); }
+  .btn-editar { background: var(--amarelo-bg); color: var(--amarelo); border: 1px solid rgba(212,160,23,0.3); }
+  .btn-editar:hover:not(:disabled) { background: rgba(212,160,23,0.15); }
+  .btn-publicar { background: var(--vermelho); color: #fff; }
+  .btn-publicar:hover:not(:disabled) { background: #a3200c; }
+  .card-body { padding: 1.25rem; }
+  .enunciado { font-size: 14px; color: var(--branco); margin-bottom: 1rem; line-height: 1.7; }
+  .alternativas { display: flex; flex-direction: column; gap: 6px; }
+  .alternativa { display: flex; gap: 8px; font-size: 13px; color: var(--cinza-texto); }
+  .alt-letra { font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 20px; }
+  .alt-letra.correta { color: var(--verde); }
+  .justificativa { margin-top: 1rem; padding: 10px 14px; background: var(--cinza-medio); border-radius: 6px; font-size: 12px; color: var(--cinza-texto); border-left: 2px solid var(--cinza-borda); }
+
+  /* ── Flashcard ── */
+  .flashcard-frente { font-size: 14px; color: var(--branco); font-weight: 500; margin-bottom: 8px; }
+  .flashcard-verso { font-size: 13px; color: var(--cinza-texto); line-height: 1.6; }
+
+  /* ── Instagram ── */
+  .ig-thumbs { display: flex; gap: 12px; margin-bottom: 1rem; }
+  .ig-thumb { width: 140px; height: 140px; object-fit: cover; border-radius: 6px; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); }
+  .ig-caption { font-size: 12px; color: var(--cinza-texto); background: var(--cinza-medio); padding: 10px 14px; border-radius: 6px; white-space: pre-wrap; max-height: 80px; overflow: hidden; transition: max-height 0.3s; }
+  .ig-caption.expandido { max-height: 300px; }
+  .ig-caption-toggle { font-size: 11px; color: var(--cinza-texto); cursor: pointer; margin-top: 4px; display: inline-block; }
+  .ig-caption-toggle:hover { color: var(--branco); }
+
+  /* ── Simulado ── */
+  .sim-titulo { font-size: 15px; font-weight: 600; color: var(--branco); margin-bottom: 6px; }
+  .sim-info { font-size: 12px; color: var(--cinza-texto); }
+
+  /* ── Formulário inline de edição ── */
+  .edit-form { display: none; padding: 1.25rem; background: #111; border-top: 1px solid var(--cinza-borda); }
+  .edit-form.visivel { display: block; }
+  .edit-form label { font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px; }
+  .edit-form .campo { margin-bottom: 14px; }
+  .edit-form textarea, .edit-form input, .edit-form select {
+    width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda);
+    color: var(--branco); border-radius: 6px; padding: 8px 12px; font-size: 13px;
+    font-family: 'Inter', sans-serif; resize: vertical;
+  }
+  .edit-form textarea:focus, .edit-form input:focus, .edit-form select:focus { outline: none; border-color: var(--vermelho); }
+  .edit-form select option { background: var(--cinza-escuro); }
+  .edit-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .edit-form .form-actions { display: flex; gap: 8px; margin-top: 6px; }
+  .btn-salvar-edicao { background: var(--vermelho); color: #fff; }
+  .btn-salvar-edicao:hover:not(:disabled) { background: #a3200c; }
+  .btn-cancelar-edicao { background: transparent; color: var(--cinza-texto); border: 1px solid var(--cinza-borda); }
+  .btn-cancelar-edicao:hover { color: var(--branco); }
+
+  /* ── Toast ── */
+  #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 12px 20px; font-size: 13px; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; }
+  #toast.visivel { opacity: 1; transform: translateY(0); }
+  #toast.sucesso { border-color: var(--verde); }
+  #toast.erro { border-color: var(--erro); }
+
+  /* ── Loading ── */
+  .loading { text-align: center; color: var(--cinza-texto); padding: 2rem; font-size: 13px; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--cinza-borda); border-top-color: var(--vermelho); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
+      <span class="admin-chip">ADMIN</span>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome">Administrador</div>
+      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Painel</div>
+      <a class="nav-item" href="/admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <div class="nav-label">Conteúdo</div>
+      <a class="nav-item" href="/admin-questoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Questões
+      </a>
+      <a class="nav-item" href="/admin-flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+      <a class="nav-item" href="/admin-simulados-mensais">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Simulados Mensais
+      </a>
+      <a class="nav-item" href="/simulado-mensal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Missão FDS
+      </a>
+      <div class="nav-label">Alunos</div>
+      <a class="nav-item" href="/admin-assinaturas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Assinaturas
+      </a>
+      <a class="nav-item" href="/admin#denuncias">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Denúncias
+      </a>
+      <div class="nav-label">Sistema</div>
+      <a class="nav-item ativo" href="/admin-aprovacoes" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Aprovações IA
+        </span>
+        <span id="nav-aprovacoes-badge" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
+      </a>
+      <a class="nav-item" href="/" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver site
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" id="btn-sair">Encerrar sessão admin</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">Aprovações IA</span>
+    </div>
+    <div class="content">
+      <div class="tabs">
+        <button class="tab-btn ativo" data-tab="questoes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Questões IA
+          <span class="tab-badge" id="badge-q"></span>
+        </button>
+        <button class="tab-btn" data-tab="flashcards">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+          Flashcards
+          <span class="tab-badge" id="badge-f"></span>
+        </button>
+        <button class="tab-btn" data-tab="instagram" id="tab-instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          Instagram
+          <span class="tab-badge" id="badge-ig"></span>
+        </button>
+        <button class="tab-btn" data-tab="simulados" id="tab-simulados">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          Simulados
+          <span class="tab-badge" id="badge-s"></span>
+        </button>
+      </div>
+
+      <div id="tab-content-questoes" class="tab-content">
+        <div class="loading"><span class="spinner"></span></div>
+      </div>
+      <div id="tab-content-flashcards" class="tab-content" style="display:none;">
+        <div class="loading"><span class="spinner"></span></div>
+      </div>
+      <div id="tab-content-instagram" class="tab-content" style="display:none;">
+        <div class="loading"><span class="spinner"></span></div>
+      </div>
+      <div id="tab-content-simulados" class="tab-content" style="display:none;">
+        <div class="loading"><span class="spinner"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script src="/js/api.js"></script>
+<script>
+(async () => {
+  if (!PBM.isAdmin()) { window.location.href = '/admin-login'; return; }
+  document.getElementById('btn-sair').addEventListener('click', () => PBM.Admin.logout());
+
+  const _isAdmin = PBM.isAdmin();
+  let _resumo = { questoes_ia: 0, flashcards: 0, instagram: 0, simulados: 0, total: 0 };
+
+  /* ── Tabs ── */
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const tabContents = document.querySelectorAll('.tab-content');
+  let tabAtual = 'questoes';
+  const tabCarregadas = {};
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab;
+      tabBtns.forEach(b => b.classList.remove('ativo'));
+      tabContents.forEach(c => c.style.display = 'none');
+      btn.classList.add('ativo');
+      document.getElementById('tab-content-' + tab).style.display = '';
+      tabAtual = tab;
+      if (!tabCarregadas[tab]) carregarTab(tab);
+    });
+  });
+
+  /* ── Toast ── */
+  function toast(msg, tipo = 'sucesso') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'visivel ' + tipo;
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.className = ''; }, 3000);
+  }
+
+  /* ── Helpers de formatação ── */
+  function fmtData(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  function esc(s) {
+    return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Carregar resumo + badges ── */
+  async function carregarResumo() {
+    try {
+      _resumo = await PBM.Admin.aprovacoes.resumo();
+      ['q', 'f', 'ig', 's'].forEach((k, i) => {
+        const tabKey = ['questoes_ia','flashcards','instagram','simulados'][i];
+        const count = _resumo[tabKey] || 0;
+        const el = document.getElementById('badge-' + k);
+        if (count > 0) { el.textContent = count; el.classList.add('visivel'); }
+      });
+      if (_resumo.total > 0) {
+        const nb = document.getElementById('nav-aprovacoes-badge');
+        if (nb) { nb.textContent = _resumo.total; nb.style.display = 'inline'; }
+      }
+    } catch {}
+  }
+
+  /* ── Ação genérica (aprovar / rejeitar) ── */
+  async function executarAcao(btn, fn, msgOk, msgErro) {
+    btn.disabled = true;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span>';
+    try {
+      await fn();
+      toast(msgOk, 'sucesso');
+      btn.closest('.card').remove();
+      await carregarResumo();
+    } catch {
+      toast(msgErro || 'Erro ao executar ação.', 'erro');
+      btn.disabled = false;
+      btn.innerHTML = orig;
+    }
+  }
+
+  /* ── Formulário inline ── */
+  function toggleEditForm(card, abrir) {
+    const form = card.querySelector('.edit-form');
+    if (!form) return;
+    if (abrir) {
+      form.classList.add('visivel');
+    } else {
+      form.classList.remove('visivel');
+    }
+  }
+
+  /* ════════════════════════════════════════════════
+     ABA — QUESTÕES IA
+  ════════════════════════════════════════════════ */
+  async function carregarQuestoes() {
+    const container = document.getElementById('tab-content-questoes');
+    container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
+    try {
+      const lista = await PBM.Admin.aprovacoes.questoesIa.listar();
+      if (!lista || lista.length === 0) {
+        container.innerHTML = `<div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <p>Nenhuma questão pendente de aprovação.</p></div>`;
+        return;
+      }
+      const altLetras = ['A','B','C','D','E'];
+      container.innerHTML = '<div class="cards-list" id="list-questoes"></div>';
+      const list = document.getElementById('list-questoes');
+      lista.forEach(q => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.id = q.id;
+
+        const alts = altLetras.map(l => {
+          const txt = q['alternativa_' + l.toLowerCase()];
+          if (!txt) return '';
+          const classe = q.resposta_correta === l ? 'correta' : '';
+          return `<div class="alternativa"><span class="alt-letra ${classe}">${l})</span><span>${esc(txt)}</span></div>`;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <div class="card-meta">
+                <span class="tag tag-area">${esc(q.area_tematica || '—')}</span>
+                <span class="tag tag-curso">${esc(q.curso || '—')}</span>
+                <span class="tag tag-data">${fmtData(q.created_at)}</span>
+                ${q.legislacao_nome ? `<span class="tag tag-data">${esc(q.legislacao_nome)}</span>` : ''}
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-editar btn-toggle-edit" title="Editar antes de aprovar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+              </button>
+              <button class="btn btn-rejeitar btn-rejeitar-q" title="Rejeitar questão">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Rejeitar
+              </button>
+              <button class="btn btn-aprovar btn-aprovar-q" title="Aprovar questão">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                Aprovar
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="enunciado">${esc(q.enunciado)}</p>
+            <div class="alternativas">${alts}</div>
+            ${q.justificativa ? `<div class="justificativa"><strong>Justificativa:</strong> ${esc(q.justificativa)}</div>` : ''}
+          </div>
+          <div class="edit-form">
+            <div class="campo"><label>Enunciado</label><textarea name="enunciado" rows="4">${esc(q.enunciado)}</textarea></div>
+            <div class="form-row">
+              ${altLetras.map(l => `<div class="campo"><label>Alternativa ${l}</label><input name="alternativa_${l.toLowerCase()}" value="${esc(q['alternativa_' + l.toLowerCase()] || '')}"></div>`).join('')}
+            </div>
+            <div class="form-row">
+              <div class="campo">
+                <label>Resposta Correta</label>
+                <select name="resposta_correta">
+                  ${altLetras.map(l => `<option value="${l}" ${q.resposta_correta === l ? 'selected' : ''}>${l}</option>`).join('')}
+                </select>
+              </div>
+              <div class="campo">
+                <label>Área Temática</label>
+                <select name="area_tematica">
+                  ${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${q.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="campo">
+                <label>Curso</label>
+                <select name="curso">
+                  ${['ctsp','cba','ambos'].map(c => `<option value="${c}" ${q.curso === c ? 'selected' : ''}>${c}</option>`).join('')}
+                </select>
+              </div>
+              <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(q.legislacao_nome || '')}"></div>
+            </div>
+            <div class="campo"><label>Justificativa</label><textarea name="justificativa" rows="3">${esc(q.justificativa || '')}</textarea></div>
+            <div class="form-actions">
+              <button class="btn btn-salvar-edicao btn-save-q">Salvar Edição</button>
+              <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
+            </div>
+          </div>`;
+        list.appendChild(card);
+
+        card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
+        card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
+
+        card.querySelector('.btn-save-q').addEventListener('click', async function() {
+          const f = card.querySelector('.edit-form');
+          const body = {
+            enunciado: f.querySelector('[name=enunciado]').value,
+            alternativa_a: f.querySelector('[name=alternativa_a]').value,
+            alternativa_b: f.querySelector('[name=alternativa_b]').value,
+            alternativa_c: f.querySelector('[name=alternativa_c]').value,
+            alternativa_d: f.querySelector('[name=alternativa_d]').value,
+            alternativa_e: f.querySelector('[name=alternativa_e]').value,
+            resposta_correta: f.querySelector('[name=resposta_correta]').value,
+            area_tematica: f.querySelector('[name=area_tematica]').value,
+            curso: f.querySelector('[name=curso]').value,
+            legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
+            justificativa: f.querySelector('[name=justificativa]').value,
+          };
+          this.disabled = true;
+          try {
+            await PBM.Admin.aprovacoes.questoesIa.editar(q.id, body);
+            Object.assign(q, body);
+            toast('Questão editada com sucesso.', 'sucesso');
+            toggleEditForm(card, false);
+          } catch {
+            toast('Erro ao salvar edição.', 'erro');
+          }
+          this.disabled = false;
+        });
+
+        card.querySelector('.btn-aprovar-q').addEventListener('click', function() {
+          executarAcao(this, () => PBM.Admin.aprovacoes.questoesIa.aprovar(q.id), 'Questão aprovada!', 'Erro ao aprovar.');
+        });
+        card.querySelector('.btn-rejeitar-q').addEventListener('click', function() {
+          executarAcao(this, () => PBM.Admin.aprovacoes.questoesIa.rejeitar(q.id), 'Questão rejeitada.', 'Erro ao rejeitar.');
+        });
+      });
+    } catch {
+      container.innerHTML = '<div class="empty"><p>Erro ao carregar questões pendentes.</p></div>';
+    }
+  }
+
+  /* ════════════════════════════════════════════════
+     ABA — FLASHCARDS
+  ════════════════════════════════════════════════ */
+  async function carregarFlashcards() {
+    const container = document.getElementById('tab-content-flashcards');
+    container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
+    try {
+      const lista = await PBM.Admin.aprovacoes.flashcards.listar();
+      if (!lista || lista.length === 0) {
+        container.innerHTML = `<div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+          <p>Nenhum flashcard pendente.</p></div>`;
+        return;
+      }
+      container.innerHTML = '<div class="cards-list" id="list-flashcards"></div>';
+      const list = document.getElementById('list-flashcards');
+      lista.forEach(fc => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.id = fc.id;
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <div class="card-meta">
+                <span class="tag tag-area">${esc(fc.area_tematica || '—')}</span>
+                <span class="tag tag-data">${fmtData(fc.created_at)}</span>
+                ${fc.legislacao_nome ? `<span class="tag tag-data">${esc(fc.legislacao_nome)}</span>` : ''}
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-editar btn-toggle-edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+              </button>
+              <button class="btn btn-rejeitar btn-rejeitar-fc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Rejeitar
+              </button>
+              <button class="btn btn-aprovar btn-aprovar-fc">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                Aprovar
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <p class="flashcard-frente">${esc(fc.frente)}</p>
+            <p class="flashcard-verso">${esc(fc.verso)}</p>
+          </div>
+          <div class="edit-form">
+            <div class="campo"><label>Frente</label><textarea name="frente" rows="2">${esc(fc.frente)}</textarea></div>
+            <div class="campo"><label>Verso</label><textarea name="verso" rows="4">${esc(fc.verso)}</textarea></div>
+            <div class="form-row">
+              <div class="campo">
+                <label>Área Temática</label>
+                <select name="area_tematica">
+                  ${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${fc.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}
+                </select>
+              </div>
+              <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(fc.legislacao_nome || '')}"></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-salvar-edicao btn-save-fc">Salvar Edição</button>
+              <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
+            </div>
+          </div>`;
+        list.appendChild(card);
+
+        card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
+        card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
+
+        card.querySelector('.btn-save-fc').addEventListener('click', async function() {
+          const f = card.querySelector('.edit-form');
+          const body = {
+            frente: f.querySelector('[name=frente]').value,
+            verso: f.querySelector('[name=verso]').value,
+            area_tematica: f.querySelector('[name=area_tematica]').value,
+            legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
+          };
+          this.disabled = true;
+          try {
+            await PBM.Admin.aprovacoes.flashcards.editar(fc.id, body);
+            toast('Flashcard editado.', 'sucesso');
+            toggleEditForm(card, false);
+          } catch {
+            toast('Erro ao salvar edição.', 'erro');
+          }
+          this.disabled = false;
+        });
+
+        card.querySelector('.btn-aprovar-fc').addEventListener('click', function() {
+          executarAcao(this, () => PBM.Admin.aprovacoes.flashcards.aprovar(fc.id), 'Flashcard aprovado!', 'Erro ao aprovar.');
+        });
+        card.querySelector('.btn-rejeitar-fc').addEventListener('click', function() {
+          executarAcao(this, () => PBM.Admin.aprovacoes.flashcards.rejeitar(fc.id), 'Flashcard rejeitado.', 'Erro ao rejeitar.');
+        });
+      });
+    } catch {
+      container.innerHTML = '<div class="empty"><p>Erro ao carregar flashcards pendentes.</p></div>';
+    }
+  }
+
+  /* ════════════════════════════════════════════════
+     ABA — INSTAGRAM (admin only)
+  ════════════════════════════════════════════════ */
+  async function carregarInstagram() {
+    const container = document.getElementById('tab-content-instagram');
+    container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
+    try {
+      const lista = await PBM.Admin.aprovacoes.instagram.listar();
+      if (!lista || lista.length === 0) {
+        container.innerHTML = `<div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>
+          <p>Nenhum post Instagram pendente.</p></div>`;
+        return;
+      }
+      container.innerHTML = '<div class="cards-list" id="list-instagram"></div>';
+      const list = document.getElementById('list-instagram');
+      lista.forEach(post => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.id = post.id;
+        const thumb1 = post.url_imagem_questao || '';
+        const thumb2 = post.url_imagem_gabarito || '';
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <div class="card-meta">
+                <span class="tag tag-area">${esc(post.area || '—')}</span>
+                <span class="tag tag-data">${fmtData(post.created_at)}</span>
+              </div>
+            </div>
+            <div class="card-actions">
+              ${_isAdmin ? `<button class="btn btn-editar btn-toggle-edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar Caption
+              </button>` : ''}
+              <button class="btn btn-rejeitar btn-rejeitar-ig">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Rejeitar
+              </button>
+              <button class="btn btn-publicar btn-publicar-ig">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Publicar Agora
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            ${(thumb1 || thumb2) ? `<div class="ig-thumbs">${thumb1 ? `<img class="ig-thumb" src="${esc(thumb1)}" alt="Questão">` : ''} ${thumb2 ? `<img class="ig-thumb" src="${esc(thumb2)}" alt="Gabarito">` : ''}</div>` : ''}
+            <div class="ig-caption" id="caption-${post.id}">${esc(post.caption || '')}</div>
+            <span class="ig-caption-toggle" data-target="caption-${post.id}">ver mais ↓</span>
+          </div>
+          ${_isAdmin ? `<div class="edit-form">
+            <div class="campo"><label>Caption</label><textarea name="caption" rows="6">${esc(post.caption || '')}</textarea></div>
+            <div class="form-actions">
+              <button class="btn btn-salvar-edicao btn-save-ig">Salvar Caption</button>
+              <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
+            </div>
+          </div>` : ''}`;
+        list.appendChild(card);
+
+        card.querySelector('.ig-caption-toggle').addEventListener('click', function() {
+          const el = document.getElementById(this.dataset.target);
+          el.classList.toggle('expandido');
+          this.textContent = el.classList.contains('expandido') ? 'ver menos ↑' : 'ver mais ↓';
+        });
+
+        if (_isAdmin) {
+          card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
+          card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
+          card.querySelector('.btn-save-ig').addEventListener('click', async function() {
+            const caption = card.querySelector('[name=caption]').value;
+            this.disabled = true;
+            try {
+              await PBM.Admin.aprovacoes.instagram.editar(post.id, caption);
+              toast('Caption atualizado.', 'sucesso');
+              toggleEditForm(card, false);
+            } catch {
+              toast('Erro ao salvar caption.', 'erro');
+            }
+            this.disabled = false;
+          });
+        }
+
+        card.querySelector('.btn-publicar-ig').addEventListener('click', function() {
+          executarAcao(this, () => PBM.Admin.aprovacoes.instagram.publicar(post.id), 'Post publicado no Instagram!', 'Erro ao publicar.');
+        });
+        card.querySelector('.btn-rejeitar-ig').addEventListener('click', function() {
+          executarAcao(this, () => PBM.Admin.aprovacoes.instagram.rejeitar(post.id), 'Post rejeitado.', 'Erro ao rejeitar.');
+        });
+      });
+    } catch {
+      container.innerHTML = '<div class="empty"><p>Erro ao carregar posts pendentes.</p></div>';
+    }
+  }
+
+  /* ════════════════════════════════════════════════
+     ABA — SIMULADOS MENSAIS (admin only)
+  ════════════════════════════════════════════════ */
+  async function carregarSimulados() {
+    const container = document.getElementById('tab-content-simulados');
+    container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
+    try {
+      const lista = await PBM.Admin.aprovacoes.simulados.listar();
+      if (!lista || lista.length === 0) {
+        container.innerHTML = `<div class="empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          <p>Nenhum simulado mensal pendente de ativação.</p></div>`;
+        return;
+      }
+      container.innerHTML = '<div class="cards-list" id="list-simulados"></div>';
+      const list = document.getElementById('list-simulados');
+      lista.forEach(sim => {
+        const questoesCount = sim.simulado_mensal_questoes?.[0]?.count ?? '—';
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.id = sim.id;
+        card.innerHTML = `
+          <div class="card-header">
+            <div>
+              <div class="card-meta">
+                <span class="tag tag-data">${fmtData(sim.created_at)}</span>
+                <span class="tag tag-area">${questoesCount} questões</span>
+              </div>
+              <p class="sim-titulo" style="margin-top:6px;">${esc(sim.titulo || 'Sem título')}</p>
+              <p class="sim-info">Encerramento: ${fmtData(sim.encerramento)}</p>
+            </div>
+            <div class="card-actions">
+              ${_isAdmin ? `<button class="btn btn-editar btn-toggle-edit">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Editar
+              </button>` : ''}
+              <button class="btn btn-rejeitar btn-rejeitar-sim">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                Rejeitar
+              </button>
+              <button class="btn btn-aprovar btn-aprovar-sim">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
+                Ativar Simulado
+              </button>
+            </div>
+          </div>
+          ${_isAdmin ? `<div class="edit-form">
+            <div class="form-row">
+              <div class="campo"><label>Título</label><input name="titulo" value="${esc(sim.titulo || '')}"></div>
+              <div class="campo"><label>Encerramento</label><input name="encerramento" type="datetime-local" value="${sim.encerramento ? sim.encerramento.slice(0,16) : ''}"></div>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-salvar-edicao btn-save-sim">Salvar</button>
+              <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
+            </div>
+          </div>` : ''}`;
+        list.appendChild(card);
+
+        if (_isAdmin) {
+          card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
+          card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
+          card.querySelector('.btn-save-sim').addEventListener('click', async function() {
+            const f = card.querySelector('.edit-form');
+            const body = {
+              titulo: f.querySelector('[name=titulo]').value,
+              encerramento: f.querySelector('[name=encerramento]').value ? new Date(f.querySelector('[name=encerramento]').value).toISOString() : undefined,
+            };
+            this.disabled = true;
+            try {
+              await PBM.Admin.aprovacoes.simulados.editar(sim.id, body);
+              toast('Simulado atualizado.', 'sucesso');
+              toggleEditForm(card, false);
+            } catch {
+              toast('Erro ao salvar.', 'erro');
+            }
+            this.disabled = false;
+          });
+        }
+
+        card.querySelector('.btn-aprovar-sim').addEventListener('click', function() {
+          executarAcao(this, () => PBM.Admin.aprovacoes.simulados.aprovar(sim.id), 'Simulado ativado!', 'Erro ao ativar.');
+        });
+        card.querySelector('.btn-rejeitar-sim').addEventListener('click', function() {
+          if (!confirm('Tem certeza? Isso apagará o simulado e todas as suas questões.')) return;
+          executarAcao(this, () => PBM.Admin.aprovacoes.simulados.rejeitar(sim.id), 'Simulado rejeitado.', 'Erro ao rejeitar.');
+        });
+      });
+    } catch {
+      container.innerHTML = '<div class="empty"><p>Erro ao carregar simulados pendentes.</p></div>';
+    }
+  }
+
+  /* ── Carregar tab ── */
+  async function carregarTab(tab) {
+    tabCarregadas[tab] = true;
+    if (tab === 'questoes') await carregarQuestoes();
+    else if (tab === 'flashcards') await carregarFlashcards();
+    else if (tab === 'instagram') await carregarInstagram();
+    else if (tab === 'simulados') await carregarSimulados();
+  }
+
+  /* ── Init ── */
+  await carregarResumo();
+  await carregarTab('questoes');
+})();
+</script>
+</body>
+</html>

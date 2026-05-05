@@ -25,7 +25,8 @@
     { "source": "/gestor-login", "destination": "/gestor-login" },
     { "source": "/gestor-cadastro", "destination": "/gestor-cadastro" },
     { "source": "/gestor-painel", "destination": "/gestor-painel" },
-    { "source": "/admin-cadastro", "destination": "/admin-cadastro" }
+    { "source": "/admin-cadastro", "destination": "/admin-cadastro" },
+    { "source": "/admin-aprovacoes", "destination": "/admin-aprovacoes" }
   ],
   "headers": [
     {
