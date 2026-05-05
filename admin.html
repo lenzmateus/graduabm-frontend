@@ -473,40 +473,27 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="/js/api.js"></script>
 <script>
 (function () {
   'use strict';
 
   /* ── Auth guard ── */
+  PBM.Admin.protegerRota();
   const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
-  if (sessionStorage.getItem('pbm_admin') !== '1' || !ADMIN_JWT) {
-    window.location.href = '/admin-login';
-    return;
-  }
 
   // Verifica JWT com backend antes de exibir qualquer conteúdo
   (async function() {
     for (let tentativa = 0; tentativa < 3; tentativa++) {
       try {
-        const r = await fetch('/api/admin/auth/me', {
-          headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
-        });
-        if (r.ok) return; // auth OK, continua
-        if (r.status === 401 || r.status === 403) {
-          sessionStorage.clear();
-          window.location.href = '/admin-login';
-          return;
-        }
-        // 5xx ou outro erro: aguarda e tenta novamente
-        await new Promise(res => setTimeout(res, 2000));
-      } catch {
-        // erro de rede: aguarda e tenta novamente
-        await new Promise(res => setTimeout(res, 2000));
+        await PBM.Admin.req('/api/admin/auth/me');
+        return; // auth OK, continua
+      } catch (err) {
+        if (err.status === 401 || err.status === 403) return; // já redirecionou
+        await new Promise(r => setTimeout(r, 2000));
       }
     }
-    // Após 3 tentativas sem auth confirm, redireciona
-    sessionStorage.clear();
-    window.location.href = '/admin-login';
+    PBM.Admin.logout();
   })();
 
   async function supaQuery(path, prefer, method, body) {
@@ -530,10 +517,7 @@
   }
 
   /* ── Logout ── */
-  document.getElementById('btn-sair').addEventListener('click', function () {
-    sessionStorage.clear();
-    window.location.href = '/';
-  });
+  document.getElementById('btn-sair').addEventListener('click', () => PBM.Admin.logout());
 
   /* ── Modo Aluno ── */
   window.ativarPreview = function() {

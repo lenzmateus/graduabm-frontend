@@ -24,13 +24,19 @@ async function request(path, options = {}) {
     throw { status: res.status, erro: `Resposta inválida do servidor (HTTP ${res.status})` };
   }
 
-  if (res.status === 401 && data.erro && data.erro.includes('Sessão encerrada')) {
-    sessionStorage.setItem('pbm_session_msg', data.erro);
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('usuario');
-    const loginRedir = PBM?.isAdmin?.() ? '/admin-login' : PBM?.isGestor?.() ? '/gestor-login' : '/login';
-    window.location.href = loginRedir;
-    throw new Error('Sessão encerrada');
+  if (res.status === 401) {
+    if (data.erro && data.erro.includes('Sessão encerrada')) {
+      sessionStorage.setItem('pbm_session_msg', data.erro);
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('usuario');
+      const loginRedir = PBM?.isAdmin?.() ? '/admin-login' : PBM?.isGestor?.() ? '/gestor-login' : '/login';
+      window.location.href = loginRedir;
+      throw new Error('Sessão encerrada');
+    }
+    if (PBM?.isAdmin?.()) {
+      PBM.Admin.logout();
+      throw { status: 401, ...data };
+    }
   }
 
   if (!res.ok) throw { status: res.status, ...data };
@@ -212,6 +218,21 @@ const PBM = {
     _authHeader() {
       const jwt = sessionStorage.getItem('pbm_admin_jwt') || '';
       return { 'Authorization': `Bearer ${jwt}` };
+    },
+    protegerRota() {
+      if (sessionStorage.getItem('pbm_admin') !== '1' || !sessionStorage.getItem('pbm_admin_jwt')) {
+        window.location.href = '/admin-login';
+      }
+    },
+    logout() {
+      ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email']
+        .forEach(k => sessionStorage.removeItem(k));
+      sessionStorage.removeItem('usuario');
+      sessionStorage.removeItem('token');
+      window.location.href = '/admin-login';
+    },
+    req(path, opts = {}) {
+      return request(path, { ...opts, headers: { ...PBM.Admin._authHeader(), ...(opts.headers || {}) } });
     },
     assinaturas: {
       stats() {

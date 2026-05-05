@@ -241,26 +241,13 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="/js/api.js"></script>
 <script>
-if (sessionStorage.getItem('pbm_admin') !== '1') { window.location.href = '/admin-login'; }
-const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
+PBM.Admin.protegerRota();
 
-const API = 'https://graduabm-backend-production.up.railway.app';
+function encerrarSessao() { PBM.Admin.logout(); }
 
-function encerrarSessao() {
-  ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email'].forEach(k => sessionStorage.removeItem(k));
-  sessionStorage.removeItem('usuario');
-  sessionStorage.removeItem('token');
-  window.location.href = '/';
-}
-
-async function req(path, opts = {}) {
-  const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}`, ...opts.headers };
-  const res = await fetch(API + path, { ...opts, headers });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw { status: res.status, ...data };
-  return data;
-}
+const req = (path, opts = {}) => PBM.Admin.req(path, opts);
 
 function toast(msg, tipo = 'ok') {
   const el = document.getElementById('toast');

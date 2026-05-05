@@ -137,12 +137,12 @@
 </head>
 <body>
 
+<script src="/js/api.js"></script>
 <script>
-const _isAdmin  = sessionStorage.getItem('pbm_admin') === '1';
-const _isGestor = sessionStorage.getItem('pbm_gestor') === '1';
+const _isAdmin  = PBM.isAdmin();
+const _isGestor = PBM.isGestor();
 if (!_isAdmin && !_isGestor) window.location.href = '/admin-login';
-const ADMIN_JWT  = _isAdmin  ? sessionStorage.getItem('pbm_admin_jwt')  : null;
-const GESTOR_TOKEN = _isGestor ? sessionStorage.getItem('pbm_gestor_token') : null;
+if (_isAdmin && !sessionStorage.getItem('pbm_admin_jwt')) window.location.href = '/admin-login';
 </script>
 
 <div class="layout">
@@ -730,20 +730,17 @@ function toast(msg, tipo) {
 }
 
 async function supaFetch(path, method = 'GET', body = null) {
-  if (!ADMIN_JWT && !GESTOR_TOKEN) { window.location.href = '/admin-login'; return { ok: false, status: 401, data: null }; }
-  const queryUrl  = GESTOR_TOKEN ? '/api/gestor/query' : '/api/admin/query';
-  const authHeader = GESTOR_TOKEN
-    ? { 'Authorization': 'Bearer ' + GESTOR_TOKEN }
-    : { 'Authorization': 'Bearer ' + ADMIN_JWT };
+  const queryUrl = _isGestor ? '/api/gestor/query' : '/api/admin/query';
+  const authHeader = _isGestor
+    ? { 'Authorization': 'Bearer ' + PBM.Gestor.getToken() }
+    : PBM.Admin._authHeader();
   const res = await fetch(queryUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeader },
     body: JSON.stringify({ path, method, body: body || undefined, prefer: 'return=representation' }),
   });
   if (res.status === 401) {
-    ['pbm_admin','pbm_admin_ts','pbm_admin_jwt','pbm_admin_role','pbm_admin_nome','pbm_admin_email',
-     'pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
-    window.location.href = GESTOR_TOKEN ? '/gestor-login' : '/admin-login';
+    _isGestor ? PBM.Gestor.logout() : PBM.Admin.logout();
     return { ok: false, status: 401, data: null };
   }
   const txt = await res.text();
@@ -1005,12 +1002,7 @@ function buildSidebar() {
 buildSidebar();
 
 /* ── Event listeners ── */
-document.getElementById('btn-sair').addEventListener('click', function () {
-  ['pbm_admin','pbm_admin_ts','pbm_admin_jwt','pbm_admin_role','pbm_admin_nome','pbm_admin_email','pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
-  sessionStorage.removeItem('usuario');
-  sessionStorage.removeItem('token');
-  window.location.href = _isGestor ? '/gestor-login' : '/';
-});
+document.getElementById('btn-sair').addEventListener('click', () => _isGestor ? PBM.Gestor.logout() : PBM.Admin.logout());
 
 document.getElementById('btn-novo').addEventListener('click', abrirModalNova);
 document.getElementById('btn-fechar-modal').addEventListener('click', fecharModal);

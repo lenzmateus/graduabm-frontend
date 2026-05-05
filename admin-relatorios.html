@@ -300,9 +300,7 @@
 
 <script src="/js/api.js"></script>
 <script>
-  if (sessionStorage.getItem('pbm_admin') !== '1') window.location.href = '/admin-login';
-
-  const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
+  PBM.Admin.protegerRota();
   document.getElementById('topbar-ts').textContent = new Date().toLocaleString('pt-BR');
 
   let dadosOriginais = [];
@@ -318,19 +316,12 @@
     };
   }
 
-  function encerrarSessao() {
-    ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email'].forEach(k => sessionStorage.removeItem(k));
-    window.location.href = '/admin-login';
-  }
+  function encerrarSessao() { PBM.Admin.logout(); }
 
   // ── Carregar dados ──────────────────────────────────────────
   async function carregar() {
     try {
-      const res = await fetch('/api/admin/assinaturas/relatorio', {
-        headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
-      });
-      if (!res.ok) throw new Error('Erro ' + res.status);
-      const { alunos } = await res.json();
+      const { alunos } = await PBM.Admin.req('/api/admin/assinaturas/relatorio');
       dadosOriginais = alunos || [];
       calcularStats();
       renderizarGrafico();

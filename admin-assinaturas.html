@@ -495,11 +495,7 @@
 <script src="/js/api.js"></script>
 <script>
   // ── Auth admin ─────────────────────────────────────────────
-  if (sessionStorage.getItem('pbm_admin') !== '1') {
-    window.location.href = '/admin-login';
-  }
-
-  const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
+  PBM.Admin.protegerRota();
 
   // ── Estado ─────────────────────────────────────────────────
   let paginaAtual = 1;
@@ -878,7 +874,7 @@
   async function carregarRelatorio() {
     const tbody = document.getElementById('tbody-relatorio');
     try {
-      const hdrs = { 'Authorization': `Bearer ${ADMIN_JWT}` };
+      const hdrs = PBM.Admin._authHeader();
       const [sCTSP, sCBA, sAmbos, sAtivos, sInativos] = await Promise.allSettled([
         fetch('/api/admin/assinaturas?status=ativo&curso=ctsp&per_page=1', { headers: hdrs }).then(r => r.json()),
         fetch('/api/admin/assinaturas?status=ativo&curso=cba&per_page=1', { headers: hdrs }).then(r => r.json()),
@@ -978,10 +974,7 @@
     }
   }
 
-  function encerrarSessao() {
-    ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email'].forEach(k => sessionStorage.removeItem(k));
-    window.location.href = '/admin-login';
-  }
+  function encerrarSessao() { PBM.Admin.logout(); }
 </script>
 <style>
 .pbm-watermark {
