@@ -201,7 +201,7 @@
       <a class="nav-item" href="#denuncias" onclick="scrollToDenuncias()" style="justify-content:space-between;">
         <span style="display:flex;align-items:center;gap:10px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          Denúncias
+          Relatórios de Problemas
         </span>
         <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
       </a>
@@ -371,7 +371,7 @@
       </div>
 
       <!-- DENÚNCIAS -->
-      <div class="secao-titulo" id="denuncias">Denúncias de questões</div>
+      <div class="secao-titulo" id="denuncias">Relatórios de Problemas</div>
       <div class="painel-card" id="painel-denuncias">
         <div class="painel-card-titulo">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
@@ -852,7 +852,7 @@
 
     if (!itens.length) {
       lista.innerHTML = '<div style="font-size:13px;color:#555;padding:1rem 0;">' +
-        (filtroDenuncias === 'pendente' ? 'Nenhuma denúncia pendente.' : 'Nenhuma denúncia encontrada.') + '</div>';
+        (filtroDenuncias === 'pendente' ? 'Nenhum relatório pendente.' : 'Nenhum relatório encontrado.') + '</div>';
       return;
     }
 

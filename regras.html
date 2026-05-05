@@ -191,8 +191,8 @@
     list-style: none; margin: 1rem 0;
   }
   .rule-list li {
-    display: flex; gap: 12px;
-    padding: 10px 0;
+    position: relative;
+    padding: 10px 0 10px 22px;
     border-bottom: 1px solid rgba(255,255,255,0.04);
     font-size: 14px; color: var(--cinza-texto);
     line-height: 1.6;
@@ -200,7 +200,7 @@
   .rule-list li:last-child { border-bottom: none; }
   .rule-list li::before {
     content: '—'; color: var(--vermelho);
-    flex-shrink: 0; margin-top: 1px;
+    position: absolute; left: 0; top: 11px;
   }
   .rule-list li strong { color: var(--branco); font-weight: 500; }
 
@@ -454,7 +454,7 @@
       <li>As questões são elaboradas com base nas legislações e normas previstas nos editais oficiais dos concursos.</li>
       <li>Cada questão possui <strong>justificativa</strong> indicando o dispositivo legal de referência.</li>
       <li>O banco é continuamente atualizado com novas questões. Questões marcadas como inativas não aparecem para o aluno.</li>
-      <li>Questões com erros podem ser denunciadas pelo aluno e revisadas pela equipe do Protocolo Bravo Mike em até 48 horas.</li>
+      <li>Questões com erros podem ser reportadas pelo aluno e revisadas pela equipe do Protocolo Bravo Mike em até 48 horas.</li>
       <li>O Protocolo Bravo Mike não se responsabiliza por mudanças de gabarito decorrentes de atualizações legislativas após a publicação da questão. Atualizações são feitas periodicamente.</li>
     </ul>
   </section>
@@ -530,7 +530,7 @@
       </div>
       <div class="info-card">
         <div class="info-card-label">Dentro da plataforma</div>
-        <div style="font-size:14px;color:var(--branco);margin-top:4px;">Botão "Denunciar questão"</div>
+        <div style="font-size:14px;color:var(--branco);margin-top:4px;">Botão "Reportar um problema"</div>
         <div class="info-card-desc" style="margin-top:6px;">Para reportar erros em questões específicas</div>
       </div>
     </div>

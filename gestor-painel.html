@@ -190,7 +190,7 @@ const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
       <a href="#secao-denuncias" class="nav-item" id="link-denuncias" style="justify-content:space-between;">
         <span style="display:flex;align-items:center;gap:10px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px;flex-shrink:0"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          Denúncias
+          Relatórios de Problemas
         </span>
         <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
       </a>
@@ -248,9 +248,9 @@ const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
       </div>
 
       <!-- Denúncias de Questões -->
-      <div class="secao-titulo" id="secao-denuncias">Denúncias de Questões</div>
+      <div class="secao-titulo" id="secao-denuncias">Relatórios de Problemas</div>
       <div class="painel-card" style="margin-bottom:2rem">
-        <div class="denuncias-wrapper" id="denuncias-conteudo"><div class="denuncias-vazio">Carregando denúncias…</div></div>
+        <div class="denuncias-wrapper" id="denuncias-conteudo"><div class="denuncias-vazio">Carregando relatórios…</div></div>
       </div>
 
       <!-- Gestão de Alunos -->
@@ -433,7 +433,7 @@ const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
   function renderDenuncias() {
     const el = document.getElementById('denuncias-conteudo');
     if (denunciasCache.length === 0) {
-      el.innerHTML = '<div class="denuncias-vazio">Nenhuma denúncia registrada.</div>';
+      el.innerHTML = '<div class="denuncias-vazio">Nenhum relatório registrado.</div>';
       return;
     }
     el.innerHTML = `
@@ -472,7 +472,7 @@ const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
     try {
       const r = await supaQuery('/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id&order=created_at.desc&limit=50');
       if (!r.ok) {
-        el.innerHTML = '<div class="denuncias-vazio" style="color:#E24B4A">Erro ao carregar denúncias.</div>';
+        el.innerHTML = '<div class="denuncias-vazio" style="color:#E24B4A">Erro ao carregar relatórios.</div>';
         return;
       }
       const denuncias = Array.isArray(r.data) ? r.data : [];
@@ -491,7 +491,7 @@ const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
       atualizarBadge();
       renderDenuncias();
     } catch {
-      el.innerHTML = '<div class="denuncias-vazio" style="color:#E24B4A">Erro ao carregar denúncias.</div>';
+      el.innerHTML = '<div class="denuncias-vazio" style="color:#E24B4A">Erro ao carregar relatórios.</div>';
       denunciasCache = [];
       atualizarBadge();
     }

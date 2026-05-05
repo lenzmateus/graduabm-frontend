@@ -748,7 +748,7 @@
 <!-- MODAL DENÚNCIA -->
 <div class="modal-overlay" id="modal-denuncia">
   <div class="modal-card" style="max-width:440px;">
-    <div class="modal-titulo">Reportar questão</div>
+    <div class="modal-titulo">Reportar um problema</div>
     <div class="modal-desc">Descreva o problema encontrado (erro no enunciado, gabarito incorreto, alternativas duplicadas, etc.).</div>
     <textarea class="modal-denuncia-textarea" id="denuncia-comentario" placeholder="Descreva o problema…" maxlength="1000"></textarea>
     <div class="modal-char"><span id="denuncia-char">0</span>/1000</div>
@@ -841,7 +841,7 @@ function btnReportarHtml(idx) {
   }
   return `<button class="btn-reportar" id="btn-reportar" onclick="abrirModalDenuncia()">
     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-    Reportar questão
+    Reportar um problema
   </button>`;
 }
 function remapearLetrasJustificativa(texto, mapa) {
