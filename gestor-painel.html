@@ -149,6 +149,7 @@
 </head>
 <body>
 
+<script src="/js/api.js"></script>
 <script>
 if (sessionStorage.getItem('pbm_gestor') !== '1') window.location.href = '/gestor-login';
 const GESTOR_TOKEN = sessionStorage.getItem('pbm_gestor_token');
@@ -308,26 +309,8 @@ const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
       new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   } catch (e) {}
 
-  const API = 'https://graduabm-backend-production.up.railway.app';
-
-  function gestorHeaders() {
-    return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GESTOR_TOKEN };
-  }
-
-  async function supaQuery(path, prefer, method, body) {
-    const res = await fetch(API + '/api/gestor/query', {
-      method: 'POST',
-      headers: gestorHeaders(),
-      body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
-    });
-    if (res.status === 401) {
-      ['pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
-      window.location.href = '/gestor-login';
-      throw new Error('Sessão expirada');
-    }
-    const text = await res.text();
-    const contentRange = res.headers.get('Content-Range');
-    return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null, contentRange };
+  function supaQuery(path, prefer, method, body) {
+    return PBM.Gestor.query(path, prefer, method, body);
   }
 
   function toast(msg, tipo) {

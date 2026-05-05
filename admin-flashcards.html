@@ -280,22 +280,10 @@ if (_isAdmin && !sessionStorage.getItem('pbm_admin_jwt')) window.location.href =
 let todosCards = [];
 let deleteId = null;
 
-async function supaFetch(path, method = 'GET', body = null) {
-  const queryUrl = _isGestor ? '/api/gestor/query' : '/api/admin/query';
-  const authHeader = _isGestor
-    ? { 'Authorization': 'Bearer ' + PBM.Gestor.getToken() }
-    : PBM.Admin._authHeader();
-  const res = await fetch(queryUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...authHeader },
-    body: JSON.stringify({ path, method, body: body || undefined, prefer: 'return=representation' }),
-  });
-  if (res.status === 401) {
-    _isGestor ? PBM.Gestor.logout() : PBM.Admin.logout();
-    return { ok: false, status: 401, data: null };
-  }
-  const txt = await res.text();
-  return { ok: res.ok, status: res.status, data: txt ? JSON.parse(txt) : null };
+function supaFetch(path, method = 'GET', body = null) {
+  return _isGestor
+    ? PBM.Gestor.query(path, 'return=representation', method, body)
+    : PBM.Admin.query(path, 'return=representation', method, body);
 }
 
 async function carregarCards() {

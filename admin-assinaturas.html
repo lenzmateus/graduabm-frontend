@@ -874,13 +874,12 @@
   async function carregarRelatorio() {
     const tbody = document.getElementById('tbody-relatorio');
     try {
-      const hdrs = PBM.Admin._authHeader();
       const [sCTSP, sCBA, sAmbos, sAtivos, sInativos] = await Promise.allSettled([
-        fetch('/api/admin/assinaturas?status=ativo&curso=ctsp&per_page=1', { headers: hdrs }).then(r => r.json()),
-        fetch('/api/admin/assinaturas?status=ativo&curso=cba&per_page=1', { headers: hdrs }).then(r => r.json()),
-        fetch('/api/admin/assinaturas?status=ativo&curso=ambos&per_page=1', { headers: hdrs }).then(r => r.json()),
-        fetch('/api/admin/assinaturas?status=ativo&per_page=1', { headers: hdrs }).then(r => r.json()),
-        fetch('/api/admin/assinaturas?status=inativo&per_page=1', { headers: hdrs }).then(r => r.json()),
+        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'ctsp', per_page: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'cba', per_page: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'ambos', per_page: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'ativo', per_page: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'inativo', per_page: 1 }),
       ]);
 
       const val = (s) => s.status === 'fulfilled' ? (s.value.total ?? 0) : null;

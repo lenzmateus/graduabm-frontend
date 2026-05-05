@@ -408,7 +408,6 @@ let tempoInicio = parseInt(sessionStorage.getItem('pbm_sm_tempo_inicio') || '0')
 
 // ── LOBBY ────────────────────────────────────────────────────────────────────
 
-const API_BASE = 'https://graduabm-backend-production.up.railway.app';
 
 function fmtDataBRT(iso) {
   return new Date(iso).toLocaleString('pt-BR', {
@@ -496,7 +495,6 @@ function entrarSimulado(id) {
 }
 
 async function renderLobbyAdmin() {
-  const TOKEN = sessionStorage.getItem('pbm_admin_jwt');
   const panel = document.getElementById('lobby-admin-panel');
   panel.innerHTML = `
     <div style="background:rgba(124,58,237,.05);border:1px solid rgba(124,58,237,.18);border-radius:12px;padding:1.25rem;">
@@ -512,8 +510,7 @@ async function renderLobbyAdmin() {
     </div>`;
 
   try {
-    const res = await fetch(`${API_BASE}/api/simulados-mensais/admin/listar`, { headers: { 'Authorization': `Bearer ${TOKEN}` } });
-    const data = await res.json();
+    const data = await PBM.Admin.simuladosMensais.listar();
     const pendentes = (data || []).filter(s => !s.ativo);
     const el = document.getElementById('lobby-pendentes');
     if (!pendentes.length) {
@@ -534,19 +531,13 @@ async function renderLobbyAdmin() {
 }
 
 async function lobbyHabilitar(id) {
-  const TOKEN = sessionStorage.getItem('pbm_admin_jwt');
   try {
-    await fetch(`${API_BASE}/api/simulados-mensais/admin/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
-      body: JSON.stringify({ ativo: true })
-    });
+    await PBM.Admin.simuladosMensais.habilitar(id, { ativo: true });
     window.location.reload();
   } catch { alert('Erro ao habilitar simulado.'); }
 }
 
 function lobbyAbrirModalGerar() {
-  const TOKEN = sessionStorage.getItem('pbm_admin_jwt');
   const agora = new Date();
   const df = (5 - agora.getDay() + 7) % 7 || 7;
   const sexta = new Date(agora); sexta.setDate(agora.getDate() + df); sexta.setHours(12,0,0,0);
@@ -600,17 +591,11 @@ function lobbyAbrirModalGerar() {
     const btn = document.getElementById('lobby-btn-gerar');
     if (btn) { btn.disabled = true; btn.textContent = 'Gerando… (~20–30 min)'; }
     try {
-      const r = await fetch(`${API_BASE}/api/simulados-mensais/admin/gerar`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
-        body: JSON.stringify({ abertura: new Date(al).toISOString(), encerramento: new Date(el2).toISOString(), curso })
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.erro || 'Erro');
+      const data = await PBM.Admin.simuladosMensais.gerar({ abertura: new Date(al).toISOString(), encerramento: new Date(el2).toISOString(), curso });
       alert('Simulados gerados! Aparecem abaixo para habilitar.');
       window.location.reload();
     } catch (err) {
-      alert('Erro: ' + err.message);
+      alert('Erro: ' + (err.erro || err.message || 'Falha ao gerar simulado.'));
       if (btn) { btn.disabled = false; btn.textContent = '+ Gerar Simulado do M\xeas (IA \xb7 Opus)'; }
     }
   };

@@ -459,17 +459,22 @@ async function carregarGrafico() {
   try {
     const dados = await PBM.Progresso.evolucaoSemanal();
 
-    if (!Array.isArray(dados) || dados.length === 0) {
+    const dadosValidos = (Array.isArray(dados) ? dados : [])
+      .filter(d => d.semana || d.data || d.periodo);
+
+    if (dadosValidos.length === 0) {
       document.getElementById('chart-container').innerHTML = '<div class="chart-empty">Responda questões para ver sua evolução aqui.</div>';
       return;
     }
 
-    const labels = dados.map(d => {
-      const dt = new Date(d.semana || d.data || d.periodo);
+    const labels = dadosValidos.map(d => {
+      const raw = (d.semana || d.data || d.periodo || '').split('T')[0];
+      const [y, m, day] = raw.split('-').map(Number);
+      const dt = new Date(y, m - 1, day);
       return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '');
     });
-    const taxas   = dados.map(d => Number(d.taxa_acerto || d.taxa_acerto_pct || 0));
-    const questoes = dados.map(d => Number(d.total_questoes || d.total_respondidas || 0));
+    const taxas   = dadosValidos.map(d => Number(d.taxa_acerto || d.taxa_acerto_pct || 0));
+    const questoes = dadosValidos.map(d => Number(d.total_questoes || d.total_respondidas || 0));
     const maxQ = Math.max(...questoes, 10);
 
     const canvas = document.getElementById('chart-evolucao');

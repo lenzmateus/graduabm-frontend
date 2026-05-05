@@ -496,15 +496,8 @@
     PBM.Admin.logout();
   })();
 
-  async function supaQuery(path, prefer, method, body) {
-    const res = await fetch('/api/admin/query', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}` },
-      body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
-    });
-    const text = await res.text();
-    const contentRange = res.headers.get('Content-Range');
-    return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null, contentRange };
+  function supaQuery(path, prefer, method, body) {
+    return PBM.Admin.query(path, prefer, method, body);
   }
 
   /* ── Toast ── */
@@ -684,13 +677,10 @@
     const msg = document.getElementById('aluno-msg');
     msg.textContent = 'Zerando progresso…'; msg.style.color = '#888';
 
-    const res = await fetch(`/api/admin/usuarios/${alunoAtual.id}/zerar-progresso`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
-    });
-    const data = await res.json().catch(() => ({}));
+    let data = {};
+    try { data = await PBM.Admin.usuarios.zerarProgresso(alunoAtual.id); } catch (e) { data = e; }
 
-    if (!res.ok) {
+    if (data && data.erro) {
       msg.textContent = data.erro || 'Erro ao zerar progresso.';
       msg.style.color = '#E24B4A';
       return;
@@ -787,11 +777,7 @@
   async function carregarStats() {
     if (!ADMIN_JWT) return;
     try {
-      const r = await fetch('/api/admin/stats', {
-        headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
-      });
-      if (!r.ok) throw new Error('stats ' + r.status);
-      const { total, ativas } = await r.json();
+      const { total, ativas } = await PBM.Admin.stats();
 
       document.getElementById('stat-total').textContent = total;
       document.getElementById('stat-total-sub').textContent = total === 1 ? 'questão cadastrada' : 'questões cadastradas';
@@ -811,9 +797,9 @@
     let backStatus = 'ERRO'; let backOk = false;
 
     try {
-      const r = await fetch('/api/admin/stats', { headers: { 'Authorization': `Bearer ${ADMIN_JWT}` } });
-      supaOk = r.ok; supaStatus = r.ok ? 'OK' : String(r.status);
-    } catch (e) { supaStatus = 'ERRO'; }
+      await PBM.Admin.stats();
+      supaOk = true; supaStatus = 'OK';
+    } catch (e) { supaOk = false; supaStatus = e.status ? String(e.status) : 'ERRO'; }
 
     // Se o /api/admin/stats respondeu OK, Railway também está OK (mesmo endpoint)
     backOk = supaOk; backStatus = supaOk ? 'OK' : 'ERRO';
@@ -972,11 +958,8 @@
   async function carregarGestores() {
     const lista = document.getElementById('gestores-lista');
     try {
-      const r = await fetch('/api/admin/gestores', {
-        headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
-      });
-      const data = await r.json();
-      if (!r.ok || !Array.isArray(data) || data.length === 0) {
+      const data = await PBM.Admin.gestores.listar();
+      if (!Array.isArray(data) || data.length === 0) {
         lista.innerHTML = '<div style="color:#555;font-size:13px;">Nenhum gestor cadastrado.</div>';
         return;
       }
@@ -1003,25 +986,20 @@
 
   window.toggleGestor = async function(id, ativoAtual) {
     const novoAtivo = !ativoAtual;
-    const r = await fetch(`/api/admin/gestores/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}` },
-      body: JSON.stringify({ ativo: novoAtivo }),
-    });
-    if (!r.ok) { toast('Erro ao atualizar gestor.', 'erro'); return; }
-    toast(novoAtivo ? 'Gestor ativado.' : 'Gestor desativado.', novoAtivo ? 'verde' : '');
-    carregarGestores();
+    try {
+      await PBM.Admin.gestores.atualizar(id, { ativo: novoAtivo });
+      toast(novoAtivo ? 'Gestor ativado.' : 'Gestor desativado.', novoAtivo ? 'verde' : '');
+      carregarGestores();
+    } catch { toast('Erro ao atualizar gestor.', 'erro'); }
   };
 
   window.removerGestor = async function(id, nome) {
     if (!confirm(`Remover gestor "${nome}" permanentemente?`)) return;
-    const r = await fetch(`/api/admin/gestores/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
-    });
-    if (!r.ok) { toast('Erro ao remover gestor.', 'erro'); return; }
-    toast('Gestor removido.', '');
-    carregarGestores();
+    try {
+      await PBM.Admin.gestores.excluir(id);
+      toast('Gestor removido.', '');
+      carregarGestores();
+    } catch { toast('Erro ao remover gestor.', 'erro'); }
   };
 
   document.getElementById('btn-gerar-convite').addEventListener('click', async function() {
@@ -1031,13 +1009,7 @@
     msg.textContent = 'Gerando…'; msg.style.color = '#888';
     document.getElementById('convite-resultado').style.display = 'none';
     try {
-      const r = await fetch('/api/admin/gestores/convidar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}` },
-        body: JSON.stringify({ email }),
-      });
-      const data = await r.json();
-      if (!r.ok) { msg.textContent = data.erro || 'Erro ao gerar convite.'; msg.style.color = '#E24B4A'; return; }
+      const data = await PBM.Admin.gestores.convidar({ email });
       document.getElementById('convite-link').value = data.link;
       document.getElementById('convite-resultado').style.display = 'block';
       msg.textContent = 'Convite gerado! Copie e envie o link.'; msg.style.color = '#27A05A';
@@ -1123,11 +1095,8 @@
   async function carregarAdmins() {
     const lista = document.getElementById('admins-lista');
     try {
-      const r = await fetch('/api/admin/admins', {
-        headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
-      });
-      const data = await r.json();
-      if (!r.ok || !Array.isArray(data) || data.length === 0) {
+      const data = await PBM.Admin.admins.listar();
+      if (!Array.isArray(data) || data.length === 0) {
         lista.innerHTML = '<div style="color:#555;font-size:13px;">Nenhum administrador cadastrado.</div>';
         return;
       }
@@ -1154,14 +1123,11 @@
 
   window.excluirAdmin = async function(id, nome) {
     if (!confirm(`Excluir o administrador "${nome}"? Esta ação não pode ser desfeita.`)) return;
-    const r = await fetch(`/api/admin/admins/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
-    });
-    const data = await r.json();
-    if (!r.ok) { toast(data.erro || 'Erro ao excluir admin.', 'erro'); return; }
-    toast('Administrador excluído.', '');
-    carregarAdmins();
+    try {
+      await PBM.Admin.admins.excluir(id);
+      toast('Administrador excluído.', '');
+      carregarAdmins();
+    } catch (err) { toast(err.erro || 'Erro ao excluir admin.', 'erro'); }
   };
 
   document.getElementById('btn-gerar-convite-admin').addEventListener('click', async function() {
@@ -1171,13 +1137,7 @@
     msg.textContent = 'Gerando…'; msg.style.color = '#888';
     document.getElementById('admin-convite-resultado').style.display = 'none';
     try {
-      const r = await fetch('/api/admin/admins/convidar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}` },
-        body: JSON.stringify({ email }),
-      });
-      const data = await r.json();
-      if (!r.ok) { msg.textContent = data.erro || 'Erro ao gerar convite.'; msg.style.color = '#E24B4A'; return; }
+      const data = await PBM.Admin.admins.convidar({ email });
       document.getElementById('admin-convite-link').value = data.link;
       document.getElementById('admin-convite-resultado').style.display = 'block';
       msg.textContent = 'Convite gerado! Copie e envie o link para o novo administrador.'; msg.style.color = '#27A05A';
