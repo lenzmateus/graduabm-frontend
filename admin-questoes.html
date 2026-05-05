@@ -713,7 +713,9 @@ function atualizarNomeLegislacao() {
 }
 
 let todasQuestoes = [];
+let totalRealBanco = 0;
 let deleteId = null;
+let _buscaTimer = null;
 
 function escHtml(str) {
   if (!str) return '';
@@ -736,34 +738,49 @@ function supaFetch(path, method = 'GET', body = null) {
 }
 
 async function carregarQuestoes() {
-  const r = await supaFetch('/rest/v1/questoes?select=*&order=criado_em.desc&limit=10000');
-  if (r.ok && Array.isArray(r.data)) {
-    todasQuestoes = r.data;
-    if (r.data.length >= 3000) {
-      toast(`⚠ ${r.data.length} questões carregadas — banco grande, considere paginação.`, 'aviso');
-    }
-    aplicarFiltros();
-  } else {
-    document.getElementById('lista-questoes').innerHTML = '<div class="loading-txt" style="color:#F09595">Erro ao carregar questões.</div>';
+  if (_isAdmin) {
+    const statsRes = await PBM.Admin.stats();
+    if (statsRes?.ok && statsRes.data?.total) totalRealBanco = statsRes.data.total;
   }
+  mostrarPlaceholder();
 }
 
-function aplicarFiltros() {
-  const curso = document.getElementById('filtro-curso').value;
-  const area = document.getElementById('filtro-area').value;
+function mostrarPlaceholder() {
+  const total = totalRealBanco ? `${totalRealBanco} questões no banco` : 'questões no banco';
+  document.getElementById('total-txt').textContent = total;
+  document.getElementById('lista-questoes').innerHTML =
+    '<div class="loading-txt" style="color:#666">Use os filtros ou busque pelo código / enunciado para listar questões.</div>';
+}
+
+async function aplicarFiltros() {
+  const curso  = document.getElementById('filtro-curso').value;
+  const area   = document.getElementById('filtro-area').value;
   const status = document.getElementById('filtro-status').value;
-  const busca = document.getElementById('filtro-busca').value.toLowerCase();
+  const busca  = document.getElementById('filtro-busca').value.trim();
 
-  let filtradas = todasQuestoes.filter(q => {
-    if (curso && q.curso !== curso) return false;
-    if (area && q.area_tematica !== area) return false;
-    if (status !== '' && String(q.ativa) !== status) return false;
-    if (busca && !q.enunciado.toLowerCase().includes(busca) && !q.legislacao_nome?.toLowerCase().includes(busca)) return false;
-    return true;
-  });
+  const semFiltro = !curso && !area && !status && !busca;
+  if (semFiltro) { mostrarPlaceholder(); return; }
 
-  document.getElementById('total-txt').textContent = `${filtradas.length} questão${filtradas.length !== 1 ? 'ões' : ''} encontrada${filtradas.length !== 1 ? 's' : ''}`;
-  renderLista(filtradas);
+  document.getElementById('lista-questoes').innerHTML = '<div class="loading-txt">Buscando…</div>';
+
+  const LIMIT = 200;
+  const params = [`select=*`, `order=criado_em.desc`, `limit=${LIMIT}`];
+  if (curso)  params.push(`curso=eq.${encodeURIComponent(curso)}`);
+  if (area)   params.push(`area_tematica=eq.${encodeURIComponent(area)}`);
+  if (status) params.push(`ativa=eq.${status}`);
+  if (busca)  params.push(`or=(enunciado.ilike.*${encodeURIComponent(busca)}*,legislacao_nome.ilike.*${encodeURIComponent(busca)}*,codigo.ilike.*${encodeURIComponent(busca)}*)`);
+
+  const r = await supaFetch(`/rest/v1/questoes?${params.join('&')}`);
+  if (!r.ok || !Array.isArray(r.data)) {
+    document.getElementById('lista-questoes').innerHTML = '<div class="loading-txt" style="color:#F09595">Erro ao buscar questões.</div>';
+    return;
+  }
+
+  todasQuestoes = r.data;
+  const cap = r.data.length === LIMIT ? ` (primeiros ${LIMIT})` : '';
+  document.getElementById('total-txt').textContent =
+    `${r.data.length} questão${r.data.length !== 1 ? 'ões' : ''} encontrada${r.data.length !== 1 ? 's' : ''}${cap} — ${totalRealBanco} no banco`;
+  renderLista(r.data);
 }
 
 function renderLista(questoes) {
@@ -1020,7 +1037,10 @@ document.getElementById('m-leg-id').addEventListener('change', atualizarNomeLegi
 ['filtro-curso','filtro-area','filtro-status'].forEach(id => {
   document.getElementById(id).addEventListener('change', aplicarFiltros);
 });
-document.getElementById('filtro-busca').addEventListener('input', aplicarFiltros);
+document.getElementById('filtro-busca').addEventListener('input', () => {
+  clearTimeout(_buscaTimer);
+  _buscaTimer = setTimeout(aplicarFiltros, 400);
+});
 
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') { fecharModal(); fecharDelete(); }
