@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Regras e Informações</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -21,7 +22,7 @@
   body {
     background: var(--carvao);
     color: var(--branco);
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
     line-height: 1.7;
     min-height: 100vh;
@@ -55,7 +56,7 @@
     background: var(--vermelho);
     color: #fff; border: none; border-radius: 6px;
     padding: 6px 14px; font-size: 13px; font-weight: 500;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     cursor: pointer; text-decoration: none;
     transition: background 0.15s;
   }
@@ -528,5 +529,16 @@
   <p>© 2025 Protocolo Bravo Mike · <a href="/">Início</a> · <a href="/regras">Regras</a> · <a href="mailto:contato@protocolobravomike.com.br">Contato</a></p>
 </footer>
 
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Redefinir senha</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -20,7 +21,7 @@
   body {
     background: var(--carvao);
     color: var(--branco);
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
     min-height: 100vh;
     display: flex;
@@ -71,7 +72,7 @@
     width: 100%; padding: 11px 14px;
     background: #111; border: 1px solid var(--cinza-borda);
     border-radius: 6px; color: var(--branco);
-    font-family: 'IBM Plex Sans', sans-serif; font-size: 14px;
+    font-family: 'Inter', sans-serif; font-size: 14px;
     outline: none; transition: border-color 0.15s;
   }
   input:focus { border-color: var(--vermelho); }
@@ -79,7 +80,7 @@
     width: 100%; padding: 13px;
     background: var(--vermelho);
     color: #fff; border: none; border-radius: 6px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px; font-weight: 600;
     cursor: pointer; transition: opacity 0.15s;
     display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -226,5 +227,16 @@
     if (e.key === 'Enter' && !document.getElementById('btn-redef').disabled) redefinir();
   });
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

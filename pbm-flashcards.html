@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Flashcards</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -17,7 +18,7 @@
     --branco: #F8F6F2;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
   .layout { display: flex; min-height: 100vh; }
 
   .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
@@ -35,7 +36,7 @@
   .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: rgba(192,39,15,0.08); }
   .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
   .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
   .btn-sair:hover { border-color: #555; color: var(--branco); }
 
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
@@ -45,7 +46,7 @@
   .conteudo { flex: 1; padding: 2rem; overflow-y: auto; display: flex; flex-direction: column; }
 
   .filtros-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.75rem; flex-wrap: wrap; }
-  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 7px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; cursor: pointer; outline: none; transition: border-color 0.15s; }
+  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 7px 12px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; outline: none; transition: border-color 0.15s; }
   .filtro-select:focus { border-color: var(--vermelho); }
   .filtro-select option { background: var(--cinza-medio); }
   .count-badge { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-left: auto; }
@@ -87,7 +88,7 @@
   .area-AT5 .card-area-badge { background: rgba(127,119,221,0.12); color: #AFA9EC; border: 1px solid rgba(127,119,221,0.3); }
 
   .nav-bar { display: flex; align-items: center; gap: 1rem; width: 100%; max-width: 620px; }
-  .btn-nav { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .btn-nav { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 8px; padding: 9px 20px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .btn-nav:hover:not(:disabled) { border-color: #555; color: var(--branco); }
   .btn-nav:disabled { opacity: 0.3; cursor: default; }
   .nav-counter { flex: 1; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cinza-texto); }
@@ -103,6 +104,27 @@
 
   @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .card-scene { animation: fadeUp 0.3s ease both; }
+
+  /* ── SETAS LATERAIS ── */
+  .seta-fc {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px; height: 44px;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    z-index: 49;
+    color: var(--cinza-texto);
+  }
+  .seta-fc:hover:not([disabled]) { border-color: #555; color: var(--branco); background: var(--cinza-medio); }
+  .seta-fc[disabled] { opacity: 0.2; cursor: default; pointer-events: none; }
+  .seta-fc-esq { left: 232px; }
+  .seta-fc-dir { right: 12px; }
+  @media (max-width: 960px) { .seta-fc { display: none !important; } }
 
   @media (max-width: 768px) {
     .layout { flex-direction: column; }
@@ -122,9 +144,16 @@
 </head>
 <body>
 
+<button class="seta-fc seta-fc-esq" id="seta-fc-esq" onclick="navegar(-1)" title="Card anterior" disabled>
+  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+</button>
+<button class="seta-fc seta-fc-dir" id="seta-fc-dir" onclick="navegar(1)" title="Próximo card">
+  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+</button>
+
 <div id="preview-banner" style="display:none;background:#7F77DD;color:#fff;padding:7px 20px;font-size:12px;font-weight:600;align-items:center;justify-content:center;gap:16px;position:sticky;top:0;z-index:200;">
   Modo Aluno ativo — você está vendo como um aluno vê
-  <a href="/admin" onclick="sessionStorage.removeItem('Protocolo Bravo Mike_preview_aluno')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>
+  <a href="/admin" onclick="sessionStorage.removeItem('pbm_preview_aluno')" style="color:#fff;text-decoration:underline;font-weight:700;">← Voltar ao Admin</a>
 </div>
 
 <div class="layout">
@@ -150,10 +179,20 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         Papirar
       </a>
+      <a class="nav-item" href="#" onclick="sessionStorage.setItem('pbm_revisao_erros','1');window.location.href='/questoes';return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Caderno de Erros
+      </a>
       <a class="nav-item" href="/simulados">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Simulados Oficiais
       </a>
+      <div class="nav-item nav-missao locked" id="nav-missao-fds">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="nav-missao-label">MISSÃO FDS</span>
+        <span class="nav-missao-timer" id="missao-timer" style="display:none">--:--:--</span>
+        <div class="nav-missao-tooltip" id="missao-tooltip"></div>
+      </div>
       <a class="nav-item" href="/ranking">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
         Ranking
@@ -232,7 +271,7 @@
 </div>
 
 <div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
-  <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
+  <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
 </div>
 
 <script>
@@ -303,6 +342,10 @@ function renderCard() {
   document.getElementById('nav-counter').textContent = (indiceAtual + 1) + ' / ' + total;
   document.getElementById('btn-prev').disabled = indiceAtual === 0;
   document.getElementById('btn-next').disabled = indiceAtual === total - 1;
+  const fcEsq = document.getElementById('seta-fc-esq');
+  const fcDir = document.getElementById('seta-fc-dir');
+  if (fcEsq) { if (indiceAtual === 0) fcEsq.setAttribute('disabled',''); else fcEsq.removeAttribute('disabled'); }
+  if (fcDir) { if (indiceAtual === total - 1) fcDir.setAttribute('disabled',''); else fcDir.removeAttribute('disabled'); }
 }
 
 function renderDots() {
@@ -353,7 +396,7 @@ function handleSair() {
 }
 
 async function iniciarApp() {
-  const isPreview = sessionStorage.getItem('Protocolo Bravo Mike_preview_aluno') === '1';
+  const isPreview = sessionStorage.getItem('pbm_preview_aluno') === '1';
   const isAdmin   = PBM.isAdmin();
 
   if (isAdmin && !isPreview) {
@@ -394,5 +437,120 @@ async function carregarFlashcards() {
 }
 </script>
 <script src="/js/api.js" onload="iniciarApp()"></script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
+<style>
+.nav-missao{display:flex;align-items:center;gap:8px;padding:8px 1.25rem;font-size:13px;font-weight:500;position:relative;border-left:2px solid transparent;}
+.nav-missao.locked{cursor:default;color:#444;}
+.nav-missao-label{flex:1;}
+.nav-missao-timer{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:.05em;}
+.nav-missao-tooltip{display:none;position:absolute;left:220px;top:0;background:#1A1A1A;border:1px solid #333;padding:8px 12px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:100;color:#AAA;}
+.nav-missao.locked:hover .nav-missao-tooltip{display:block;}
+.nav-missao.active{color:#7DD99A;border-left-color:#7DD99A;background:rgba(125,217,154,.06);text-decoration:none;animation:pulse-missao 2s ease-in-out infinite;}
+.nav-missao-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;background:rgba(125,217,154,.12);color:#7DD99A;border-radius:4px;padding:1px 6px;letter-spacing:.08em;}
+@keyframes pulse-missao{0%,100%{opacity:1}50%{opacity:.72}}
+.nav-missao.encerrado{color:#888;text-decoration:none;}
+.nav-missao.encerrado:hover{color:#AAA;}
+.nav-missao-ranking-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#666;letter-spacing:.05em;}
+</style>
+<script>
+(async function initMissaoFDSSidebar(){
+  const el=document.getElementById('nav-missao-fds');
+  if(!el)return;
+  let status;
+  try{status=await PBM.MissaoFDS.status();}catch{return;}
+  if(status.estado==='active'){
+    const a=document.createElement('a');
+    a.className='nav-item nav-missao active';a.href='/simulado-mensal';
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span class="nav-missao-label">MISSÃO FDS</span><span class="nav-missao-badge">ABERTA</span>';
+    el.replaceWith(a);
+  }else if(status.estado==='locked'&&status.proximo){
+    const abertura=new Date(status.proximo.abertura);
+    const encerramento=new Date(status.proximo.encerramento);
+    const fmt=d=>d.toLocaleString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'});
+    const tip=document.getElementById('missao-tooltip');
+    if(tip)tip.textContent='Abre '+fmt(abertura)+' · Fecha '+fmt(encerramento)+' BRT';
+    el.style.cursor='pointer';
+    el.addEventListener('click',function(){
+      const ov=document.createElement('div');
+      ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;';
+      ov.innerHTML='<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem 1.75rem;max-width:320px;width:90%;">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid #222;padding-bottom:.75rem;">'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+
+          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">MISSÃO FDS — BLOQUEADA</span>'+
+        '</div>'+
+        '<div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">Abertura</div>'+
+        '<div style="font-size:14px;color:#CCC;margin-bottom:1rem;">'+fmt(abertura)+' BRT</div>'+
+        '<div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">Encerramento</div>'+
+        '<div style="font-size:14px;color:#CCC;margin-bottom:1.25rem;">'+fmt(encerramento)+' BRT</div>'+
+        '<div style="text-align:center;background:#111;border-radius:8px;padding:.75rem;margin-bottom:1.25rem;">'+
+          '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:9px;color:#444;letter-spacing:.1em;margin-bottom:.4rem;">ABRE EM</div>'+
+          '<div id="missao-modal-timer" style="font-family:\'IBM Plex Mono\',monospace;font-size:24px;color:#C0270F;letter-spacing:.04em;"></div>'+
+        '</div>'+
+        '<button id="missao-modal-close" style="width:100%;background:none;border:1px solid #2A2A2A;color:#555;padding:7px;border-radius:6px;cursor:pointer;font-size:12px;font-family:\'IBM Plex Mono\',monospace;letter-spacing:.06em;">FECHAR</button>'+
+      '</div>';
+      document.body.appendChild(ov);
+      function tickModal(){
+        const pt=document.getElementById('missao-modal-timer');if(!pt)return;
+        const diff=Math.max(0,abertura-Date.now());
+        const dd=Math.floor(diff/86400000),hh=Math.floor((diff%86400000)/3600000);
+        const mm=Math.floor((diff%3600000)/60000),ss=Math.floor((diff%60000)/1000);
+        pt.textContent=dd>0?dd+'d '+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0'):String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+      }
+      tickModal();const iv=setInterval(tickModal,1000);
+      function closeModal(){ov.remove();clearInterval(iv);document.removeEventListener('keydown',onKey);}
+      function onKey(e){if(e.key==='Escape')closeModal();}
+      document.addEventListener('keydown',onKey);
+      ov.addEventListener('click',function(e){if(e.target===ov)closeModal();});
+      document.getElementById('missao-modal-close').addEventListener('click',closeModal);
+    });
+    function tick(){
+      const diff=Math.max(0,abertura-Date.now());
+      const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
+      const m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+      const t=document.getElementById('missao-timer');
+      if(t)t.textContent=d>0?d+'d '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'):String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }
+    const _t=document.getElementById("missao-timer");if(_t)_t.style.display="";tick();setInterval(tick,1000);
+  }else if(status.estado==='encerrado'&&status.ultimo){
+    const a=document.createElement('a');
+    a.className='nav-item nav-missao encerrado';
+    a.href='/simulado-mensal-ranking?id='+status.ultimo.id;
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg><span class="nav-missao-label">MISSÃO FDS</span><span class="nav-missao-ranking-badge">RANKING →</span>';
+    el.replaceWith(a);
+  }else{
+    el.style.cursor='pointer';
+    el.addEventListener('click',function(){
+      const ov=document.createElement('div');
+      ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;';
+      ov.innerHTML='<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem 1.75rem;max-width:320px;width:90%;">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid #222;padding-bottom:.75rem;">'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+
+          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">MISSÃO FDS</span>'+
+        '</div>'+
+        '<div style="text-align:center;padding:1rem 0;">'+
+          '<div style="font-size:13px;color:#666;line-height:1.7;">Nenhuma missão agendada<br>no momento.<br><br>Fique atento — a próxima<br>será anunciada em breve.</div>'+
+        '</div>'+
+        '<button id="missao-modal-close" style="margin-top:1rem;width:100%;background:none;border:1px solid #2A2A2A;color:#555;padding:7px;border-radius:6px;cursor:pointer;font-size:12px;font-family:\'IBM Plex Mono\',monospace;letter-spacing:.06em;">FECHAR</button>'+
+      '</div>';
+      document.body.appendChild(ov);
+      function closeModal(){ov.remove();document.removeEventListener('keydown',onKey);}
+      function onKey(e){if(e.key==='Escape')closeModal();}
+      document.addEventListener('keydown',onKey);
+      ov.addEventListener('click',function(e){if(e.target===ov)closeModal();});
+      document.getElementById('missao-modal-close').addEventListener('click',closeModal);
+    });
+  }
+})();
+</script>
 </body>
 </html>

@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Questões</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -26,7 +27,7 @@
   html { scroll-behavior: smooth; }
   body {
     background: var(--carvao); color: var(--branco);
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px; line-height: 1.6;
     min-height: 100vh;
   }
@@ -118,7 +119,8 @@
   .quiz-main {
     flex: 1;
     display: flex; align-items: flex-start; justify-content: center;
-    padding: 2.5rem 1rem 4rem;
+    padding: 1.25rem 1rem 2rem;
+    position: relative;
   }
   .questao-card {
     width: 100%; max-width: 760px;
@@ -132,7 +134,7 @@
   /* ── BADGES ── */
   .questao-badges {
     display: flex; align-items: center; gap: 8px;
-    margin-bottom: 1.25rem; flex-wrap: wrap;
+    margin-bottom: 0.75rem; flex-wrap: wrap;
   }
   .badge-area {
     font-family: 'IBM Plex Mono', monospace;
@@ -154,25 +156,25 @@
 
   /* ── ENUNCIADO ── */
   .questao-enunciado {
-    font-size: 15px; line-height: 1.75;
+    font-size: 14px; line-height: 1.6;
     color: var(--branco);
-    margin-bottom: 1.75rem;
-    padding-bottom: 1.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--cinza-borda);
   }
 
   /* ── ALTERNATIVAS ── */
   .alternativas {
-    display: flex; flex-direction: column; gap: 8px;
-    margin-bottom: 1.5rem;
+    display: flex; flex-direction: column; gap: 6px;
+    margin-bottom: 1rem;
   }
   .alt {
-    display: flex; align-items: flex-start; gap: 12px;
+    display: flex; align-items: flex-start; gap: 10px;
     background: var(--cinza-escuro);
     border: 1px solid var(--cinza-borda);
-    border-radius: 10px; padding: 12px 16px;
+    border-radius: 8px; padding: 9px 14px;
     cursor: pointer; transition: all 0.15s;
-    font-size: 14px; color: #bbb;
+    font-size: 13px; color: #bbb;
     user-select: none;
   }
   .alt:hover:not(.bloqueada) { border-color: #555; background: var(--cinza-medio); color: var(--branco); }
@@ -205,8 +207,8 @@
 
   /* ── FEEDBACK ── */
   .feedback {
-    border-radius: 8px; padding: 14px 16px;
-    margin-bottom: 1.5rem; font-size: 13px; line-height: 1.65;
+    border-radius: 8px; padding: 10px 14px;
+    margin-bottom: 1rem; font-size: 13px; line-height: 1.55;
     animation: fadeUp 0.2s ease both;
   }
   .feedback-acerto {
@@ -232,7 +234,7 @@
     background: var(--cor-area); color: #fff;
     border: none; border-radius: 8px;
     padding: 13px 32px; font-size: 14px; font-weight: 600;
-    cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer; font-family: 'Inter', sans-serif;
     transition: opacity 0.15s, transform 0.1s;
   }
   .btn-confirmar:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
@@ -249,6 +251,7 @@
     min-height: 100vh;
     flex-direction: column; align-items: center;
     padding: 3rem 1rem 4rem;
+    position: relative;
   }
   .resultado-header {
     text-align: center; margin-bottom: 2rem;
@@ -319,7 +322,7 @@
   .btn-resultado {
     padding: 13px 28px; border-radius: 8px;
     font-size: 14px; font-weight: 600;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     cursor: pointer; transition: all 0.15s;
     text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
   }
@@ -349,7 +352,7 @@
     padding: 11px 24px; border-radius: 8px;
     background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
     color: var(--branco); font-size: 13px;
-    cursor: pointer; font-family: 'IBM Plex Sans', sans-serif;
+    cursor: pointer; font-family: 'Inter', sans-serif;
     transition: all 0.15s; text-decoration: none;
     display: inline-flex; align-items: center; gap: 8px;
   }
@@ -361,7 +364,7 @@
     border: none;
     color: #555;
     font-size: 11px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     cursor: pointer;
     display: inline-flex; align-items: center; gap: 5px;
     padding: 4px 0;
@@ -374,7 +377,7 @@
     width: 100%; min-height: 90px;
     background: var(--cinza-medio); border: 1px solid var(--cinza-borda);
     border-radius: 8px; padding: 10px 12px;
-    color: var(--branco); font-size: 13px; font-family: 'IBM Plex Sans', sans-serif;
+    color: var(--branco); font-size: 13px; font-family: 'Inter', sans-serif;
     resize: vertical; outline: none; line-height: 1.6;
     transition: border-color 0.15s;
     user-select: text; -webkit-user-select: text;
@@ -401,7 +404,7 @@
   .modal-acoes { display: flex; gap: 10px; justify-content: center; }
   .btn-modal {
     padding: 10px 22px; border-radius: 7px; font-size: 13px; font-weight: 500;
-    cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; border: none;
+    cursor: pointer; font-family: 'Inter', sans-serif; border: none;
     transition: all 0.15s;
   }
   .btn-modal-cancel { background: var(--cinza-medio); color: var(--cinza-texto); border: 1px solid var(--cinza-borda); }
@@ -415,7 +418,7 @@
     .header-contexto { display: none; }
     .header-center { padding: 0 0.75rem; }
     .prog-track { width: 120px; }
-    .quiz-main { padding: 1.25rem 1rem 3rem; }
+    .quiz-main { padding: 1rem 1rem 1.5rem; }
     .questao-acao { flex-direction: column; align-items: stretch; }
     .btn-confirmar { width: 100%; justify-content: center; }
     .acao-hint { text-align: center; }
@@ -432,6 +435,45 @@
     #tela-resultados { padding: 1.5rem 1rem 3rem; }
   }
 
+  /* ── NAVEGADOR DE QUESTÕES ── */
+  #nav-questoes {
+    display: none;
+    position: fixed; top: 56px; left: 50%; transform: translateX(-50%);
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+    border-top: none; border-radius: 0 0 12px 12px;
+    padding: 12px 14px 14px; z-index: 8;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    max-width: 420px; width: calc(100vw - 2rem);
+  }
+  #nav-questoes.aberto { display: block; }
+  #nav-legenda {
+    display: flex; gap: 12px; margin-bottom: 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555;
+    letter-spacing: 0.04em;
+  }
+  #nav-legenda span { display: flex; align-items: center; gap: 4px; }
+  .nav-dot {
+    width: 8px; height: 8px; border-radius: 2px; display: inline-block;
+  }
+  .nav-q-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+  .nav-q-btn {
+    width: 30px; height: 30px; border-radius: 6px;
+    border: 1px solid #333; background: var(--cinza-medio);
+    color: #555; font-size: 11px; font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
+    cursor: pointer; transition: all 0.12s;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .nav-q-btn:hover { border-color: #555; color: var(--branco); }
+  .nav-q-btn.atual { border-color: var(--cor-area); color: var(--branco); box-shadow: 0 0 0 1px var(--cor-area); }
+  .nav-q-btn.correta { background: rgba(39,160,90,0.15); border-color: rgba(39,160,90,0.4); color: #7DD99A; }
+  .nav-q-btn.errada  { background: rgba(226,75,74,0.12);  border-color: rgba(226,75,74,0.35);  color: #F09595; }
+  .header-center { cursor: pointer; }
+  .header-center:hover .prog-info { color: var(--branco); }
+  #nav-chevron { font-size: 9px; color: #444; margin-left: 3px; transition: transform 0.15s; display: inline-block; }
+  #nav-questoes.aberto ~ * #nav-chevron,
+  .nav-aberto #nav-chevron { transform: rotate(180deg); }
+
   /* PROTEÇÃO ANTI-CÓPIA */
   body {
     -webkit-user-select: none;
@@ -439,6 +481,28 @@
     -ms-user-select: none;
     user-select: none;
   }
+
+  /* ── SETAS DE NAVEGAÇÃO LATERAL ── */
+  .seta-nav {
+    position: fixed;
+    top: calc(50% + 28px);
+    transform: translateY(-50%);
+    width: 44px; height: 44px;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 50%;
+    display: none;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    z-index: 49;
+    color: var(--cinza-texto);
+  }
+  .seta-nav:hover:not([disabled]) { border-color: #555; color: var(--branco); background: var(--cinza-medio); }
+  .seta-nav[disabled] { opacity: 0.2; cursor: default; pointer-events: none; }
+  .seta-esq { left: 12px; }
+  .seta-dir { right: 12px; }
+  @media (max-width: 860px) { .seta-nav { display: none !important; } }
 
   /* ── POMODORO FLUTUANTE ── */
   #pom-float {
@@ -585,9 +649,10 @@
       <span class="header-sep">·</span>
       <span class="header-contexto" id="hdr-contexto">—</span>
     </div>
-    <div class="header-center">
+    <div class="header-center" id="hdr-nav-toggle" onclick="toggleNav()" title="Mapa de questões">
       <div class="prog-info">
         <span id="hdr-atual">1</span>/<span id="hdr-total">—</span>
+        <span id="nav-chevron">▾</span>
       </div>
       <div class="prog-track">
         <div class="prog-fill" id="prog-fill"></div>
@@ -602,6 +667,16 @@
       </button>
     </div>
   </header>
+
+  <div id="nav-questoes">
+    <div id="nav-legenda">
+      <span><span class="nav-dot" style="background:#2A2A2A;border:1px solid #333;"></span>Não respondida</span>
+      <span><span class="nav-dot" style="background:rgba(39,160,90,0.3);"></span>Acerto</span>
+      <span><span class="nav-dot" style="background:rgba(226,75,74,0.25);"></span>Erro</span>
+      <span><span class="nav-dot" style="border:1px solid var(--cor-area);"></span>Atual</span>
+    </div>
+    <div class="nav-q-grid" id="nav-grid"></div>
+  </div>
 
   <main class="quiz-main">
     <div class="questao-card">
@@ -626,6 +701,7 @@
     <div class="resultado-logo">Protocolo Bravo Mike</div>
     <div class="resultado-titulo" id="res-titulo">Sessão encerrada</div>
     <div class="resultado-sub" id="res-sub">—</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:0.1em;color:var(--cor-area);margin-top:10px;opacity:0.7;">Você não estuda. Você Treina.</div>
   </div>
 
   <div class="resultado-score">
@@ -687,17 +763,27 @@
 <div class="modal-overlay" id="modal-saida">
   <div class="modal-card">
     <div class="modal-titulo">Encerrar sessão?</div>
-    <div class="modal-desc">Seu progresso até aqui será salvo. Você pode retomar os estudos a qualquer momento.</div>
-    <div class="modal-acoes">
-      <button class="btn-modal btn-modal-cancel" onclick="fecharModal()">Continuar</button>
-      <button class="btn-modal btn-modal-sair" onclick="sairSessao()">Encerrar</button>
+    <div class="modal-desc">Finalize para ver seu resultado agora, ou saia sem registrar aproveitamento.</div>
+    <div class="modal-acoes" style="flex-direction:column;gap:8px;">
+      <button class="btn-modal btn-encerrar" style="background:var(--verde);color:#fff;width:100%;font-size:14px;padding:12px;" onclick="fecharModal();encerrarSessao()">Ver resultado agora →</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-modal btn-modal-cancel" style="flex:1;" onclick="fecharModal()">Continuar estudando</button>
+        <button class="btn-modal btn-modal-sair" style="flex:1;" onclick="sairSessao()">Sair</button>
+      </div>
     </div>
   </div>
 </div>
 
 <script src="/js/api.js"></script>
+<button class="seta-nav seta-esq" id="seta-esq" onclick="voltarQuestao()" title="Questão anterior" disabled>
+  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+</button>
+<button class="seta-nav seta-dir" id="seta-dir" onclick="pularQuestao()" title="Próxima / Pular">
+  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+</button>
+
 <div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
-  <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'IBM Plex Sans',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
+  <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
 </div>
 <script>if(sessionStorage.getItem('pbm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
 <script>
@@ -712,15 +798,16 @@ let respondida  = false;
 let historicoRespostas = [];
 let timerInterval = null;
 let timerSeg  = 0;
+let estadoQuestoes = {}; // persiste shuffle e respostas por índice
 
 // ── PARAMS (vindos da tela anterior) ──
-const curso      = sessionStorage.getItem('Protocolo Bravo Mike_curso') || 'ctsp';
-const area       = sessionStorage.getItem('Protocolo Bravo Mike_at')    || 'AT1';
-const legsRaw    = sessionStorage.getItem('Protocolo Bravo Mike_legislacoes');
+const curso      = sessionStorage.getItem('pbm_curso') || 'ctsp';
+const area       = sessionStorage.getItem('pbm_at')    || 'AT1';
+const legsRaw    = sessionStorage.getItem('pbm_legislacoes');
 const legislacoes = legsRaw ? JSON.parse(legsRaw) : [];
-const qtdPorLegRaw = sessionStorage.getItem('Protocolo Bravo Mike_qtd_por_leg');
+const qtdPorLegRaw = sessionStorage.getItem('pbm_qtd_por_leg');
 const qtdPorLeg  = qtdPorLegRaw ? JSON.parse(qtdPorLegRaw) : null;
-const qtd        = parseInt(sessionStorage.getItem('Protocolo Bravo Mike_qtd') || '20') || 20;
+const qtd        = parseInt(sessionStorage.getItem('pbm_qtd') || '20') || 20;
 
 // ── HELPERS DE ESTRUTURA ──
 function getEnunciado(q) {
@@ -746,6 +833,17 @@ function getRespostaCorreta(q) {
 function getJustificativa(q) {
   return q.justificativa || q.gabarito_comentado || q.explicacao || q.comentario || '';
 }
+function btnReportarHtml(idx) {
+  if (estadoQuestoes[idx]?.reportado) {
+    return `<button class="btn-reportar enviado" disabled>
+      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Reportado
+    </button>`;
+  }
+  return `<button class="btn-reportar" id="btn-reportar" onclick="abrirModalDenuncia()">
+    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+    Reportar questão
+  </button>`;
+}
 function remapearLetrasJustificativa(texto, mapa) {
   if (!texto || !mapa) return texto;
   // Substitui padrões como "alternativa C", "letra B", "opção D", "item A"
@@ -765,7 +863,32 @@ async function init() {
       await PBM.protegerRota();
     }
 
-    const filtro = sessionStorage.getItem('Protocolo Bravo Mike_filtro');
+    const filtro = sessionStorage.getItem('pbm_filtro');
+    const revisaoErros = sessionStorage.getItem('pbm_revisao_erros') === '1';
+
+    if (revisaoErros) {
+      sessionStorage.removeItem('pbm_revisao_erros');
+      const dados = await PBM.api.questoes.erros();
+      questoes = Array.isArray(dados) ? dados : [];
+      if (!questoes.length) {
+        mostrarErro('Nenhum erro encontrado para revisar. Continue estudando e volte depois!');
+        return;
+      }
+      for (let i = questoes.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questoes[i], questoes[j]] = [questoes[j], questoes[i]];
+      }
+      setCor(area);
+      iniciarTimer();
+      document.getElementById('hdr-total').textContent = questoes.length;
+      document.getElementById('hdr-contexto').textContent = 'REVISÃO DE ERROS';
+      mostrarQuestao();
+      document.getElementById('tela-loading').style.display = 'none';
+      document.getElementById('tela-questao').style.display = 'flex';
+      document.getElementById('seta-esq').style.display = 'flex';
+      document.getElementById('seta-dir').style.display = 'flex';
+      return;
+    }
 
     if (qtdPorLeg && Object.keys(qtdPorLeg).length > 0) {
       // Novo fluxo: buscar por legislação individualmente com sua quantidade
@@ -795,14 +918,6 @@ async function init() {
       questoes = Array.isArray(dados) ? dados : (dados.questoes || []);
     }
 
-    try {
-      const sessao = await PBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
-      sessaoId = sessao.id;
-    } catch (err) {
-      console.error('[Protocolo Bravo Mike] Falha ao criar sessão:', err);
-      document.getElementById('banner-erro-sessao').style.display = 'block';
-    }
-
     if (!questoes.length) {
       mostrarErro('Nenhuma questão cadastrada para as legislações selecionadas. Tente outra combinação.');
       return;
@@ -815,6 +930,8 @@ async function init() {
     mostrarQuestao();
     document.getElementById('tela-loading').style.display = 'none';
     document.getElementById('tela-questao').style.display = 'flex';
+    document.getElementById('seta-esq').style.display = 'flex';
+    document.getElementById('seta-dir').style.display = 'flex';
 
   } catch (err) {
     const detalhe = err.erro || err.message || (err.status ? 'HTTP ' + err.status : '');
@@ -837,15 +954,18 @@ function mostrarQuestao() {
 
   const q    = questoes[idxAtual];
   const alts = getAlternativas(q);
-
-  // Embaralhar as alternativas
-  const shuffledAlts = [...alts].sort(() => Math.random() - 0.5);
-  const displayLetters = ['A', 'B', 'C', 'D', 'E'];
-  shuffledAlts.forEach((alt, index) => {
-    alt.displayLetra = displayLetters[index];
-  });
-
   const leg  = getLegislacao(q);
+
+  // Persiste o shuffle por questão para consistência ao voltar
+  if (!estadoQuestoes[idxAtual]) estadoQuestoes[idxAtual] = {};
+  const estado = estadoQuestoes[idxAtual];
+  if (!estado.shuffledAlts) {
+    const shuffled = [...alts].sort(() => Math.random() - 0.5);
+    const displayLetters = ['A', 'B', 'C', 'D', 'E'];
+    shuffled.forEach((alt, i) => { alt.displayLetra = displayLetters[i]; });
+    estado.shuffledAlts = shuffled;
+  }
+  const shuffledAlts = estado.shuffledAlts;
 
   document.getElementById('hdr-atual').textContent  = idxAtual + 1;
   document.getElementById('prog-fill').style.width  = (idxAtual / questoes.length * 100) + '%';
@@ -871,6 +991,40 @@ function mostrarQuestao() {
   btn.textContent = 'Confirmar';
   btn.disabled = true;
   btn.className = 'btn-confirmar';
+
+  // Restaura estado se voltou a uma questão já respondida
+  if (estado.respondida) {
+    selecionada = estado.selecionada;
+    respondida  = true;
+
+    const origParaDisplay = {};
+    shuffledAlts.forEach(a => { origParaDisplay[a.letra] = a.displayLetra; });
+    const corretaDisplay = origParaDisplay[estado.correta] || estado.correta;
+
+    document.querySelectorAll('.alt').forEach(alt => {
+      alt.classList.add('bloqueada');
+      if (alt.dataset.originalLetra === estado.correta) alt.classList.add('correta');
+      else if (alt.dataset.originalLetra === estado.selecionada && !estado.acertou) alt.classList.add('errada');
+    });
+
+    const just = remapearLetrasJustificativa(getJustificativa(q), origParaDisplay);
+    const fb   = document.getElementById('feedback');
+    fb.style.display = 'block';
+    fb.className = 'feedback ' + (estado.acertou ? 'feedback-acerto' : 'feedback-erro');
+    fb.innerHTML =
+      `<div class="feedback-titulo">${estado.acertou ? '✓ Correto!' : '✗ Incorreto — Gabarito: alternativa ' + corretaDisplay}</div>` +
+      (just ? `<div class="feedback-txt">${just}</div>` : '') +
+      (q.codigo ? `<div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.45">Cód. ${q.codigo}</div>` : '') +
+      btnReportarHtml(idxAtual);
+
+    document.getElementById('acao-hint').textContent = '';
+    const ultima = idxAtual === questoes.length - 1;
+    btn.textContent = ultima ? 'Ver resultado' : 'Próxima →';
+    btn.className   = ultima ? 'btn-confirmar btn-encerrar' : 'btn-confirmar btn-proxima';
+    btn.disabled    = false;
+  }
+
+  atualizarSetas();
 
   // animar
   document.querySelector('.questao-card').style.animation = 'none';
@@ -905,7 +1059,11 @@ async function confirmarResposta() {
   const acertou = selecionada === correta;
 
   if (acertou) acertos++; else erros++;
-  historicoRespostas.push({ q, escolhida: selecionada, correta, acertou });
+  historicoRespostas.push({ q, escolhida: selecionada, correta, acertou, idx: idxAtual });
+
+  // Persiste estado para navegação retroativa
+  if (!estadoQuestoes[idxAtual]) estadoQuestoes[idxAtual] = {};
+  Object.assign(estadoQuestoes[idxAtual], { respondida: true, selecionada, correta, acertou });
 
   // visual + mapa orig→display para remapear justificativa
   let corretaDisplay = correta;
@@ -931,15 +1089,27 @@ async function confirmarResposta() {
     `<div class="feedback-titulo">${acertou ? '✓ Correto!' : '✗ Incorreto — Gabarito: alternativa ' + corretaDisplay}</div>` +
     (just ? `<div class="feedback-txt">${just}</div>` : '') +
     (q.codigo ? `<div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.45">Cód. ${q.codigo}</div>` : '') +
-    `<button class="btn-reportar" id="btn-reportar" onclick="abrirModalDenuncia()">
-       <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-       Reportar questão
-     </button>`;
+    btnReportarHtml(idxAtual);
 
-  // registrar resposta na API
+  // registrar resposta na API (cria sessão de forma lazy na primeira resposta)
+  if (!sessaoId) {
+    try {
+      const sessao = await PBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
+      sessaoId = sessao.id;
+    } catch (err) {
+      console.error('[Protocolo Bravo Mike] Falha ao criar sessão:', err);
+    }
+  }
   if (sessaoId) {
     PBM.api.sessoes.responder(sessaoId, { questao_id: q.id, resposta_escolhida: selecionada, correta: acertou })
-      .catch(err => { console.error('[Protocolo Bravo Mike] Falha ao registrar resposta:', err); });
+      .catch(err => {
+        console.error('[Protocolo Bravo Mike] Falha ao registrar resposta:', err);
+        const aviso = document.createElement('div');
+        aviso.textContent = '⚠ Progresso não salvo — verifique sua conexão';
+        aviso.style.cssText = 'position:fixed;bottom:1rem;right:1rem;background:#C0270F;color:#fff;padding:.5rem 1rem;border-radius:6px;font-size:12px;z-index:9999';
+        document.body.appendChild(aviso);
+        setTimeout(() => aviso.remove(), 4000);
+      });
   }
 
   // atualizar botão
@@ -949,6 +1119,31 @@ async function confirmarResposta() {
   btn.className   = ultima ? 'btn-confirmar btn-encerrar' : 'btn-confirmar btn-proxima';
   btn.disabled    = false;
   document.getElementById('acao-hint').textContent = '';
+  if (document.getElementById('nav-questoes')?.classList.contains('aberto')) atualizarNav();
+  setTimeout(() => {
+    const btn = document.getElementById('btn-acao');
+    const y = btn.getBoundingClientRect().top + window.pageYOffset - 20;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  }, 100);
+}
+
+// ── SETAS LATERAIS ──
+function atualizarSetas() {
+  const esq = document.getElementById('seta-esq');
+  const dir = document.getElementById('seta-dir');
+  if (!esq || !dir) return;
+  if (idxAtual === 0) esq.setAttribute('disabled', ''); else esq.removeAttribute('disabled');
+  const ultimaSemResposta = idxAtual === questoes.length - 1 && !respondida;
+  if (ultimaSemResposta) dir.setAttribute('disabled', ''); else dir.removeAttribute('disabled');
+}
+
+function voltarQuestao() {
+  if (idxAtual > 0) { idxAtual--; mostrarQuestao(); }
+}
+
+function pularQuestao() {
+  if (respondida) { proximaQuestao(); return; }
+  if (idxAtual < questoes.length - 1) { idxAtual++; mostrarQuestao(); }
 }
 
 // ── PRÓXIMA / ENCERRAR ──
@@ -975,6 +1170,8 @@ async function encerrarSessao() {
 // ── RESULTADOS ──
 function mostrarResultados() {
   document.getElementById('tela-questao').style.display = 'none';
+  document.getElementById('seta-esq').style.display = 'none';
+  document.getElementById('seta-dir').style.display = 'none';
 
   const total  = questoes.length;
   const pct    = Math.round(acertos / total * 100);
@@ -1000,7 +1197,7 @@ function mostrarResultados() {
     div.innerHTML = `
       <div class="res-icone ${h.acertou ? 'res-ok' : 'res-err'}">${h.acertou ? '✓' : '✗'}</div>
       <div class="res-texto">
-        <span style="color:#666;font-family:'IBM Plex Mono',monospace;font-size:10px;">Q${i + 1}</span>
+        <span style="color:#666;font-family:'IBM Plex Mono',monospace;font-size:10px;">Q${(h.idx !== undefined ? h.idx + 1 : i + 1)}</span>
         <span style="margin-left:6px;">${trecho}</span>
       </div>
       <div class="res-gabarito">
@@ -1051,18 +1248,57 @@ async function enviarDenuncia() {
 
   try {
     await PBM.api.denuncias.reportar(q.id, comentario);
+    if (!estadoQuestoes[idxAtual]) estadoQuestoes[idxAtual] = {};
+    estadoQuestoes[idxAtual].reportado = true;
     fecharModalDenuncia();
     const btnReport = document.getElementById('btn-reportar');
     if (btnReport) {
       btnReport.classList.add('enviado');
       btnReport.innerHTML = `<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Reportado`;
       btnReport.onclick = null;
+      btnReport.disabled = true;
     }
   } catch {
     btn.disabled = false;
     btn.textContent = 'Tentar novamente';
   }
 }
+
+// ── NAVEGADOR DE QUESTÕES ──
+function toggleNav() {
+  const nav = document.getElementById('nav-questoes');
+  const chevron = document.getElementById('nav-chevron');
+  const aberto = nav.classList.toggle('aberto');
+  chevron.style.transform = aberto ? 'rotate(180deg)' : '';
+  if (aberto) atualizarNav();
+}
+function fecharNav() {
+  document.getElementById('nav-questoes').classList.remove('aberto');
+  document.getElementById('nav-chevron').style.transform = '';
+}
+function atualizarNav() {
+  const grid = document.getElementById('nav-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  questoes.forEach((_, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'nav-q-btn';
+    btn.textContent = i + 1;
+    const est = estadoQuestoes[i];
+    if (est?.respondida) btn.classList.add(est.acertou ? 'correta' : 'errada');
+    if (i === idxAtual) btn.classList.add('atual');
+    btn.onclick = () => { idxAtual = i; mostrarQuestao(); fecharNav(); };
+    grid.appendChild(btn);
+  });
+}
+document.addEventListener('click', e => {
+  const nav = document.getElementById('nav-questoes');
+  if (nav?.classList.contains('aberto') &&
+      !e.target.closest('#nav-questoes') &&
+      !e.target.closest('#hdr-nav-toggle')) {
+    fecharNav();
+  }
+});
 
 // ── SAÍDA ──
 function confirmarSaida() { document.getElementById('modal-saida').classList.add('visivel'); }
@@ -1075,6 +1311,14 @@ async function sairSessao() {
   pararTimer();
   window.location.href = '/selecao-legislacao';
 }
+
+// ── SAÍDA POR ABA/NAVEGAÇÃO ──
+// keepalive garante que o fetch sobrevive ao unload; pagehide é mais confiável que beforeunload
+window.addEventListener('pagehide', () => {
+  if (sessaoId) {
+    PBM.api.sessoes.encerrar(sessaoId).catch(() => {});
+  }
+});
 
 // ── ERRO ──
 function mostrarErro(msg) {
@@ -1462,5 +1706,16 @@ window.addEventListener('beforeunload', function() {
   sessionStorage.setItem('pom_pos_bottom', pomWin.style.bottom || '');
 });
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

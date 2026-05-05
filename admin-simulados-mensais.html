@@ -2,28 +2,51 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Simulados Mensais (Admin)</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F; --carvao: #0F0F0F; --cinza-escuro: #1A1A1A;
     --cinza-medio: #2A2A2A; --cinza-borda: #333; --cinza-texto: #888;
     --branco: #F8F6F2; --verde: #7DD99A; --dourado: #F0C050;
+    --roxo: #7C3AED; --roxo-bg: rgba(124,58,237,0.1);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; min-height: 100vh; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 14px; min-height: 100vh; }
 
-  .topbar { height: 56px; background: var(--cinza-escuro); border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; position: sticky; top: 0; z-index: 50; }
-  .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--branco); letter-spacing: 0.05em; text-decoration: none; }
-  .topbar-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); border: 1px solid var(--cinza-borda); padding: 2px 8px; border-radius: 4px; }
-  .topbar-nav { display: flex; gap: 8px; align-items: center; }
-  .btn-sm { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; border: 1px solid var(--cinza-borda); background: transparent; color: var(--cinza-texto); transition: all 0.15s; text-decoration: none; }
+  /* Layout */
+  .layout { display: flex; min-height: 100vh; }
+  .main { flex: 1; overflow-x: hidden; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+
+  /* Sidebar */
+  .sidebar { width: 220px; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; flex-shrink: 0; }
+  .sidebar-logo { padding: 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; gap: 10px; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--branco); letter-spacing: 0.04em; text-decoration: none; line-height: 1.2; }
+  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--cinza-texto); border: 1px solid var(--cinza-borda); padding: 2px 6px; border-radius: 4px; }
+  .sidebar-usuario { padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 600; color: var(--branco); }
+  .usuario-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--verde); display: inline-block; }
+  .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.12em; padding: 0 1.25rem; margin: 12px 0 4px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 8px; font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.15s; }
+  .btn-sair:hover { border-color: #E24B4A; color: #E24B4A; }
+  @media (max-width: 768px) { .sidebar { display: none; } }
+
+  .btn-sm { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; font-family: 'Inter', sans-serif; cursor: pointer; border: 1px solid var(--cinza-borda); background: transparent; color: var(--cinza-texto); transition: all 0.15s; text-decoration: none; }
   .btn-sm:hover { color: var(--branco); border-color: #555; }
+  .btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
   .btn-primary { background: var(--vermelho); color: #fff; border-color: var(--vermelho); }
   .btn-primary:hover { background: #8B1A08; border-color: #8B1A08; color: #fff; }
-
-  .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
 
   /* Seção topo */
   .page-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 12px; }
@@ -63,7 +86,7 @@
   .adicionar-section { border-top: 1px solid var(--cinza-borda); padding-top: 1rem; margin-top: 1rem; }
   .adicionar-titulo { font-size: 12px; color: var(--cinza-texto); margin-bottom: 10px; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.08em; }
   .busca-row { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
-  .select-sm { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; }
+  .select-sm { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; }
   .busca-result { display: flex; flex-direction: column; gap: 4px; max-height: 240px; overflow-y: auto; }
   .busca-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 8px; border: 1px solid var(--cinza-borda); border-radius: 6px; cursor: pointer; transition: background 0.1s; }
   .busca-item:hover { background: rgba(255,255,255,0.04); }
@@ -84,7 +107,7 @@
   .form-group { display: flex; flex-direction: column; gap: 4px; }
   .form-group.full { grid-column: 1 / -1; }
   .form-label { font-size: 11px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; }
-  .form-input { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 8px 12px; border-radius: 6px; font-size: 13px; font-family: 'IBM Plex Sans', sans-serif; }
+  .form-input { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 8px 12px; border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; }
   .form-input:focus { outline: none; border-color: var(--vermelho); }
   .form-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
 
@@ -109,21 +132,71 @@
 </head>
 <body>
 
-<div class="topbar">
-  <a href="/admin.html" class="topbar-logo">Protocolo Bravo Mike <span class="topbar-badge">ADMIN</span></a>
-  <div class="topbar-nav">
-    <a href="/admin.html" class="btn-sm">← Painel Principal</a>
-    <a href="/admin-questoes.html" class="btn-sm">Questões</a>
-  </div>
-</div>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/admin" class="logo-text">Protocolo Bravo Mike</a>
+      <span class="admin-chip">ADMIN</span>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome">Administrador</div>
+      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Painel</div>
+      <a class="nav-item" href="/admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <div class="nav-label">Conteúdo</div>
+      <a class="nav-item" href="/admin-questoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Questões
+      </a>
+      <a class="nav-item" href="/admin-flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+      <a class="nav-item ativo" href="/admin-simulados-mensais">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>
+        Simulados Mensais
+      </a>
+      <a class="nav-item" href="/simulado-mensal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Missão FDS
+      </a>
+      <div class="nav-label">Alunos</div>
+      <a class="nav-item" href="/admin-assinaturas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Assinaturas
+      </a>
+      <a class="nav-item" href="/admin#denuncias">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Denúncias
+      </a>
+      <div class="nav-label">Sistema</div>
+      <a class="nav-item" href="/" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver site
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="encerrarSessao()">Encerrar sessão admin</button>
+    </div>
+  </aside>
 
+  <div class="main">
 <div class="container">
   <div class="page-header">
     <div>
       <div class="page-titulo">Simulados Mensais</div>
       <div class="page-sub">Gerencie simulados exclusivos, questões e acompanhe participações.</div>
     </div>
-    <button class="btn-sm btn-primary" onclick="toggleFormNovo()">+ Novo Simulado</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+      <button class="btn-sm" id="btn-gerar" onclick="abrirModalGerar()">Gerar Simulado do Mês (IA)</button>
+      <button class="btn-sm btn-primary" onclick="toggleFormNovo()">+ Novo Simulado</button>
+      <button class="btn-topbar-sair" onclick="encerrarSessao()">Encerrar sessão</button>
+    </div>
   </div>
 
   <!-- FORMULÁRIO NOVO SIMULADO -->
@@ -162,17 +235,27 @@
   </div>
 </div>
 
+</div><!-- /container -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
 <div class="toast" id="toast"></div>
 
 <script>
-const ADMIN_TOKEN = localStorage.getItem('admin_token') || prompt('Token de administrador:');
-if (!ADMIN_TOKEN) { alert('Token necessário.'); history.back(); }
-localStorage.setItem('admin_token', ADMIN_TOKEN);
+if (sessionStorage.getItem('pbm_admin') !== '1') { window.location.href = '/admin-login'; }
+const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
 
-const API = 'https://Protocolo Bravo Mike-backend-production.up.railway.app';
+const API = 'https://graduabm-backend-production.up.railway.app';
+
+function encerrarSessao() {
+  ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email'].forEach(k => sessionStorage.removeItem(k));
+  localStorage.removeItem('usuario');
+  localStorage.removeItem('token');
+  window.location.href = '/';
+}
 
 async function req(path, opts = {}) {
-  const headers = { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN, ...opts.headers };
+  const headers = { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}`, ...opts.headers };
   const res = await fetch(API + path, { ...opts, headers });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw { status: res.status, ...data };
@@ -245,9 +328,9 @@ async function carregarSimulados() {
             <span class="sim-status ${st.cls}">${st.label}</span>
             <div class="sim-acoes">
               ${st.label === 'ENCERRADO' && !sim.questoes_incorporadas
-                ? `<button class="btn-sm" onclick="event.stopPropagation();incorporar('${sim.id}')">Incorporar Questões</button>` : ''}
+                ? `<button class="btn-sm" onclick="event.stopPropagation();incorporar('${sim.id}', this)">Incorporar Questões</button>` : ''}
               <button class="btn-sm" onclick="event.stopPropagation();verRanking('${sim.id}')">Ranking</button>
-              <button class="btn-sm" onclick="event.stopPropagation();toggleAtivo('${sim.id}',${!sim.ativo})">${sim.ativo ? 'Desativar' : 'Ativar'}</button>
+              <button class="btn-sm" onclick="event.stopPropagation();toggleAtivo('${sim.id}',${!sim.ativo})">${sim.ativo ? 'Desativar' : 'Habilitar'}</button>
             </div>
           </div>
           <div class="sim-corpo" id="corpo-${sim.id}">
@@ -343,7 +426,7 @@ async function buscarQuestoes(simId, curso) {
     if (area) qs.set('area', area);
     const data = await req(`/api/simulados-mensais/admin/questoes-disponiveis?${qs}`);
     questoesDisponiveis[simId] = data;
-    selecionadosPorSimulado[simId] = new Set();
+    if (!selecionadosPorSimulado[simId]) selecionadosPorSimulado[simId] = new Set();
     renderizarBuscaResult(simId);
   } catch (err) { el.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro || 'Erro'}</div>`; }
 }
@@ -394,13 +477,17 @@ async function confirmarAdicao(simId) {
   } catch (err) { toast(err.erro || 'Erro ao adicionar.', 'err'); }
 }
 
-async function incorporar(simId) {
+async function incorporar(simId, btn) {
   if (!confirm('Incorporar as questões deste simulado ao banco regular (ativa = true)?')) return;
+  if (btn) { btn.disabled = true; btn.textContent = '…'; }
   try {
     const res = await req(`/api/simulados-mensais/admin/${simId}/incorporar`, { method: 'POST' });
     toast(`${res.incorporadas} questão(ões) incorporadas ao banco.`);
     carregarSimulados();
-  } catch (err) { toast(err.erro || 'Erro.', 'err'); }
+  } catch (err) {
+    toast(err.erro || 'Erro.', 'err');
+    if (btn) { btn.disabled = false; btn.textContent = 'Incorporar Questões'; }
+  }
 }
 
 function verRanking(simId) {
@@ -417,7 +504,106 @@ async function toggleAtivo(simId, novoAtivo) {
   } catch (err) { toast(err.erro || 'Erro.', 'err'); }
 }
 
+function abrirModalGerar() {
+  const agora = new Date();
+  const diasParaSexta = (5 - agora.getDay() + 7) % 7 || 7;
+  const sexta = new Date(agora); sexta.setDate(agora.getDate() + diasParaSexta);
+  sexta.setHours(12, 0, 0, 0);
+  const domingo = new Date(sexta); domingo.setDate(sexta.getDate() + 2);
+  domingo.setHours(23, 59, 0, 0);
+  const toLocal = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  ov.innerHTML = `
+    <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:420px;width:90%;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.25rem;">Gerar Simulado do M\xeas</div>
+      <div style="font-size:12px;color:#666;margin-bottom:1.25rem;line-height:1.6;">
+        Os simulados ficam inativos at\xe9 voc\xea clicar em <strong style="color:#AAA">Habilitar</strong>.
+      </div>
+      <div style="margin-bottom:1.25rem;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Curso</div>
+        <div style="display:flex;gap:8px;">
+          <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:6px;padding:8px 10px;cursor:pointer;font-size:12px;color:var(--cinza-texto);">
+            <input type="radio" name="g-curso" value="ambos" checked style="accent-color:var(--vermelho);"> CTSP + CBA
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:6px;padding:8px 10px;cursor:pointer;font-size:12px;color:var(--cinza-texto);">
+            <input type="radio" name="g-curso" value="ctsp" style="accent-color:var(--vermelho);"> Só CTSP
+          </label>
+          <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:6px;padding:8px 10px;cursor:pointer;font-size:12px;color:var(--cinza-texto);">
+            <input type="radio" name="g-curso" value="cba" style="accent-color:var(--vermelho);"> Só CBA
+          </label>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem;">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Abertura</div>
+          <input id="g-abertura" type="datetime-local" class="form-input" value="${toLocal(sexta)}">
+        </div>
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Encerramento</div>
+          <input id="g-encerramento" type="datetime-local" class="form-input" value="${toLocal(domingo)}">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="g-cancelar" class="btn-sm">Cancelar</button>
+        <button id="g-confirmar" class="btn-sm btn-primary">Gerar com IA (Opus)</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+
+  document.getElementById('g-cancelar').addEventListener('click', () => ov.remove());
+  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+
+  document.getElementById('g-confirmar').addEventListener('click', async () => {
+    const aberturaLocal = document.getElementById('g-abertura').value;
+    const encerramentoLocal = document.getElementById('g-encerramento').value;
+    const curso = document.querySelector('input[name="g-curso"]:checked')?.value || 'ambos';
+    if (!aberturaLocal || !encerramentoLocal) { toast('Preencha as datas.', 'err'); return; }
+    if (new Date(encerramentoLocal) <= new Date(aberturaLocal)) { toast('Encerramento deve ser depois da abertura.', 'err'); return; }
+
+    const abertura = new Date(aberturaLocal).toISOString();
+    const encerramento = new Date(encerramentoLocal).toISOString();
+
+    ov.remove();
+    const btn = document.getElementById('btn-gerar');
+    btn.disabled = true;
+    btn.textContent = 'Gerando… (Opus, ~20–30 min)';
+    toast('Gera\xe7\xe3o iniciada com Opus. Aguarde — pode demorar 20–30 minutos.', 'ok');
+
+    try {
+      const res = await req('/api/simulados-mensais/admin/gerar', {
+        method: 'POST', body: JSON.stringify({ abertura, encerramento, curso }),
+      });
+      const ctsp = res.resultado?.ctsp;
+      const cba = res.resultado?.cba;
+      const msg = [
+        ctsp?.simulado_id ? `CTSP: ${ctsp.questoes}q` : ctsp ? `CTSP: erro` : null,
+        cba?.simulado_id  ? `CBA: ${cba.questoes}q`   : cba  ? `CBA: erro`  : null,
+      ].join(' \xb7 ');
+      toast(`Simulados gerados! ${msg} — clique em Habilitar para liberar.`, 'ok');
+      carregarSimulados();
+    } catch (err) {
+      toast(err.erro || 'Erro ao gerar simulados.', 'err');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Gerar Simulado do M\xeas (IA)';
+    }
+  });
+}
+
 carregarSimulados();
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

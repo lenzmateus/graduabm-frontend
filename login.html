@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Entrar</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -26,7 +27,7 @@
   body {
     background: var(--carvao);
     color: var(--branco);
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     min-height: 100vh;
@@ -60,7 +61,7 @@
 
   /* ── LADO ESQUERDO — decorativo ── */
   .side-esquerdo {
-    background: var(--cinza-escuro);
+    background: var(--carvao);
     border-right: 1px solid var(--cinza-borda);
     display: flex; flex-direction: column;
     justify-content: center; align-items: flex-start;
@@ -71,12 +72,22 @@
     position: absolute; inset: 0;
     pointer-events: none;
     overflow: hidden;
+    display: flex; align-items: center; justify-content: flex-end;
   }
   .side-bg-grid img {
-    width: 100%; height: 100%;
-    object-fit: cover; object-position: center top;
-    opacity: 0.35;
+    width: auto; height: 90%;
+    object-fit: initial;
+    opacity: 0.22;
     display: block;
+    margin-right: -5%;
+    filter: drop-shadow(0 0 40px rgba(192,39,15,0.2));
+  }
+  /* gradiente que protege a legibilidade do texto sobre o emblema */
+  .side-esquerdo::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(105deg, rgba(15,15,15,0.97) 0%, rgba(15,15,15,0.75) 50%, rgba(15,15,15,0.15) 100%);
+    pointer-events: none; z-index: 0;
   }
   .side-content { position: relative; z-index: 1; }
   .side-tag {
@@ -101,9 +112,21 @@
     font-size: 52px; line-height: 0.92;
     letter-spacing: 0.02em;
     color: var(--branco);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
   .side-titulo span { color: var(--vermelho); display: block; }
+  .side-tagline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 0.1em;
+    color: var(--vermelho);
+    margin-bottom: 1.75rem;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .side-tagline::before {
+    content: '';
+    width: 3px; height: 18px;
+    background: var(--vermelho); flex-shrink: 0;
+  }
   .side-desc {
     font-size: 14px; color: var(--cinza-texto);
     line-height: 1.7; max-width: 360px;
@@ -190,7 +213,7 @@
     border: 1px solid var(--cinza-borda);
     border-radius: 8px;
     padding: 11px 14px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
     color: var(--branco);
     outline: none;
@@ -229,7 +252,7 @@
     color: #fff; border: none;
     border-radius: 8px;
     padding: 13px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px; font-weight: 600;
     cursor: pointer;
     transition: background 0.2s, transform 0.1s;
@@ -442,7 +465,7 @@
     font-size: 12px;
     font-weight: 500;
     cursor: pointer;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     transition: all 0.15s;
     white-space: nowrap;
   }
@@ -479,13 +502,14 @@
 
   <!-- LADO ESQUERDO -->
   <div class="side-esquerdo">
-    <div class="side-bg-grid"><img src="/images/banner-login.png" alt=""></div>
+    <div class="side-bg-grid"></div>
     <div class="side-content">
       <div class="side-tag">Processo seletivo intelectual</div>
       <h2 class="side-titulo">
         A graduação<br>
         <span>começa aqui.</span>
       </h2>
+      <div class="side-tagline">Você não estuda. Você Treina.</div>
       <p class="side-desc">
         Questões elaboradas a partir dos decretos, leis e normativas cobrados na prova — organizadas por área temática.
       </p>
@@ -617,11 +641,11 @@
       <!-- TABS + FORMULÁRIOS -->
       <div id="area-forms">
         <div class="form-titulo" id="form-titulo">Entrar</div>
-        <div class="form-sub" id="form-sub">Não tem conta? <a href="#" onclick="trocarTab('cadastro')">Cadastre-se</a></div>
+        <div class="form-sub" id="form-sub">Não tem conta? <a href="#cadastro" onclick="trocarTab('cadastro')">Cadastre-se</a></div>
 
         <div class="tabs">
           <button class="tab ativo" id="tab-login" onclick="trocarTab('login')">Entrar</button>
-          <button class="tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Cadastrar</button>
+          <button class="tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Criar conta</button>
         </div>
 
         <!-- FORM LOGIN -->
@@ -671,113 +695,68 @@
               <input type="text" id="cad-sobrenome" placeholder="Silva">
             </div>
           </div>
+
           <div class="campo">
             <label>E-mail</label>
             <input type="email" id="cad-email" placeholder="seu@email.com">
           </div>
+
           <div class="campo">
             <label style="display:flex;align-items:center;gap:6px;">
-              Codinome
-              <span style="font-size:10px;color:#555;font-weight:400;letter-spacing:0;">(opcional)</span>
+              Codinome (opcional)
               <span class="tooltip-wrap" style="position:relative;display:inline-flex;">
-                <button type="button" class="btn-info" onclick="toggleTooltip(this)" title="O que é o codinome?">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <button type="button" class="btn-info" onclick="toggleTooltip(this)" tabindex="-1">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 </button>
-                <div class="tooltip-box">
-                  Seu codinome é exibido publicamente no <strong>Ranking Geral</strong> no lugar do seu nome real.<br><br>
-                  Se não informar, você aparecerá como <strong>Anônimo</strong>.<br><br>
-                  Ex: Alpha01, Tigre_RS, BravoBM
-                </div>
+                <div class="tooltip-box">Seu nome no ranking. Se não informado, usaremos as iniciais do seu nome. Máximo 20 caracteres.</div>
               </span>
             </label>
-            <input type="text" id="cad-nickname" placeholder="Ex: Alpha01, Tigre_RS" maxlength="20" autocomplete="off">
-          </div>
-          <div class="campo">
-            <label>Senha</label>
-            <div class="campo-senha">
-              <input type="password" id="cad-senha" placeholder="Mínimo 8 caracteres">
-              <button type="button" class="btn-ver-senha" onclick="toggleSenha('cad-senha',this)" tabindex="-1" title="Mostrar senha">
-                <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              </button>
-            </div>
-          </div>
-          <div class="campo">
-            <label>Confirmar senha</label>
-            <div class="campo-senha">
-              <input type="password" id="cad-confirma" placeholder="Repita a senha">
-              <button type="button" class="btn-ver-senha" onclick="toggleSenha('cad-confirma',this)" tabindex="-1" title="Mostrar senha">
-                <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-              </button>
-            </div>
+            <input type="text" id="cad-nickname" placeholder="Ex: BravoMike_RS" maxlength="20">
           </div>
 
           <div class="campo">
             <label>Curso</label>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;">
-              <div id="card-ctsp" onclick="selecionarCursoCad('ctsp')" style="border-radius:8px;padding:12px 14px;border:1px solid var(--cinza-borda);background:var(--cinza-escuro);cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;">
-                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:var(--vermelho);opacity:0.5;"></div>
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.04em;color:var(--branco);">CTSP</div>
-                <div style="font-size:11px;color:var(--cinza-texto);">Curso Técnico de Segurança Pública</div>
-                <div style="font-size:10px;color:#555;margin-top:4px;font-family:'IBM Plex Mono',monospace;">SARGENTO · 60 QUESTÕES</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;">
+              <div id="card-ctsp" onclick="selecionarCursoCad('ctsp')" style="background:var(--cinza-escuro);border:1px solid var(--cinza-borda);border-radius:8px;padding:12px;cursor:pointer;transition:all 0.15s;">
+                <div style="font-size:13px;font-weight:600;color:var(--branco);margin-bottom:3px;">CTSP</div>
+                <div style="font-size:11px;color:var(--cinza-texto);">Sargentos — 60 questões</div>
               </div>
-              <div id="card-cba" onclick="selecionarCursoCad('cba')" style="border-radius:8px;padding:12px 14px;border:1px solid var(--cinza-borda);background:var(--cinza-escuro);cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;">
-                <div style="position:absolute;top:0;left:0;right:0;height:3px;background:#185FA5;opacity:0.5;"></div>
-                <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.04em;color:var(--branco);">CBA</div>
-                <div style="font-size:11px;color:var(--cinza-texto);">Curso Básico de Administração</div>
-                <div style="font-size:10px;color:#555;margin-top:4px;font-family:'IBM Plex Mono',monospace;">TENENTE · 40 QUESTÕES</div>
+              <div id="card-cba" onclick="selecionarCursoCad('cba')" style="background:var(--cinza-escuro);border:1px solid var(--cinza-borda);border-radius:8px;padding:12px;cursor:pointer;transition:all 0.15s;">
+                <div style="font-size:13px;font-weight:600;color:var(--branco);margin-bottom:3px;">CBA</div>
+                <div style="font-size:11px;color:var(--cinza-texto);">Tenentes — 40 questões</div>
               </div>
             </div>
           </div>
 
-          <button class="btn-submit" id="btn-cadastro" onclick="fazerCadastro()" style="margin-top:0.5rem;">
+          <div class="campo">
+            <label>Senha</label>
+            <div class="campo-senha">
+              <input type="password" id="cad-senha" placeholder="Mínimo 8 caracteres">
+              <button type="button" class="btn-ver-senha" onclick="toggleSenha('cad-senha',this)" tabindex="-1">
+                <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Confirmar senha</label>
+            <div class="campo-senha">
+              <input type="password" id="cad-confirma" placeholder="Repita a senha">
+              <button type="button" class="btn-ver-senha" onclick="toggleSenha('cad-confirma',this)" tabindex="-1">
+                <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-submit" id="btn-cadastro" onclick="fazerCadastro()">
             <span class="spinner" id="spin-cadastro"></span>
             <span id="txt-cadastro">Criar conta</span>
           </button>
 
-          <div class="divisor">
-            <div class="divisor-linha"></div>
-            <span class="divisor-txt">após o cadastro</span>
-            <div class="divisor-linha"></div>
-          </div>
-
-          <div style="background:var(--cinza-escuro);border:1px solid var(--cinza-borda);border-radius:8px;padding:14px 16px;margin-bottom:1.25rem;">
-            <div style="font-size:12px;color:var(--cinza-texto);margin-bottom:6px;">O que você tem acesso</div>
-            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;">
-              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bbb;">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#27A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Questões organizadas por legislação específica
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bbb;">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#27A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Simulados CTSP e CBA no tempo oficial da prova
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bbb;">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#27A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Gabarito comentado com artigos de lei
-              </div>
-              <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:#bbb;">
-                <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#27A05A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Revisão de erros e painel de desempenho
-              </div>
-            </div>
-            <div style="border-top:1px solid var(--cinza-borda);padding-top:10px;display:flex;flex-direction:column;gap:6px;">
-              <div style="display:flex;align-items:baseline;gap:6px;">
-                <div style="font-size:22px;font-weight:500;color:var(--branco);font-family:'Bebas Neue',sans-serif;letter-spacing:0.03em;">R$ 29,90</div>
-                <span style="font-size:13px;color:var(--cinza-texto);">/ mês</span>
-                <span style="font-size:11px;color:#555;margin-left:auto;">Cancele quando quiser</span>
-              </div>
-              <div style="display:flex;align-items:center;gap:6px;">
-                <span style="font-size:12px;color:#aaa;">ou</span>
-                <span style="font-size:13px;color:var(--cinza-texto);">R$ 79,90 / trimestral</span>
-                <span style="font-size:10px;background:rgba(192,39,15,0.15);color:#C0270F;border:1px solid rgba(192,39,15,0.3);border-radius:4px;padding:1px 5px;">economia de 11%</span>
-              </div>
-            </div>
-          </div>
-
           <div class="termos">
-            Ao criar conta, você concorda com os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>.
+            Ao criar sua conta, você concorda com os <a href="/regras">Termos de uso</a> e a <a href="/regras">Política de privacidade</a>.
           </div>
         </div>
 
@@ -863,8 +842,8 @@
       mostrarPainel(data.usuario);
     } catch (err) {
       if (err.codigo === 'ASSINATURA_INATIVA' && err.usuario) {
-        if (err.token) localStorage.setItem('token', err.token);
-        localStorage.setItem('usuario', JSON.stringify(err.usuario));
+        if (err.token) sessionStorage.setItem('token', err.token);
+        sessionStorage.setItem('usuario', JSON.stringify(err.usuario));
         mostrarPainel(err.usuario);
       } else {
         mostrarMsg('msg-login', err.erro || err.message || 'E-mail ou senha incorretos.', 'erro');
@@ -941,7 +920,7 @@
   }
 
   // ── Painel pós-login ──────────────────────────────────────
-  function mostrarPainel(usuario) {
+  function mostrarPainel(usuario, trialRecemConcedido = false) {
     document.getElementById('area-forms').style.display = 'none';
     document.getElementById('painel').classList.add('visivel');
     document.getElementById('painel-nome').textContent = usuario.nome;
@@ -961,14 +940,18 @@
       const venc = new Date(usuario.vencimento);
       document.getElementById('vencimento-txt').textContent = 'Ativo até ' + venc.toLocaleDateString('pt-BR');
 
-      const diasRestantes = Math.ceil((venc.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
-      const avisoEl = document.getElementById('aviso-vencimento');
-      const avisoTxt = document.getElementById('aviso-vencimento-txt');
-      if (diasRestantes <= 7 && diasRestantes > 0) {
-        avisoTxt.textContent = `Sua assinatura vence em ${diasRestantes} dia${diasRestantes !== 1 ? 's' : ''}. Renove para não perder o acesso.`;
-        avisoEl.classList.add('visivel');
-      } else if (diasRestantes <= 0) {
-        avisoTxt.textContent = 'Sua assinatura venceu. Renove para retomar o acesso.';
+      // Compara dia a dia em UTC para evitar "0 dias" quando ainda há horas restantes
+      const hoje = new Date(); hoje.setUTCHours(0,0,0,0);
+      const vencDia = new Date(venc); vencDia.setUTCHours(0,0,0,0);
+      const diasRestantes = Math.ceil((vencDia.getTime() - hoje.getTime()) / (24 * 60 * 60 * 1000));
+      if (trialRecemConcedido) {
+        const avisoEl = document.getElementById('aviso-vencimento');
+        const avisoTxt = document.getElementById('aviso-vencimento-txt');
+        if (diasRestantes > 0) {
+          avisoTxt.textContent = `Acesso trial liberado! Válido por ${diasRestantes} dia${diasRestantes !== 1 ? 's' : ''} (até ${venc.toLocaleDateString('pt-BR')}). Assine um plano para não perder o acesso.`;
+        } else {
+          avisoTxt.textContent = 'Seu trial expirou. Assine um plano para retomar o acesso.';
+        }
         avisoEl.classList.add('visivel');
       }
     }
@@ -1083,9 +1066,18 @@
   }
 
   // ── Init: verificar se já logado mas inativo ──────────────
-  (function() {
+  (async function() {
     const u = PBM.getUsuario();
-    if (u && PBM.Auth.estaLogado()) mostrarPainel(u);
+    if (u && PBM.Auth.estaLogado()) {
+      mostrarPainel(u); // exibe imediatamente com dados do localStorage
+      try {
+        const data = await request('/api/auth/me');
+        if (data.usuario) {
+          sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
+          mostrarPainel(data.usuario); // atualiza com dados frescos do servidor
+        }
+      } catch { /* sessão expirada — mostra formulário de login */ }
+    }
 
     // Seleciona a tab correta se houver hash na URL
     if (window.location.hash === '#cadastro') {
@@ -1136,12 +1128,12 @@
       // Atualiza o usuario no localStorage e recarrega o painel
       setTimeout(async () => {
         try {
-          const me = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + localStorage.getItem('token') } });
+          const me = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem('token') } });
           if (me.ok) {
             const meData = await me.json();
             if (meData.usuario) {
-              localStorage.setItem('usuario', JSON.stringify(meData.usuario));
-              mostrarPainel(meData.usuario);
+              sessionStorage.setItem('usuario', JSON.stringify(meData.usuario));
+              mostrarPainel(meData.usuario, true);
             }
           }
         } catch { window.location.reload(); }
@@ -1164,5 +1156,16 @@
     if (cadVisivel   && !document.getElementById('btn-cadastro').disabled) fazerCadastro();
   });
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

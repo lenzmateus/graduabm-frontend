@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Questões</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -24,7 +25,7 @@
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
 
   .layout { display: flex; min-height: 100vh; }
 
@@ -46,22 +47,25 @@
   .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
   .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
   .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
   .btn-sair:hover { border-color: #555; color: var(--branco); }
 
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; gap: 1rem; }
   .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
-  .btn-novo { display: inline-flex; align-items: center; gap: 7px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s, transform 0.1s; }
+  .topbar-dir { display: flex; align-items: center; gap: 12px; }
+  .btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
+  .btn-novo { display: inline-flex; align-items: center; gap: 7px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s, transform 0.1s; }
   .btn-novo:hover { background: #6960C8; transform: translateY(-1px); }
 
   .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
 
   /* filtros */
   .filtros { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
-  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 8px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; cursor: pointer; outline: none; }
+  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; outline: none; }
   .filtro-select:focus { border-color: var(--roxo); }
-  .filtro-busca { flex: 1; min-width: 180px; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 8px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; outline: none; }
+  .filtro-busca { flex: 1; min-width: 180px; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 13px; outline: none; }
   .filtro-busca:focus { border-color: var(--roxo); }
   .filtro-busca::placeholder { color: #555; }
 
@@ -76,7 +80,7 @@
   .status-ativa { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
   .status-inativa { background: rgba(226,75,74,0.08); border: 1px solid rgba(226,75,74,0.2); color: #F09595; }
   .questao-acoes { display: flex; gap: 6px; justify-content: flex-end; }
-  .btn-mini { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.12s; }
+  .btn-mini { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s; }
   .btn-mini:hover { border-color: #555; color: var(--branco); }
   .btn-mini.danger:hover { border-color: var(--erro); color: #F09595; }
   .btn-mini.edit:hover { border-color: var(--roxo); color: #AFA9EC; }
@@ -100,7 +104,7 @@
 
   .campo { margin-bottom: 1rem; }
   .campo label { display: block; font-size: 11px; font-weight: 500; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
-  .campo input, .campo select, .campo textarea { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 9px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.2s; }
+  .campo input, .campo select, .campo textarea { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 9px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.2s; }
   .campo input:focus, .campo select:focus, .campo textarea:focus { border-color: var(--roxo); }
   .campo input::placeholder, .campo textarea::placeholder { color: #555; }
   .campo textarea { resize: vertical; min-height: 80px; }
@@ -109,10 +113,10 @@
   .alt-label { display: flex; align-items: center; gap: 6px; }
   .alt-letra { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; color: var(--roxo); width: 14px; }
 
-  .btn-salvar { background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s; }
+  .btn-salvar { background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; }
   .btn-salvar:hover { background: #6960C8; }
   .btn-salvar:disabled { background: #444; cursor: default; }
-  .btn-cancelar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .btn-cancelar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .btn-cancelar:hover { border-color: #555; color: var(--branco); }
 
   @media (max-width: 768px) {
@@ -137,7 +141,7 @@
 const _isAdmin  = sessionStorage.getItem('pbm_admin') === '1';
 const _isGestor = sessionStorage.getItem('pbm_gestor') === '1';
 if (!_isAdmin && !_isGestor) window.location.href = '/admin-login';
-const ADMIN_TOKEN  = _isAdmin  ? sessionStorage.getItem('pbm_admin_token')  : null;
+const ADMIN_JWT  = _isAdmin  ? sessionStorage.getItem('pbm_admin_jwt')  : null;
 const GESTOR_TOKEN = _isGestor ? sessionStorage.getItem('pbm_gestor_token') : null;
 </script>
 
@@ -147,10 +151,13 @@ const GESTOR_TOKEN = _isGestor ? sessionStorage.getItem('pbm_gestor_token') : nu
   <div class="main">
     <div class="topbar">
       <span class="topbar-titulo">Gestão de Questões</span>
-      <button class="btn-novo" id="btn-novo">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nova Questão
-      </button>
+      <div class="topbar-dir">
+        <button class="btn-novo" id="btn-novo">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Nova Questão
+        </button>
+        <button class="btn-topbar-sair" onclick="document.getElementById('btn-sair').click()">Encerrar sessão</button>
+      </div>
     </div>
 
     <div class="conteudo">
@@ -712,7 +719,7 @@ async function supaFetch(path, method = 'GET', body = null) {
   const queryUrl  = GESTOR_TOKEN ? '/api/gestor/query' : '/api/admin/query';
   const authHeader = GESTOR_TOKEN
     ? { 'Authorization': 'Bearer ' + GESTOR_TOKEN }
-    : { 'x-admin-token': ADMIN_TOKEN || '' };
+    : { 'Authorization': 'Bearer ' + (ADMIN_JWT || '') };
   const res = await fetch(queryUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeader },
@@ -801,11 +808,21 @@ function abrirModalNova() {
   document.getElementById('overlay-modal').classList.add('aberto');
 }
 
-function abrirModalEditar(id) {
-  const q = todasQuestoes.find(x => x.id === id);
-  if (!q) return;
+async function abrirModalEditar(id) {
   document.getElementById('modal-titulo').textContent = 'Editar Questão';
-  document.getElementById('modal-id').value = q.id;
+  document.getElementById('modal-id').value = id;
+  document.getElementById('modal-erro').style.display = 'none';
+  document.getElementById('overlay-modal').classList.add('aberto');
+
+  // Busca dado fresco do servidor para evitar edição sobre cache desatualizado
+  let q;
+  try {
+    const r = await supaFetch(`/rest/v1/questoes?id=eq.${id}&select=*`);
+    q = r.ok && Array.isArray(r.data) ? r.data[0] : null;
+  } catch {}
+  if (!q) q = todasQuestoes.find(x => x.id === id); // fallback para cache local
+  if (!q) return;
+
   document.getElementById('m-curso').value = q.curso || 'ctsp';
   document.getElementById('m-area').value = q.area_tematica || 'AT1';
   atualizarSelectLegislacoes();
@@ -819,8 +836,6 @@ function abrirModalEditar(id) {
   document.getElementById('m-gabarito').value = String(q.gabarito ?? 0);
   document.getElementById('m-ativa').value = String(q.ativa !== false);
   document.getElementById('m-comentario').value = q.comentario || '';
-  document.getElementById('modal-erro').style.display = 'none';
-  document.getElementById('overlay-modal').classList.add('aberto');
 }
 
 function fecharModal() { document.getElementById('overlay-modal').classList.remove('aberto'); }
@@ -837,6 +852,15 @@ async function salvarQuestao() {
 
   if (!enunciado || !altA || !altB) {
     erroEl.textContent = 'Preencha o enunciado e pelo menos as alternativas A e B.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  const gabaritoIdx = parseInt(document.getElementById('m-gabarito').value);
+  const gabaritoLetra = ['a','b','c','d','e'][gabaritoIdx];
+  const gabaritoAlt = gabaritoLetra ? document.getElementById('m-alt-' + gabaritoLetra)?.value.trim() : '';
+  if (!gabaritoAlt) {
+    erroEl.textContent = `A alternativa marcada como gabarito (${(gabaritoLetra || '?').toUpperCase()}) não pode estar vazia.`;
     erroEl.style.display = 'block';
     return;
   }
@@ -912,6 +936,9 @@ function buildSidebar() {
   const svgFlash = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
   const svgAluno = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
   const svgGest  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`;
+  const svgSim   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>`;
+  const svgDen   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`;
+  const svgSite  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
   if (_isGestor) {
     const nome = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
     document.getElementById('sidebar').innerHTML = `
@@ -935,10 +962,13 @@ function buildSidebar() {
         <div class="nav-label">Conteúdo</div>
         <a class="nav-item ativo" href="/admin-questoes">${svgQ} Questões</a>
         <a class="nav-item" href="/admin-flashcards">${svgFlash} Flashcards</a>
-        <div class="nav-label">Gestão</div>
+        <a class="nav-item" href="/admin-simulados-mensais">${svgSim} Simulados Mensais</a>
+        <a class="nav-item" href="/simulado-mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Missão FDS</a>
+        <div class="nav-label">Alunos</div>
         <a class="nav-item" href="/admin-assinaturas">${svgAluno} Assinaturas</a>
+        <a class="nav-item" href="/admin#denuncias">${svgDen} Denúncias</a>
         <div class="nav-label">Sistema</div>
-        <a class="nav-item" href="/area-estudos">${svgAluno} Modo Aluno</a>
+        <a class="nav-item" href="/" target="_blank">${svgSite} Ver site</a>
       </nav>
       <div class="sidebar-footer"><button class="btn-sair" id="btn-sair">Encerrar sessão</button></div>`;
   }
@@ -947,7 +977,7 @@ buildSidebar();
 
 /* ── Event listeners ── */
 document.getElementById('btn-sair').addEventListener('click', function () {
-  ['pbm_admin','pbm_admin_ts','pbm_admin_token','pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
+  ['pbm_admin','pbm_admin_ts','pbm_admin_jwt','pbm_admin_role','pbm_admin_nome','pbm_admin_email','pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
   localStorage.removeItem('usuario');
   localStorage.removeItem('token');
   window.location.href = _isGestor ? '/gestor-login' : '/';
@@ -985,7 +1015,21 @@ if (linkModoAluno) {
   });
 }
 
-carregarQuestoes();
+carregarQuestoes().then(() => {
+  const editarId = new URLSearchParams(location.search).get('editar');
+  if (editarId) abrirModalEditar(editarId);
+});
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

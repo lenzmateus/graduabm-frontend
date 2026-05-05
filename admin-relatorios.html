@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Relatórios</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --roxo: #7F77DD;
+    --roxo-bg: rgba(127,119,221,0.08);
+    --roxo-borda: rgba(127,119,221,0.3);
+    --verde: #27A05A;
+    --verde-bg: rgba(39,160,90,0.08);
+    --verde-borda: rgba(39,160,90,0.3);
+    --vermelho: #C0270F;
+    --vermelho-bg: rgba(192,39,15,0.08);
+    --vermelho-borda: rgba(192,39,15,0.3);
+    --amarelo: #BA7517;
+    --amarelo-bg: rgba(186,117,23,0.1);
+    --amarelo-borda: rgba(186,117,23,0.3);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #AFA9EC; letter-spacing: 0.04em; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--roxo); }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .topbar-dir { display: flex; align-items: center; gap: 12px; }
+  .btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; animation: fadeUp 0.3s ease both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* STATS */
+  .grid-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.25rem; }
+  .stat-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; }
+  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.03em; color: var(--branco); }
+  .stat-sub { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; }
+
+  /* SEÇÃO */
+  .secao-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+  .secao-titulo::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+
+  /* FILTROS */
+  .filtros-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; outline: none; }
+  .filtro-select:focus { border-color: var(--roxo); }
+  .filtro-input { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: 'Inter', sans-serif; outline: none; min-width: 200px; }
+  .filtro-input::placeholder { color: #555; }
+  .filtro-input:focus { border-color: var(--roxo); }
+  .btn-exportar { display: inline-flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; margin-left: auto; }
+  .btn-exportar:hover { border-color: var(--roxo); color: #AFA9EC; }
+
+  /* TABELA */
+  .tabela-wrap { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; overflow: hidden; margin-bottom: 1.5rem; }
+  .tabela { width: 100%; border-collapse: collapse; }
+  .tabela th { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--cinza-borda); background: var(--carvao); font-weight: 500; cursor: pointer; user-select: none; }
+  .tabela th:hover { color: var(--branco); }
+  .tabela th.sorted { color: #AFA9EC; }
+  .tabela td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #222; vertical-align: middle; }
+  .tabela tr:last-child td { border-bottom: none; }
+  .tabela tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* BADGES */
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.04em; }
+  .badge-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+  .badge-ativo { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
+  .badge-inativo { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); color: #F09595; }
+
+  /* HORÁRIO BAR */
+  .hora-bar-wrap { display: flex; gap: 2px; align-items: flex-end; height: 32px; }
+  .hora-bar { background: var(--roxo); border-radius: 2px 2px 0 0; min-width: 4px; opacity: 0.7; }
+  .hora-bar:hover { opacity: 1; }
+
+  /* GRÁFICO HORÁRIOS */
+  .grafico-horarios { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .grafico-titulo { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 1.25rem; }
+  .grafico-bars { display: flex; gap: 6px; align-items: flex-end; height: 100px; }
+  .g-bar-col { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+  .g-bar { background: var(--roxo); border-radius: 3px 3px 0 0; width: 100%; transition: background 0.15s; }
+  .g-bar:hover { background: #AFA9EC; }
+  .g-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; }
+
+  /* LOADING */
+  .loading-row td { text-align: center; color: var(--cinza-texto); padding: 2rem; font-size: 13px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
+  .toast.visivel { transform: translateX(-50%) translateY(0); }
+  .toast.verde { border-color: var(--verde-borda); color: #7DD99A; }
+
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; }
+    .conteudo { padding: 1rem; }
+    .grid-cards { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
+      <span class="admin-chip">ADMIN</span>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome">Administrador</div>
+      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Painel</div>
+      <a class="nav-item" href="/admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <div class="nav-label">Conteúdo</div>
+      <a class="nav-item" href="/admin-questoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Questões
+      </a>
+      <a class="nav-item" href="/admin-flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+      <a class="nav-item" href="/admin-simulados-mensais">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>
+        Simulados Mensais
+      </a>
+      <a class="nav-item" href="/simulado-mensal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Missão FDS
+      </a>
+      <div class="nav-label">Alunos</div>
+      <a class="nav-item" href="/admin-assinaturas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Assinaturas
+      </a>
+      <a class="nav-item ativo" href="/admin-relatorios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Relatórios
+      </a>
+      <a class="nav-item" href="/admin#denuncias">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Denúncias
+      </a>
+      <div class="nav-label">Sistema</div>
+      <a class="nav-item" href="/" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver site
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="encerrarSessao()">Encerrar sessão admin</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Relatórios de Uso — últimos 90 dias</span>
+      <div class="topbar-dir">
+        <span class="topbar-mono" id="topbar-ts">—</span>
+        <button class="btn-topbar-sair" onclick="encerrarSessao()">Encerrar sessão</button>
+      </div>
+    </div>
+    <div class="conteudo">
+
+      <!-- STATS GERAIS -->
+      <div class="grid-cards">
+        <div class="stat-card">
+          <div class="stat-label">Alunos com acesso</div>
+          <div class="stat-val" id="stat-com-acesso">—</div>
+          <div class="stat-sub">sessões nos últimos 90 dias</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Alunos sem acesso</div>
+          <div class="stat-val" id="stat-sem-acesso" style="color:var(--cinza-texto);">—</div>
+          <div class="stat-sub">nunca acessaram</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total de sessões</div>
+          <div class="stat-val" id="stat-sessoes">—</div>
+          <div class="stat-sub">últimos 90 dias</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tempo médio / aluno</div>
+          <div class="stat-val" id="stat-tempo-medio">—</div>
+          <div class="stat-sub">minutos de estudo</div>
+        </div>
+      </div>
+
+      <!-- TABELA DETALHADA -->
+      <div class="secao-titulo">Detalhe por aluno</div>
+
+      <div class="filtros-row">
+        <select class="filtro-select" id="filtro-status" onchange="filtrar()">
+          <option value="todos">Todos</option>
+          <option value="ativo">Ativos</option>
+          <option value="inativo">Inativos</option>
+        </select>
+        <select class="filtro-select" id="filtro-curso" onchange="filtrar()">
+          <option value="todos">Todos os cursos</option>
+          <option value="ctsp">CTSP</option>
+          <option value="cba">CBA</option>
+          <option value="ambos">Ambos</option>
+        </select>
+        <select class="filtro-select" id="filtro-acesso" onchange="filtrar()">
+          <option value="todos">Qualquer acesso</option>
+          <option value="com">Com acesso recente</option>
+          <option value="sem">Nunca acessaram</option>
+        </select>
+        <input class="filtro-input" type="text" id="filtro-busca" placeholder="Buscar nome ou e-mail…" oninput="debounce(filtrar, 350)()">
+        <button class="btn-exportar" onclick="exportarCSV()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar CSV
+        </button>
+      </div>
+
+      <div class="tabela-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th onclick="ordenar('nome')">Nome</th>
+              <th onclick="ordenar('email')">E-mail</th>
+              <th onclick="ordenar('curso')">Curso</th>
+              <th>Status</th>
+              <th onclick="ordenar('ultimo_acesso')">Último acesso ↓</th>
+              <th onclick="ordenar('total_sessoes')">Sessões</th>
+              <th onclick="ordenar('tempo_total_minutos')">Tempo (min)</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-relatorio">
+            <tr class="loading-row"><td colspan="7">Carregando…</td></tr>
+          </tbody>
+        </table>
+        <div style="padding:10px 14px;border-top:1px solid var(--cinza-borda);font-size:12px;color:var(--cinza-texto);" id="rodape-count"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/api.js"></script>
+<script>
+  if (sessionStorage.getItem('pbm_admin') !== '1') window.location.href = '/admin-login';
+
+  const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
+  document.getElementById('topbar-ts').textContent = new Date().toLocaleString('pt-BR');
+
+  let dadosOriginais = [];
+  let dadosFiltrados = [];
+  let campoOrdem = 'ultimo_acesso';
+  let ordemAsc = false;
+  let _debounceTimer = null;
+
+  function debounce(fn, ms) {
+    return function(...args) {
+      clearTimeout(_debounceTimer);
+      _debounceTimer = setTimeout(() => fn(...args), ms);
+    };
+  }
+
+  function encerrarSessao() {
+    ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email'].forEach(k => sessionStorage.removeItem(k));
+    window.location.href = '/admin-login';
+  }
+
+  // ── Carregar dados ──────────────────────────────────────────
+  async function carregar() {
+    try {
+      const res = await fetch('/api/admin/assinaturas/relatorio', {
+        headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
+      });
+      if (!res.ok) throw new Error('Erro ' + res.status);
+      const { alunos } = await res.json();
+      dadosOriginais = alunos || [];
+      calcularStats();
+      renderizarGrafico();
+      filtrar();
+    } catch (err) {
+      document.getElementById('tbody-relatorio').innerHTML =
+        '<tr class="loading-row"><td colspan="7">Erro ao carregar relatório.</td></tr>';
+      console.error(err);
+    }
+  }
+
+  function calcularStats() {
+    const comAcesso = dadosOriginais.filter(a => a.ultimo_acesso).length;
+    const semAcesso = dadosOriginais.filter(a => !a.ultimo_acesso).length;
+    const totalSessoes = dadosOriginais.reduce((s, a) => s + (a.total_sessoes || 0), 0);
+    const alunosComSessao = dadosOriginais.filter(a => a.total_sessoes > 0);
+    const tempoMedio = alunosComSessao.length > 0
+      ? Math.round(alunosComSessao.reduce((s, a) => s + (a.tempo_total_minutos || 0), 0) / alunosComSessao.length)
+      : 0;
+
+    document.getElementById('stat-com-acesso').textContent = comAcesso;
+    document.getElementById('stat-sem-acesso').textContent = semAcesso;
+    document.getElementById('stat-sessoes').textContent = totalSessoes;
+    document.getElementById('stat-tempo-medio').textContent = tempoMedio;
+  }
+
+  function renderizarGrafico() {
+    const horas = new Array(24).fill(0);
+    for (const a of dadosOriginais) {
+      for (const [h, n] of Object.entries(a.horas || {})) {
+        horas[parseInt(h)] += n;
+      }
+    }
+    const maxH = Math.max(...horas, 1);
+    const container = document.getElementById('grafico-bars');
+    container.innerHTML = horas.map((n, h) => {
+      const pct = Math.round((n / maxH) * 100);
+      const label = String(h).padStart(2, '0') + 'h';
+      return `<div class="g-bar-col" title="${label}: ${n} sessões">
+        <div class="g-bar" style="height:${pct}%;background:${pct > 60 ? '#C0270F' : pct > 30 ? '#7F77DD' : '#333'};"></div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Filtros e ordenação ────────────────────────────────────
+  function filtrar() {
+    const status = document.getElementById('filtro-status').value;
+    const curso = document.getElementById('filtro-curso').value;
+    const acesso = document.getElementById('filtro-acesso').value;
+    const busca = document.getElementById('filtro-busca').value.toLowerCase().trim();
+
+    dadosFiltrados = dadosOriginais.filter(a => {
+      if (status !== 'todos' && (status === 'ativo') !== Boolean(a.ativo)) return false;
+      if (curso !== 'todos' && a.curso !== curso) return false;
+      if (acesso === 'com' && !a.ultimo_acesso) return false;
+      if (acesso === 'sem' && a.ultimo_acesso) return false;
+      if (busca && !(a.nome || '').toLowerCase().includes(busca) && !(a.email || '').toLowerCase().includes(busca)) return false;
+      return true;
+    });
+
+    ordenarDados();
+    renderizarTabela();
+  }
+
+  function ordenar(campo) {
+    if (campoOrdem === campo) ordemAsc = !ordemAsc;
+    else { campoOrdem = campo; ordemAsc = campo !== 'ultimo_acesso'; }
+    ordenarDados();
+    renderizarTabela();
+  }
+
+  function ordenarDados() {
+    dadosFiltrados.sort((a, b) => {
+      let va = a[campoOrdem], vb = b[campoOrdem];
+      if (va == null && vb == null) return 0;
+      if (va == null) return 1;
+      if (vb == null) return -1;
+      if (typeof va === 'string') return ordemAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+      return ordemAsc ? va - vb : vb - va;
+    });
+  }
+
+  function renderizarTabela() {
+    const tbody = document.getElementById('tbody-relatorio');
+    if (dadosFiltrados.length === 0) {
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Nenhum aluno encontrado.</td></tr>';
+      document.getElementById('rodape-count').textContent = '';
+      return;
+    }
+
+    tbody.innerHTML = dadosFiltrados.map(a => {
+      const ultimoAcesso = a.ultimo_acesso
+        ? new Date(a.ultimo_acesso).toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+        : '<span style="color:#444;">Nunca</span>';
+
+      const statusBadge = a.ativo
+        ? '<span class="badge badge-ativo"><span class="badge-dot"></span>Ativo</span>'
+        : '<span class="badge badge-inativo"><span class="badge-dot"></span>Inativo</span>';
+
+      const tempo = a.tempo_total_minutos > 0
+        ? `<span style="color:var(--branco)">${a.tempo_total_minutos}</span>`
+        : '<span style="color:#444;">—</span>';
+
+      return `<tr>
+        <td style="font-weight:500;color:var(--branco);">${esc(a.nome)}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cinza-texto);">${esc(a.email)}</td>
+        <td><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;">${(a.curso||'—').toUpperCase()}</span></td>
+        <td>${statusBadge}</td>
+        <td style="font-size:11px;">${ultimoAcesso}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;text-align:center;">${a.total_sessoes || '<span style="color:#444">0</span>'}</td>
+        <td style="text-align:center;">${tempo}</td>
+      </tr>`;
+    }).join('');
+
+    document.getElementById('rodape-count').textContent = `${dadosFiltrados.length} aluno(s) exibido(s)`;
+  }
+
+  // ── Exportar CSV ────────────────────────────────────────────
+  function exportarCSV() {
+    const linhas = [
+      ['Nome', 'E-mail', 'Curso', 'Status', 'Último Acesso', 'Sessões (90d)', 'Tempo Total (min)'].join(';'),
+      ...dadosFiltrados.map(a => [
+        a.nome || '',
+        a.email || '',
+        (a.curso || '').toUpperCase(),
+        a.ativo ? 'Ativo' : 'Inativo',
+        a.ultimo_acesso ? new Date(a.ultimo_acesso).toLocaleString('pt-BR') : 'Nunca',
+        a.total_sessoes || 0,
+        a.tempo_total_minutos || 0,
+      ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(';')),
+    ];
+
+    const blob = new Blob(['﻿' + linhas.join('\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `relatorio-pbm-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('CSV exportado!', 'verde');
+  }
+
+  // ── Utilitários ──────────────────────────────────────────────
+  function esc(str) {
+    return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  let toastTimer = null;
+  function toast(msg, tipo = '') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast ' + tipo + ' visivel';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('visivel'), 3000);
+  }
+
+  carregar();
+</script>
+</body>
+</html>

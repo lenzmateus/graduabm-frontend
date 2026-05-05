@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Acesso Gestor</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -21,7 +22,7 @@
     --erro: #E24B4A;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
 
   .card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 14px; padding: 2.5rem; width: 100%; max-width: 400px; }
 
@@ -30,10 +31,10 @@
 
   .campo { margin-bottom: 1.25rem; }
   label { display: block; font-size: 11px; font-weight: 500; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-  input { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 10px 14px; font-family: 'IBM Plex Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.15s; }
+  input { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: border-color 0.15s; }
   input:focus { border-color: var(--roxo); }
 
-  .btn { width: 100%; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s; margin-top: 0.5rem; }
+  .btn { width: 100%; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; margin-top: 0.5rem; }
   .btn:hover { background: #6960C8; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -70,7 +71,7 @@
 </div>
 
 <script>
-const API = 'https://Protocolo Bravo Mike-backend-production.up.railway.app';
+const API = 'https://graduabm-backend-production.up.railway.app';
 
 document.getElementById('form-login').addEventListener('submit', async function(e) {
   e.preventDefault();
@@ -114,5 +115,16 @@ document.getElementById('form-login').addEventListener('submit', async function(
   }
 });
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

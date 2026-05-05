@@ -7,8 +7,13 @@ async function request(path, options = {}) {
 
   let res;
   try {
-    res = await fetch(`${API_URL}${path}`, { ...options, headers });
+    res = await fetch(`${API_URL}${path}`, {
+      ...options,
+      headers,
+      signal: options.signal || AbortSignal.timeout(15000),
+    });
   } catch (err) {
+    if (err.name === 'TimeoutError') throw { status: 0, erro: 'Servidor demorou muito para responder. Tente novamente.' };
     throw { status: 0, erro: 'Sem conexão com o servidor. Verifique sua internet.' };
   }
 
@@ -22,7 +27,7 @@ async function request(path, options = {}) {
   if (res.status === 401 && data.erro && data.erro.includes('Sessão encerrada')) {
     alert(data.erro);
     sessionStorage.removeItem('token');
-    localStorage.removeItem('usuario');
+    sessionStorage.removeItem('usuario');
     window.location.href = '/login';
     throw new Error('Sessão encerrada');
   }
@@ -33,7 +38,7 @@ async function request(path, options = {}) {
 
 const PBM = {
   getUsuario() {
-    try { return JSON.parse(localStorage.getItem('usuario')); }
+    try { return JSON.parse(sessionStorage.getItem('usuario')); }
     catch { return null; }
   },
 
@@ -58,13 +63,12 @@ const PBM = {
     }
     try {
       const data = await request('/api/auth/me');
-      if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
       if (!data.usuario?.ativo) {
         window.location.href = '/login';
       }
     } catch {
-      sessionStorage.removeItem('token');
-      localStorage.removeItem('usuario');
+      sessionStorage.clear();
       window.location.href = '/login';
     }
   },
@@ -83,7 +87,7 @@ const PBM = {
         body: JSON.stringify({ email, senha }),
       });
       if (data.token) sessionStorage.setItem('token', data.token);
-      if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
       return data;
     },
     async cadastrar({ nome, email, senha, curso, nickname }) {
@@ -92,12 +96,11 @@ const PBM = {
         body: JSON.stringify({ nome, email, senha, curso, nickname: nickname || undefined }),
       });
       if (data.token) sessionStorage.setItem('token', data.token);
-      if (data.usuario) localStorage.setItem('usuario', JSON.stringify(data.usuario));
+      if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
       return data;
     },
     logout() {
-      sessionStorage.removeItem('token');
-      localStorage.removeItem('usuario');
+      sessionStorage.clear();
       window.location.href = '/login';
     },
     async esqueciSenha({ email }) {
@@ -137,8 +140,11 @@ const PBM = {
   },
 
   Ranking: {
-    listar() {
-      return request('/api/ranking');
+    listar(curso = '') {
+      return request('/api/ranking' + (curso ? `?curso=${curso}` : ''));
+    },
+    simulados(curso = '') {
+      return request('/api/ranking/simulados' + (curso ? `?curso=${curso}` : ''));
     },
   },
 
@@ -160,10 +166,10 @@ const PBM = {
         return request('/api/sessoes', { method: 'POST', body: JSON.stringify(body) });
       },
       responder(id, body) {
-        return request('/api/sessoes/' + id + '/respostas', { method: 'POST', body: JSON.stringify(body) });
+        return request('/api/sessoes/' + id + '/respostas', { method: 'POST', body: JSON.stringify(body), keepalive: true });
       },
       encerrar(id) {
-        return request('/api/sessoes/' + id + '/encerrar', { method: 'PATCH' });
+        return request('/api/sessoes/' + id + '/encerrar', { method: 'PATCH', keepalive: true });
       },
     },
     denuncias: {
@@ -199,36 +205,43 @@ const PBM = {
   },
 
   Admin: {
+    _authHeader() {
+      const jwt = sessionStorage.getItem('pbm_admin_jwt') || '';
+      return { 'Authorization': `Bearer ${jwt}` };
+    },
     assinaturas: {
       stats() {
-        return request('/api/admin/assinaturas/stats', { headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request('/api/admin/assinaturas/stats', { headers: PBM.Admin._authHeader() });
       },
       listar(params = {}) {
         const qs = new URLSearchParams(params).toString();
-        return request('/api/admin/assinaturas' + (qs ? '?' + qs : ''), { headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request('/api/admin/assinaturas' + (qs ? '?' + qs : ''), { headers: PBM.Admin._authHeader() });
       },
       gerenciar(userId, body) {
-        return request(`/api/admin/assinaturas/${userId}`, { method: 'PATCH', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request(`/api/admin/assinaturas/${userId}`, { method: 'PATCH', body: JSON.stringify(body), headers: PBM.Admin._authHeader() });
       },
       logs(userId) {
-        return request(`/api/admin/assinaturas/${userId}/logs`, { headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request(`/api/admin/assinaturas/${userId}/logs`, { headers: PBM.Admin._authHeader() });
+      },
+      excluir(userId) {
+        return request(`/api/admin/assinaturas/${userId}`, { method: 'DELETE', headers: PBM.Admin._authHeader() });
       },
     },
     cupons: {
       listar() {
-        return request('/api/admin/cupons', { headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request('/api/admin/cupons', { headers: PBM.Admin._authHeader() });
       },
       criar(body) {
-        return request('/api/admin/cupons', { method: 'POST', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request('/api/admin/cupons', { method: 'POST', body: JSON.stringify(body), headers: PBM.Admin._authHeader() });
       },
       editar(id, body) {
-        return request(`/api/admin/cupons/${id}`, { method: 'PATCH', body: JSON.stringify(body), headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request(`/api/admin/cupons/${id}`, { method: 'PATCH', body: JSON.stringify(body), headers: PBM.Admin._authHeader() });
       },
       desativar(id) {
-        return request(`/api/admin/cupons/${id}`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request(`/api/admin/cupons/${id}`, { method: 'DELETE', headers: PBM.Admin._authHeader() });
       },
       excluir(id) {
-        return request(`/api/admin/cupons/${id}/excluir`, { method: 'DELETE', headers: { 'x-admin-token': sessionStorage.getItem('pbm_admin_token') || '' } });
+        return request(`/api/admin/cupons/${id}/excluir`, { method: 'DELETE', headers: PBM.Admin._authHeader() });
       },
     },
   },
@@ -239,6 +252,28 @@ const PBM = {
     },
     aplicar(codigo) {
       return request('/api/cupons/aplicar', { method: 'POST', body: JSON.stringify({ codigo }) });
+    },
+  },
+
+  MissaoFDS: {
+    async status() {
+      const [ativoRes, proximoRes] = await Promise.allSettled([
+        PBM.SimuladoMensal.ativo(),
+        PBM.SimuladoMensal.proximo(),
+      ]);
+      const ativo = ativoRes.status === 'fulfilled' ? ativoRes.value : null;
+      const proximo = proximoRes.status === 'fulfilled' ? proximoRes.value : null;
+
+      if (ativo && ativo.id) return { estado: 'active', simulado: ativo };
+      if (proximo && proximo.abertura) return { estado: 'locked', proximo };
+
+      try {
+        const lista = await PBM.SimuladoMensal.listar();
+        const ultimo = Array.isArray(lista) ? lista.find(s => s.status === 'encerrado') : null;
+        return { estado: 'encerrado', ultimo: ultimo || null };
+      } catch {
+        return { estado: 'encerrado', ultimo: null };
+      }
     },
   },
 
@@ -280,4 +315,3 @@ const PBM = {
 };
 
 window.PBM = PBM;
-window.GraduaBM = PBM; // alias temporário — remover após 30 dias

@@ -1,15 +1,15 @@
 /**
- * GraduaBM — Tour guiado de primeiro acesso
- * Ativa uma vez por conta (chave: graduabm_tour_[userId])
+ * Protocolo Bravo Mike — Tour guiado de primeiro acesso
+ * Ativa uma vez por conta (chave: pbm_tour_v1_[userId])
  * Exibe um spotlight progressivo sobre os elementos principais do dashboard.
  */
 (function() {
-  const TOUR_KEY_PREFIX = 'graduabm_tour_v1_';
+  const TOUR_KEY_PREFIX = 'pbm_tour_v1_';
 
   const STEPS = [
     {
       target: null,
-      title: 'Bem-vindo ao GraduaBM!',
+      title: 'Bem-vindo ao Protocolo Bravo Mike!',
       body: 'Esta plataforma foi criada para turbinar sua preparação para o CBMRS. Em menos de 2 minutos vamos te mostrar os principais recursos.',
       position: 'center',
     },
@@ -137,7 +137,7 @@
         color: #F8F6F2; margin-bottom: 8px; line-height: 1.2;
       }
       .gbm-tour-body {
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'Inter', sans-serif;
         font-size: 13px; color: #888; line-height: 1.6;
         margin-bottom: 1.25rem;
       }
@@ -149,7 +149,7 @@
         margin-right: auto;
         background: none; border: none;
         color: #555; font-size: 12px;
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'Inter', sans-serif;
         cursor: pointer; padding: 0; transition: color 0.15s;
       }
       .gbm-tour-skip:hover { color: #888; }
@@ -158,7 +158,7 @@
         border: 1px solid #333;
         color: #888; border-radius: 6px;
         padding: 6px 14px; font-size: 12px;
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'Inter', sans-serif;
         cursor: pointer; transition: all 0.15s;
       }
       .gbm-tour-btn:hover { border-color: #555; color: #F8F6F2; }
@@ -209,7 +209,7 @@
         color: #F8F6F2; margin-bottom: 10px;
       }
       .gbm-modal-box p {
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'Inter', sans-serif;
         font-size: 14px; color: #888; line-height: 1.65;
         margin-bottom: 1.75rem;
       }
@@ -220,7 +220,7 @@
         background: transparent; border: 1px solid #333;
         color: #555; border-radius: 8px;
         padding: 10px 20px; font-size: 13px;
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'Inter', sans-serif;
         cursor: pointer; transition: all 0.15s;
       }
       .gbm-modal-btn-skip:hover { border-color: #555; color: #888; }
@@ -228,7 +228,7 @@
         background: #C0270F; border: 1px solid #C0270F;
         color: #fff; border-radius: 8px;
         padding: 10px 24px; font-size: 13px; font-weight: 600;
-        font-family: 'IBM Plex Sans', sans-serif;
+        font-family: 'Inter', sans-serif;
         cursor: pointer; transition: all 0.15s;
       }
       .gbm-modal-btn-start:hover { background: #8B1A08; border-color: #8B1A08; }
@@ -246,7 +246,7 @@
         <div class="gbm-modal-icon">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#C0270F" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
-        <h2>Bem-vindo ao GraduaBM!</h2>
+        <h2>Bem-vindo ao Protocolo Bravo Mike!</h2>
         <p>Sua plataforma de preparação para o CBMRS. Vamos te mostrar os principais recursos em menos de 2 minutos?</p>
         <div class="gbm-modal-actions">
           <button class="gbm-modal-btn-skip" id="gbm-skip-modal">Pular tour</button>
@@ -308,6 +308,9 @@
       if (currentStep >= STEPS.length) { destroy(); return; }
       showStep(currentStep);
     });
+
+    /* marca como visto imediatamente — evita reaparecer se usuário navegar sem concluir */
+    markDone();
 
     /* mostrar modal de boas-vindas */
     modalCenter.classList.add('visible');
@@ -400,15 +403,12 @@
     if (overlay) overlay.remove();
   }
 
-  /* ── INICIAR ── */
-  function init() {
-    if (!shouldShow()) return;
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', buildDOM);
-    } else {
+  /* ── API PÚBLICA ── */
+  window.PBMTour = {
+    /* Chamado pelo dashboard após autenticação confirmar usuário logado */
+    init() {
+      if (!shouldShow()) return;
       setTimeout(buildDOM, 600);
     }
-  }
-
-  init();
+  };
 })();

@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Ranking Geral</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -29,7 +30,7 @@
   body {
     background: var(--carvao);
     color: var(--branco);
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     min-height: 100vh;
@@ -94,7 +95,7 @@
     border: 1px solid var(--cinza-borda); color: var(--cinza-texto);
     border-radius: 6px; padding: 7px 0; font-size: 12px;
     cursor: pointer; transition: all 0.15s;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
   }
   .btn-sair:hover { border-color: #555; color: var(--branco); }
 
@@ -183,7 +184,7 @@
     background: transparent; border: none; cursor: pointer;
     color: var(--cinza-texto);
     transition: background 0.15s, color 0.15s;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     border-right: 1px solid var(--cinza-borda);
   }
   .tab-btn:last-child { border-right: none; }
@@ -351,6 +352,14 @@
     font-family: 'IBM Plex Mono', monospace;
     white-space: nowrap;
   }
+  .rank-fds-badge {
+    font-size: 9px; font-weight: 500; letter-spacing: 0.05em;
+    padding: 1px 5px; border-radius: 3px;
+    background: rgba(125,217,154,0.1); color: #7DD99A;
+    border: 1px solid rgba(125,217,154,0.25);
+    font-family: 'IBM Plex Mono', monospace;
+    white-space: nowrap; cursor: default;
+  }
 
   .rank-num {
     font-family: 'IBM Plex Mono', monospace;
@@ -449,6 +458,53 @@
     .sidebar { display: none; }
     .conteudo { padding: 1.25rem; }
   }
+
+  /* ── MODO SELECTOR ── */
+  .mode-selector {
+    display: flex; gap: 4px; margin-bottom: 1.25rem;
+  }
+  .mode-btn {
+    padding: 8px 20px; font-size: 12px; font-weight: 500;
+    background: transparent; border: 1px solid var(--cinza-borda);
+    cursor: pointer; color: var(--cinza-texto); border-radius: 6px;
+    transition: all 0.15s; font-family: 'Inter', sans-serif;
+  }
+  .mode-btn.ativo { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
+  .mode-btn:not(.ativo):hover { border-color: #555; color: var(--branco); }
+
+  /* ── RANKING SIMULADOS ── */
+  .ranking-header-sim {
+    display: grid;
+    grid-template-columns: 52px 1fr 80px 120px 130px 120px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--cinza-borda);
+    background: rgba(0,0,0,0.2);
+  }
+  .ranking-row-sim {
+    display: grid;
+    grid-template-columns: 52px 1fr 80px 120px 130px 120px;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--cinza-borda);
+    align-items: center;
+    transition: background 0.1s;
+  }
+  .ranking-row-sim:last-child { border-bottom: none; }
+  .ranking-row-sim:hover { background: rgba(255,255,255,0.02); }
+  .ranking-row-sim.sou-eu { background: rgba(192,39,15,0.06); border-left: 2px solid var(--vermelho); }
+  .rank-aproveit {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 0.04em; color: var(--vermelho);
+  }
+  .rank-acertos {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--branco);
+  }
+  .rank-data { font-size: 11px; color: var(--cinza-texto); }
+  @media (max-width: 900px) {
+    .ranking-header-sim { display: none; }
+    .ranking-row-sim { grid-template-columns: 44px 1fr auto; }
+    .ranking-row-sim > *:nth-child(3),
+    .ranking-row-sim > *:nth-child(4) { display: none; }
+  }
 </style>
 </head>
 <body>
@@ -473,10 +529,20 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         Papirar
       </a>
+      <a class="nav-item" href="#" onclick="sessionStorage.setItem('pbm_revisao_erros','1');window.location.href='/questoes';return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Caderno de Erros
+      </a>
       <a class="nav-item" href="/simulados">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         Simulados Oficiais
       </a>
+      <div class="nav-item nav-missao locked" id="nav-missao-fds">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span class="nav-missao-label">MISSÃO FDS</span>
+        <span class="nav-missao-timer" id="missao-timer" style="display:none">--:--:--</span>
+        <div class="nav-missao-tooltip" id="missao-tooltip"></div>
+      </div>
       <a class="nav-item ativo" href="/ranking">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
         Ranking
@@ -504,7 +570,7 @@
       <div class="hero">
         <div class="hero-bg-grid"></div>
         <div class="hero-content">
-          <div class="hero-tag">Gamificação · CBMRS</div>
+          <div class="hero-tag">Gamificação · Protocolo Bravo Mike</div>
           <h1 class="hero-titulo">HALL DA <span>FAMA</span></h1>
           <p class="hero-sub">Desempenho acumulado de todos os cadetes com assinatura ativa.</p>
           <div class="stats-strip" id="stats-strip">
@@ -528,6 +594,12 @@
         </div>
       </div>
 
+      <!-- MODO -->
+      <div class="mode-selector">
+        <button class="mode-btn ativo" data-mode="estudos">Estudos</button>
+        <button class="mode-btn" data-mode="simulados">Simulados Oficiais</button>
+      </div>
+
       <!-- CONTROLES -->
       <div class="controles">
         <div class="tab-group" id="tabs-curso">
@@ -535,7 +607,7 @@
           <button class="tab-btn" data-curso="ctsp">CTSP</button>
           <button class="tab-btn" data-curso="cba">CBA</button>
         </div>
-        <div class="sort-group">
+        <div class="sort-group" id="sort-group-estudos">
           <span class="sort-label">Ordenar por:</span>
           <div class="tab-group" id="tabs-sort">
             <button class="tab-btn ativo" data-sort="score">Score</button>
@@ -555,7 +627,7 @@
 
       <!-- TABELA -->
       <div class="ranking-section">
-        <div class="ranking-header">
+        <div class="ranking-header" id="header-estudos">
           <div class="ranking-col-header">#</div>
           <div class="ranking-col-header">Cadete</div>
           <div class="ranking-col-header">Curso</div>
@@ -563,6 +635,14 @@
           <div class="ranking-col-header sortable" data-sort="taxa_acerto">Acerto %</div>
           <div class="ranking-col-header sortable" data-sort="tempo_minutos">Tempo</div>
           <div class="ranking-col-header sortable sort-ativo" data-sort="score">Score</div>
+        </div>
+        <div class="ranking-header-sim" id="header-simulados" style="display:none">
+          <div class="ranking-col-header">#</div>
+          <div class="ranking-col-header">Cadete</div>
+          <div class="ranking-col-header">Curso</div>
+          <div class="ranking-col-header">Acertos</div>
+          <div class="ranking-col-header">Aproveitamento</div>
+          <div class="ranking-col-header">Data</div>
         </div>
         <div id="ranking-body">
           <div class="skeleton"></div>
@@ -617,12 +697,14 @@
 
   // ── Estado ──────────────────────────────────────────────────
   let rankingOriginal = [];
+  let simRankingOriginal = [];
   let filtroCurso = '';
   let sortCampo = 'score';
+  let modo = 'estudos';
 
   // ── Score ────────────────────────────────────────────────────
   function calcScore(r) {
-    return Math.round(r.questoes_respondidas * (r.taxa_acerto / 100) * 10 + r.tempo_minutos * 0.5);
+    return Math.round(r.questoes_respondidas * (r.taxa_acerto / 100) * 10 + r.tempo_minutos * 0.5 + (r.bonus_missao || 0));
   }
 
   // ── Formatadores ─────────────────────────────────────────────
@@ -765,6 +847,7 @@
           </div>
           <div class="rank-usuario">
             ${renderNome(r, false)}
+            ${r.missoes_fds > 0 ? `<span class="rank-fds-badge" title="${r.missoes_fds} Missão(ões) FDS">⚡${r.missoes_fds}</span>` : ''}
           </div>
           <div>
             <span class="curso-badge ${cursoClass}">${r.curso?.toUpperCase()}</span>
@@ -795,6 +878,102 @@
     document.getElementById('mp-score').textContent = meu.score ?? calcScore(meu);
   }
 
+  // ── Simulados: render ─────────────────────────────────────────
+  function getSimFiltrado() {
+    let lista = simRankingOriginal.filter(r => filtroCurso === '' || r.curso === filtroCurso);
+    lista.forEach((r, i) => { r.posicao_filtrada = i + 1; });
+    return lista;
+  }
+
+  function renderSimPodio(lista) {
+    const top3 = lista.slice(0, 3);
+    const podio = document.getElementById('podio');
+    if (top3.length === 0) { podio.innerHTML = ''; return; }
+    const classes = ['pos-2', 'pos-1', 'pos-3'];
+    const labels  = ['2º', '1º', '3º'];
+    const order   = [1, 0, 2];
+    const cards = [null, null, null];
+    order.forEach((idx, visual) => {
+      const r = top3[idx];
+      if (!r) { cards[visual] = ''; return; }
+      const cursoClass = r.curso === 'ctsp' ? 'curso-ctsp' : 'curso-cba';
+      const totalLabel = r.curso === 'ctsp' ? '60' : r.curso === 'cba' ? '40' : r.total;
+      cards[visual] = `
+        <div class="podio-card ${classes[visual]}">
+          ${r.sou_eu ? '<span class="podio-sou-eu">VOCÊ</span>' : ''}
+          <div class="podio-medal">${labels[visual]}</div>
+          <div class="podio-nome ${r.nome ? '' : 'podio-anonimo'}">${r.nome || 'Anônimo'}</div>
+          <div class="curso-badge ${cursoClass}">${r.curso?.toUpperCase()}</div>
+          <div class="podio-metric-val">${r.percentual}%</div>
+          <div class="podio-metric-label">aproveitamento</div>
+          <div class="podio-sub-stats">
+            <div class="podio-sub-item">
+              <span class="podio-sub-val">${r.acertos}/${totalLabel}</span>
+              <span class="podio-sub-key">acertos</span>
+            </div>
+          </div>
+        </div>`;
+    });
+    podio.innerHTML = cards.join('');
+  }
+
+  function renderSimTabela(lista) {
+    const tbody = document.getElementById('ranking-body');
+    const medalhas = { 1: '🥇', 2: '🥈', 3: '🥉' };
+    if (lista.length === 0) {
+      tbody.innerHTML = `<div class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <p>Nenhum simulado entregue neste filtro.</p><p>Complete um simulado oficial para aparecer aqui!</p></div>`;
+      return;
+    }
+    tbody.innerHTML = lista.map(r => {
+      const posClass = r.posicao_filtrada <= 3 ? `top-${r.posicao_filtrada}` : '';
+      const rowClass = r.sou_eu ? 'sou-eu' : '';
+      const cursoClass = r.curso === 'ctsp' ? 'curso-ctsp' : 'curso-cba';
+      const medalha = medalhas[r.posicao_filtrada] || '';
+      const totalLabel = r.curso === 'ctsp' ? '60' : r.curso === 'cba' ? '40' : r.total;
+      const dataFmt = r.encerrada_em ? new Date(r.encerrada_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }) : '—';
+      return `<div class="ranking-row-sim ${rowClass}">
+        <div class="rank-pos ${posClass}">${medalha ? `<span class="medal-icon">${medalha}</span>` : r.posicao_filtrada}</div>
+        <div class="rank-usuario">${renderNome(r, false)}</div>
+        <div><span class="curso-badge ${cursoClass}">${r.curso?.toUpperCase()}</span></div>
+        <div class="rank-acertos">${r.acertos}/${totalLabel}</div>
+        <div class="rank-aproveit">${r.percentual}%</div>
+        <div class="rank-data">${dataFmt}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderSimStats(lista) {
+    const comDados = lista.filter(r => r.total > 0);
+    const mediaAcerto = comDados.length > 0
+      ? (comDados.reduce((s, r) => s + r.percentual, 0) / comDados.length).toFixed(1) : '0';
+    document.getElementById('stat-alunos').textContent = fmtNum(lista.length);
+    document.getElementById('stat-questoes').textContent = fmtNum(lista.reduce((s, r) => s + r.total, 0));
+    document.getElementById('stat-acerto').textContent = mediaAcerto + '%';
+    document.getElementById('stat-horas').textContent = '—';
+  }
+
+  function renderSimMinhaPos(lista) {
+    const meu = lista.find(r => r.sou_eu);
+    const bloco = document.getElementById('minha-pos');
+    if (!meu) { bloco.classList.remove('visivel'); return; }
+    bloco.classList.add('visivel');
+    document.getElementById('mp-pos').textContent = `#${meu.posicao_filtrada}`;
+    document.getElementById('mp-questoes').textContent = `${meu.acertos}/${meu.total}`;
+    document.getElementById('mp-acerto').textContent = meu.percentual + '%';
+    document.getElementById('mp-tempo').textContent = '—';
+    document.getElementById('mp-score').textContent = '—';
+  }
+
+  function renderAllSim() {
+    const lista = getSimFiltrado();
+    renderSimStats(lista);
+    renderSimPodio(lista);
+    renderSimTabela(lista);
+    renderSimMinhaPos(lista);
+  }
+
   // ── Render completo ───────────────────────────────────────────
   function renderAll() {
     const lista = getRankingFiltrado();
@@ -810,13 +989,36 @@
   }
 
   // ── Controles ─────────────────────────────────────────────────
+  // ── Modo selector ─────────────────────────────────────────────
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('ativo'));
+      btn.classList.add('ativo');
+      modo = btn.dataset.mode;
+
+      const isSimulados = modo === 'simulados';
+      document.getElementById('sort-group-estudos').style.display = isSimulados ? 'none' : '';
+      document.getElementById('header-estudos').style.display = isSimulados ? 'none' : '';
+      document.getElementById('header-simulados').style.display = isSimulados ? '' : 'none';
+      document.querySelector('.hero-tag').textContent = isSimulados
+        ? 'Simulados Oficiais · Protocolo Bravo Mike'
+        : 'Gamificação · Protocolo Bravo Mike';
+
+      if (isSimulados) {
+        if (simRankingOriginal.length === 0) carregarSimulados(); else renderAllSim();
+      } else {
+        renderAll();
+      }
+    });
+  });
+
   document.getElementById('tabs-curso').addEventListener('click', e => {
     const btn = e.target.closest('.tab-btn');
     if (!btn) return;
     document.querySelectorAll('#tabs-curso .tab-btn').forEach(b => b.classList.remove('ativo'));
     btn.classList.add('ativo');
     filtroCurso = btn.dataset.curso;
-    renderAll();
+    if (modo === 'simulados') renderAllSim(); else renderAll();
   });
 
   document.getElementById('tabs-sort').addEventListener('click', e => {
@@ -859,7 +1061,138 @@
     }
   }
 
+  async function carregarSimulados() {
+    document.getElementById('ranking-body').innerHTML =
+      '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+    document.getElementById('podio').innerHTML =
+      '<div class="skeleton" style="height:200px;border-radius:10px;"></div><div class="skeleton" style="height:220px;border-radius:10px;"></div><div class="skeleton" style="height:200px;border-radius:10px;"></div>';
+    try {
+      const { ranking } = await PBM.Ranking.simulados();
+      simRankingOriginal = ranking || [];
+      renderAllSim();
+    } catch (err) {
+      document.getElementById('ranking-body').innerHTML =
+        '<div class="empty-state"><p>Erro ao carregar ranking de simulados.</p></div>';
+      document.getElementById('podio').innerHTML = '';
+    }
+  }
+
   carregar();
+</script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
+<style>
+.nav-missao{display:flex;align-items:center;gap:8px;padding:8px 1.25rem;font-size:13px;font-weight:500;position:relative;border-left:2px solid transparent;}
+.nav-missao.locked{cursor:default;color:#444;}
+.nav-missao-label{flex:1;}
+.nav-missao-timer{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:.05em;}
+.nav-missao-tooltip{display:none;position:absolute;left:220px;top:0;background:#1A1A1A;border:1px solid #333;padding:8px 12px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:100;color:#AAA;}
+.nav-missao.locked:hover .nav-missao-tooltip{display:block;}
+.nav-missao.active{color:#7DD99A;border-left-color:#7DD99A;background:rgba(125,217,154,.06);text-decoration:none;animation:pulse-missao 2s ease-in-out infinite;}
+.nav-missao-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;background:rgba(125,217,154,.12);color:#7DD99A;border-radius:4px;padding:1px 6px;letter-spacing:.08em;}
+@keyframes pulse-missao{0%,100%{opacity:1}50%{opacity:.72}}
+.nav-missao.encerrado{color:#888;text-decoration:none;}
+.nav-missao.encerrado:hover{color:#AAA;}
+.nav-missao-ranking-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#666;letter-spacing:.05em;}
+</style>
+<script>
+(async function initMissaoFDSSidebar(){
+  const el=document.getElementById('nav-missao-fds');
+  if(!el)return;
+  let status;
+  try{status=await PBM.MissaoFDS.status();}catch{return;}
+  if(status.estado==='active'){
+    const a=document.createElement('a');
+    a.className='nav-item nav-missao active';a.href='/simulado-mensal';
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span class="nav-missao-label">MISSÃO FDS</span><span class="nav-missao-badge">ABERTA</span>';
+    el.replaceWith(a);
+  }else if(status.estado==='locked'&&status.proximo){
+    const abertura=new Date(status.proximo.abertura);
+    const encerramento=new Date(status.proximo.encerramento);
+    const fmt=d=>d.toLocaleString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'});
+    const tip=document.getElementById('missao-tooltip');
+    if(tip)tip.textContent='Abre '+fmt(abertura)+' · Fecha '+fmt(encerramento)+' BRT';
+    el.style.cursor='pointer';
+    el.addEventListener('click',function(){
+      const ov=document.createElement('div');
+      ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;';
+      ov.innerHTML='<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem 1.75rem;max-width:320px;width:90%;">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid #222;padding-bottom:.75rem;">'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+
+          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">MISSÃO FDS — BLOQUEADA</span>'+
+        '</div>'+
+        '<div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">Abertura</div>'+
+        '<div style="font-size:14px;color:#CCC;margin-bottom:1rem;">'+fmt(abertura)+' BRT</div>'+
+        '<div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">Encerramento</div>'+
+        '<div style="font-size:14px;color:#CCC;margin-bottom:1.25rem;">'+fmt(encerramento)+' BRT</div>'+
+        '<div style="text-align:center;background:#111;border-radius:8px;padding:.75rem;margin-bottom:1.25rem;">'+
+          '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:9px;color:#444;letter-spacing:.1em;margin-bottom:.4rem;">ABRE EM</div>'+
+          '<div id="missao-modal-timer" style="font-family:\'IBM Plex Mono\',monospace;font-size:24px;color:#C0270F;letter-spacing:.04em;"></div>'+
+        '</div>'+
+        '<button id="missao-modal-close" style="width:100%;background:none;border:1px solid #2A2A2A;color:#555;padding:7px;border-radius:6px;cursor:pointer;font-size:12px;font-family:\'IBM Plex Mono\',monospace;letter-spacing:.06em;">FECHAR</button>'+
+      '</div>';
+      document.body.appendChild(ov);
+      function tickModal(){
+        const pt=document.getElementById('missao-modal-timer');if(!pt)return;
+        const diff=Math.max(0,abertura-Date.now());
+        const dd=Math.floor(diff/86400000),hh=Math.floor((diff%86400000)/3600000);
+        const mm=Math.floor((diff%3600000)/60000),ss=Math.floor((diff%60000)/1000);
+        pt.textContent=dd>0?dd+'d '+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0'):String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
+      }
+      tickModal();const iv=setInterval(tickModal,1000);
+      function closeModal(){ov.remove();clearInterval(iv);document.removeEventListener('keydown',onKey);}
+      function onKey(e){if(e.key==='Escape')closeModal();}
+      document.addEventListener('keydown',onKey);
+      ov.addEventListener('click',function(e){if(e.target===ov)closeModal();});
+      document.getElementById('missao-modal-close').addEventListener('click',closeModal);
+    });
+    function tick(){
+      const diff=Math.max(0,abertura-Date.now());
+      const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
+      const m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
+      const t=document.getElementById('missao-timer');
+      if(t)t.textContent=d>0?d+'d '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'):String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    }
+    const _t=document.getElementById("missao-timer");if(_t)_t.style.display="";tick();setInterval(tick,1000);
+  }else if(status.estado==='encerrado'&&status.ultimo){
+    const a=document.createElement('a');
+    a.className='nav-item nav-missao encerrado';
+    a.href='/simulado-mensal-ranking?id='+status.ultimo.id;
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg><span class="nav-missao-label">MISSÃO FDS</span><span class="nav-missao-ranking-badge">RANKING →</span>';
+    el.replaceWith(a);
+  }else{
+    el.style.cursor='pointer';
+    el.addEventListener('click',function(){
+      const ov=document.createElement('div');
+      ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;';
+      ov.innerHTML='<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem 1.75rem;max-width:320px;width:90%;">'+
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid #222;padding-bottom:.75rem;">'+
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+
+          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">MISSÃO FDS</span>'+
+        '</div>'+
+        '<div style="text-align:center;padding:1rem 0;">'+
+          '<div style="font-size:13px;color:#666;line-height:1.7;">Nenhuma missão agendada<br>no momento.<br><br>Fique atento — a próxima<br>será anunciada em breve.</div>'+
+        '</div>'+
+        '<button id="missao-modal-close" style="margin-top:1rem;width:100%;background:none;border:1px solid #2A2A2A;color:#555;padding:7px;border-radius:6px;cursor:pointer;font-size:12px;font-family:\'IBM Plex Mono\',monospace;letter-spacing:.06em;">FECHAR</button>'+
+      '</div>';
+      document.body.appendChild(ov);
+      function closeModal(){ov.remove();document.removeEventListener('keydown',onKey);}
+      function onKey(e){if(e.key==='Escape')closeModal();}
+      document.addEventListener('keydown',onKey);
+      ov.addEventListener('click',function(e){if(e.target===ov)closeModal();});
+      document.getElementById('missao-modal-close').addEventListener('click',closeModal);
+    });
+  }
+})();
 </script>
 </body>
 </html>

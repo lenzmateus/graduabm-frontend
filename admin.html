@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Painel Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --carvao: #0F0F0F;
@@ -22,7 +23,7 @@
     --erro: #E24B4A;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
   .layout { display: flex; min-height: 100vh; }
 
   /* SIDEBAR */
@@ -42,7 +43,7 @@
   .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
   .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
   .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
   .btn-sair:hover { border-color: #555; color: var(--branco); }
 
   /* MAIN */
@@ -55,8 +56,10 @@
 
   /* TOPBAR DIREITA */
   .topbar-direita { display: flex; align-items: center; gap: 12px; }
-  .btn-modo-aluno { display: inline-flex; align-items: center; gap: 7px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s; }
+  .btn-modo-aluno { display: inline-flex; align-items: center; gap: 7px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; }
   .btn-modo-aluno:hover { background: #6960C8; }
+  .btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
 
   /* STATS */
   .grid-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
@@ -73,7 +76,7 @@
   .painel-card-desc { font-size: 13px; color: var(--cinza-texto); line-height: 1.6; margin-bottom: 1.25rem; }
 
   /* BOTÕES */
-  .btn-acesso { display: inline-flex; align-items: center; gap: 8px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 11px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s, transform 0.1s; text-decoration: none; }
+  .btn-acesso { display: inline-flex; align-items: center; gap: 8px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 11px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s, transform 0.1s; text-decoration: none; }
   .btn-acesso:hover { background: #6960C8; transform: translateY(-1px); }
   .btn-acesso.verde { background: var(--verde); }
   .btn-acesso.verde:hover { background: #1D6B3E; }
@@ -92,7 +95,7 @@
 
   /* CHAVE CLAUDE */
   .chave-box { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #AFA9EC; letter-spacing: 0.06em; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .chave-copy { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
+  .chave-copy { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
   .chave-copy:hover { border-color: var(--roxo); color: #AFA9EC; }
   .chave-copy.copiado { border-color: var(--verde); color: #7DD99A; }
   .instrucoes-claude { background: var(--roxo-bg); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #AFA9EC; line-height: 1.7; }
@@ -113,11 +116,15 @@
   .denuncia-badges { display: flex; gap: 6px; }
   .denuncia-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
   .badge-area-d { background: rgba(192,39,15,0.1); border: 1px solid rgba(192,39,15,0.25); color: #E0866E; }
-  .btn-resolver { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
+  .btn-resolver { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
   .btn-resolver:hover { border-color: var(--verde); color: #7DD99A; }
   .btn-resolver.resolvendo { opacity: 0.5; cursor: default; }
+  .btn-excluir-denuncia { background: transparent; border: 1px solid rgba(226,75,74,0.3); color: #888; border-radius: 6px; padding: 4px 10px; font-size: 10px; cursor: pointer; font-family: 'IBM Plex Mono', monospace; transition: all 0.15s; white-space: nowrap; }
+  .btn-excluir-denuncia:hover { border-color: #E24B4A; color: #F09595; }
+  .btn-editar-questao { background: transparent; border: 1px solid rgba(170,170,200,0.25); color: #888; border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; text-decoration: none; display: inline-block; }
+  .btn-editar-questao:hover { border-color: #AFA9EC; color: #AFA9EC; }
   #denuncias-filtro { display: flex; gap: 6px; margin-bottom: 1rem; }
-  .filtro-btn { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .filtro-btn { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .filtro-btn:hover { border-color: #555; color: var(--branco); }
   .filtro-btn.ativo { border-color: var(--roxo-borda); color: #AFA9EC; background: var(--roxo-bg); }
 
@@ -178,10 +185,18 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>
         Simulados Mensais
       </a>
+      <a class="nav-item" href="/simulado-mensal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Missão FDS
+      </a>
       <div class="nav-label">Alunos</div>
       <a class="nav-item" href="/admin-assinaturas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         Assinaturas
+      </a>
+      <a class="nav-item" href="/admin-relatorios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Relatórios
       </a>
       <a class="nav-item" href="#denuncias" onclick="scrollToDenuncias()" style="justify-content:space-between;">
         <span style="display:flex;align-items:center;gap:10px;">
@@ -206,11 +221,12 @@
       <span class="topbar-titulo">Painel de administração <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#444;margin-left:8px">v2</span></span>
       <div class="topbar-direita">
         <span class="topbar-mono" id="topbar-data"></span>
-        <select id="preview-curso" style="background: var(--cinza-escuro); color: white; border: 1px solid var(--roxo-borda); border-radius: 6px; padding: 7px 10px; font-size: 12px; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; outline: none;">
+        <select id="preview-curso" style="background: var(--cinza-escuro); color: white; border: 1px solid var(--roxo-borda); border-radius: 6px; padding: 7px 10px; font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; outline: none;">
           <option value="ctsp">Simular CTSP</option>
           <option value="cba">Simular CBA</option>
         </select>
         <button class="btn-modo-aluno" id="btn-modo-aluno">🎓 Modo Aluno</button>
+        <button class="btn-topbar-sair" onclick="document.getElementById('btn-sair').click()">Encerrar sessão</button>
       </div>
     </div>
 
@@ -299,8 +315,8 @@
         </div>
         <div class="painel-card-desc">Busque pelo nome ou e-mail para alterar curso e status de acesso.</div>
         <div style="display:flex;gap:8px;margin-bottom:12px;">
-          <input id="aluno-busca-input" type="text" placeholder="Nome ou email@aluno.com" style="flex:1;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
-          <button onclick="buscarAluno()" style="background:var(--roxo);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Buscar</button>
+          <input id="aluno-busca-input" type="text" placeholder="Nome ou email@aluno.com" style="flex:1;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;">
+          <button onclick="buscarAluno()" style="background:var(--roxo);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Buscar</button>
         </div>
 
         <!-- Lista de resultados quando a busca retorna múltiplos -->
@@ -317,18 +333,34 @@
             </div>
             <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
               <div style="display:flex;align-items:center;gap:8px;">
-                <select id="aluno-novo-curso" style="background:var(--cinza-escuro);color:var(--branco);border:1px solid var(--cinza-borda);border-radius:6px;padding:7px 10px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
+                <select id="aluno-novo-curso" style="background:var(--cinza-escuro);color:var(--branco);border:1px solid var(--cinza-borda);border-radius:6px;padding:7px 10px;font-size:13px;font-family:'Inter',sans-serif;outline:none;">
                   <option value="ctsp">CTSP — Sargento</option>
                   <option value="cba">CBA — Tenente</option>
                   <option value="">Sem restrição (Teste)</option>
                 </select>
-                <button onclick="migrarCurso()" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Salvar curso</button>
+                <button onclick="migrarCurso()" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Salvar curso</button>
               </div>
-              <button id="btn-toggle-ativo" onclick="toggleAtivo()" style="border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;width:100%;"></button>
+              <button id="btn-toggle-ativo" onclick="toggleAtivo()" style="border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;width:100%;"></button>
+              <button onclick="zerarProgressoConfirm()" style="background:transparent;border:1px solid #4A2020;color:#A05050;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;width:100%;transition:all 0.15s;" onmouseover="this.style.borderColor='#7A3030';this.style.color='#E24B4A'" onmouseout="this.style.borderColor='#4A2020';this.style.color='#A05050'">Zerar progresso do aluno</button>
             </div>
           </div>
         </div>
         <div id="aluno-msg" style="font-size:12px;margin-top:8px;"></div>
+
+<!-- MODAL ZERAR PROGRESSO -->
+<div id="modal-zerar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#1A1A1A;border:1px solid #4A2020;border-radius:12px;padding:2rem;max-width:380px;width:90%;text-align:center;">
+    <div style="width:48px;height:48px;border-radius:50%;background:rgba(226,75,74,0.12);border:1px solid rgba(226,75,74,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+      <svg width="20" height="20" fill="none" stroke="#F09595" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+    </div>
+    <div style="font-size:16px;font-weight:600;color:#F8F6F2;margin-bottom:8px;">Zerar progresso?</div>
+    <div style="font-size:13px;color:#888;line-height:1.6;margin-bottom:1.5rem;">Esta ação vai apagar <strong style="color:#F09595;">todas as sessões e respostas</strong> de <span id="modal-zerar-nome" style="color:#F8F6F2;font-weight:600;"></span>. Não pode ser desfeita.</div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button onclick="document.getElementById('modal-zerar').style.display='none'" style="flex:1;background:#2A2A2A;border:1px solid #333;color:#888;border-radius:7px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;">Cancelar</button>
+      <button onclick="zerarProgresso()" style="flex:1;background:#8B1A08;border:none;color:#fff;border-radius:7px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Zerar agora</button>
+    </div>
+  </div>
+</div>
       </div>
 
       <!-- DENÚNCIAS -->
@@ -348,6 +380,29 @@
         </div>
       </div>
 
+      <!-- ADMINISTRADORES -->
+      <div class="secao-titulo">Administradores</div>
+      <div class="painel-card" style="margin-bottom:1rem" id="secao-admins">
+        <div class="painel-card-titulo">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#C0270F" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Convidar novo administrador
+        </div>
+        <div class="painel-card-desc">Gere um link de convite para o novo admin. Ele define a própria senha ao acessar o link. O link expira em 7 dias e pode ser usado apenas uma vez.</div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+          <input id="admin-convite-email" type="email" placeholder="email@admin.com" style="flex:1;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;">
+          <button id="btn-gerar-convite-admin" style="background:var(--vermelho);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Gerar convite</button>
+        </div>
+        <div id="admin-convite-resultado" style="display:none;background:var(--cinza-medio);border:1px solid var(--verde-borda);border-radius:8px;padding:12px;margin-bottom:8px;">
+          <div style="font-size:11px;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Link de convite (copie e envie)</div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input id="admin-convite-link" type="text" readonly style="flex:1;background:var(--cinza-escuro);border:1px solid var(--cinza-borda);color:#F09595;border-radius:6px;padding:8px 10px;font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none;">
+            <button id="btn-copiar-convite-admin" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Copiar</button>
+          </div>
+        </div>
+        <div id="admin-convite-msg" style="font-size:12px;min-height:16px;margin-bottom:12px;"></div>
+        <div id="admins-lista" style="font-size:13px;color:#555;">Carregando…</div>
+      </div>
+
       <!-- GESTORES -->
       <div class="secao-titulo">Gestores</div>
       <div class="painel-card" style="margin-bottom:1rem">
@@ -357,14 +412,14 @@
         </div>
         <div class="painel-card-desc">Gere um link de convite para cadastro. O link expira em 7 dias e pode ser usado apenas uma vez.</div>
         <div style="display:flex;gap:8px;margin-bottom:12px;">
-          <input id="gestor-email-input" type="email" placeholder="email@gestor.com" style="flex:1;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;outline:none;">
-          <button id="btn-gerar-convite" style="background:var(--roxo);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Gerar convite</button>
+          <input id="gestor-email-input" type="email" placeholder="email@gestor.com" style="flex:1;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;">
+          <button id="btn-gerar-convite" style="background:var(--roxo);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Gerar convite</button>
         </div>
         <div id="convite-resultado" style="display:none;background:var(--cinza-medio);border:1px solid var(--verde-borda);border-radius:8px;padding:12px;margin-bottom:8px;">
           <div style="font-size:11px;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Link de convite (copie e envie)</div>
           <div style="display:flex;gap:8px;align-items:center;">
             <input id="convite-link" type="text" readonly style="flex:1;background:var(--cinza-escuro);border:1px solid var(--cinza-borda);color:#AFA9EC;border-radius:6px;padding:8px 10px;font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none;">
-            <button id="btn-copiar-convite" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">Copiar</button>
+            <button id="btn-copiar-convite" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Copiar</button>
           </div>
         </div>
         <div id="convite-msg" style="font-size:12px;min-height:16px;"></div>
@@ -423,17 +478,32 @@
   'use strict';
 
   /* ── Auth guard ── */
-  if (sessionStorage.getItem('pbm_admin') !== '1') {
+  const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
+  if (sessionStorage.getItem('pbm_admin') !== '1' || !ADMIN_JWT) {
     window.location.href = '/admin-login';
     return;
   }
 
-  const ADMIN_TOKEN = sessionStorage.getItem('pbm_admin_token');
+  // Verifica JWT com backend antes de exibir qualquer conteúdo
+  (async function() {
+    try {
+      const r = await fetch('/api/admin/auth/me', {
+        headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
+      });
+      if (!r.ok) {
+        sessionStorage.clear();
+        window.location.href = '/admin-login';
+      }
+    } catch {
+      sessionStorage.clear();
+      window.location.href = '/admin-login';
+    }
+  })();
 
   async function supaQuery(path, prefer, method, body) {
     const res = await fetch('/api/admin/query', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN || '' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}` },
       body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
     });
     const text = await res.text();
@@ -452,9 +522,7 @@
 
   /* ── Logout ── */
   document.getElementById('btn-sair').addEventListener('click', function () {
-    ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_token'].forEach(k => sessionStorage.removeItem(k));
-    localStorage.removeItem('usuario');
-    localStorage.removeItem('token');
+    sessionStorage.clear();
     window.location.href = '/';
   });
 
@@ -462,16 +530,17 @@
   window.ativarPreview = function() {
     const cursoSel = document.getElementById('preview-curso');
     if (cursoSel) {
-      sessionStorage.setItem('Protocolo Bravo Mike_curso', cursoSel.value);
+      sessionStorage.setItem('pbm_curso', cursoSel.value);
     }
-    localStorage.setItem('usuario', JSON.stringify({
-      nome: 'Aluno Teste',
-      email: 'soulreaperfps@gmail.com',
+    sessionStorage.setItem('usuario', JSON.stringify({
+      nome: 'Admin Preview',
+      email: 'admin@preview.com',
       ativo: true,
-      plano: 'mensal'
+      plano: 'mensal',
+      curso: cursoSel ? cursoSel.value : 'ctsp',
     }));
-    localStorage.setItem('token', 'admin-preview-token');
-    sessionStorage.setItem('Protocolo Bravo Mike_preview_aluno', '1');
+    sessionStorage.setItem('token', window.__ADMIN_PREVIEW_TOKEN__ || 'admin-preview');
+    sessionStorage.setItem('pbm_preview_aluno', '1');
   };
 
   document.getElementById('btn-modo-aluno').addEventListener('click', function () {
@@ -480,7 +549,7 @@
   });
 
   /* Ao voltar para o painel admin, sai do preview */
-  sessionStorage.removeItem('Protocolo Bravo Mike_preview_aluno');
+  sessionStorage.removeItem('pbm_preview_aluno');
 
   /* ── Gestão de alunos ── */
   let alunoAtual = null;
@@ -609,6 +678,35 @@
     toast(novoAtivo ? 'Aluno ativado.' : 'Aluno desativado.', novoAtivo ? 'sucesso' : 'erro');
   };
 
+  window.zerarProgressoConfirm = function() {
+    if (!alunoAtual) return;
+    document.getElementById('modal-zerar-nome').textContent = alunoAtual.nome;
+    document.getElementById('modal-zerar').style.display = 'flex';
+  };
+
+  window.zerarProgresso = async function() {
+    if (!alunoAtual) return;
+    document.getElementById('modal-zerar').style.display = 'none';
+    const msg = document.getElementById('aluno-msg');
+    msg.textContent = 'Zerando progresso…'; msg.style.color = '#888';
+
+    const res = await fetch(`/api/admin/usuarios/${alunoAtual.id}/zerar-progresso`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      msg.textContent = data.erro || 'Erro ao zerar progresso.';
+      msg.style.color = '#E24B4A';
+      return;
+    }
+
+    msg.textContent = `Zerado: ${data.sessoes_apagadas} sessão(ões) e ${data.respostas_apagadas} resposta(s) removidas.`;
+    msg.style.color = '#27A05A';
+    toast('Progresso do aluno zerado com sucesso.', 'sucesso');
+  };
+
   /* ── Data na topbar ── */
   try {
     document.getElementById('topbar-data').textContent =
@@ -693,7 +791,7 @@
 
   /* ── Stats do Supabase ── */
   async function carregarStats() {
-    if (!ADMIN_TOKEN) return;
+    if (!ADMIN_JWT) return;
     try {
       const [rTotal, rAtivas] = await Promise.all([
         supaQuery('/rest/v1/questoes?select=id', 'count=exact'),
@@ -728,7 +826,7 @@
     try {
       const ctrl = new AbortController();
       const timer = setTimeout(() => ctrl.abort(), 7000);
-      const r = await fetch('https://Protocolo Bravo Mike-backend-production.up.railway.app/api/auth/me', { signal: ctrl.signal });
+      const r = await fetch('https://graduabm-backend-production.up.railway.app/api/auth/me', { signal: ctrl.signal });
       clearTimeout(timer);
       backOk = r.status < 500; backStatus = String(r.status);
     } catch (e) { backStatus = e.name === 'AbortError' ? 'TIMEOUT' : 'ERRO'; }
@@ -782,8 +880,8 @@
       const questaoInfo = d.questoes;
       const enunciado = questaoInfo?.enunciado || '';
       const trecho = enunciado.length > 90 ? enunciado.slice(0, 90) + '…' : enunciado;
-      const area = questaoInfo?.area || '';
-      const leg = questaoInfo?.legislacao || '';
+      const area = questaoInfo?.area_tematica || '';
+      const leg = questaoInfo?.legislacao_nome || '';
       const aluno = d.users?.nome || d.users?.email || 'Aluno desconhecido';
       const data = d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
       const resolvida = d.resolvida;
@@ -800,7 +898,13 @@
             <span class="denuncia-data">${data}</span>
           </div>
         </div>
-        ${!resolvida ? `<button class="btn-resolver" onclick="resolverDenuncia('${d.id}', this)">✓ Resolver</button>` : '<span style="font-size:11px;color:#444;font-family:\'IBM Plex Mono\',monospace;">resolvida</span>'}
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
+          <a href="admin-questoes.html?editar=${d.questao_id}" class="btn-editar-questao">✏ Editar Questão</a>
+          ${!resolvida
+            ? `<button class="btn-resolver" onclick="resolverDenuncia('${d.id}', this)">✓ Resolver</button>`
+            : `<span style="font-size:11px;color:#444;font-family:'IBM Plex Mono',monospace;">resolvida</span>
+               <button class="btn-excluir-denuncia" onclick="excluirDenuncia('${d.id}', this)">🗑 Excluir</button>`}
+        </div>
       </div>`;
     }).join('');
   }
@@ -811,10 +915,10 @@
   }
 
   async function carregarDenuncias() {
-    if (!ADMIN_TOKEN) return;
+    if (!ADMIN_JWT) return;
     try {
       const r = await supaQuery(
-        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,questoes(area,legislacao,enunciado),users(nome,email)&order=created_at.desc&limit=100'
+        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,questoes(area_tematica,legislacao_nome,enunciado),users(nome,email)&order=created_at.desc&limit=100'
       );
       if (!r.ok) return;
       denunciasCache = Array.isArray(r.data) ? r.data : [];
@@ -856,12 +960,33 @@
     }
   };
 
+  window.excluirDenuncia = async function(id, btn) {
+    if (!confirm('Excluir esta denúncia permanentemente?')) return;
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      const r = await supaQuery(`/rest/v1/denuncias?id=eq.${id}`, 'return=minimal', 'DELETE');
+      if (!r.ok) throw new Error();
+      denunciasCache = denunciasCache.filter(d => d.id !== id);
+      renderDenuncias();
+      const pendentes = denunciasCache.filter(d => !d.resolvida).length;
+      const badge = document.getElementById('badge-denuncias');
+      if (pendentes > 0) { badge.textContent = pendentes; badge.style.display = 'inline-block'; }
+      else { badge.style.display = 'none'; }
+      toast('Denúncia excluída.', 'verde');
+    } catch {
+      btn.disabled = false;
+      btn.textContent = '🗑 Excluir';
+      toast('Erro ao excluir denúncia.', 'erro');
+    }
+  };
+
   /* ── Gestores ── */
   async function carregarGestores() {
     const lista = document.getElementById('gestores-lista');
     try {
       const r = await fetch('/api/admin/gestores', {
-        headers: { 'x-admin-token': ADMIN_TOKEN || '' },
+        headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
       });
       const data = await r.json();
       if (!r.ok || !Array.isArray(data) || data.length === 0) {
@@ -876,10 +1001,10 @@
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
             <span style="font-size:11px;color:${g.ativo ? '#27A05A' : '#E24B4A'};font-weight:600;">${g.ativo ? 'Ativo' : 'Inativo'}</span>
-            <button onclick="toggleGestor('${g.id}', ${g.ativo})" style="background:${g.ativo ? '#7A1A10' : 'var(--verde)'};color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">
+            <button onclick="toggleGestor('${g.id}', ${g.ativo})" style="background:${g.ativo ? '#7A1A10' : 'var(--verde)'};color:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">
               ${g.ativo ? 'Desativar' : 'Ativar'}
             </button>
-            <button onclick="removerGestor('${g.id}', '${escHtml(g.nome)}')" style="background:transparent;border:1px solid #555;color:var(--cinza-texto);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;">
+            <button onclick="removerGestor('${g.id}', '${escHtml(g.nome)}')" style="background:transparent;border:1px solid #555;color:var(--cinza-texto);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">
               Remover
             </button>
           </div>
@@ -893,7 +1018,7 @@
     const novoAtivo = !ativoAtual;
     const r = await fetch(`/api/admin/gestores/${id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN || '' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}` },
       body: JSON.stringify({ ativo: novoAtivo }),
     });
     if (!r.ok) { toast('Erro ao atualizar gestor.', 'erro'); return; }
@@ -905,7 +1030,7 @@
     if (!confirm(`Remover gestor "${nome}" permanentemente?`)) return;
     const r = await fetch(`/api/admin/gestores/${id}`, {
       method: 'DELETE',
-      headers: { 'x-admin-token': ADMIN_TOKEN || '' },
+      headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
     });
     if (!r.ok) { toast('Erro ao remover gestor.', 'erro'); return; }
     toast('Gestor removido.', '');
@@ -921,7 +1046,7 @@
     try {
       const r = await fetch('/api/admin/gestores/convidar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-admin-token': ADMIN_TOKEN || '' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}` },
         body: JSON.stringify({ email }),
       });
       const data = await r.json();
@@ -1005,13 +1130,102 @@
     }
   }
 
+  /* ── Administradores ── */
+  const ADMIN_ROLE = sessionStorage.getItem('pbm_admin_role') || 'admin';
+
+  async function carregarAdmins() {
+    const lista = document.getElementById('admins-lista');
+    try {
+      const r = await fetch('/api/admin/admins', {
+        headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
+      });
+      const data = await r.json();
+      if (!r.ok || !Array.isArray(data) || data.length === 0) {
+        lista.innerHTML = '<div style="color:#555;font-size:13px;">Nenhum administrador cadastrado.</div>';
+        return;
+      }
+      lista.innerHTML = data.map(a => {
+        const ehSuperAdmin = a.role === 'super_admin';
+        const podeDeletar = ADMIN_ROLE === 'super_admin' && !ehSuperAdmin;
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--cinza-borda);" id="admin-row-${a.id}">
+          <div>
+            <div style="font-size:13px;font-weight:500;">${escHtml(a.nome)}</div>
+            <div style="font-size:11px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">${escHtml(a.email)}${ehSuperAdmin ? ' · <span style="color:#C0270F">SUPER ADMIN</span>' : ''}</div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:11px;color:${a.ativo ? '#27A05A' : '#E24B4A'};font-weight:600;">${a.ativo ? 'Ativo' : 'Inativo'}</span>
+            ${podeDeletar
+              ? `<button onclick="excluirAdmin('${a.id}', '${escHtml(a.nome)}')" style="background:transparent;border:1px solid #7A1A10;color:#E24B4A;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Excluir</button>`
+              : ''}
+          </div>
+        </div>`;
+      }).join('');
+    } catch {
+      lista.innerHTML = '<div style="color:#E24B4A;font-size:13px;">Erro ao carregar administradores.</div>';
+    }
+  }
+
+  window.excluirAdmin = async function(id, nome) {
+    if (!confirm(`Excluir o administrador "${nome}"? Esta ação não pode ser desfeita.`)) return;
+    const r = await fetch(`/api/admin/admins/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${ADMIN_JWT}` },
+    });
+    const data = await r.json();
+    if (!r.ok) { toast(data.erro || 'Erro ao excluir admin.', 'erro'); return; }
+    toast('Administrador excluído.', '');
+    carregarAdmins();
+  };
+
+  document.getElementById('btn-gerar-convite-admin').addEventListener('click', async function() {
+    const email = document.getElementById('admin-convite-email').value.trim();
+    const msg = document.getElementById('admin-convite-msg');
+    if (!email) { msg.textContent = 'Digite o e-mail do novo administrador.'; msg.style.color = '#E24B4A'; return; }
+    msg.textContent = 'Gerando…'; msg.style.color = '#888';
+    document.getElementById('admin-convite-resultado').style.display = 'none';
+    try {
+      const r = await fetch('/api/admin/admins/convidar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ADMIN_JWT}` },
+        body: JSON.stringify({ email }),
+      });
+      const data = await r.json();
+      if (!r.ok) { msg.textContent = data.erro || 'Erro ao gerar convite.'; msg.style.color = '#E24B4A'; return; }
+      document.getElementById('admin-convite-link').value = data.link;
+      document.getElementById('admin-convite-resultado').style.display = 'block';
+      msg.textContent = 'Convite gerado! Copie e envie o link para o novo administrador.'; msg.style.color = '#27A05A';
+    } catch {
+      msg.textContent = 'Erro de conexão.'; msg.style.color = '#E24B4A';
+    }
+  });
+
+  document.getElementById('btn-copiar-convite-admin').addEventListener('click', function() {
+    const input = document.getElementById('admin-convite-link');
+    navigator.clipboard.writeText(input.value).then(() => {
+      this.textContent = 'Copiado!';
+      setTimeout(() => { this.textContent = 'Copiar'; }, 2000);
+    });
+  });
+
   /* ── Iniciar ── */
   carregarStats();
   verificarServicos();
   carregarDenuncias();
+  carregarAdmins();
   carregarGestores();
   carregarGestorLogs();
 }());
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

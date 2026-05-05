@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -26,7 +27,7 @@
   body {
     background: var(--carvao);
     color: var(--branco);
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     min-height: 100vh;
@@ -145,7 +146,7 @@
     background: var(--cinza-escuro);
     border: 1px solid var(--cinza-borda);
     border-radius: 8px; padding: 11px 14px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px; color: var(--branco);
     outline: none; transition: border-color 0.2s;
   }
@@ -165,7 +166,7 @@
     background: var(--roxo);
     color: #fff; border: none;
     border-radius: 8px; padding: 13px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px; font-weight: 600;
     cursor: pointer;
     transition: background 0.2s, transform 0.1s;
@@ -248,32 +249,78 @@
   <div class="side-direito">
     <div class="form-container">
 
-      <div class="form-titulo">Administrador</div>
-      <div class="form-sub">Entre com suas credenciais de admin</div>
+      <!-- VIEW: LOGIN -->
+      <div id="view-login">
+        <div class="form-titulo">Administrador</div>
+        <div class="form-sub">Entre com suas credenciais de admin</div>
 
-      <div class="msg" id="msg-admin"></div>
+        <div class="msg" id="msg-login"></div>
 
-      <div class="campo">
-        <label>E-mail</label>
-        <input type="email" id="admin-email" placeholder="admin@email.com" autocomplete="username">
-      </div>
-      <div class="campo">
-        <label>Senha</label>
-        <div class="campo-senha">
-          <input type="password" id="admin-senha" placeholder="••••••••" autocomplete="current-password">
-          <button type="button" class="btn-ver-senha" onclick="toggleSenha()" tabindex="-1" title="Mostrar senha">
-            <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-            <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-          </button>
+        <div class="campo">
+          <label>E-mail</label>
+          <input type="email" id="admin-email" placeholder="admin@email.com" autocomplete="username">
         </div>
+        <div class="campo">
+          <label>Senha</label>
+          <div class="campo-senha">
+            <input type="password" id="admin-senha" placeholder="••••••••" autocomplete="current-password">
+            <button type="button" class="btn-ver-senha" onclick="toggleSenha()" tabindex="-1" title="Mostrar senha">
+              <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-submit" id="btn-admin" onclick="fazerLoginAdmin()">
+          <span class="spinner" id="spin-admin"></span>
+          <span id="txt-admin">Entrar como administrador</span>
+        </button>
+
+        <button type="button" onclick="mostrarView('esqueci')" style="background:none;border:none;cursor:pointer;display:block;width:100%;text-align:center;font-size:12px;color:var(--cinza-texto);margin-bottom:0.75rem;font-family:'Inter',sans-serif;transition:color 0.2s;" onmouseover="this.style.color='var(--branco)'" onmouseout="this.style.color='var(--cinza-texto)'">Esqueci minha senha</button>
+        <a href="/" class="voltar-link">← Voltar ao site</a>
       </div>
 
-      <button class="btn-submit" id="btn-admin" onclick="fazerLoginAdmin()">
-        <span class="spinner" id="spin-admin"></span>
-        <span id="txt-admin">Entrar como administrador</span>
-      </button>
+      <!-- VIEW: ESQUECI MINHA SENHA -->
+      <div id="view-esqueci" style="display:none">
+        <button type="button" onclick="mostrarView('login')" style="background:none;border:none;cursor:pointer;color:var(--cinza-texto);font-size:12px;margin-bottom:1.5rem;display:flex;align-items:center;gap:6px;font-family:'Inter',sans-serif;padding:0;transition:color 0.2s;" onmouseover="this.style.color='var(--branco)'" onmouseout="this.style.color='var(--cinza-texto)'">← Voltar ao login</button>
 
-      <a href="/" class="voltar-link">← Voltar ao site</a>
+        <div class="form-titulo">Redefinir senha</div>
+        <div class="form-sub">Informe seu e-mail de administrador</div>
+
+        <div class="msg" id="msg-esqueci"></div>
+
+        <div class="campo">
+          <label>E-mail</label>
+          <input type="email" id="esqueci-email" placeholder="admin@email.com">
+        </div>
+
+        <button class="btn-submit" id="btn-esqueci" onclick="enviarEsqueciSenha()">
+          <span class="spinner" id="spin-esqueci"></span>
+          <span id="txt-esqueci">Enviar link de redefinição</span>
+        </button>
+      </div>
+
+      <!-- VIEW: REDEFINIR SENHA (via token da URL) -->
+      <div id="view-redefinir" style="display:none">
+        <div class="form-titulo">Nova senha</div>
+        <div class="form-sub">Crie uma nova senha para sua conta</div>
+
+        <div class="msg" id="msg-redefinir"></div>
+
+        <div class="campo">
+          <label>Nova senha</label>
+          <input type="password" id="nova-senha" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <div class="campo">
+          <label>Confirmar nova senha</label>
+          <input type="password" id="nova-senha2" placeholder="••••••••" autocomplete="new-password">
+        </div>
+
+        <button class="btn-submit" id="btn-redefinir" onclick="confirmarRedefinicao()">
+          <span class="spinner" id="spin-redefinir"></span>
+          <span id="txt-redefinir">Redefinir senha</span>
+        </button>
+      </div>
 
     </div>
   </div>
@@ -281,63 +328,161 @@
 </div>
 
 <script>
-const EMAIL_HASH = 'f4e74563d8181446dae5c536e7b52b71947f03666e459e5b6e4fc65f97d959e0';
-const SENHA_HASH = '082984dd01b7bc67ef8990cf569e6522bfbde5913c069b21090bcded8f1a7b34';
+const API_URL = 'https://graduabm-backend-production.up.railway.app';
 
-if (sessionStorage.getItem('pbm_admin') === '1') {
+if (sessionStorage.getItem('pbm_admin') === '1' && sessionStorage.getItem('pbm_admin_jwt')) {
   window.location.href = '/admin';
 }
 
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+// Detecta se a URL tem token de redefinição
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('acao') === 'redefinir' && urlParams.get('token')) {
+  document.getElementById('view-login').style.display = 'none';
+  document.getElementById('view-redefinir').style.display = 'block';
 }
 
+function mostrarView(view) {
+  document.getElementById('view-login').style.display = view === 'login' ? 'block' : 'none';
+  document.getElementById('view-esqueci').style.display = view === 'esqueci' ? 'block' : 'none';
+  document.getElementById('view-redefinir').style.display = view === 'redefinir' ? 'block' : 'none';
+}
+
+// LOGIN
 async function fazerLoginAdmin() {
   const email = document.getElementById('admin-email').value.trim();
   const senha = document.getElementById('admin-senha').value;
+  const msg = document.getElementById('msg-login');
 
-  if (!email || !senha) {
-    mostrarMsg('Preencha e-mail e senha.');
-    return;
-  }
+  if (!email || !senha) { msg.textContent = 'Preencha e-mail e senha.'; msg.className = 'msg erro'; return; }
 
-  setLoading(true);
-  limparMsg();
+  document.getElementById('btn-admin').disabled = true;
+  document.getElementById('spin-admin').style.display = 'block';
+  document.getElementById('txt-admin').textContent = '';
+  msg.className = 'msg';
 
-  const [eHash, sHash] = await Promise.all([sha256(email), sha256(senha)]);
+  try {
+    const res = await fetch(`${API_URL}/api/admin/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, senha }),
+    });
+    const data = await res.json();
 
-  if (eHash === EMAIL_HASH && sHash === SENHA_HASH) {
+    if (!res.ok) {
+      msg.textContent = data.erro || 'E-mail ou senha incorretos.';
+      msg.className = 'msg erro';
+      document.getElementById('btn-admin').disabled = false;
+      document.getElementById('spin-admin').style.display = 'none';
+      document.getElementById('txt-admin').textContent = 'Entrar como administrador';
+      return;
+    }
+
     sessionStorage.setItem('pbm_admin', '1');
-    sessionStorage.setItem('pbm_admin_ts', Date.now().toString());
-    sessionStorage.setItem('pbm_admin_token', sHash);
+    sessionStorage.setItem('pbm_admin_jwt', data.token);
+    sessionStorage.setItem('pbm_admin_role', data.admin.role);
+    sessionStorage.setItem('pbm_admin_nome', data.admin.nome);
+    sessionStorage.setItem('pbm_admin_email', data.admin.email);
     window.location.href = '/admin';
-  } else {
-    mostrarMsg('E-mail ou senha incorretos.');
-    setLoading(false);
+  } catch {
+    msg.textContent = 'Erro de conexão. Tente novamente.';
+    msg.className = 'msg erro';
+    document.getElementById('btn-admin').disabled = false;
+    document.getElementById('spin-admin').style.display = 'none';
+    document.getElementById('txt-admin').textContent = 'Entrar como administrador';
   }
 }
 
-function mostrarMsg(txt) {
-  const el = document.getElementById('msg-admin');
-  el.textContent = txt;
-  el.className = 'msg erro';
+// ESQUECI MINHA SENHA
+async function enviarEsqueciSenha() {
+  const email = document.getElementById('esqueci-email').value.trim();
+  const msg = document.getElementById('msg-esqueci');
+
+  if (!email) { msg.textContent = 'Informe seu e-mail.'; msg.className = 'msg erro'; return; }
+
+  document.getElementById('btn-esqueci').disabled = true;
+  document.getElementById('spin-esqueci').style.display = 'block';
+  document.getElementById('txt-esqueci').textContent = '';
+  msg.className = 'msg';
+
+  try {
+    await fetch(`${API_URL}/api/admin/auth/esqueci-senha`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    msg.textContent = 'Se este e-mail estiver cadastrado, você receberá um link em breve.';
+    msg.className = 'msg';
+    msg.style.background = 'rgba(127,119,221,0.1)';
+    msg.style.border = '1px solid rgba(127,119,221,0.3)';
+    msg.style.color = '#AFA9EC';
+    msg.style.display = 'block';
+  } catch {
+    msg.textContent = 'Erro de conexão. Tente novamente.';
+    msg.className = 'msg erro';
+  } finally {
+    document.getElementById('btn-esqueci').disabled = false;
+    document.getElementById('spin-esqueci').style.display = 'none';
+    document.getElementById('txt-esqueci').textContent = 'Enviar link de redefinição';
+  }
 }
 
-function limparMsg() {
-  const el = document.getElementById('msg-admin');
-  el.className = 'msg';
-  el.textContent = '';
-}
+// REDEFINIR SENHA
+async function confirmarRedefinicao() {
+  const nova = document.getElementById('nova-senha').value;
+  const nova2 = document.getElementById('nova-senha2').value;
+  const msg = document.getElementById('msg-redefinir');
+  const token = new URLSearchParams(window.location.search).get('token');
 
-function setLoading(on) {
-  document.getElementById('btn-admin').disabled = on;
-  document.getElementById('spin-admin').style.display = on ? 'block' : 'none';
-  document.getElementById('txt-admin').textContent = on ? '' : 'Entrar como administrador';
+  if (!nova || !nova2) { msg.textContent = 'Preencha os dois campos.'; msg.className = 'msg erro'; return; }
+  if (nova !== nova2) { msg.textContent = 'As senhas não coincidem.'; msg.className = 'msg erro'; return; }
+  if (nova.length < 8) { msg.textContent = 'A senha deve ter pelo menos 8 caracteres.'; msg.className = 'msg erro'; return; }
+
+  document.getElementById('btn-redefinir').disabled = true;
+  document.getElementById('spin-redefinir').style.display = 'block';
+  document.getElementById('txt-redefinir').textContent = '';
+  msg.className = 'msg';
+
+  try {
+    const res = await fetch(`${API_URL}/api/admin/auth/redefinir-senha`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, nova_senha: nova }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      msg.textContent = data.erro || 'Erro ao redefinir senha.';
+      msg.className = 'msg erro';
+      document.getElementById('btn-redefinir').disabled = false;
+      document.getElementById('spin-redefinir').style.display = 'none';
+      document.getElementById('txt-redefinir').textContent = 'Redefinir senha';
+      return;
+    }
+
+    msg.textContent = 'Senha redefinida com sucesso! Redirecionando para o login…';
+    msg.className = 'msg';
+    msg.style.background = 'rgba(39,160,90,0.1)';
+    msg.style.border = '1px solid rgba(39,160,90,0.3)';
+    msg.style.color = '#7DD99A';
+    msg.style.display = 'block';
+    setTimeout(() => { window.location.href = '/admin-login'; }, 2000);
+  } catch {
+    msg.textContent = 'Erro de conexão. Tente novamente.';
+    msg.className = 'msg erro';
+    document.getElementById('btn-redefinir').disabled = false;
+    document.getElementById('spin-redefinir').style.display = 'none';
+    document.getElementById('txt-redefinir').textContent = 'Redefinir senha';
+  }
 }
 
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter') fazerLoginAdmin();
+  if (e.key !== 'Enter') return;
+  const viewLogin = document.getElementById('view-login');
+  const viewEsqueci = document.getElementById('view-esqueci');
+  const viewRedefinir = document.getElementById('view-redefinir');
+  if (viewLogin.style.display !== 'none') fazerLoginAdmin();
+  else if (viewEsqueci.style.display !== 'none') enviarEsqueciSenha();
+  else if (viewRedefinir.style.display !== 'none') confirmarRedefinicao();
 });
 
 function toggleSenha() {
@@ -358,5 +503,16 @@ function toggleSenha() {
   }
 }
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

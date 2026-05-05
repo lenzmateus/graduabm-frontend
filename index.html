@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
@@ -26,7 +27,7 @@
   body {
     background: var(--carvao);
     color: var(--branco);
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 15px;
     line-height: 1.6;
     overflow-x: hidden;
@@ -141,12 +142,28 @@
     line-height: 0.92;
     letter-spacing: 0.02em;
     color: var(--branco);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     animation: fadeUp 0.6s 0.1s ease both;
   }
   .hero-titulo .destaque {
     color: var(--vermelho);
     display: block;
+  }
+
+  .hero-tagline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    letter-spacing: 0.1em;
+    color: var(--vermelho);
+    margin-bottom: 1.75rem;
+    animation: fadeUp 0.6s 0.15s ease both;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tagline::before {
+    content: '';
+    width: 3px; height: 22px;
+    background: var(--vermelho);
+    flex-shrink: 0;
   }
 
   .hero-sub {
@@ -169,7 +186,7 @@
     border: none;
     border-radius: 8px;
     padding: 13px 28px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px; font-weight: 600;
     cursor: pointer;
     transition: background 0.2s, transform 0.1s;
@@ -183,7 +200,7 @@
     border: 1px solid var(--cinza-borda);
     border-radius: 8px;
     padding: 13px 24px;
-    font-family: 'IBM Plex Sans', sans-serif;
+    font-family: 'Inter', sans-serif;
     font-size: 14px;
     cursor: pointer;
     transition: border-color 0.2s, background 0.2s;
@@ -206,11 +223,36 @@
   }
   .stat-desc { font-size: 11px; color: var(--cinza-texto); line-height: 1.4; }
 
-  /* ── HERO RIGHT — BANNER CURSOS ── */
+  /* ── HERO RIGHT — FOTO ── */
   .hero-right {
-    display: flex; align-items: center; justify-content: center;
-    padding: 4rem 4rem 4rem 2rem;
     position: relative; z-index: 2;
+    overflow: hidden;
+  }
+
+  .hero-visual {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .hero-banner-img {
+    position: relative; z-index: 1;
+    width: min(88%, 520px);
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 0 48px rgba(192,39,15,0.28)) drop-shadow(0 0 100px rgba(192,39,15,0.10));
+    animation: float 7s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-14px); }
+  }
+
+  /* gradiente diagonal que funde com o fundo escuro à esquerda */
+  .hero-visual::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(105deg, #0F0F0F 0%, #0F0F0F 8%, transparent 40%);
+    pointer-events: none;
   }
 
   .cursos-banner {
@@ -387,6 +429,14 @@
     font-size: 12px;
     color: var(--cinza-texto);
     line-height: 1.5;
+  }
+  .stats-bar-hint {
+    margin-top: 6px;
+    font-size: 10px;
+    color: var(--vermelho);
+    line-height: 1.4;
+    font-style: italic;
+    opacity: 0.8;
   }
   @media (max-width: 768px) {
     .stats-bar { flex-direction: column; }
@@ -571,6 +621,8 @@
       <span class="destaque">começa aqui.</span>
     </h1>
 
+    <div class="hero-tagline">Você não estuda. Você Treina.</div>
+
     <p class="hero-sub">
       Questões organizadas por legislação, simulados no tempo oficial da prova e acompanhamento do seu desempenho — tudo focado em quem quer <strong>avançar na carreira</strong> pelo mérito intelectual.<br><br>
       Conteúdo baseado nos <strong>decretos, leis e normativas</strong> cobrados na prova — sem enrolação.
@@ -587,7 +639,10 @@
   </div>
 
   <div class="hero-right">
-    <div class="cursos-banner">
+    <div class="hero-visual">
+      <img class="hero-banner-img" src="/images/emblem-pbm.png" alt="Protocolo Bravo Mike">
+    </div>
+    <div class="cursos-banner" style="display:none;">
 
       <div class="banner-topo">
         <div class="banner-linha"></div>
@@ -686,6 +741,7 @@
   <div class="stats-bar-item">
     <div class="stats-bar-num">60/40</div>
     <div class="stats-bar-desc">questões — CTSP<br>e CBA respectivamente</div>
+    <div class="stats-bar-hint">Novos concursos chegando.<br>A missão se expande.</div>
   </div>
   <div class="stats-bar-item">
     <div class="stats-bar-num">5</div>

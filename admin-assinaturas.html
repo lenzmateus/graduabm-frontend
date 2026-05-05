@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+  <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Assinaturas</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --carvao: #0F0F0F;
@@ -28,7 +29,7 @@
     --erro: #E24B4A;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'IBM Plex Sans', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
   .layout { display: flex; min-height: 100vh; }
 
   /* SIDEBAR */
@@ -48,7 +49,7 @@
   .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
   .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
   .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'IBM Plex Sans', sans-serif; }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
   .btn-sair:hover { border-color: #555; color: var(--branco); }
 
   /* MAIN */
@@ -56,6 +57,9 @@
   .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
   .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
   .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .topbar-dir { display: flex; align-items: center; gap: 12px; }
+  .btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
   .conteudo { flex: 1; padding: 2rem; overflow-y: auto; animation: fadeUp 0.3s ease both; }
   @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -72,9 +76,9 @@
 
   /* FILTROS */
   .filtros-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
-  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: 'IBM Plex Sans', sans-serif; cursor: pointer; outline: none; transition: border-color 0.15s; }
+  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; outline: none; transition: border-color 0.15s; }
   .filtro-select:focus { border-color: var(--roxo); }
-  .filtro-input { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: 'IBM Plex Sans', sans-serif; outline: none; transition: border-color 0.15s; min-width: 220px; }
+  .filtro-input { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 10px; font-size: 12px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s; min-width: 220px; }
   .filtro-input::placeholder { color: #555; }
   .filtro-input:focus { border-color: var(--roxo); }
 
@@ -95,7 +99,7 @@
 
   /* AÇÕES */
   .acoes { display: flex; gap: 6px; }
-  .btn-acao { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .btn-acao { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
   .btn-acao:hover { border-color: var(--roxo); color: #AFA9EC; }
   .btn-acao.verde:hover { border-color: var(--verde-borda); color: #7DD99A; }
   .btn-acao.vermelho:hover { border-color: var(--vermelho-borda); color: #F09595; }
@@ -103,7 +107,7 @@
   /* PAGINAÇÃO */
   .paginacao { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-top: 1px solid var(--cinza-borda); font-size: 12px; color: var(--cinza-texto); }
   .pag-btns { display: flex; gap: 6px; }
-  .btn-pag { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 12px; font-size: 12px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .btn-pag { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 12px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .btn-pag:hover:not(:disabled) { border-color: #555; color: var(--branco); }
   .btn-pag:disabled { opacity: 0.3; cursor: default; }
 
@@ -114,23 +118,23 @@
   .modal-sub { font-size: 12px; color: var(--cinza-texto); margin-bottom: 1.5rem; }
   .modal-campo { margin-bottom: 1rem; }
   .modal-campo label { display: block; font-size: 11px; font-weight: 500; color: #888; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
-  .modal-campo input, .modal-campo select, .modal-campo textarea { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 7px; padding: 9px 12px; font-family: 'IBM Plex Sans', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.15s; }
+  .modal-campo input, .modal-campo select, .modal-campo textarea { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 7px; padding: 9px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.15s; }
   .modal-campo input::placeholder, .modal-campo textarea::placeholder { color: #555; }
   .modal-campo input:focus, .modal-campo select:focus, .modal-campo textarea:focus { border-color: var(--roxo); }
   .modal-campo textarea { resize: vertical; min-height: 60px; }
   .modal-campo select option { background: var(--cinza-medio); }
   .modal-campo .hint { font-size: 11px; color: #555; margin-top: 4px; }
   .modal-btns { display: flex; gap: 8px; margin-top: 1.5rem; }
-  .btn-modal-ok { flex: 1; background: var(--roxo); border: none; color: #fff; border-radius: 7px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.15s; }
+  .btn-modal-ok { flex: 1; background: var(--roxo); border: none; color: #fff; border-radius: 7px; padding: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.15s; }
   .btn-modal-ok:hover { background: #6960C8; }
   .btn-modal-ok.vermelho { background: var(--vermelho); }
   .btn-modal-ok.vermelho:hover { background: #8B1A08; }
-  .btn-modal-cancel { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 7px; padding: 10px 20px; font-size: 13px; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: all 0.15s; }
+  .btn-modal-cancel { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 7px; padding: 10px 20px; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .btn-modal-cancel:hover { border-color: #555; color: var(--branco); }
 
   /* CUPONS */
   .cupons-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-  .btn-novo { display: inline-flex; align-items: center; gap: 7px; background: var(--roxo); color: #fff; border: none; border-radius: 7px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'IBM Plex Sans', sans-serif; transition: background 0.2s; }
+  .btn-novo { display: inline-flex; align-items: center; gap: 7px; background: var(--roxo); color: #fff; border: none; border-radius: 7px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; }
   .btn-novo:hover { background: #6960C8; }
 
   /* LOGS */
@@ -144,6 +148,9 @@
   .toast.visivel { transform: translateX(-50%) translateY(0); }
   .toast.verde { border-color: var(--verde-borda); color: #7DD99A; }
   .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
+
+  /* BADGE INATIVO 6M */
+  .badge-inativo6m { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.35); color: #E24B4A; }
 
   /* LOADING */
   .loading-row td { text-align: center; color: var(--cinza-texto); padding: 2rem; font-size: 13px; }
@@ -188,10 +195,30 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         Questões
       </a>
+      <a class="nav-item" href="/admin-flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+      <a class="nav-item" href="/admin-simulados-mensais">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>
+        Simulados Mensais
+      </a>
+      <a class="nav-item" href="/simulado-mensal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        Missão FDS
+      </a>
       <div class="nav-label">Alunos</div>
       <a class="nav-item ativo" href="/admin-assinaturas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         Assinaturas
+      </a>
+      <a class="nav-item" href="/admin-relatorios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Relatórios
+      </a>
+      <a class="nav-item" href="/admin#denuncias">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        Denúncias
       </a>
       <div class="nav-label">Sistema</div>
       <a class="nav-item" href="/" target="_blank">
@@ -207,7 +234,10 @@
   <div class="main">
     <div class="topbar">
       <span class="topbar-titulo">Gerenciamento de Assinaturas</span>
-      <span class="topbar-mono" id="topbar-ts">—</span>
+      <div class="topbar-dir">
+        <span class="topbar-mono" id="topbar-ts">—</span>
+        <button class="btn-topbar-sair" onclick="encerrarSessao()">Encerrar sessão</button>
+      </div>
     </div>
     <div class="conteudo">
 
@@ -278,6 +308,23 @@
         </div>
       </div>
 
+      <!-- RELATÓRIOS -->
+      <div class="secao-titulo">Relatório de Alunos</div>
+      <div class="tabela-wrap" style="margin-bottom:1.5rem;">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Segmento</th>
+              <th>Quantidade</th>
+              <th>% do total</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-relatorio">
+            <tr class="loading-row"><td colspan="3">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
       <!-- CUPONS -->
       <div class="cupons-header">
         <div class="secao-titulo" style="margin-bottom:0;flex:1;">Cupons de Acesso</div>
@@ -311,6 +358,26 @@
 </div>
 
 <!-- MODAIS -->
+
+<!-- Modal: Alterar Curso -->
+<div class="modal-overlay" id="modal-curso" style="display:none;">
+  <div class="modal">
+    <div class="modal-titulo">Alterar Curso</div>
+    <div class="modal-sub" id="modal-curso-sub"></div>
+    <div class="modal-campo">
+      <label>Curso de acesso</label>
+      <select id="modal-curso-valor">
+        <option value="ctsp">CTSP — Sargento</option>
+        <option value="cba">CBA — Tenente</option>
+        <option value="ambos">Ambos (CTSP + CBA)</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="fecharModalCurso()">Cancelar</button>
+      <button class="btn-modal-ok" onclick="confirmarAlterarCurso()">Salvar Curso</button>
+    </div>
+  </div>
+</div>
 
 <!-- Modal: Ação em assinatura -->
 <div class="modal-overlay" id="modal-acao" style="display:none;">
@@ -399,6 +466,30 @@
   </div>
 </div>
 
+<!-- Modal: Excluir Usuário -->
+<div class="modal-overlay" id="modal-excluir" style="display:none;">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-titulo" style="color:var(--erro);">Excluir Usuário</div>
+    <div class="modal-sub" id="modal-excluir-sub"></div>
+    <div style="background:rgba(226,75,74,0.08);border:1px solid rgba(226,75,74,0.3);border-radius:8px;padding:12px 14px;margin-bottom:1.25rem;font-size:12px;color:#F09595;line-height:1.6;">
+      Esta ação é <strong>permanente e irreversível</strong>. Serão excluídos:<br>
+      · Todas as sessões e respostas do aluno<br>
+      · Participações em simulados mensais<br>
+      · Denúncias registradas<br>
+      · Histórico de assinatura<br>
+      · Cadastro do usuário
+    </div>
+    <div class="modal-campo">
+      <label>Digite o e-mail do aluno para confirmar</label>
+      <input type="text" id="excluir-confirma-email" placeholder="" autocomplete="off" oninput="validarConfirmacaoExcluir()">
+    </div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="fecharModalExcluir()">Cancelar</button>
+      <button class="btn-modal-ok vermelho" id="btn-confirmar-excluir" onclick="confirmarExcluir()" disabled>Excluir Permanentemente</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="/js/api.js"></script>
@@ -408,13 +499,14 @@
     window.location.href = '/admin-login';
   }
 
-  const ADMIN_TOKEN = sessionStorage.getItem('pbm_admin_token');
+  const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
 
   // ── Estado ─────────────────────────────────────────────────
   let paginaAtual = 1;
   const POR_PAGINA = 20;
   let totalAlunos = 0;
   let debounceTimer = null;
+  let buscaSeq = 0;
   let acaoAtual = { userId: null, acao: null };
 
   // ── Init ───────────────────────────────────────────────────
@@ -448,6 +540,7 @@
   }
 
   async function carregarAlunos() {
+    const minha = ++buscaSeq;
     const tbody = document.getElementById('tbody-alunos');
     tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Carregando…</td></tr>';
 
@@ -463,10 +556,12 @@
 
     try {
       const data = await PBM.Admin.assinaturas.listar(params);
+      if (minha !== buscaSeq) return; // request mais recente sobrepôs este
       totalAlunos = data.total || 0;
       renderizarAlunos(data.alunos || []);
       atualizarPaginacao();
     } catch (err) {
+      if (minha !== buscaSeq) return;
       tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Erro ao carregar dados.</td></tr>';
     }
   }
@@ -480,10 +575,15 @@
 
     const agora = Date.now();
     const em7Dias = agora + 7 * 24 * 60 * 60 * 1000;
+    const ha6Meses = agora - 180 * 24 * 60 * 60 * 1000;
 
     tbody.innerHTML = alunos.map(a => {
+      const inativo6m = !a.ativo && a.criado_em && new Date(a.criado_em).getTime() < ha6Meses;
+
       let statusBadge;
-      if (!a.ativo) {
+      if (!a.ativo && inativo6m) {
+        statusBadge = '<span class="badge badge-inativo6m"><span class="badge-dot"></span>Inativo 6m+</span>';
+      } else if (!a.ativo) {
         statusBadge = '<span class="badge badge-inativo"><span class="badge-dot"></span>Inativo</span>';
       } else if (a.vencimento && new Date(a.vencimento).getTime() <= em7Dias) {
         statusBadge = '<span class="badge badge-vencendo"><span class="badge-dot"></span>Vencendo</span>';
@@ -508,7 +608,9 @@
             ${!a.ativo ? `<button class="btn-acao verde" onclick="abrirAcao('${a.id}','ativar','${esc(a.nome)}')">Ativar</button>` : ''}
             ${a.ativo ? `<button class="btn-acao vermelho" onclick="abrirAcao('${a.id}','desativar','${esc(a.nome)}')">Desativar</button>` : ''}
             <button class="btn-acao" onclick="abrirAcao('${a.id}','trial','${esc(a.nome)}')">Trial</button>
+            <button class="btn-acao" onclick="abrirModalCurso('${a.id}','${esc(a.nome)}','${(a.curso||'ctsp')}')">Curso</button>
             <button class="btn-acao" onclick="verLogs('${a.id}','${esc(a.email)}')">Logs</button>
+            <button class="btn-acao vermelho" onclick="abrirModalExcluir('${a.id}','${esc(a.nome)}','${esc(a.email)}')">Excluir</button>
           </div>
         </td>
       </tr>`;
@@ -648,10 +750,13 @@
   }
 
   function abrirModalNovoCupom() {
+    const hoje = new Date().toISOString().split('T')[0];
     document.getElementById('cupom-codigo').value = '';
     document.getElementById('cupom-dias').value = '7';
     document.getElementById('cupom-max-usos').value = '';
     document.getElementById('cupom-validade').value = '';
+    document.getElementById('cupom-validade').min = hoje;
+    document.getElementById('editar-validade').min = hoje;
     document.getElementById('cupom-descricao').value = '';
     document.getElementById('modal-cupom').style.display = 'flex';
   }
@@ -741,6 +846,75 @@
     }
   }
 
+  // ── Modal Curso ─────────────────────────────────────────────
+  let cursoAtual = { userId: null };
+
+  function abrirModalCurso(userId, nome, cursoAtualVal) {
+    cursoAtual.userId = userId;
+    document.getElementById('modal-curso-sub').textContent = nome;
+    document.getElementById('modal-curso-valor').value = cursoAtualVal || 'ctsp';
+    document.getElementById('modal-curso').style.display = 'flex';
+  }
+
+  function fecharModalCurso() {
+    document.getElementById('modal-curso').style.display = 'none';
+    cursoAtual.userId = null;
+  }
+
+  async function confirmarAlterarCurso() {
+    if (!cursoAtual.userId) return;
+    const curso = document.getElementById('modal-curso-valor').value;
+    try {
+      await PBM.Admin.assinaturas.gerenciar(cursoAtual.userId, { acao: 'alterar_curso', curso });
+      fecharModalCurso();
+      toast('Curso atualizado com sucesso!', 'verde');
+      carregarAlunos();
+    } catch (err) {
+      toast(err.erro || 'Erro ao alterar curso.', 'erro');
+    }
+  }
+
+  // ── Relatório básico ────────────────────────────────────────
+  async function carregarRelatorio() {
+    const tbody = document.getElementById('tbody-relatorio');
+    try {
+      const hdrs = { 'Authorization': `Bearer ${ADMIN_JWT}` };
+      const [sCTSP, sCBA, sAmbos, sAtivos, sInativos] = await Promise.allSettled([
+        fetch('/api/admin/assinaturas?status=ativo&curso=ctsp&per_page=1', { headers: hdrs }).then(r => r.json()),
+        fetch('/api/admin/assinaturas?status=ativo&curso=cba&per_page=1', { headers: hdrs }).then(r => r.json()),
+        fetch('/api/admin/assinaturas?status=ativo&curso=ambos&per_page=1', { headers: hdrs }).then(r => r.json()),
+        fetch('/api/admin/assinaturas?status=ativo&per_page=1', { headers: hdrs }).then(r => r.json()),
+        fetch('/api/admin/assinaturas?status=inativo&per_page=1', { headers: hdrs }).then(r => r.json()),
+      ]);
+
+      const val = (s) => s.status === 'fulfilled' ? (s.value.total ?? 0) : null;
+      const rCTSP = val(sCTSP), rCBA = val(sCBA), rAmbos = val(sAmbos);
+      const rAtivos = val(sAtivos), rInativos = val(sInativos);
+
+      const total = (rAtivos ?? 0) + (rInativos ?? 0);
+      const pct = (n) => n === null ? '—' : (total > 0 ? ((n / total) * 100).toFixed(1) + '%' : '—');
+      const fmt = (n) => n === null ? '<span style="color:#F09595">erro</span>' : n;
+
+      const linhas = [
+        { label: 'Ativos — CTSP (Sargento)', n: rCTSP, cor: '#7DD99A' },
+        { label: 'Ativos — CBA (Tenente)', n: rCBA, cor: '#AFA9EC' },
+        { label: 'Ativos — Ambos', n: rAmbos, cor: '#EF9F27' },
+        { label: 'Inativos (sem acesso)', n: rInativos, cor: '#F09595' },
+        { label: 'Total de cadastros', n: total, cor: '#F8F6F2', bold: true },
+      ];
+
+      tbody.innerHTML = linhas.map(l => `<tr>
+        <td style="font-size:13px;${l.bold ? 'font-weight:600;' : ''}color:${l.cor};">${l.label}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:13px;${l.bold ? 'font-weight:600;' : ''}">${fmt(l.n)}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cinza-texto);">${l.bold ? '100%' : pct(l.n)}</td>
+      </tr>`).join('');
+    } catch {
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="3">Erro ao carregar relatório.</td></tr>';
+    }
+  }
+
+  carregarRelatorio();
+
   // ── Fechar modal ao clicar fora ────────────────────────────
   document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', function(e) {
@@ -762,10 +936,63 @@
     toastTimer = setTimeout(() => el.classList.remove('visivel'), 3000);
   }
 
+  // ── Modal Excluir Usuário ──────────────────────────────────
+  let excluirAtual = { userId: null, email: null };
+
+  function abrirModalExcluir(userId, nome, email) {
+    excluirAtual = { userId, email };
+    document.getElementById('modal-excluir-sub').textContent = `${nome} · ${email}`;
+    document.getElementById('excluir-confirma-email').value = '';
+    document.getElementById('btn-confirmar-excluir').disabled = true;
+    document.getElementById('modal-excluir').style.display = 'flex';
+    setTimeout(() => document.getElementById('excluir-confirma-email').focus(), 100);
+  }
+
+  function fecharModalExcluir() {
+    document.getElementById('modal-excluir').style.display = 'none';
+    excluirAtual = { userId: null, email: null };
+  }
+
+  function validarConfirmacaoExcluir() {
+    const digitado = document.getElementById('excluir-confirma-email').value.trim().toLowerCase();
+    const esperado = (excluirAtual.email || '').toLowerCase();
+    document.getElementById('btn-confirmar-excluir').disabled = digitado !== esperado;
+  }
+
+  async function confirmarExcluir() {
+    const { userId } = excluirAtual;
+    if (!userId) return;
+    const btn = document.getElementById('btn-confirmar-excluir');
+    btn.disabled = true;
+    btn.textContent = 'Excluindo…';
+    try {
+      const r = await PBM.Admin.assinaturas.excluir(userId);
+      fecharModalExcluir();
+      toast(r.mensagem || 'Usuário excluído com sucesso.', 'verde');
+      carregarAlunos();
+      carregarStats();
+    } catch (err) {
+      toast(err.erro || 'Erro ao excluir usuário.', 'erro');
+      btn.disabled = false;
+      btn.textContent = 'Excluir Permanentemente';
+    }
+  }
+
   function encerrarSessao() {
-    ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_token'].forEach(k => sessionStorage.removeItem(k));
+    ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email'].forEach(k => sessionStorage.removeItem(k));
     window.location.href = '/admin-login';
   }
 </script>
+<style>
+.pbm-watermark {
+  pointer-events: none; user-select: none;
+  position: fixed; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05; z-index: 0;
+}
+</style>
+<div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

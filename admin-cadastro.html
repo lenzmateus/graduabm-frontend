@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
   <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Protocolo Bravo Mike — Cadastro de Gestor</title>
+<title>Protocolo Bravo Mike — Cadastro de Administrador</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -17,6 +17,9 @@
     --roxo: #7F77DD;
     --roxo-bg: rgba(127,119,221,0.08);
     --roxo-borda: rgba(127,119,221,0.3);
+    --vermelho: #C0270F;
+    --vermelho-bg: rgba(192,39,15,0.08);
+    --vermelho-borda: rgba(192,39,15,0.3);
     --verde: #27A05A;
     --erro: #E24B4A;
   }
@@ -26,19 +29,19 @@
   .card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 14px; padding: 2.5rem; width: 100%; max-width: 420px; }
 
   .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.06em; color: var(--branco); text-align: center; margin-bottom: 4px; }
-  .subtitulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #AFA9EC; letter-spacing: 0.08em; text-align: center; margin-bottom: 2.5rem; text-transform: uppercase; }
+  .subtitulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #F09595; letter-spacing: 0.08em; text-align: center; margin-bottom: 2.5rem; text-transform: uppercase; }
 
-  .aviso-convite { background: var(--roxo-bg); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #AFA9EC; margin-bottom: 1.5rem; line-height: 1.5; }
+  .aviso-convite { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #F09595; margin-bottom: 1.5rem; line-height: 1.5; }
   .aviso-convite strong { color: var(--branco); }
 
   .campo { margin-bottom: 1.25rem; }
   label { display: block; font-size: 11px; font-weight: 500; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
   input { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 10px 14px; font-family: 'Inter', sans-serif; font-size: 14px; outline: none; transition: border-color 0.15s; }
-  input:focus { border-color: var(--roxo); }
+  input:focus { border-color: var(--vermelho); }
   input:read-only { opacity: 0.6; cursor: not-allowed; }
 
-  .btn { width: 100%; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; margin-top: 0.5rem; }
-  .btn:hover { background: #6960C8; }
+  .btn { width: 100%; background: var(--vermelho); color: #fff; border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; margin-top: 0.5rem; }
+  .btn:hover { background: #a32010; }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .msg { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 13px; display: none; }
@@ -50,27 +53,27 @@
   .convite-invalido p { font-size: 13px; color: var(--cinza-texto); }
 
   .rodape { text-align: center; margin-top: 1.5rem; font-size: 12px; color: #555; }
-  .rodape a { color: var(--roxo); text-decoration: none; }
+  .rodape a { color: var(--vermelho); text-decoration: none; }
   .rodape a:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
 <div class="card">
   <div class="logo">Protocolo Bravo Mike</div>
-  <div class="subtitulo">Cadastro de Gestor</div>
+  <div class="subtitulo">Cadastro de Administrador</div>
 
   <div id="conteudo-loading" style="text-align:center;color:#555;font-size:13px;padding:1rem 0;">Verificando convite…</div>
   <div id="conteudo-invalido" class="convite-invalido" style="display:none">
     <h2>Convite inválido</h2>
-    <p>Este link de convite é inválido, expirou ou já foi utilizado.<br>Solicite um novo convite ao administrador.</p>
+    <p>Este link de convite é inválido, expirou ou já foi utilizado.<br>Solicite um novo convite ao administrador responsável.</p>
   </div>
 
   <form id="form-cadastro" style="display:none">
     <div class="aviso-convite">
-      Você foi convidado para gerenciar o <strong>Protocolo Bravo Mike</strong> como gestor. Preencha seus dados para criar sua conta.
+      Você foi convidado para administrar o <strong>Protocolo Bravo Mike</strong>. Preencha seus dados para criar sua conta de administrador.
     </div>
     <div class="campo">
-      <label for="email">Email</label>
+      <label for="email">E-mail</label>
       <input type="email" id="email" readonly>
     </div>
     <div class="campo">
@@ -85,11 +88,11 @@
       <label for="senha2">Confirmar senha</label>
       <input type="password" id="senha2" placeholder="••••••••" autocomplete="new-password" required minlength="8">
     </div>
-    <button class="btn" type="submit" id="btn-cadastro">Criar conta</button>
+    <button class="btn" type="submit" id="btn-cadastro">Criar conta de administrador</button>
     <div class="msg" id="msg"></div>
   </form>
 
-  <div class="rodape"><a href="/">Voltar ao início</a></div>
+  <div class="rodape"><a href="/admin-login">Já tenho conta — fazer login</a></div>
 </div>
 
 <script>
@@ -106,7 +109,7 @@ function mostrarInvalido(motivo) {
 if (!tokenConvite) {
   mostrarInvalido();
 } else {
-  fetch('/api/gestor/auth/validar-convite?token=' + encodeURIComponent(tokenConvite))
+  fetch('/api/admin/auth/validar-convite?token=' + encodeURIComponent(tokenConvite))
     .then(r => r.json())
     .then(data => {
       if (data.erro) { mostrarInvalido(data.erro); return; }
@@ -139,7 +142,7 @@ document.getElementById('form-cadastro').addEventListener('submit', async functi
   btn.textContent = 'Criando conta…';
 
   try {
-    const res = await fetch('/api/gestor/auth/cadastro', {
+    const res = await fetch('/api/admin/auth/cadastrar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, nome, senha, token_convite: tokenConvite }),
@@ -150,23 +153,18 @@ document.getElementById('form-cadastro').addEventListener('submit', async functi
       msg.className = 'msg erro';
       msg.textContent = data.erro || 'Erro ao criar conta.';
       btn.disabled = false;
-      btn.textContent = 'Criar conta';
+      btn.textContent = 'Criar conta de administrador';
       return;
     }
 
-    sessionStorage.setItem('pbm_gestor', '1');
-    sessionStorage.setItem('pbm_gestor_token', data.token);
-    sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
-    sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
-
     msg.className = 'msg sucesso';
-    msg.textContent = 'Conta criada com sucesso! Redirecionando…';
-    setTimeout(() => { window.location.href = '/gestor-painel'; }, 1200);
+    msg.textContent = 'Conta criada com sucesso! Redirecionando para o login…';
+    setTimeout(() => { window.location.href = '/admin-login'; }, 1500);
   } catch {
     msg.className = 'msg erro';
     msg.textContent = 'Sem conexão com o servidor.';
     btn.disabled = false;
-    btn.textContent = 'Criar conta';
+    btn.textContent = 'Criar conta de administrador';
   }
 });
 </script>
