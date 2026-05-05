@@ -226,6 +226,25 @@
         </div>
       </div>
 
+      <!-- GRÁFICO HORÁRIOS -->
+      <div class="grafico-horarios">
+        <div class="grafico-titulo">Sessões por horário do dia (últimos 90 dias)</div>
+        <div class="grafico-bars" id="grafico-bars">
+          <!-- preenchido pelo JS -->
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;padding:0 2px;">
+          <span class="g-label">00h</span>
+          <span class="g-label">03h</span>
+          <span class="g-label">06h</span>
+          <span class="g-label">09h</span>
+          <span class="g-label">12h</span>
+          <span class="g-label">15h</span>
+          <span class="g-label">18h</span>
+          <span class="g-label">21h</span>
+          <span class="g-label">23h</span>
+        </div>
+      </div>
+
       <!-- TABELA DETALHADA -->
       <div class="secao-titulo">Detalhe por aluno</div>
 
@@ -351,7 +370,7 @@
       const pct = Math.round((n / maxH) * 100);
       const label = String(h).padStart(2, '0') + 'h';
       return `<div class="g-bar-col" title="${label}: ${n} sessões">
-        <div class="g-bar" style="height:${pct}%;background:${pct > 60 ? '#C0270F' : pct > 30 ? '#7F77DD' : '#333'};"></div>
+        <div class="g-bar" style="height:${Math.max(pct,2)}%;background:${pct > 60 ? '#C0270F' : pct > 30 ? '#7F77DD' : '#333'};"></div>
       </div>`;
     }).join('');
   }

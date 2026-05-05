@@ -394,7 +394,7 @@
 
 <div class="tela-cheia" id="tela-loading">
   <div class="loader"></div>
-  <div style="font-size: 14px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace;">GERANDO CADERNO DE PROVA...</div>
+  <div id="loading-msg" style="font-size: 14px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace;">GERANDO CADERNO DE PROVA...</div>
 </div>
 
 <div class="layout">
@@ -477,7 +477,7 @@
 
     <div class="gab-footer">
       <button class="btn-nav" onclick="fecharGabarito()">Continuar Revisando</button>
-      <button class="btn-finalizar" onclick="entregarProva(false)" style="padding: 12px 24px;">Entregar Prova Definitivamente</button>
+      <button id="btn-entregar-prova" class="btn-finalizar" onclick="entregarProva(false)" style="padding: 12px 24px;">Entregar Prova Definitivamente</button>
     </div>
   </div>
 
@@ -537,7 +537,7 @@ let tempoRestante = 14400;
 let timerInterval = null;
 
 async function init() {
-  PBM.protegerRota();
+  await PBM.protegerRota();
 
   const curso = sessionStorage.getItem('pbm_simulado_curso');
   if (!curso) { window.location.href = '/simulados'; return; }
@@ -547,7 +547,6 @@ async function init() {
     questoes = res.questoes || [];
 
     if (questoes.length === 0) {
-      alert("Nenhuma questão encontrada para este simulado.");
       window.location.href = '/simulados';
       return;
     }
@@ -568,22 +567,29 @@ async function init() {
 
     document.getElementById('tela-loading').style.display = 'none';
     
+    // C4: Garante 4h desde o início — limpa timer de prova anterior do mesmo curso
+    sessionStorage.removeItem('pbm_timer_' + curso);
     iniciarCronometro();
     renderizarNav();
     carregarQuestao(0);
 
   } catch (err) {
     console.error(err);
-    alert("Erro ao carregar o simulado.");
     window.location.href = '/simulados';
   }
 }
 
 function iniciarCronometro() {
+  const curso = sessionStorage.getItem('pbm_simulado_curso');
+  const timerKey = 'pbm_timer_' + curso;
+  const salvo = sessionStorage.getItem(timerKey);
+  tempoRestante = salvo ? Math.max(0, parseInt(salvo)) : 14400;
+
   const el = document.getElementById('timer');
   timerInterval = setInterval(() => {
     tempoRestante--;
-    
+    sessionStorage.setItem(timerKey, String(tempoRestante));
+
     const h = String(Math.floor(tempoRestante / 3600)).padStart(2, '0');
     const m = String(Math.floor((tempoRestante % 3600) / 60)).padStart(2, '0');
     const s = String(tempoRestante % 60).padStart(2, '0');
@@ -741,9 +747,9 @@ function pintarBolinha(index, letra) {
 
 // ── ENTREGA DA PROVA ──
 async function entregarProva(porTempoEsgotado) {
-  if (porTempoEsgotado) {
-    alert("Tempo esgotado! A prova será entregue automaticamente com as bolinhas preenchidas no Cartão Resposta oficial até agora.");
-  } else {
+  const btnEntregar = document.getElementById('btn-entregar-prova');
+  if (btnEntregar) { if (btnEntregar.disabled) return; btnEntregar.disabled = true; }
+  if (!porTempoEsgotado) {
     const brancas = respostas.filter(r => !r.oficial).length;
     if (brancas > 0) {
       const c = confirm(`Você deixou ${brancas} bolinha(s) em branco no Cartão Resposta. Deseja entregar a prova mesmo assim? O que está apenas no rascunho NÃO conta!`);
@@ -752,9 +758,10 @@ async function entregarProva(porTempoEsgotado) {
   }
 
   clearInterval(timerInterval);
-  
+  sessionStorage.removeItem('pbm_timer_' + sessionStorage.getItem('pbm_simulado_curso'));
+
   // Mostrar loading over the whole page
-  document.getElementById('tela-loading').querySelector('div:nth-child(2)').textContent = 'CORRIGINDO PROVA E SALVANDO GABARITO...';
+  document.getElementById('loading-msg').textContent = 'CORRIGINDO PROVA E SALVANDO GABARITO...';
   document.getElementById('tela-loading').style.display = 'flex';
 
   if (!sessaoId) {
@@ -778,7 +785,14 @@ async function entregarProva(porTempoEsgotado) {
 
   try {
     await PBM.api.sessoes.encerrar(sessaoId);
-  } catch(e) {}
+  } catch(e) {
+    if (e && e.codigo === 'TEMPO_EXCEDIDO') {
+      document.getElementById('tela-loading').style.display = 'none';
+      alert('⏰ Tempo máximo do simulado excedido. Suas respostas foram registradas mas a entrega não pôde ser confirmada.');
+      window.location.href = '/simulados';
+      return;
+    }
+  }
 
   mostrarResultado();
 }
@@ -788,9 +802,9 @@ function mostrarResultado() {
   document.getElementById('tela-gabarito').classList.remove('ativo');
 
   const total = respostas.length;
-  const acertos = respostas.filter(r => r.oficial && r.oficial === r.gabaritoReal).length;
-  const erros = respostas.filter(r => r.oficial && r.oficial !== r.gabaritoReal).length;
-  const branco = respostas.filter(r => !r.oficial).length;
+  const acertos = respostas.filter(r => r.gabaritoReal && r.oficial === r.gabaritoReal).length;
+  const erros   = respostas.filter(r => r.gabaritoReal && r.oficial && r.oficial !== r.gabaritoReal).length;
+  const branco  = respostas.filter(r => !r.oficial).length;
   const pct = total > 0 ? Math.round((acertos / total) * 100) : 0;
 
   // Tempo usado
@@ -839,7 +853,7 @@ function mostrarResultado() {
     const at = (questoes[i].area_tematica || questoes[i].area || 'GERAL').toUpperCase();
     if (!porArea[at]) porArea[at] = { acertos: 0, total: 0 };
     porArea[at].total++;
-    if (r.oficial && r.oficial === r.gabaritoReal) porArea[at].acertos++;
+    if (r.gabaritoReal && r.oficial === r.gabaritoReal) porArea[at].acertos++;
   });
 
   const areaGrid = document.getElementById('res-area-grid');

@@ -687,8 +687,6 @@
 
 <script src="/js/api.js"></script>
 <script>
-  PBM.protegerRota();
-
   const usuario = PBM.getUsuario();
   if (usuario) {
     document.getElementById('sb-nome').textContent = usuario.nome;
@@ -1077,7 +1075,10 @@
     }
   }
 
-  carregar();
+  (async () => {
+    await PBM.protegerRota();
+    carregar();
+  })();
 </script>
 <style>
 .pbm-watermark {

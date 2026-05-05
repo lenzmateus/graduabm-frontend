@@ -715,24 +715,48 @@ function atualizarNomeLegislacao() {
 let todasQuestoes = [];
 let deleteId = null;
 
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function toast(msg, tipo) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'toast visivel' + (tipo ? ' ' + tipo : '');
+  clearTimeout(el._t);
+  el._t = setTimeout(() => { el.className = 'toast'; }, 4000);
+}
+
 async function supaFetch(path, method = 'GET', body = null) {
+  if (!ADMIN_JWT && !GESTOR_TOKEN) { window.location.href = '/admin-login'; return { ok: false, status: 401, data: null }; }
   const queryUrl  = GESTOR_TOKEN ? '/api/gestor/query' : '/api/admin/query';
   const authHeader = GESTOR_TOKEN
     ? { 'Authorization': 'Bearer ' + GESTOR_TOKEN }
-    : { 'Authorization': 'Bearer ' + (ADMIN_JWT || '') };
+    : { 'Authorization': 'Bearer ' + ADMIN_JWT };
   const res = await fetch(queryUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...authHeader },
     body: JSON.stringify({ path, method, body: body || undefined, prefer: 'return=representation' }),
   });
+  if (res.status === 401) {
+    ['pbm_admin','pbm_admin_ts','pbm_admin_jwt','pbm_admin_role','pbm_admin_nome','pbm_admin_email',
+     'pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
+    window.location.href = GESTOR_TOKEN ? '/gestor-login' : '/admin-login';
+    return { ok: false, status: 401, data: null };
+  }
   const txt = await res.text();
   return { ok: res.ok, status: res.status, data: txt ? JSON.parse(txt) : null };
 }
 
 async function carregarQuestoes() {
-  const r = await supaFetch('/rest/v1/questoes?select=*&order=criado_em.desc&limit=3000');
+  const r = await supaFetch('/rest/v1/questoes?select=*&order=criado_em.desc&limit=10000');
   if (r.ok && Array.isArray(r.data)) {
     todasQuestoes = r.data;
+    if (r.data.length >= 3000) {
+      toast(`⚠ ${r.data.length} questões carregadas — banco grande, considere paginação.`, 'aviso');
+    }
     aplicarFiltros();
   } else {
     document.getElementById('lista-questoes').innerHTML = '<div class="loading-txt" style="color:#F09595">Erro ao carregar questões.</div>';
@@ -772,7 +796,7 @@ function renderLista(questoes) {
     <div class="questao-row" id="row-${q.id}">
       <div>
         <div class="questao-enunciado" title="${enunciadoTitle}">${enunciadoEsc}</div>
-        <div class="questao-leg">${q.legislacao_nome || q.legislacao_id || '—'} · ${(q.curso || '').toUpperCase()} ${q.area_tematica || ''}</div>
+        <div class="questao-leg">${escHtml(q.legislacao_nome || q.legislacao_id || '—')} · ${(q.curso || '').toUpperCase()} ${q.area_tematica || ''}</div>
       </div>
       <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#AFA9EC;letter-spacing:0.04em">${q.codigo || '—'}</div>
       <div class="questao-gabarito">${letra}</div>
@@ -819,7 +843,7 @@ async function abrirModalEditar(id) {
   try {
     const r = await supaFetch(`/rest/v1/questoes?id=eq.${id}&select=*`);
     q = r.ok && Array.isArray(r.data) ? r.data[0] : null;
-  } catch {}
+  } catch (e) { toast('Erro ao carregar questão atualizada', 'erro'); }
   if (!q) q = todasQuestoes.find(x => x.id === id); // fallback para cache local
   if (!q) return;
 
@@ -857,10 +881,15 @@ async function salvarQuestao() {
   }
 
   const gabaritoIdx = parseInt(document.getElementById('m-gabarito').value);
+  if (isNaN(gabaritoIdx) || gabaritoIdx < 0 || gabaritoIdx > 4) {
+    erroEl.textContent = 'Gabarito inválido. Selecione uma alternativa de A a E.';
+    erroEl.style.display = 'block';
+    return;
+  }
   const gabaritoLetra = ['a','b','c','d','e'][gabaritoIdx];
-  const gabaritoAlt = gabaritoLetra ? document.getElementById('m-alt-' + gabaritoLetra)?.value.trim() : '';
+  const gabaritoAlt = document.getElementById('m-alt-' + gabaritoLetra)?.value.trim() || '';
   if (!gabaritoAlt) {
-    erroEl.textContent = `A alternativa marcada como gabarito (${(gabaritoLetra || '?').toUpperCase()}) não pode estar vazia.`;
+    erroEl.textContent = `A alternativa marcada como gabarito (${gabaritoLetra.toUpperCase()}) não pode estar vazia.`;
     erroEl.style.display = 'block';
     return;
   }
@@ -894,7 +923,7 @@ async function salvarQuestao() {
   if (id) {
     r = await supaFetch(`/rest/v1/questoes?id=eq.${id}`, 'PATCH', payload);
   } else {
-    r = await supaFetch('/rest/v1/questoes', 'POST', [payload]);
+    r = await supaFetch('/rest/v1/questoes', 'POST', payload);
   }
 
   btn.disabled = false;
@@ -978,8 +1007,8 @@ buildSidebar();
 /* ── Event listeners ── */
 document.getElementById('btn-sair').addEventListener('click', function () {
   ['pbm_admin','pbm_admin_ts','pbm_admin_jwt','pbm_admin_role','pbm_admin_nome','pbm_admin_email','pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
-  localStorage.removeItem('usuario');
-  localStorage.removeItem('token');
+  sessionStorage.removeItem('usuario');
+  sessionStorage.removeItem('token');
   window.location.href = _isGestor ? '/gestor-login' : '/';
 });
 
@@ -1004,16 +1033,6 @@ document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') { fecharModal(); fecharDelete(); }
 });
 
-/* Modo aluno na sidebar */
-const linkModoAluno = document.querySelector('.sidebar-nav a[href="/area-estudos"]');
-if (linkModoAluno) {
-  linkModoAluno.addEventListener('click', function (e) {
-    e.preventDefault();
-    localStorage.setItem('usuario', JSON.stringify({ nome: 'Aluno Teste', email: 'soulreaperfps@gmail.com', ativo: true, plano: 'mensal' }));
-    localStorage.setItem('token', 'admin-preview-token');
-    window.location.href = '/area-estudos';
-  });
-}
 
 carregarQuestoes().then(() => {
   const editarId = new URLSearchParams(location.search).get('editar');
@@ -1021,6 +1040,11 @@ carregarQuestoes().then(() => {
 });
 </script>
 <style>
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 10px 20px; font-size: 13px; color: #fff; transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
+.toast.visivel { transform: translateX(-50%) translateY(0); }
+.toast.verde { border-color: rgba(39,160,90,0.4); color: #7DD99A; }
+.toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
+.toast.aviso { border-color: rgba(255,180,0,0.4); color: #FFD166; }
 .pbm-watermark {
   pointer-events: none; user-select: none;
   position: fixed; top: 50%; left: 50%;
@@ -1031,5 +1055,6 @@ carregarQuestoes().then(() => {
 }
 </style>
 <div class="pbm-watermark" aria-hidden="true"></div>
+<div class="toast" id="toast"></div>
 </body>
 </html>

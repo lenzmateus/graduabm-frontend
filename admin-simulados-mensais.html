@@ -249,8 +249,8 @@ const API = 'https://graduabm-backend-production.up.railway.app';
 
 function encerrarSessao() {
   ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email'].forEach(k => sessionStorage.removeItem(k));
-  localStorage.removeItem('usuario');
-  localStorage.removeItem('token');
+  sessionStorage.removeItem('usuario');
+  sessionStorage.removeItem('token');
   window.location.href = '/';
 }
 

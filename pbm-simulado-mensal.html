@@ -347,7 +347,7 @@
     </div>
     <div class="gab-footer">
       <button class="btn-nav" onclick="fecharGabarito()">Continuar Revisando</button>
-      <button class="btn-finalizar" onclick="entregarProva(false)" style="padding:12px 24px;">Entregar Definitivamente</button>
+      <button id="btn-entregar-prova" class="btn-finalizar" onclick="entregarProva(false)" style="padding:12px 24px;">Entregar Definitivamente</button>
     </div>
   </div>
 
@@ -404,7 +404,7 @@ let currentIndex = 0;
 let respostas = [];
 let tempoRestante = 14400;
 let timerInterval = null;
-let tempoInicio = Date.now();
+let tempoInicio = parseInt(sessionStorage.getItem('pbm_sm_tempo_inicio') || '0') || Date.now();
 
 // ── LOBBY ────────────────────────────────────────────────────────────────────
 
@@ -619,7 +619,7 @@ function lobbyAbrirModalGerar() {
 // ── EXAM ─────────────────────────────────────────────────────────────────────
 
 async function init() {
-  PBM.protegerRota();
+  await PBM.protegerRota();
 
   simuladoId = sessionStorage.getItem('pbm_simulado_mensal_id');
   if (!simuladoId) { await initLobby(); return; }
@@ -657,6 +657,11 @@ async function init() {
     }
 
     respostas = questoes.map(q => ({ questao_id: q.id, rascunho: null, oficial: null }));
+
+    if (!sessionStorage.getItem('pbm_sm_tempo_inicio')) {
+      tempoInicio = Date.now();
+      sessionStorage.setItem('pbm_sm_tempo_inicio', String(tempoInicio));
+    }
 
     // Ajusta timer para não ultrapassar encerramento do simulado
     if (simuladoEncerramento) {
@@ -813,7 +818,10 @@ function fecharDrawerNavBtn() {
 }
 
 async function entregarProva(porTempo) {
+  const btnEntregar = document.getElementById('btn-entregar-prova');
+  if (btnEntregar) { if (btnEntregar.disabled) return; btnEntregar.disabled = true; }
   clearInterval(timerInterval);
+  sessionStorage.removeItem('pbm_sm_tempo_inicio');
   if (!porTempo) {
     const nOficial = respostas.filter(r => r.oficial).length;
     const nTotal = questoes.length;
@@ -848,8 +856,8 @@ async function entregarProva(porTempo) {
 
 function mostrarResultado(resultado) {
   const { acertos, total, percentual, posicao } = resultado;
-  const erros = respostas.filter(r => r.oficial && r.oficial !== null).length - acertos;
   const emBranco = respostas.filter(r => !r.oficial).length;
+  const erros = Math.max(0, total - acertos - emBranco);
   const tempoUsadoSeg = Math.floor((Date.now() - tempoInicio) / 1000);
   const th = String(Math.floor(tempoUsadoSeg / 3600)).padStart(2,'0');
   const tm = String(Math.floor((tempoUsadoSeg % 3600) / 60)).padStart(2,'0');

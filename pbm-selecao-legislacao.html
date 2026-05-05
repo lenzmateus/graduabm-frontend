@@ -1696,8 +1696,8 @@ function handleSair() {
   } else if (typeof PBM !== 'undefined') {
     PBM.Auth.logout();
   } else {
-    localStorage.removeItem('token');
-    localStorage.removeItem('usuario');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('usuario');
     window.location.href = '/login';
   }
 }
@@ -1707,7 +1707,7 @@ document.getElementById('btn-logout-top').addEventListener('click', handleSair);
 // ── PROTEÇÃO DE ROTA ──
 (function() {
   if (sessionStorage.getItem('pbm_admin') === '1') return;
-  if (!localStorage.getItem('token')) {
+  if (!sessionStorage.getItem('token')) {
     window.location.href = '/login';
   }
 })();

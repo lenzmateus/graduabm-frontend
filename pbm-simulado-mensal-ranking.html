@@ -291,7 +291,7 @@ function atualizarCountdownAguardando(targetIso) {
 }
 
 async function init() {
-  PBM.protegerRota();
+  await PBM.protegerRota();
   const user = PBM.getUsuario();
   if (user) document.getElementById('user-nome').textContent = user.nome;
   document.getElementById('btn-sair').addEventListener('click', () => PBM.Auth.logout());
@@ -547,6 +547,7 @@ function trocarGabFiltro(filtro) {
 }
 
 init();
+window.addEventListener('beforeunload', () => clearInterval(countdownInterval));
 </script>
 <style>
 .pbm-watermark {

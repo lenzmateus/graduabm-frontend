@@ -1069,9 +1069,9 @@
   (async function() {
     const u = PBM.getUsuario();
     if (u && PBM.Auth.estaLogado()) {
-      mostrarPainel(u); // exibe imediatamente com dados do localStorage
+      mostrarPainel(u); // exibe imediatamente com dados em cache
       try {
-        const data = await request('/api/auth/me');
+        const data = await PBM.Auth.me();
         if (data.usuario) {
           sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
           mostrarPainel(data.usuario); // atualiza com dados frescos do servidor
@@ -1125,16 +1125,12 @@
       const data = await PBM.Cupons.aplicar(codigo);
       msgEl.textContent = data.mensagem || 'Acesso liberado!';
       msgEl.className = 'cupom-msg sucesso';
-      // Atualiza o usuario no localStorage e recarrega o painel
       setTimeout(async () => {
         try {
-          const me = await fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + sessionStorage.getItem('token') } });
-          if (me.ok) {
-            const meData = await me.json();
-            if (meData.usuario) {
-              sessionStorage.setItem('usuario', JSON.stringify(meData.usuario));
-              mostrarPainel(meData.usuario, true);
-            }
+          const meData = await PBM.Auth.me();
+          if (meData.usuario) {
+            sessionStorage.setItem('usuario', JSON.stringify(meData.usuario));
+            mostrarPainel(meData.usuario, true);
           }
         } catch { window.location.reload(); }
       }, 1500);

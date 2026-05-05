@@ -291,6 +291,12 @@ async function supaFetch(path, method = 'GET', body = null) {
     headers: { 'Content-Type': 'application/json', ...authHeader },
     body: JSON.stringify({ path, method, body: body || undefined, prefer: 'return=representation' }),
   });
+  if (res.status === 401) {
+    ['pbm_admin','pbm_admin_ts','pbm_admin_jwt','pbm_admin_role','pbm_admin_nome','pbm_admin_email',
+     'pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
+    window.location.href = GESTOR_TOKEN ? '/gestor-login' : '/admin-login';
+    return { ok: false, status: 401, data: null };
+  }
   const txt = await res.text();
   return { ok: res.ok, status: res.status, data: txt ? JSON.parse(txt) : null };
 }
@@ -503,8 +509,8 @@ async function confirmarDelete() {
 
 document.getElementById('btn-sair').addEventListener('click', function() {
   ['pbm_admin','pbm_admin_ts','pbm_admin_jwt','pbm_admin_role','pbm_admin_nome','pbm_admin_email','pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
-  localStorage.removeItem('usuario');
-  localStorage.removeItem('token');
+  sessionStorage.removeItem('usuario');
+  sessionStorage.removeItem('token');
   window.location.href = _isGestor ? '/gestor-login' : '/';
 });
 document.getElementById('btn-novo').addEventListener('click', abrirModalNova);
@@ -528,8 +534,8 @@ const linkModoAluno = document.getElementById('link-modo-aluno');
 if (linkModoAluno) {
   linkModoAluno.addEventListener('click', function(e) {
     e.preventDefault();
-    localStorage.setItem('usuario', JSON.stringify({ nome: 'Aluno Teste', email: 'teste@protocolobravomike.com.br', ativo: true, plano: 'mensal' }));
-    localStorage.setItem('token', 'admin-preview-token');
+    sessionStorage.setItem('usuario', JSON.stringify({ nome: 'Aluno Teste', email: 'teste@protocolobravomike.com.br', ativo: true, plano: 'mensal' }));
+    sessionStorage.setItem('token', 'admin-preview-token');
     window.location.href = '/area-estudos';
   });
 }

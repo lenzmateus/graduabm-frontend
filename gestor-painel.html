@@ -473,7 +473,7 @@ const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
             const data = d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR') : '—';
             const resolvida = d.resolvida;
             return `<tr id="denuncia-row-${d.id}">
-              <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#AFA9EC;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(questaoLabel)}</td>
+              <td title="${escHtml(enunciado)}" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#AFA9EC;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:help;">${escHtml(questaoLabel)}</td>
               <td>${escHtml(d.comentario || '—')}</td>
               <td style="white-space:nowrap;color:#888">${data}</td>
               <td><span class="badge-status ${resolvida ? 'resolvido' : 'pendente'}">${resolvida ? 'resolvida' : 'pendente'}</span></td>
@@ -509,6 +509,8 @@ const GESTOR_NOME  = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
       renderDenuncias();
     } catch {
       el.innerHTML = '<div class="denuncias-vazio" style="color:#E24B4A">Erro ao carregar denúncias.</div>';
+      denunciasCache = [];
+      atualizarBadge();
     }
   }
 

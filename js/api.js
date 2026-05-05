@@ -10,7 +10,7 @@ async function request(path, options = {}) {
     res = await fetch(`${API_URL}${path}`, {
       ...options,
       headers,
-      signal: options.signal || AbortSignal.timeout(15000),
+      signal: options.signal || (AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined),
     });
   } catch (err) {
     if (err.name === 'TimeoutError') throw { status: 0, erro: 'Servidor demorou muito para responder. Tente novamente.' };
@@ -25,10 +25,11 @@ async function request(path, options = {}) {
   }
 
   if (res.status === 401 && data.erro && data.erro.includes('Sessão encerrada')) {
-    alert(data.erro);
+    sessionStorage.setItem('pbm_session_msg', data.erro);
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('usuario');
-    window.location.href = '/login';
+    const loginRedir = PBM?.isAdmin?.() ? '/admin-login' : PBM?.isGestor?.() ? '/gestor-login' : '/login';
+    window.location.href = loginRedir;
     throw new Error('Sessão encerrada');
   }
 
@@ -62,7 +63,7 @@ const PBM = {
       return;
     }
     try {
-      const data = await request('/api/auth/me');
+      const data = await PBM.Auth.me();
       if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
       if (!data.usuario?.ativo) {
         window.location.href = '/login';
@@ -120,6 +121,9 @@ const PBM = {
         method: 'POST',
         body: JSON.stringify({ senha_atual, nova_senha }),
       });
+    },
+    async me() {
+      return request('/api/auth/me');
     },
   },
 

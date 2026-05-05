@@ -560,6 +560,7 @@ function selecionarCurso(c) {
 function iniciarSimulado() {
   sessionStorage.setItem('pbm_modo', 'simulado');
   sessionStorage.setItem('pbm_simulado_curso', cursoSelecionado);
+  sessionStorage.removeItem('pbm_timer_' + cursoSelecionado);
   window.location.href = '/simulado-prova';
 }
 
@@ -676,8 +677,8 @@ function irParaSimuladoMensal(id) {
   window.location.href = '/simulado-mensal';
 }
 
-function init() {
-  PBM.protegerRota();
+async function init() {
+  await PBM.protegerRota();
   const user = PBM.getUsuario();
   if (user) {
     document.getElementById('user-nome').textContent = user.nome;

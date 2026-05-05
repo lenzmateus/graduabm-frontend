@@ -892,7 +892,7 @@ async function init() {
 
     if (qtdPorLeg && Object.keys(qtdPorLeg).length > 0) {
       // Novo fluxo: buscar por legislação individualmente com sua quantidade
-      const resultados = await Promise.all(
+      const settled = await Promise.allSettled(
         Object.entries(qtdPorLeg).map(([leg, n]) => {
           const p = new URLSearchParams({ curso, area, legislacoes: leg, quantidade: String(n) });
           if (filtro && filtro !== 'todas') p.set('filtro', filtro);
@@ -901,6 +901,7 @@ async function init() {
           );
         })
       );
+      const resultados = settled.filter(r => r.status === 'fulfilled').map(r => r.value);
       // Mescla e embaralha
       const merged = resultados.flat();
       for (let i = merged.length - 1; i > 0; i--) {
@@ -1053,6 +1054,7 @@ async function acaoPrincipal() {
 async function confirmarResposta() {
   if (!selecionada) return;
   respondida = true;
+  document.getElementById('btn-acao').disabled = true;
 
   const q       = questoes[idxAtual];
   const correta = getRespostaCorreta(q);
@@ -1672,10 +1674,24 @@ document.getElementById('pom-float-bar').addEventListener('click', function(e) {
     document.getElementById('pom-reabrir').style.display = 'flex';
   }
   if (minimizado) pomWin.classList.add('minimizado');
-  if (posLeft)   { pomWin.style.left   = posLeft;   pomWin.style.right  = 'auto'; }
-  if (posTop)    { pomWin.style.top    = posTop;    pomWin.style.bottom = 'auto'; }
-  if (!posLeft && posRight)  pomWin.style.right  = posRight;
-  if (!posTop  && posBottom) pomWin.style.bottom = posBottom;
+  if (posLeft) {
+    const left = parseInt(posLeft);
+    const winW = pomWin.offsetWidth || 280;
+    if (left >= 0 && left + winW <= window.innerWidth) {
+      pomWin.style.left = posLeft; pomWin.style.right = 'auto';
+    }
+  } else if (posRight) {
+    pomWin.style.right = posRight;
+  }
+  if (posTop) {
+    const top = parseInt(posTop);
+    const winH = pomWin.offsetHeight || 200;
+    if (top >= 0 && top + winH <= window.innerHeight) {
+      pomWin.style.top = posTop; pomWin.style.bottom = 'auto';
+    }
+  } else if (posBottom) {
+    pomWin.style.bottom = posBottom;
+  }
 
   atualizarDisplayPom();
   updatePlayBtn();
