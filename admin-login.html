@@ -327,8 +327,8 @@
 
 </div>
 
+<script src="/js/api.js"></script>
 <script>
-const API_URL = 'https://graduabm-backend-production.up.railway.app';
 
 if (sessionStorage.getItem('pbm_admin') === '1' && sessionStorage.getItem('pbm_admin_jwt')) {
   window.location.href = '/admin';
@@ -361,30 +361,10 @@ async function fazerLoginAdmin() {
   msg.className = 'msg';
 
   try {
-    const res = await fetch(`${API_URL}/api/admin/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, senha }),
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      msg.textContent = data.erro || 'E-mail ou senha incorretos.';
-      msg.className = 'msg erro';
-      document.getElementById('btn-admin').disabled = false;
-      document.getElementById('spin-admin').style.display = 'none';
-      document.getElementById('txt-admin').textContent = 'Entrar como administrador';
-      return;
-    }
-
-    sessionStorage.setItem('pbm_admin', '1');
-    sessionStorage.setItem('pbm_admin_jwt', data.token);
-    sessionStorage.setItem('pbm_admin_role', data.admin.role);
-    sessionStorage.setItem('pbm_admin_nome', data.admin.nome);
-    sessionStorage.setItem('pbm_admin_email', data.admin.email);
+    await PBM.Admin.Auth.login({ email, senha });
     window.location.href = '/admin';
-  } catch {
-    msg.textContent = 'Erro de conexão. Tente novamente.';
+  } catch (err) {
+    msg.textContent = err.erro || 'E-mail ou senha incorretos.';
     msg.className = 'msg erro';
     document.getElementById('btn-admin').disabled = false;
     document.getElementById('spin-admin').style.display = 'none';
@@ -405,11 +385,7 @@ async function enviarEsqueciSenha() {
   msg.className = 'msg';
 
   try {
-    await fetch(`${API_URL}/api/admin/auth/esqueci-senha`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
+    await PBM.Admin.Auth.esqueciSenha({ email });
     msg.textContent = 'Se este e-mail estiver cadastrado, você receberá um link em breve.';
     msg.className = 'msg';
     msg.style.background = 'rgba(127,119,221,0.1)';
@@ -443,22 +419,7 @@ async function confirmarRedefinicao() {
   msg.className = 'msg';
 
   try {
-    const res = await fetch(`${API_URL}/api/admin/auth/redefinir-senha`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, nova_senha: nova }),
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      msg.textContent = data.erro || 'Erro ao redefinir senha.';
-      msg.className = 'msg erro';
-      document.getElementById('btn-redefinir').disabled = false;
-      document.getElementById('spin-redefinir').style.display = 'none';
-      document.getElementById('txt-redefinir').textContent = 'Redefinir senha';
-      return;
-    }
-
+    await PBM.Admin.Auth.redefinirSenha({ token, nova_senha: nova });
     msg.textContent = 'Senha redefinida com sucesso! Redirecionando para o login…';
     msg.className = 'msg';
     msg.style.background = 'rgba(39,160,90,0.1)';

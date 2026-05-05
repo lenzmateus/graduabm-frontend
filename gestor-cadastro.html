@@ -92,6 +92,7 @@
   <div class="rodape"><a href="/">Voltar ao início</a></div>
 </div>
 
+<script src="/js/api.js"></script>
 <script>
 const params = new URLSearchParams(window.location.search);
 const tokenConvite = params.get('token');
@@ -106,8 +107,7 @@ function mostrarInvalido(motivo) {
 if (!tokenConvite) {
   mostrarInvalido();
 } else {
-  fetch('/api/gestor/auth/validar-convite?token=' + encodeURIComponent(tokenConvite))
-    .then(r => r.json())
+  PBM.Gestor.Auth.validarConvite(tokenConvite)
     .then(data => {
       if (data.erro) { mostrarInvalido(data.erro); return; }
       document.getElementById('conteudo-loading').style.display = 'none';
@@ -139,32 +139,13 @@ document.getElementById('form-cadastro').addEventListener('submit', async functi
   btn.textContent = 'Criando conta…';
 
   try {
-    const res = await fetch('/api/gestor/auth/cadastro', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, nome, senha, token_convite: tokenConvite }),
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      msg.className = 'msg erro';
-      msg.textContent = data.erro || 'Erro ao criar conta.';
-      btn.disabled = false;
-      btn.textContent = 'Criar conta';
-      return;
-    }
-
-    sessionStorage.setItem('pbm_gestor', '1');
-    sessionStorage.setItem('pbm_gestor_token', data.token);
-    sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
-    sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
-
+    await PBM.Gestor.Auth.cadastrar({ email, nome, senha, token_convite: tokenConvite });
     msg.className = 'msg sucesso';
     msg.textContent = 'Conta criada com sucesso! Redirecionando…';
     setTimeout(() => { window.location.href = '/gestor-painel'; }, 1200);
-  } catch {
+  } catch (err) {
     msg.className = 'msg erro';
-    msg.textContent = 'Sem conexão com o servidor.';
+    msg.textContent = err.erro || 'Sem conexão com o servidor.';
     btn.disabled = false;
     btn.textContent = 'Criar conta';
   }

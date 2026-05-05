@@ -99,7 +99,7 @@
     border: 1px solid var(--cinza-borda);
     border-radius: 12px;
     padding: 1.5rem 2rem;
-    margin: 2rem auto;
+    margin: 2rem auto 0;
     max-width: 860px;
   }
   .indice-titulo {
@@ -126,12 +126,13 @@
   .page-content {
     max-width: 860px;
     margin: 0 auto;
-    padding: 0 2rem 4rem;
+    padding: 2rem 2rem 5rem;
   }
 
   .section {
-    margin-bottom: 3rem;
+    margin-bottom: 3.5rem;
     scroll-margin-top: 72px;
+    padding-bottom: 0.5rem;
   }
   .section-header {
     display: flex; align-items: center; gap: 12px;
@@ -154,10 +155,10 @@
     color: var(--branco);
   }
 
-  .content-block { margin-bottom: 1.25rem; }
+  .content-block { margin-bottom: 1.5rem; }
   .content-block p {
     color: var(--cinza-texto);
-    font-size: 14px; line-height: 1.75;
+    font-size: 14px; line-height: 1.85;
     margin-bottom: 0.75rem;
   }
   .content-block p:last-child { margin-bottom: 0; }
@@ -253,12 +254,22 @@
   footer p { font-size: 12px; color: var(--cinza-texto); }
   footer a { color: var(--cinza-texto); text-decoration: underline; }
 
+  /* ── WATERMARK ── */
+  .pbm-watermark {
+    pointer-events: none; user-select: none;
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 520px; height: 520px;
+    background: url('/images/emblem-pbm.png') center/contain no-repeat;
+    opacity: 0.05; z-index: 0;
+  }
+
   @media (max-width: 640px) {
     .topnav { padding: 0 1rem; }
     .hero { padding: 2rem 1rem; }
-    .indice { margin: 1.5rem 1rem; padding: 1.25rem; }
+    .indice { margin: 1.5rem 1rem 0; padding: 1.25rem; }
     .indice-lista { grid-template-columns: 1fr; }
-    .page-content { padding: 0 1rem 3rem; }
+    .page-content { padding: 1.5rem 1rem 3rem; }
     .info-grid { grid-template-columns: 1fr; }
     .nav-links { display: none; }
   }
@@ -284,7 +295,14 @@
 <div class="hero">
   <div class="hero-tag">Regras & Informações</div>
   <h1>Tudo que você precisa saber<br>antes de começar</h1>
-  <p>Entenda como funciona a plataforma, as regras de uso e o compromisso com sua preparação para o CBMRS.</p>
+  <p>Entenda como funciona a plataforma, as regras de uso e o compromisso com sua preparação para o concurso.</p>
+</div>
+
+<!-- AVISO INSTITUCIONAL -->
+<div style="background:#111822;border-top:1px solid #1e3a5f;border-bottom:1px solid #1e3a5f;padding:0.85rem 2rem;text-align:center;">
+  <p style="font-size:12px;color:#85B7EB;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;line-height:1.6;">
+    ⚠&nbsp;&nbsp;AVISO: Esta plataforma é uma iniciativa <strong style="color:#a8cff0;">independente</strong> e não possui qualquer vínculo institucional com órgãos governamentais ou forças militares.
+  </p>
 </div>
 
 <!-- ÍNDICE -->
@@ -314,7 +332,7 @@
       <h2>O que é o Protocolo Bravo Mike</h2>
     </div>
     <div class="content-block">
-      <p>O <strong>Protocolo Bravo Mike</strong> é uma plataforma de preparação para os concursos do <strong>Corpo de Bombeiros Militar do Rio Grande do Sul (CBMRS)</strong>. O conteúdo é estruturado com base nos editais oficiais vigentes e atende dois processos seletivos:</p>
+      <p>O <strong>Protocolo Bravo Mike</strong> é uma plataforma de preparação para os concursos militares. O conteúdo é estruturado com base nos editais oficiais vigentes e atende dois processos seletivos:</p>
     </div>
     <div class="info-grid">
       <div class="info-card">
@@ -380,7 +398,7 @@
       </table>
     </div>
     <div class="info-box">
-      <p>Distribuição extraída das portarias oficiais de abertura de concurso do CBMRS. Sujeita a alteração conforme novos editais.</p>
+      <p>Distribuição extraída das portarias oficiais de abertura de concurso. Sujeita a alteração conforme novos editais.</p>
     </div>
   </section>
 
@@ -410,7 +428,7 @@
       <h2>Simulado Oficial</h2>
     </div>
     <div class="content-block">
-      <p>O Simulado replica as condições reais da prova do CBMRS. Leia com atenção as regras antes de iniciar:</p>
+      <p>O Simulado replica as condições reais da prova do concurso. Leia com atenção as regras antes de iniciar:</p>
     </div>
     <ul class="rule-list">
       <li><strong>Cronômetro de 4 horas:</strong> o tempo começa ao iniciar o simulado e não pode ser pausado. Nos últimos 5 minutos, o cronômetro pisca em vermelho.</li>
@@ -433,7 +451,7 @@
       <h2>Banco de questões</h2>
     </div>
     <ul class="rule-list">
-      <li>As questões são elaboradas com base nas legislações e normas previstas no edital oficial do CBMRS.</li>
+      <li>As questões são elaboradas com base nas legislações e normas previstas nos editais oficiais dos concursos.</li>
       <li>Cada questão possui <strong>justificativa</strong> indicando o dispositivo legal de referência.</li>
       <li>O banco é continuamente atualizado com novas questões. Questões marcadas como inativas não aparecem para o aluno.</li>
       <li>Questões com erros podem ser denunciadas pelo aluno e revisadas pela equipe do Protocolo Bravo Mike em até 48 horas.</li>
@@ -507,7 +525,7 @@
     <div class="info-grid">
       <div class="info-card">
         <div class="info-card-label">E-mail</div>
-        <div style="font-size:14px;color:var(--branco);margin-top:4px;">contato@protocolobravomike.com.br</div>
+        <div style="font-size:14px;color:var(--branco);margin-top:4px;"><a href="mailto:contato@protocolobravomike.com.br" style="color:#85B7EB;text-decoration:none;">contato@protocolobravomike.com.br</a></div>
         <div class="info-card-desc" style="margin-top:6px;">Suporte geral, ativação de conta, cancelamento</div>
       </div>
       <div class="info-card">
@@ -517,7 +535,8 @@
       </div>
     </div>
     <div class="content-block" style="margin-top:1.5rem;">
-      <p style="font-size:13px; color:#555;">Protocolo Bravo Mike — Plataforma de preparação para o CBMRS. Desenvolvido por alunos, para alunos.<br>
+      <p style="font-size:13px; color:#555;">Protocolo Bravo Mike — Plataforma independente de preparação para concursos militares. Desenvolvido por candidatos, para candidatos.<br>
+      <strong style="color:#666;">Esta plataforma não possui vínculo institucional com nenhum órgão governamental.</strong><br>
       Última atualização destas informações: maio de 2025.</p>
     </div>
   </section>
@@ -529,16 +548,6 @@
   <p>© 2025 Protocolo Bravo Mike · <a href="/">Início</a> · <a href="/regras">Regras</a> · <a href="mailto:contato@protocolobravomike.com.br">Contato</a></p>
 </footer>
 
-<style>
-.pbm-watermark {
-  pointer-events: none; user-select: none;
-  position: fixed; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 520px; height: 520px;
-  background: url('/images/emblem-pbm.png') center/contain no-repeat;
-  opacity: 0.05; z-index: 0;
-}
-</style>
 <div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>

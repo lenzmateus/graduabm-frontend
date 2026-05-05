@@ -158,7 +158,6 @@ const PBM = {
     },
   },
 
-  // API unificada — questões e sessões
   api: {
     questoes: {
       listar(qs) {
@@ -169,6 +168,13 @@ const PBM = {
       },
       erros() {
         return request('/api/questoes/erros');
+      },
+      legislacoes(curso, area) {
+        const p = new URLSearchParams();
+        if (curso) p.set('curso', curso);
+        if (area) p.set('area', area);
+        const qs = p.toString();
+        return request('/api/questoes/legislacoes' + (qs ? '?' + qs : ''));
       },
     },
     sessoes: {
@@ -202,15 +208,48 @@ const PBM = {
       ['pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
       window.location.href = '/gestor-login';
     },
-    query(path, prefer, method, body) {
-      return fetch(API_URL + '/api/gestor/query', {
+    async query(path, prefer, method, body) {
+      const res = await fetch(API_URL + '/api/gestor/query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${PBM.Gestor.getToken()}`,
         },
         body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
-      }).then(r => r.json());
+      });
+      if (res.status === 401) { PBM.Gestor.logout(); return { ok: false, status: 401, data: null, contentRange: null }; }
+      const text = await res.text();
+      const contentRange = res.headers.get('Content-Range');
+      return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null, contentRange };
+    },
+    Auth: {
+      async login({ email, senha }) {
+        const data = await request('/api/gestor/auth/login', {
+          method: 'POST', body: JSON.stringify({ email, senha }),
+        });
+        if (data.token) {
+          sessionStorage.setItem('pbm_gestor', '1');
+          sessionStorage.setItem('pbm_gestor_token', data.token);
+          sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
+          sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
+        }
+        return data;
+      },
+      validarConvite(token) {
+        return request('/api/gestor/auth/validar-convite?token=' + encodeURIComponent(token));
+      },
+      async cadastrar({ email, nome, senha, token_convite }) {
+        const data = await request('/api/gestor/auth/cadastro', {
+          method: 'POST', body: JSON.stringify({ email, nome, senha, token_convite }),
+        });
+        if (data.token) {
+          sessionStorage.setItem('pbm_gestor', '1');
+          sessionStorage.setItem('pbm_gestor_token', data.token);
+          sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
+          sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
+        }
+        return data;
+      },
     },
   },
 
@@ -233,6 +272,68 @@ const PBM = {
     },
     req(path, opts = {}) {
       return request(path, { ...opts, headers: { ...PBM.Admin._authHeader(), ...(opts.headers || {}) } });
+    },
+    Auth: {
+      async login({ email, senha }) {
+        const data = await request('/api/admin/auth/login', {
+          method: 'POST', body: JSON.stringify({ email, senha }),
+        });
+        if (data.token) {
+          sessionStorage.setItem('pbm_admin', '1');
+          sessionStorage.setItem('pbm_admin_jwt', data.token);
+          sessionStorage.setItem('pbm_admin_role', data.admin.role);
+          sessionStorage.setItem('pbm_admin_nome', data.admin.nome);
+          sessionStorage.setItem('pbm_admin_email', data.admin.email);
+        }
+        return data;
+      },
+      esqueciSenha({ email }) {
+        return request('/api/admin/auth/esqueci-senha', { method: 'POST', body: JSON.stringify({ email }) });
+      },
+      redefinirSenha({ token, nova_senha }) {
+        return request('/api/admin/auth/redefinir-senha', { method: 'POST', body: JSON.stringify({ token, nova_senha }) });
+      },
+      validarConvite(token) {
+        return request('/api/admin/auth/validar-convite?token=' + encodeURIComponent(token));
+      },
+      cadastrar({ email, nome, senha, token_convite }) {
+        return request('/api/admin/auth/cadastrar', { method: 'POST', body: JSON.stringify({ email, nome, senha, token_convite }) });
+      },
+    },
+    stats() {
+      return PBM.Admin.req('/api/admin/stats');
+    },
+    async query(path, prefer, method, body) {
+      const res = await fetch(API_URL + '/api/admin/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...PBM.Admin._authHeader() },
+        body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
+      });
+      if (res.status === 401) { PBM.Admin.logout(); return { ok: false, status: 401, data: null, contentRange: null }; }
+      const text = await res.text();
+      const contentRange = res.headers.get('Content-Range');
+      return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null, contentRange };
+    },
+    usuarios: {
+      zerarProgresso(id) {
+        return PBM.Admin.req(`/api/admin/usuarios/${id}/zerar-progresso`, { method: 'POST' });
+      },
+    },
+    gestores: {
+      listar() { return PBM.Admin.req('/api/admin/gestores'); },
+      atualizar(id, body) { return PBM.Admin.req(`/api/admin/gestores/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
+      excluir(id) { return PBM.Admin.req(`/api/admin/gestores/${id}`, { method: 'DELETE' }); },
+      convidar(body) { return PBM.Admin.req('/api/admin/gestores/convidar', { method: 'POST', body: JSON.stringify(body) }); },
+    },
+    admins: {
+      listar() { return PBM.Admin.req('/api/admin/admins'); },
+      excluir(id) { return PBM.Admin.req(`/api/admin/admins/${id}`, { method: 'DELETE' }); },
+      convidar(body) { return PBM.Admin.req('/api/admin/admins/convidar', { method: 'POST', body: JSON.stringify(body) }); },
+    },
+    simuladosMensais: {
+      listar() { return PBM.Admin.req('/api/simulados-mensais/admin/listar'); },
+      habilitar(id, body) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
+      gerar(body) { return PBM.Admin.req('/api/simulados-mensais/admin/gerar', { method: 'POST', body: JSON.stringify(body) }); },
     },
     assinaturas: {
       stats() {

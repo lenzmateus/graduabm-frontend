@@ -838,6 +838,7 @@
   </div>
 </div>
 
+<script src="/js/api.js"></script>
 <script>
 // ── DISTRIBUIÇÃO DO EDITAL (questões esperadas por área/curso) ──
 const EDITAL = {
@@ -1426,13 +1427,7 @@ function trocarArea(at, btn) {
 // ── CARREGAR CONTAGENS REAIS DO BANCO POR LEGISLAÇÃO ──
 async function carregarContagensReais() {
   try {
-    const token = sessionStorage.getItem('token') || '';
-    const resp = await fetch(
-      `https://graduabm-backend-production.up.railway.app/api/questoes/legislacoes?curso=${encodeURIComponent(cursoAtual)}&area=${encodeURIComponent(areaAtual.toUpperCase())}`,
-      { headers: token ? { Authorization: 'Bearer ' + token } : {} }
-    );
-    if (!resp.ok) return;
-    const dados = await resp.json();
+    const dados = await PBM.api.questoes.legislacoes(cursoAtual, areaAtual.toUpperCase());
     contagensReais = {};
     (dados || []).forEach(l => { if (l.legislacao_id) contagensReais[l.legislacao_id] = l.total || 0; });
     contagensCarregadas = true;
@@ -1740,6 +1735,7 @@ if (sessionStorage.getItem('pbm_preview_aluno') === '1') {
 })();
 
 Promise.all([carregarProgressoLeg(), carregarContagensReais()]).then(() => render());
+
 
 // ── POMODORO: RESTAURAR ESTADO (vindo da página de questões) ──
 (function restaurarPomodoro() {

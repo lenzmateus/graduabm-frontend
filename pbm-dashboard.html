@@ -279,6 +279,23 @@
     font-family: 'IBM Plex Mono', monospace;
     letter-spacing: 0.03em;
   }
+  .chart-filtros {
+    display: flex; gap: 4px;
+  }
+  .chart-filtro-btn {
+    background: transparent;
+    border: 1px solid #2A2A2A;
+    color: #555;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chart-filtro-btn:hover { border-color: #444; color: #888; }
+  .chart-filtro-btn.ativo { border-color: var(--vermelho); color: var(--vermelho); background: rgba(192,39,15,0.08); }
   .chart-container {
     background: #111;
     border: 1px solid #1E1E1E;
@@ -421,8 +438,16 @@
       <!-- GRÁFICO DE EVOLUÇÃO -->
       <div class="chart-section">
         <div class="chart-header">
-          <h2 class="chart-title">Evolução Semanal</h2>
-          <span class="chart-subtitle">acerto % · volume de questões</span>
+          <div>
+            <h2 class="chart-title">Evolução</h2>
+            <span class="chart-subtitle" id="chart-subtitle">acerto % · volume de questões</span>
+          </div>
+          <div class="chart-filtros" id="chart-filtros">
+            <button class="chart-filtro-btn" data-dias="7">7D</button>
+            <button class="chart-filtro-btn ativo" data-dias="30">30D</button>
+            <button class="chart-filtro-btn" data-dias="90">90D</button>
+            <button class="chart-filtro-btn" data-dias="0">Tudo</button>
+          </div>
         </div>
         <div class="chart-container" id="chart-container">
           <canvas id="chart-evolucao"></canvas>
@@ -454,148 +479,183 @@ function renderRankBadge(curso) {
 }
 
 let chartInstance = null;
+let todosOsDados = [];
+let periodoAtivo = 30;
+
+function renderizarGrafico(dadosFiltrados) {
+  const container = document.getElementById('chart-container');
+
+  if (dadosFiltrados.length === 0) {
+    if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+    container.innerHTML = '<div class="chart-empty">Nenhum dado para o período selecionado.</div>';
+    return;
+  }
+
+  if (!container.querySelector('canvas')) {
+    container.innerHTML = '<canvas id="chart-evolucao"></canvas>';
+  }
+
+  const labels = dadosFiltrados.map(d => {
+    const raw = (d.semana || d.data || d.periodo || '').split('T')[0];
+    const [y, m, day] = raw.split('-').map(Number);
+    const dt = new Date(y, m - 1, day);
+    return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '');
+  });
+  const taxas   = dadosFiltrados.map(d => Number(d.taxa_acerto || d.taxa_acerto_pct || 0));
+  const questoes = dadosFiltrados.map(d => Number(d.total_questoes || d.total_respondidas || 0));
+  const maxQ = Math.max(...questoes, 10);
+
+  const canvas = document.getElementById('chart-evolucao');
+  const ctx = canvas.getContext('2d');
+
+  const grad = ctx.createLinearGradient(0, 0, 0, 260);
+  grad.addColorStop(0,   'rgba(192,39,15,0.22)');
+  grad.addColorStop(0.6, 'rgba(192,39,15,0.05)');
+  grad.addColorStop(1,   'rgba(192,39,15,0)');
+
+  if (chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Questões',
+          data: questoes,
+          backgroundColor: 'rgba(133,183,235,0.09)',
+          borderColor: 'rgba(133,183,235,0.2)',
+          borderWidth: 1,
+          borderRadius: 4,
+          yAxisID: 'yBar',
+          order: 2,
+        },
+        {
+          type: 'line',
+          label: 'Acerto',
+          data: taxas,
+          borderColor: '#C0270F',
+          backgroundColor: grad,
+          borderWidth: 2.5,
+          fill: true,
+          tension: 0.42,
+          pointBackgroundColor: '#C0270F',
+          pointBorderColor: '#111',
+          pointBorderWidth: 2,
+          pointRadius: dadosFiltrados.length > 60 ? 2 : 5,
+          pointHoverRadius: 7,
+          pointHoverBackgroundColor: '#C0270F',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 2,
+          yAxisID: 'y',
+          order: 1,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: { duration: 500, easing: 'easeOutQuart' },
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          position: 'top', align: 'end',
+          labels: {
+            color: '#555',
+            font: { family: "'IBM Plex Mono', monospace", size: 10 },
+            boxWidth: 10, boxHeight: 10, padding: 18,
+            usePointStyle: true, pointStyle: 'circle',
+          }
+        },
+        tooltip: {
+          backgroundColor: '#181818',
+          borderColor: '#282828',
+          borderWidth: 1,
+          titleColor: '#D0CEC9',
+          bodyColor: '#777',
+          titleFont: { family: "'Inter', sans-serif", weight: '600', size: 12 },
+          bodyFont: { family: "'IBM Plex Mono', monospace", size: 12 },
+          padding: 12, cornerRadius: 10,
+          displayColors: true, boxWidth: 8, boxHeight: 8,
+          callbacks: {
+            title: items => items[0].label,
+            label: item => {
+              if (item.datasetIndex === 1) return '  Acerto: ' + item.raw + '%';
+              return '  Questões: ' + item.raw;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(255,255,255,0.03)', drawTicks: false },
+          border: { color: 'rgba(255,255,255,0.06)' },
+          ticks: {
+            color: '#3A3A3A',
+            font: { family: "'IBM Plex Mono', monospace", size: 10 },
+            padding: 8,
+            maxTicksLimit: 15,
+          }
+        },
+        y: {
+          position: 'left', min: 0, max: 100,
+          grid: { color: 'rgba(255,255,255,0.04)', drawTicks: false },
+          border: { color: 'transparent' },
+          ticks: {
+            color: '#3A3A3A',
+            font: { family: "'IBM Plex Mono', monospace", size: 10 },
+            callback: v => v + '%', padding: 10, maxTicksLimit: 6,
+          }
+        },
+        yBar: {
+          position: 'right', min: 0, max: maxQ * 2.5,
+          display: false, grid: { drawOnChartArea: false },
+        }
+      }
+    }
+  });
+}
+
+function filtrarEAtualizar(dias) {
+  periodoAtivo = dias;
+
+  document.querySelectorAll('.chart-filtro-btn').forEach(btn => {
+    btn.classList.toggle('ativo', Number(btn.dataset.dias) === dias);
+  });
+
+  const subtitulo = document.getElementById('chart-subtitle');
+  const labels = { 7: 'últimos 7 dias', 30: 'últimos 30 dias', 90: 'últimos 90 dias', 0: 'todo o histórico' };
+  if (subtitulo) subtitulo.textContent = 'acerto % · volume de questões · ' + (labels[dias] || '');
+
+  let filtrado = todosOsDados;
+  if (dias > 0) {
+    const corte = new Date();
+    corte.setDate(corte.getDate() - dias);
+    filtrado = todosOsDados.filter(d => {
+      const raw = (d.semana || d.data || d.periodo || '').split('T')[0];
+      return raw >= corte.toISOString().split('T')[0];
+    });
+  }
+
+  renderizarGrafico(filtrado);
+}
 
 async function carregarGrafico() {
   try {
     const dados = await PBM.Progresso.evolucaoSemanal();
+    todosOsDados = (Array.isArray(dados) ? dados : []).filter(d => d.semana || d.data || d.periodo);
 
-    if (!Array.isArray(dados) || dados.length === 0) {
+    if (todosOsDados.length === 0) {
       document.getElementById('chart-container').innerHTML = '<div class="chart-empty">Responda questões para ver sua evolução aqui.</div>';
+      document.getElementById('chart-filtros').style.display = 'none';
       return;
     }
 
-    const labels = dados.map(d => {
-      const dt = new Date(d.semana || d.data || d.periodo);
-      return dt.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '');
+    document.querySelectorAll('.chart-filtro-btn').forEach(btn => {
+      btn.addEventListener('click', () => filtrarEAtualizar(Number(btn.dataset.dias)));
     });
-    const taxas   = dados.map(d => Number(d.taxa_acerto || d.taxa_acerto_pct || 0));
-    const questoes = dados.map(d => Number(d.total_questoes || d.total_respondidas || 0));
-    const maxQ = Math.max(...questoes, 10);
 
-    const canvas = document.getElementById('chart-evolucao');
-    const ctx = canvas.getContext('2d');
-
-    // gradiente vermelho → transparente sob a linha de acerto
-    const grad = ctx.createLinearGradient(0, 0, 0, 260);
-    grad.addColorStop(0,   'rgba(192,39,15,0.22)');
-    grad.addColorStop(0.6, 'rgba(192,39,15,0.05)');
-    grad.addColorStop(1,   'rgba(192,39,15,0)');
-
-    if (chartInstance) chartInstance.destroy();
-
-    chartInstance = new Chart(ctx, {
-      data: {
-        labels,
-        datasets: [
-          // barras de volume (fundo)
-          {
-            type: 'bar',
-            label: 'Questões',
-            data: questoes,
-            backgroundColor: 'rgba(133,183,235,0.09)',
-            borderColor: 'rgba(133,183,235,0.2)',
-            borderWidth: 1,
-            borderRadius: 4,
-            yAxisID: 'yBar',
-            order: 2,
-          },
-          // linha de acerto (frente)
-          {
-            type: 'line',
-            label: 'Acerto',
-            data: taxas,
-            borderColor: '#C0270F',
-            backgroundColor: grad,
-            borderWidth: 2.5,
-            fill: true,
-            tension: 0.42,
-            pointBackgroundColor: '#C0270F',
-            pointBorderColor: '#111',
-            pointBorderWidth: 2,
-            pointRadius: 5,
-            pointHoverRadius: 7,
-            pointHoverBackgroundColor: '#C0270F',
-            pointHoverBorderColor: '#fff',
-            pointHoverBorderWidth: 2,
-            yAxisID: 'y',
-            order: 1,
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: { duration: 700, easing: 'easeOutQuart' },
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: {
-            position: 'top',
-            align: 'end',
-            labels: {
-              color: '#555',
-              font: { family: "'IBM Plex Mono', monospace", size: 10 },
-              boxWidth: 10,
-              boxHeight: 10,
-              padding: 18,
-              usePointStyle: true,
-              pointStyle: 'circle',
-            }
-          },
-          tooltip: {
-            backgroundColor: '#181818',
-            borderColor: '#282828',
-            borderWidth: 1,
-            titleColor: '#D0CEC9',
-            bodyColor: '#777',
-            titleFont: { family: "'Inter', sans-serif", weight: '600', size: 12 },
-            bodyFont: { family: "'IBM Plex Mono', monospace", size: 12 },
-            padding: 12,
-            cornerRadius: 10,
-            displayColors: true,
-            boxWidth: 8,
-            boxHeight: 8,
-            callbacks: {
-              title: items => items[0].label,
-              label: item => {
-                if (item.datasetIndex === 1) return '  Acerto: ' + item.raw + '%';
-                return '  Questões: ' + item.raw;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            grid: { color: 'rgba(255,255,255,0.03)', drawTicks: false },
-            border: { color: 'rgba(255,255,255,0.06)' },
-            ticks: {
-              color: '#3A3A3A',
-              font: { family: "'IBM Plex Mono', monospace", size: 10 },
-              padding: 8,
-            }
-          },
-          y: {
-            position: 'left',
-            min: 0, max: 100,
-            grid: { color: 'rgba(255,255,255,0.04)', drawTicks: false },
-            border: { color: 'transparent' },
-            ticks: {
-              color: '#3A3A3A',
-              font: { family: "'IBM Plex Mono', monospace", size: 10 },
-              callback: v => v + '%',
-              padding: 10,
-              maxTicksLimit: 6,
-            }
-          },
-          yBar: {
-            position: 'right',
-            min: 0,
-            max: maxQ * 2.5,
-            display: false,
-            grid: { drawOnChartArea: false },
-          }
-        }
-      }
-    });
+    filtrarEAtualizar(periodoAtivo);
   } catch (err) {
     console.warn('Gráfico não carregado:', err);
     document.getElementById('chart-container').innerHTML = '<div class="chart-empty">Responda questões para ver sua evolução aqui.</div>';

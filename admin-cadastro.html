@@ -95,6 +95,7 @@
   <div class="rodape"><a href="/admin-login">Já tenho conta — fazer login</a></div>
 </div>
 
+<script src="/js/api.js"></script>
 <script>
 const params = new URLSearchParams(window.location.search);
 const tokenConvite = params.get('token');
@@ -109,8 +110,7 @@ function mostrarInvalido(motivo) {
 if (!tokenConvite) {
   mostrarInvalido();
 } else {
-  fetch('/api/admin/auth/validar-convite?token=' + encodeURIComponent(tokenConvite))
-    .then(r => r.json())
+  PBM.Admin.Auth.validarConvite(tokenConvite)
     .then(data => {
       if (data.erro) { mostrarInvalido(data.erro); return; }
       document.getElementById('conteudo-loading').style.display = 'none';
@@ -142,27 +142,13 @@ document.getElementById('form-cadastro').addEventListener('submit', async functi
   btn.textContent = 'Criando conta…';
 
   try {
-    const res = await fetch('/api/admin/auth/cadastrar', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, nome, senha, token_convite: tokenConvite }),
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      msg.className = 'msg erro';
-      msg.textContent = data.erro || 'Erro ao criar conta.';
-      btn.disabled = false;
-      btn.textContent = 'Criar conta de administrador';
-      return;
-    }
-
+    await PBM.Admin.Auth.cadastrar({ email, nome, senha, token_convite: tokenConvite });
     msg.className = 'msg sucesso';
     msg.textContent = 'Conta criada com sucesso! Redirecionando para o login…';
     setTimeout(() => { window.location.href = '/admin-login'; }, 1500);
-  } catch {
+  } catch (err) {
     msg.className = 'msg erro';
-    msg.textContent = 'Sem conexão com o servidor.';
+    msg.textContent = err.erro || 'Sem conexão com o servidor.';
     btn.disabled = false;
     btn.textContent = 'Criar conta de administrador';
   }

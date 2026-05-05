@@ -70,8 +70,8 @@
   </div>
 </div>
 
+<script src="/js/api.js"></script>
 <script>
-const API = 'https://graduabm-backend-production.up.railway.app';
 
 document.getElementById('form-login').addEventListener('submit', async function(e) {
   e.preventDefault();
@@ -86,30 +86,11 @@ document.getElementById('form-login').addEventListener('submit', async function(
   const senha = document.getElementById('senha').value;
 
   try {
-    const res = await fetch(API + '/api/gestor/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, senha }),
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      msg.className = 'msg erro';
-      msg.textContent = data.erro || 'Erro ao fazer login.';
-      btn.disabled = false;
-      btn.textContent = 'Entrar';
-      return;
-    }
-
-    sessionStorage.setItem('pbm_gestor', '1');
-    sessionStorage.setItem('pbm_gestor_token', data.token);
-    sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
-    sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
-
+    await PBM.Gestor.Auth.login({ email, senha });
     window.location.href = '/gestor-painel';
-  } catch {
+  } catch (err) {
     msg.className = 'msg erro';
-    msg.textContent = 'Sem conexão com o servidor.';
+    msg.textContent = err.erro || 'Sem conexão com o servidor.';
     btn.disabled = false;
     btn.textContent = 'Entrar';
   }
