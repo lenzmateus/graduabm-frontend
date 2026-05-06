@@ -147,6 +147,25 @@
   .loading { text-align: center; color: var(--cinza-texto); padding: 2rem; font-size: 13px; }
   .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--cinza-borda); border-top-color: var(--vermelho); border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
+    .topbar { padding: 0.75rem 1rem; }
+    .content { padding: 1rem; }
+    .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .ig-thumbs { flex-wrap: wrap; }
+    .ig-thumb { width: 100px; height: 100px; }
+  }
+  @media (max-width: 480px) {
+    .card-header { flex-direction: column; align-items: flex-start; }
+    .card-actions { width: 100%; flex-wrap: wrap; }
+    .card-actions .btn { flex: 1; justify-content: center; }
+  }
 </style>
 </head>
 <body>

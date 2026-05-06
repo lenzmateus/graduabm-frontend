@@ -592,6 +592,17 @@
     .hero-btns { flex-direction: column; }
     .hero-titulo { font-size: clamp(42px, 11vw, 60px); }
     .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+    .aviso-institucional { padding: 0.75rem 1rem; }
+  }
+
+  /* ── WATERMARK ── */
+  .pbm-watermark {
+    pointer-events: none; user-select: none;
+    position: fixed; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 520px; height: 520px;
+    background: url('/images/emblem-pbm.png') center/contain no-repeat;
+    opacity: 0.04; z-index: 0;
   }
 </style>
 </head>
@@ -610,7 +621,7 @@
 </nav>
 
 <!-- AVISO INSTITUCIONAL -->
-<div style="background:#111822;border-top:1px solid #1e3a5f;border-bottom:1px solid #1e3a5f;padding:0.85rem 2rem;text-align:center;">
+<div class="aviso-institucional" style="background:#111822;border-top:1px solid #1e3a5f;border-bottom:1px solid #1e3a5f;padding:0.85rem 2rem;text-align:center;">
   <p style="font-size:12px;color:#85B7EB;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;line-height:1.6;">
     ⚠&nbsp;&nbsp;AVISO: Esta plataforma é uma iniciativa <strong style="color:#a8cff0;">independente</strong> e não possui qualquer vínculo institucional com órgãos governamentais ou forças militares.
   </p>
@@ -852,6 +863,8 @@
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
   </a>
 </section>
+
+<div class="pbm-watermark" aria-hidden="true"></div>
 
 <!-- FOOTER -->
 <footer>
