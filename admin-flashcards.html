@@ -65,8 +65,8 @@
   .filtro-busca:focus { border-color: var(--roxo); }
   .filtro-busca::placeholder { color: #555; }
 
-  .lista-header { display: grid; grid-template-columns: 1fr 80px 60px 80px 60px 110px; gap: 1rem; padding: 8px 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 4px; }
-  .card-row { display: grid; grid-template-columns: 1fr 80px 60px 80px 60px 110px; gap: 1rem; align-items: center; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 1rem; margin-bottom: 6px; transition: border-color 0.15s; }
+  .lista-header { display: grid; grid-template-columns: minmax(0, 1fr) 80px 60px 80px 60px 110px; gap: 1rem; padding: 8px 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 4px; }
+  .card-row { display: grid; grid-template-columns: minmax(0, 1fr) 80px 60px 80px 60px 110px; gap: 1rem; align-items: center; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 1rem; margin-bottom: 6px; transition: border-color 0.15s; }
   .card-row:hover { border-color: #444; }
   .card-frente { font-size: 13px; color: var(--branco); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .card-leg { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -364,7 +364,7 @@ function abrirModalNova() {
 }
 
 function abrirModalEditar(id) {
-  const c = todosCards.find(x => x.id === id);
+  const c = todosCards.find(x => String(x.id) === String(id));
   if (!c) return;
   document.getElementById('modal-titulo').textContent = 'Editar Flashcard';
   document.getElementById('modal-id').value = c.id;
@@ -481,7 +481,6 @@ async function confirmarDelete() {
         <a class="nav-item" href="/admin-questoes">${svgQ} Questões</a>
         <a class="nav-item ativo" href="/admin-flashcards">${svgFlash} Flashcards</a>
         <a class="nav-item" href="/admin-simulados-mensais">${svgSim} Simulados Mensais</a>
-        <a class="nav-item" href="/simulado-mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Missão FDS</a>
         <div class="nav-label">Alunos</div>
         <a class="nav-item" href="/admin-assinaturas">${svgAluno} Assinaturas</a>
         <a class="nav-item" href="/admin#denuncias">${svgDen} Relatórios de Problemas</a>

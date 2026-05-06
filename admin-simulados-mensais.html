@@ -81,6 +81,24 @@
   .q-enun { font-size: 12px; color: var(--branco); flex: 1; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .btn-remover { background: none; border: 1px solid #333; color: var(--cinza-texto); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
   .btn-remover:hover { border-color: #E24B4A; color: #E24B4A; }
+  .btn-ver { background: none; border: 1px solid #333; color: var(--cinza-texto); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
+  .btn-ver:hover { border-color: #555; color: var(--branco); }
+
+  /* Detalhe expandido de questão */
+  .q-detalhe { padding: 10px 10px 12px 44px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--cinza-borda); border-radius: 0 0 6px 6px; }
+  .q-detalhe-enun { font-size: 13px; color: var(--branco); margin-bottom: 10px; line-height: 1.6; }
+  .q-alt { font-size: 12px; color: var(--cinza-texto); padding: 2px 0; line-height: 1.5; }
+  .q-gabarito { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--verde); margin-top: 8px; }
+  .q-justificativa { font-size: 12px; color: #777; margin-top: 6px; font-style: italic; line-height: 1.5; border-top: 1px solid var(--cinza-borda); padding-top: 6px; }
+
+  /* Badge de progresso */
+  .badge-progresso { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 1px 7px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+  .badge-ok { background: rgba(125,217,154,0.1); color: var(--verde); border: 1px solid rgba(125,217,154,0.3); }
+  .badge-warn { background: rgba(240,192,80,0.1); color: var(--dourado); border: 1px solid rgba(240,192,80,0.3); }
+
+  /* Formulário inline de edição de datas */
+  .edit-datas-form { display: none; padding: 12px 1.25rem; background: rgba(255,255,255,0.02); border-top: 1px solid var(--cinza-borda); }
+  .edit-datas-form.aberto { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
 
   /* Busca para adicionar questões */
   .adicionar-section { border-top: 1px solid var(--cinza-borda); padding-top: 1rem; margin-top: 1rem; }
@@ -161,10 +179,6 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>
         Simulados Mensais
       </a>
-      <a class="nav-item" href="/simulado-mensal">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        Missão FDS
-      </a>
       <div class="nav-label">Alunos</div>
       <a class="nav-item" href="/admin-assinaturas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
@@ -197,7 +211,7 @@
   <div class="page-header">
     <div>
       <div class="page-titulo">Simulados Mensais</div>
-      <div class="page-sub">Gerencie simulados exclusivos, questões e acompanhe participações.</div>
+      <div class="page-sub">Gerencie simulados exclusivos, questões e acompanhe participações. Os simulados criados aqui aparecem como <strong>Protocolo QAP</strong> para os alunos.</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
       <button class="btn-sm" id="btn-gerar" onclick="abrirModalGerar()">Gerar Simulado do Mês (IA)</button>
@@ -303,6 +317,9 @@ const questoesSimulado = {};
 const questoesDisponiveis = {};
 const selecionadosPorSimulado = {};
 const painelAberto = {};
+const simuladosData = {};
+
+const toLocal = d => new Date(new Date(d).getTime() - new Date(d).getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
 async function carregarSimulados() {
   const grid = document.getElementById('simulados-grid');
@@ -310,6 +327,7 @@ async function carregarSimulados() {
     const data = await req('/api/simulados-mensais/admin/listar');
     if (!data.length) { grid.innerHTML = '<div style="color:var(--cinza-texto);text-align:center;padding:2rem;font-family:\'IBM Plex Mono\',monospace;font-size:13px;">Nenhum simulado criado ainda.</div>'; return; }
     grid.innerHTML = data.map(sim => {
+      simuladosData[sim.id] = sim;
       const st = getStatus(sim);
       return `
         <div class="sim-card" id="sim-card-${sim.id}">
@@ -317,19 +335,34 @@ async function carregarSimulados() {
             <div class="sim-curso ${sim.curso}">${sim.curso.toUpperCase()}</div>
             <div class="sim-info">
               <div class="sim-titulo">${sim.titulo}</div>
-              <div class="sim-datas">${formatarData(sim.abertura)} → ${formatarData(sim.encerramento)}</div>
+              <div class="sim-datas" id="sim-datas-${sim.id}">${formatarData(sim.abertura)} → ${formatarData(sim.encerramento)}</div>
             </div>
             <span class="sim-status ${st.cls}">${st.label}</span>
             <div class="sim-acoes">
               ${st.label === 'ENCERRADO' && !sim.questoes_incorporadas
                 ? `<button class="btn-sm" onclick="event.stopPropagation();incorporar('${sim.id}', this)">Incorporar Questões</button>` : ''}
               <button class="btn-sm" onclick="event.stopPropagation();verRanking('${sim.id}')">Ranking</button>
+              <button class="btn-sm" onclick="event.stopPropagation();toggleEditDatas('${sim.id}')">Editar Datas</button>
               <button class="btn-sm" onclick="event.stopPropagation();toggleAtivo('${sim.id}',${!sim.ativo})">${sim.ativo ? 'Desativar' : 'Habilitar'}</button>
+            </div>
+          </div>
+          <div class="edit-datas-form" id="edit-datas-${sim.id}">
+            <div class="form-group">
+              <div class="form-label">Abertura</div>
+              <input class="form-input" id="ed-abertura-${sim.id}" type="datetime-local" value="${toLocal(sim.abertura)}">
+            </div>
+            <div class="form-group">
+              <div class="form-label">Encerramento</div>
+              <input class="form-input" id="ed-encerramento-${sim.id}" type="datetime-local" value="${toLocal(sim.encerramento)}">
+            </div>
+            <div style="display:flex;gap:6px;padding-bottom:2px;">
+              <button class="btn-sm" onclick="toggleEditDatas('${sim.id}')">Cancelar</button>
+              <button class="btn-sm btn-primary" onclick="salvarDatas('${sim.id}')">Salvar</button>
             </div>
           </div>
           <div class="sim-corpo" id="corpo-${sim.id}">
             <div class="questoes-header">
-              <div class="questoes-titulo">Questões vinculadas</div>
+              <div class="questoes-titulo" id="qtitulo-${sim.id}">Questões vinculadas</div>
               <button class="btn-sm btn-primary" onclick="adicionarQuestoes('${sim.id}','${sim.curso}')">+ Adicionar Questões</button>
             </div>
             <div class="questoes-lista" id="qlista-${sim.id}">
@@ -379,14 +412,68 @@ async function carregarQuestoesDoSimulado(id) {
 function renderizarQuestoesDo(id) {
   const lista = document.getElementById(`qlista-${id}`);
   const data = questoesSimulado[id] || [];
+
+  const curso = simuladosData[id]?.curso || 'ctsp';
+  const esperado = curso === 'ctsp' ? 60 : 40;
+  const badgeCls = data.length >= esperado ? 'badge-ok' : 'badge-warn';
+  const tituloEl = document.getElementById(`qtitulo-${id}`);
+  if (tituloEl) tituloEl.innerHTML = `Questões vinculadas <span class="badge-progresso ${badgeCls}">${data.length} / ${esperado}</span>`;
+
   if (!data.length) { lista.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:8px 0;">Nenhuma questão vinculada ainda.</div>'; return; }
   lista.innerHTML = data.map(({ ordem, questoes: q }) => `
-    <div class="questao-item">
-      <span class="q-ord">${ordem}</span>
-      <span class="q-area-tag">${q.area_tematica || '—'}</span>
-      <span class="q-enun">${q.enunciado || ''}</span>
-      <button class="btn-remover" onclick="removerQuestao('${id}','${q.id}')">Remover</button>
+    <div>
+      <div class="questao-item">
+        <span class="q-ord">${ordem}</span>
+        <span class="q-area-tag">${q.area_tematica || '—'}</span>
+        <span class="q-enun">${q.enunciado || ''}</span>
+        <div style="display:flex;gap:4px;flex-shrink:0;">
+          <button class="btn-ver" onclick="toggleDetalhe('${q.id}')">Ver</button>
+          <button class="btn-remover" onclick="removerQuestao('${id}','${q.id}')">Remover</button>
+        </div>
+      </div>
+      <div class="q-detalhe" id="qd-${q.id}" style="display:none;">
+        <div class="q-detalhe-enun">${q.enunciado || ''}</div>
+        <div class="q-detalhe-alts">
+          <div class="q-alt"><strong>A.</strong> ${q.alternativa_a || '—'}</div>
+          <div class="q-alt"><strong>B.</strong> ${q.alternativa_b || '—'}</div>
+          <div class="q-alt"><strong>C.</strong> ${q.alternativa_c || '—'}</div>
+          <div class="q-alt"><strong>D.</strong> ${q.alternativa_d || '—'}</div>
+          <div class="q-alt"><strong>E.</strong> ${q.alternativa_e || '—'}</div>
+        </div>
+        <div class="q-gabarito">Gabarito: <strong>${q.resposta_correta || '—'}</strong></div>
+        ${q.justificativa ? `<div class="q-justificativa">${q.justificativa}</div>` : ''}
+        <a href="/admin-questoes?id=${q.id}" target="_blank" class="btn-sm" style="display:inline-block;margin-top:8px;">Editar no Editor ↗</a>
+      </div>
     </div>`).join('');
+}
+
+function toggleDetalhe(questaoId) {
+  const el = document.getElementById(`qd-${questaoId}`);
+  if (el) el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+function toggleEditDatas(simId) {
+  const form = document.getElementById(`edit-datas-${simId}`);
+  if (form) form.classList.toggle('aberto');
+}
+
+async function salvarDatas(simId) {
+  const aberturaLocal = document.getElementById(`ed-abertura-${simId}`).value;
+  const encerramentoLocal = document.getElementById(`ed-encerramento-${simId}`).value;
+  if (!aberturaLocal || !encerramentoLocal) { toast('Preencha as duas datas.', 'err'); return; }
+  const abertura = new Date(aberturaLocal).toISOString();
+  const encerramento = new Date(encerramentoLocal).toISOString();
+  if (new Date(encerramento) <= new Date(abertura)) { toast('Encerramento deve ser depois da abertura.', 'err'); return; }
+  try {
+    await req(`/api/simulados-mensais/admin/${simId}`, {
+      method: 'PATCH', body: JSON.stringify({ abertura, encerramento }),
+    });
+    toast('Datas atualizadas!');
+    toggleEditDatas(simId);
+    const datasEl = document.getElementById(`sim-datas-${simId}`);
+    if (datasEl) datasEl.textContent = `${formatarData(abertura)} → ${formatarData(encerramento)}`;
+    if (simuladosData[simId]) { simuladosData[simId].abertura = abertura; simuladosData[simId].encerramento = encerramento; }
+  } catch (err) { toast(err.erro || 'Erro ao salvar datas.', 'err'); }
 }
 
 async function removerQuestao(simId, questaoId) {

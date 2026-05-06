@@ -290,6 +290,25 @@
   .termos a { color: var(--cinza-texto); text-decoration: none; }
   .termos a:hover { color: var(--branco); }
 
+  /* ── Trial Banner ── */
+  .trial-banner {
+    display: none;
+    background: var(--vermelho);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.4s ease both;
+  }
+  .trial-banner.visivel { display: block; }
+  .trial-banner-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 0.04em;
+    color: #fff;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+  .trial-banner-desc { font-size: 12px; color: rgba(255,255,255,0.85); line-height: 1.5; }
+
   /* Acesso bloqueado */
   .bloqueado-card {
     background: var(--cinza-escuro);
@@ -640,6 +659,15 @@
 
       <!-- TABS + FORMULÁRIOS -->
       <div id="area-forms">
+        <!-- Banner trial — visível apenas quando ?trial= válido -->
+        <div class="trial-banner" id="trial-banner">
+          <div class="trial-banner-titulo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+            ACESSO TRIAL
+          </div>
+          <div class="trial-banner-desc" id="trial-banner-desc">Crie sua conta abaixo para ativar seu acesso gratuito.</div>
+        </div>
+
         <div class="form-titulo" id="form-titulo">Entrar</div>
         <div class="form-sub" id="form-sub">Não tem conta? <a href="#cadastro" onclick="trocarTab('cadastro')">Cadastre-se</a></div>
 
@@ -853,6 +881,9 @@
     }
   }
 
+  // ── Trial token (capturado da URL) ───────────────────────
+  let trialTokenAtivo = null;
+
   // ── Seleção de curso no cadastro ─────────────────────────
   let cursoCadastro = '';
 
@@ -910,8 +941,8 @@
     limparMsgs();
 
     try {
-      const data = await PBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro, nickname });
-      mostrarPainel(data.usuario);
+      const data = await PBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro, nickname, trial_token: trialTokenAtivo || undefined });
+      mostrarPainel(data.usuario, !!trialTokenAtivo && data.usuario?.ativo);
     } catch (err) {
       mostrarMsg('msg-cadastro', err.erro || err.message || 'Erro ao criar conta.', 'erro');
     } finally {
@@ -1082,6 +1113,36 @@
     // Seleciona a tab correta se houver hash na URL
     if (window.location.hash === '#cadastro') {
       trocarTab('cadastro');
+    }
+
+    // Detecta ?trial= e valida o convite
+    const trialParam = new URLSearchParams(location.search).get('trial');
+    if (trialParam) {
+      try {
+        const resp = await PBM.ConvitesTrial.validar(trialParam);
+        if (resp.valido) {
+          trialTokenAtivo = trialParam;
+          const dias = resp.dias_trial;
+          document.getElementById('trial-banner-desc').textContent =
+            `Você recebeu ${dias} dia${dias !== 1 ? 's' : ''} de acesso gratuito ao Protocolo Bravo Mike. Crie sua conta abaixo para ativar.`;
+          document.getElementById('trial-banner').classList.add('visivel');
+          trocarTab('cadastro');
+          // Pré-seleciona e trava o curso se não for 'ambos'
+          if (resp.curso && resp.curso !== 'ambos') {
+            selecionarCursoCad(resp.curso);
+            document.getElementById('card-ctsp').style.pointerEvents = resp.curso === 'ctsp' ? 'none' : '';
+            document.getElementById('card-cba').style.pointerEvents  = resp.curso === 'cba'  ? 'none' : '';
+          }
+        } else {
+          const motivos = { desativado: 'Este link de convite foi desativado.', expirado: 'Este link de convite expirou.', esgotado: 'Este link de convite já foi utilizado o número máximo de vezes.' };
+          const msgEl = document.getElementById('msg-cadastro');
+          msgEl.textContent = motivos[resp.motivo] || 'Link de convite inválido.';
+          msgEl.className = 'msg erro';
+          trocarTab('cadastro');
+        }
+      } catch {
+        // ignora silenciosamente — formulário normal exibido
+      }
     }
   })();
 

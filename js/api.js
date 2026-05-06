@@ -34,7 +34,10 @@ async function request(path, options = {}) {
       throw new Error('Sessão encerrada');
     }
     if (PBM?.isAdmin?.()) {
-      PBM.Admin.logout();
+      const adminJwt = sessionStorage.getItem('pbm_admin_jwt');
+      if (adminJwt && options.headers?.['Authorization'] === `Bearer ${adminJwt}`) {
+        PBM.Admin.logout();
+      }
       throw { status: 401, ...data };
     }
   }
@@ -97,10 +100,10 @@ const PBM = {
       if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
       return data;
     },
-    async cadastrar({ nome, email, senha, curso, nickname }) {
+    async cadastrar({ nome, email, senha, curso, nickname, trial_token }) {
       const data = await request('/api/auth/cadastro', {
         method: 'POST',
-        body: JSON.stringify({ nome, email, senha, curso, nickname: nickname || undefined }),
+        body: JSON.stringify({ nome, email, senha, curso, nickname: nickname || undefined, trial_token: trial_token || undefined }),
       });
       if (data.token) sessionStorage.setItem('token', data.token);
       if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
@@ -370,6 +373,20 @@ const PBM = {
         return request(`/api/admin/cupons/${id}/excluir`, { method: 'DELETE', headers: PBM.Admin._authHeader() });
       },
     },
+    convites: {
+      listar() {
+        return request('/api/admin/convites', { headers: PBM.Admin._authHeader() });
+      },
+      criar(body) {
+        return request('/api/admin/convites', { method: 'POST', body: JSON.stringify(body), headers: PBM.Admin._authHeader() });
+      },
+      editar(id, body) {
+        return request(`/api/admin/convites/${id}`, { method: 'PATCH', body: JSON.stringify(body), headers: PBM.Admin._authHeader() });
+      },
+      excluir(id) {
+        return request(`/api/admin/convites/${id}`, { method: 'DELETE', headers: PBM.Admin._authHeader() });
+      },
+    },
     aprovacoes: {
       resumo() { return PBM.Admin.req('/api/admin/aprovacoes/resumo'); },
       questoesIa: {
@@ -405,6 +422,12 @@ const PBM = {
     },
     aplicar(codigo) {
       return request('/api/cupons/aplicar', { method: 'POST', body: JSON.stringify({ codigo }) });
+    },
+  },
+
+  ConvitesTrial: {
+    validar(token) {
+      return request('/api/convites/validar?token=' + encodeURIComponent(token));
     },
   },
 

@@ -539,7 +539,7 @@
       </a>
       <div class="nav-item nav-missao locked" id="nav-missao-fds">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span class="nav-missao-label">MISSÃO FDS</span>
+        <span class="nav-missao-label">PROTOCOLO QAP</span>
         <span class="nav-missao-timer" id="missao-timer" style="display:none">--:--:--</span>
         <div class="nav-missao-tooltip" id="missao-tooltip"></div>
       </div>
@@ -1114,7 +1114,7 @@
   if(status.estado==='active'){
     const a=document.createElement('a');
     a.className='nav-item nav-missao active';a.href='/simulado-mensal';
-    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span class="nav-missao-label">MISSÃO FDS</span><span class="nav-missao-badge">ABERTA</span>';
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span class="nav-missao-label">PROTOCOLO QAP</span><span class="nav-missao-badge">ABERTA</span>';
     el.replaceWith(a);
   }else if(status.estado==='locked'&&status.proximo){
     const abertura=new Date(status.proximo.abertura);
@@ -1129,7 +1129,7 @@
       ov.innerHTML='<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem 1.75rem;max-width:320px;width:90%;">'+
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid #222;padding-bottom:.75rem;">'+
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+
-          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">MISSÃO FDS — BLOQUEADA</span>'+
+          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">PROTOCOLO QAP — BLOQUEADO</span>'+
         '</div>'+
         '<div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">Abertura</div>'+
         '<div style="font-size:14px;color:#CCC;margin-bottom:1rem;">'+fmt(abertura)+' BRT</div>'+
@@ -1168,7 +1168,7 @@
     const a=document.createElement('a');
     a.className='nav-item nav-missao encerrado';
     a.href='/simulado-mensal-ranking?id='+status.ultimo.id;
-    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg><span class="nav-missao-label">MISSÃO FDS</span><span class="nav-missao-ranking-badge">RANKING →</span>';
+    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg><span class="nav-missao-label">PROTOCOLO QAP</span><span class="nav-missao-ranking-badge">RANKING →</span>';
     el.replaceWith(a);
   }else{
     el.style.cursor='pointer';
@@ -1178,7 +1178,7 @@
       ov.innerHTML='<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem 1.75rem;max-width:320px;width:90%;">'+
         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid #222;padding-bottom:.75rem;">'+
           '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+
-          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">MISSÃO FDS</span>'+
+          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">PROTOCOLO QAP</span>'+
         '</div>'+
         '<div style="text-align:center;padding:1rem 0;">'+
           '<div style="font-size:13px;color:#666;line-height:1.7;">Nenhuma missão agendada<br>no momento.<br><br>Fique atento — a próxima<br>será anunciada em breve.</div>'+

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
   <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Protocolo Bravo Mike — Missão FDS</title>
+<title>Protocolo Bravo Mike — Protocolo QAP</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -266,13 +266,13 @@
 
 <div class="tela-cheia" id="tela-loading">
   <div class="loader"></div>
-  <div style="font-size:14px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">CARREGANDO MISSÃO FDS...</div>
+  <div style="font-size:14px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">CARREGANDO PROTOCOLO QAP...</div>
 </div>
 
 <!-- LOBBY: mostrado quando não há simuladoId na sessão -->
 <div id="tela-lobby" style="position:fixed;inset:0;background:var(--carvao);z-index:500;display:none;align-items:center;justify-content:center;padding:2rem;overflow-y:auto;">
   <div style="width:100%;max-width:520px;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:.06em;text-align:center;margin-bottom:.2rem;">MISSÃO FDS</div>
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:.06em;text-align:center;margin-bottom:.2rem;">PROTOCOLO QAP</div>
     <div id="lobby-sub" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#444;text-align:center;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2rem;">Carregando...</div>
     <div id="lobby-status-card" style="margin-bottom:1rem;"></div>
     <div id="lobby-admin-panel"></div>
@@ -284,7 +284,7 @@
 
   <header class="topbar">
     <a href="/simulados" class="topbar-logo">Protocolo Bravo Mike</a>
-    <div class="topbar-info" id="topbar-titulo">MISSÃO FDS</div>
+    <div class="topbar-info" id="topbar-titulo">PROTOCOLO QAP</div>
     <div style="display:flex;align-items:center;gap:8px;">
       <div class="timer-box" id="timer">04:00:00</div>
       <button class="btn-toggle-nav" onclick="abrirDrawerNav()">
@@ -442,7 +442,7 @@ function renderLobbyStatus(status) {
     card.innerHTML = `
       <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem;text-align:center;">
         <div style="font-size:11px;color:var(--verde);font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;margin-bottom:.75rem;">● ABERTA AGORA</div>
-        <div style="font-size:14px;color:#CCC;margin-bottom:1.25rem;">${status.simulado?.titulo || 'Missão FDS'}</div>
+        <div style="font-size:14px;color:#CCC;margin-bottom:1.25rem;">${status.simulado?.titulo || 'Protocolo QAP'}</div>
         <button onclick="entrarSimulado('${status.simulado.id}')"
           style="width:100%;background:var(--verde);color:#0F0F0F;border:none;padding:14px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
           ENTRAR NA MISSÃO
@@ -629,7 +629,7 @@ async function init() {
       return;
     }
 
-    document.getElementById('topbar-titulo').innerHTML = `<strong style="color:var(--dourado);">MISSÃO FDS</strong><br>${simuladoTitulo}`;
+    document.getElementById('topbar-titulo').innerHTML = `<strong style="color:var(--dourado);">PROTOCOLO QAP</strong><br>${simuladoTitulo}`;
 
     // Registra participação (cria sessão no backend)
     if (partExist) {
