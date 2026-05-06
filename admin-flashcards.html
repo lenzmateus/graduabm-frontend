@@ -494,15 +494,17 @@ async function confirmarDelete() {
       <div class="sidebar-footer"><button class="btn-sair" id="btn-sair">Encerrar sessão</button></div>`;
   }
 })();
-(async () => {
+async function carregarBadgeAprovacoes() {
   try {
     const r = await PBM.Admin.aprovacoes.resumo();
-    if (r?.total > 0) {
-      const el = document.getElementById('nav-aprovacoes-badge');
-      if (el) { el.textContent = r.total; el.style.display = 'inline'; }
-    }
+    const el = document.getElementById('nav-aprovacoes-badge');
+    if (!el) return;
+    if (r?.total > 0) { el.textContent = r.total; el.style.display = 'inline'; }
+    else { el.style.display = 'none'; }
   } catch {}
-})();
+}
+carregarBadgeAprovacoes();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) carregarBadgeAprovacoes(); });
 
 document.getElementById('btn-sair').addEventListener('click', () => _isGestor ? PBM.Gestor.logout() : PBM.Admin.logout());
 document.getElementById('btn-novo').addEventListener('click', abrirModalNova);

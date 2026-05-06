@@ -358,6 +358,9 @@
     .res-area-grid { grid-template-columns: repeat(2, 1fr); }
     .topbar-logo { font-size: 18px; }
     .nav-drawer-grid { grid-template-columns: repeat(5, 1fr); }
+    .gab-col { padding: 0.75rem; overflow-y: auto; }
+    .gab-header { padding: 0.75rem; }
+    .gab-footer { padding: 0.75rem; gap: 8px; }
   }
 
   /* ── SETAS LATERAIS ── */
@@ -380,6 +383,39 @@
   .seta-sim-esq { left: 262px; }
   .seta-sim-dir { right: 12px; }
   @media (max-width: 960px) { .seta-sim { display: none !important; } }
+
+  /* ── BOTTOMBAR MOBILE ── */
+  .bottombar {
+    display: none; position: fixed;
+    bottom: 0; left: 0; right: 0; height: 60px;
+    background: var(--cinza-escuro);
+    border-top: 1px solid var(--cinza-borda);
+    z-index: 200;
+    grid-template-columns: repeat(6, 1fr);
+  }
+  .bottombar a {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 3px; color: #555; text-decoration: none;
+    font-size: 9px; font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    transition: color 0.12s;
+  }
+  .bottombar a svg { width: 20px; height: 20px; }
+  .bottombar a.ativo { color: var(--vermelho); }
+  .bottombar a:hover { color: var(--branco); }
+  @media (max-width: 768px) {
+    .bottombar { display: grid; }
+    .main-area { padding-bottom: 76px; }
+  }
+
+  /* ── SPRINT 4 — AJUSTES FINOS MOBILE ── */
+  @media (max-width: 480px) {
+    .btn-iniciar, .btn-acao, .btn-confirmar, .btn-resultado, .res-btn,
+    .alt, .nav-q-btn { min-height: 44px; }
+    .badge-area, .badge-leg, .alt-letra, .resultado-secao,
+    .header-contexto, .prog-info, .modal-char,
+    .countdown-label, .mensal-info { font-size: 13px; }
+  }
 
 </style>
 </head>
@@ -930,6 +966,17 @@ init();
   opacity: 0.05; z-index: 0;
 }
 </style>
+<nav class="bottombar" id="bottombar">
+  <a href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Início</a>
+  <a href="/area-estudos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Estudar</a>
+  <a href="/simulados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Simulados</a>
+  <a href="/simulado-mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>QAP</a>
+  <a href="/flashcards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Cards</a>
+  <a href="/ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>Ranking</a>
+</nav>
+<script>
+(function(){var p=window.location.pathname,m={'/dashboard':'/dashboard','/area-estudos':'/area-estudos','/selecao-legislacao':'/area-estudos','/questoes':'/area-estudos','/simulados':'/simulados','/simulado-prova':'/simulados','/simulado-mensal':'/simulado-mensal','/simulado-mensal-ranking':'/simulado-mensal','/flashcards':'/flashcards','/ranking':'/ranking'},a=m[p]||p;document.querySelectorAll('#bottombar a').forEach(function(l){if(l.getAttribute('href')===a)l.classList.add('ativo');});})();
+</script>
 <div class="pbm-watermark" aria-hidden="true"></div>
 </body>
 </html>
