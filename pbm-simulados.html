@@ -494,6 +494,7 @@
       </a>
     </nav>
     <div class="sidebar-footer">
+      <button onclick="if(window.PBMTour)PBMTour.start()" style="display:block;width:100%;background:transparent;border:none;color:#444;font-size:11px;font-family:'Inter',sans-serif;cursor:pointer;text-align:left;padding:0;margin-bottom:8px;transition:color .15s;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#444'">? Tutorial desta página</button>
       <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
     </div>
   </aside>
@@ -575,6 +576,7 @@
 </div>
 
 <script src="/js/api.js"></script>
+<script src="/js/tour.js"></script>
 <script>
 let cursoSelecionado = 'ctsp';
 let countdownInterval = null;
@@ -730,6 +732,7 @@ async function init() {
   document.getElementById('btn-sair').addEventListener('click', () => PBM.Auth.logout());
   document.getElementById('btn-logout-top').addEventListener('click', () => PBM.Auth.logout());
   carregarSimuladoMensal();
+  if (window.PBMTour) PBMTour.init();
 }
 
 init();

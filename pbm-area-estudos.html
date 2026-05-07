@@ -527,6 +527,7 @@
     </nav>
 
     <div class="sidebar-footer">
+      <button onclick="if(window.PBMTour)PBMTour.start()" style="display:block;width:100%;background:transparent;border:none;color:#444;font-size:11px;font-family:'Inter',sans-serif;cursor:pointer;text-align:left;padding:0;margin-bottom:8px;transition:color .15s;" onmouseover="this.style.color='#888'" onmouseout="this.style.color='#444'">? Tutorial desta página</button>
       <button class="btn-sair" onclick="handleSair()">Encerrar sessão</button>
     </div>
   </aside>
@@ -939,11 +940,13 @@ async function iniciarApp() {
       console.warn('Desempenho não carregado:', err.message);
     }
   }
+  if (window.PBMTour) PBMTour.init();
 }
 
 // Carregar api.js e chamar iniciarApp apenas uma vez após carregado
 </script>
 <script src="/js/api.js" onload="iniciarApp()"></script>
+<script src="/js/tour.js"></script>
 <div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">
   <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
 </div>

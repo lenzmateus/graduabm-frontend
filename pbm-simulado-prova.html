@@ -789,7 +789,10 @@ async function entregarProva(porTempoEsgotado) {
     const brancas = respostas.filter(r => !r.oficial).length;
     if (brancas > 0) {
       const c = confirm(`Você deixou ${brancas} bolinha(s) em branco no Cartão Resposta. Deseja entregar a prova mesmo assim? O que está apenas no rascunho NÃO conta!`);
-      if(!c) return;
+      if(!c) {
+        if (btnEntregar) btnEntregar.disabled = false;
+        return;
+      }
     }
   }
 
@@ -916,7 +919,7 @@ function mostrarResultado() {
     const correto = r.gabaritoReal;
     const acertou = marcou && marcou === correto;
     const cls = !marcou ? '' : (acertou ? 'ok' : 'err');
-    const justif = questoes[i] && questoes[i].justificativa;
+    const justif = questoes[i] && (questoes[i].comentario || questoes[i].justificativa);
 
     const item = document.createElement('div');
     item.className = `res-gab-item ${cls}`;

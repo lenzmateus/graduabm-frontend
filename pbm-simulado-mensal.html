@@ -755,10 +755,11 @@ function carregarQuestao(index) {
 
   const lista = document.getElementById('alts-lista');
   lista.innerHTML = '';
-  ['a','b','c','d','e'].forEach(l => {
-    const texto = q['alternativa_' + l];
+  const alts = Array.isArray(q.alternativas)
+    ? q.alternativas.map((txt, i) => ({ letra: String.fromCharCode(65 + i), texto: typeof txt === 'string' ? txt : (txt.texto || '') }))
+    : ['a','b','c','d','e'].map(l => ({ letra: l.toUpperCase(), texto: q['alternativa_' + l] || '' })).filter(a => a.texto);
+  alts.forEach(({ letra, texto }) => {
     if (!texto) return;
-    const letra = l.toUpperCase();
     const div = document.createElement('div');
     div.className = `alt ${respostas[index].rascunho === letra ? 'selecionada' : ''}`;
     div.onclick = () => marcarRascunho(index, letra);

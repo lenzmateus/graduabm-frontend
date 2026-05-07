@@ -698,6 +698,7 @@
     </div>
     <div class="header-right">
       <div class="timer-display" id="timer-display">00:00</div>
+      <button onclick="if(window.PBMTour)PBMTour.start()" title="Tutorial da página" style="background:transparent;border:1px solid #2A2A2A;color:#555;border-radius:6px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s;margin-right:6px;" onmouseover="this.style.borderColor='#555';this.style.color='#888'" onmouseout="this.style.borderColor='#2A2A2A';this.style.color='#555'">?</button>
       <button class="btn-sair-quiz" onclick="confirmarSaida()" title="Encerrar sessão">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -813,6 +814,7 @@
 </div>
 
 <script src="/js/api.js"></script>
+<script src="/js/tour.js"></script>
 <button class="seta-nav seta-esq" id="seta-esq" onclick="voltarQuestao()" title="Questão anterior" disabled>
   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
 </button>
@@ -858,18 +860,19 @@ function getAlternativas(q) {
       return { letra: (a.letra || String.fromCharCode(65 + i)).toUpperCase(), texto: a.texto || a.conteudo || '' };
     });
   }
-  // colunas separadas: alternativa_a, alternativa_b…
+  // fallback: questões antigas com colunas separadas
   return ['a','b','c','d','e']
     .map(l => ({ letra: l.toUpperCase(), texto: q['alternativa_' + l] || '' }))
     .filter(a => a.texto);
 }
 function getRespostaCorreta(q) {
   if (typeof q.gabarito === 'number') return String.fromCharCode(65 + q.gabarito);
-  const r = q.resposta_correta || q.gabarito || '';
+  // fallback: questões antigas com resposta_correta string
+  const r = q.resposta_correta || '';
   return r.toString().toUpperCase().trim().charAt(0);
 }
 function getJustificativa(q) {
-  return q.justificativa || q.gabarito_comentado || q.explicacao || q.comentario || '';
+  return q.comentario || q.justificativa || '';
 }
 function btnReportarHtml(idx) {
   if (estadoQuestoes[idx]?.reportado) {
@@ -925,6 +928,7 @@ async function init() {
       document.getElementById('tela-questao').style.display = 'flex';
       document.getElementById('seta-esq').style.display = 'flex';
       document.getElementById('seta-dir').style.display = 'flex';
+      if (window.PBMTour) PBMTour.init();
       return;
     }
 
@@ -971,6 +975,7 @@ async function init() {
     document.getElementById('tela-questao').style.display = 'flex';
     document.getElementById('seta-esq').style.display = 'flex';
     document.getElementById('seta-dir').style.display = 'flex';
+    if (window.PBMTour) PBMTour.init();
 
   } catch (err) {
     const detalhe = err.erro || err.message || (err.status ? 'HTTP ' + err.status : '');

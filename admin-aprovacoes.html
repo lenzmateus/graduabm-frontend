@@ -114,6 +114,16 @@
   .ig-caption-toggle { font-size: 11px; color: var(--cinza-texto); cursor: pointer; margin-top: 4px; display: inline-block; }
   .ig-caption-toggle:hover { color: var(--branco); }
 
+  /* ── Smart Card Fields (Sprint 1 — Supra Sumo) ── */
+  .tag-tipo { background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.3); color: var(--amarelo); }
+  .assertivas-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 1rem; }
+  .assertiva-item { font-size: 13px; color: var(--branco); padding: 5px 12px; border-left: 2px solid rgba(127,119,221,0.4); line-height: 1.6; }
+  .assertiva-item strong { font-family: 'IBM Plex Mono', monospace; color: var(--roxo); margin-right: 6px; }
+  .juiz-feedback { margin-top: 1rem; padding: 10px 14px; background: rgba(127,119,221,0.08); border-radius: 6px; font-size: 12px; color: #9B96E8; border-left: 2px solid rgba(127,119,221,0.4); }
+  .juiz-feedback strong { color: var(--roxo); }
+  .topicos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .topico-chip { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(39,160,90,0.08); border: 1px solid rgba(39,160,90,0.25); color: var(--verde); }
+
   /* ── Simulado ── */
   .sim-titulo { font-size: 15px; font-weight: 600; color: var(--branco); margin-bottom: 6px; }
   .sim-info { font-size: 12px; color: var(--cinza-texto); }
@@ -363,8 +373,9 @@
       toast(msgOk, 'sucesso');
       btn.closest('.card').remove();
       await carregarResumo();
-    } catch {
-      toast(msgErro || 'Erro ao executar ação.', 'erro');
+    } catch (err) {
+      const detail = err?.erro || err?.message || '';
+      toast(detail ? `${msgErro || 'Erro.'} ${detail}` : (msgErro || 'Erro ao executar ação.'), 'erro');
       btn.disabled = false;
       btn.innerHTML = orig;
     }
@@ -410,12 +421,21 @@
           return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(txt)}</span></div>`;
         }).join('');
 
+        const NUMERAIS = ['I','II','III','IV','V'];
+        const assertivasHtml = (q.assertivas && q.assertivas.length > 0)
+          ? `<div class="assertivas-list">${q.assertivas.map((a, i) => `<div class="assertiva-item"><strong>${NUMERAIS[i] || (i+1)+'.'}</strong>${esc(a)}</div>`).join('')}</div>`
+          : '';
+        const topicosHtml = (q.topicos_cobertos && q.topicos_cobertos.length > 0)
+          ? `<div class="topicos">${q.topicos_cobertos.map(t => `<span class="topico-chip">${esc(t)}</span>`).join('')}</div>`
+          : '';
+
         card.innerHTML = `
           <div class="card-header">
             <div>
               <div class="card-meta">
                 <span class="tag tag-area">${esc(q.area_tematica || '—')}</span>
                 <span class="tag tag-curso">${esc(q.curso || '—')}</span>
+                ${q.tipo_questao && q.tipo_questao !== 'direta' ? `<span class="tag tag-tipo">${esc(q.tipo_questao)}</span>` : ''}
                 <span class="tag tag-data">${fmtData(q.created_at)}</span>
                 ${q.legislacao_nome ? `<span class="tag tag-data">${esc(q.legislacao_nome)}</span>` : ''}
               </div>
@@ -437,7 +457,10 @@
           </div>
           <div class="card-body">
             <p class="enunciado">${esc(q.enunciado)}</p>
+            ${assertivasHtml}
             <div class="alternativas">${alts}</div>
+            ${q.revisao_notas ? `<div class="juiz-feedback"><strong>Juiz IA:</strong> ${esc(q.revisao_notas)}</div>` : ''}
+            ${topicosHtml}
             ${q.comentario ? `<div class="justificativa"><strong>Comentário:</strong> ${esc(q.comentario)}</div>` : ''}
           </div>
           <div class="edit-form">
@@ -467,6 +490,26 @@
               <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(q.legislacao_nome || '')}"></div>
             </div>
             <div class="campo"><label>Comentário</label><textarea name="comentario" rows="3">${esc(q.comentario || '')}</textarea></div>
+            <div class="form-row">
+              <div class="campo">
+                <label>Tipo de Questão</label>
+                <select name="tipo_questao">
+                  ${['direta','assercoes','verdadeiro_falso','lacunas'].map(t => `<option value="${t}" ${(q.tipo_questao||'direta') === t ? 'selected' : ''}>${t}</option>`).join('')}
+                </select>
+              </div>
+              <div class="campo">
+                <label>Tópicos Cobertos (um por linha)</label>
+                <textarea name="topicos_cobertos" rows="3">${esc((q.topicos_cobertos || []).join('\n'))}</textarea>
+              </div>
+            </div>
+            <div class="campo">
+              <label>Assertivas (uma por linha — para tipo asserções/V/F)</label>
+              <textarea name="assertivas" rows="4">${esc((q.assertivas || []).join('\n'))}</textarea>
+            </div>
+            <div class="campo">
+              <label>Feedback do Juiz IA</label>
+              <textarea name="revisao_notas" rows="2">${esc(q.revisao_notas || '')}</textarea>
+            </div>
             <div class="form-actions">
               <button class="btn btn-salvar-edicao btn-save-q">Salvar Edição</button>
               <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
@@ -480,6 +523,8 @@
         card.querySelector('.btn-save-q').addEventListener('click', async function() {
           const f = card.querySelector('.edit-form');
           const alternativas = Array.from(f.querySelectorAll('[name^=alt_]')).map(el => el.value);
+          const assertivasRaw = f.querySelector('[name=assertivas]').value.trim();
+          const topicosRaw = f.querySelector('[name=topicos_cobertos]').value.trim();
           const body = {
             enunciado: f.querySelector('[name=enunciado]').value,
             alternativas,
@@ -488,11 +533,39 @@
             curso: f.querySelector('[name=curso]').value,
             legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
             comentario: f.querySelector('[name=comentario]').value,
+            tipo_questao: f.querySelector('[name=tipo_questao]').value,
+            assertivas: assertivasRaw ? assertivasRaw.split('\n').map(s => s.trim()).filter(Boolean) : [],
+            topicos_cobertos: topicosRaw ? topicosRaw.split('\n').map(s => s.trim()).filter(Boolean) : [],
+            revisao_notas: f.querySelector('[name=revisao_notas]').value || null,
           };
           this.disabled = true;
           try {
             await PBM.Admin.aprovacoes.questoesIa.editar(q.id, body);
             Object.assign(q, body);
+            // Atualiza o card-body para refletir as mudanças visualmente
+            const altsHtml = body.alternativas.map((txt, i) => {
+              const letra = altLetras[i] || String(i + 1);
+              const classe = body.gabarito === i ? 'correta' : '';
+              return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(txt)}</span></div>`;
+            }).join('');
+            card.querySelector('.enunciado').textContent = body.enunciado;
+            card.querySelector('.alternativas').innerHTML = altsHtml;
+            const justEl = card.querySelector('.justificativa');
+            if (body.comentario) {
+              if (justEl) {
+                justEl.innerHTML = `<strong>Comentário:</strong> ${esc(body.comentario)}`;
+              } else {
+                card.querySelector('.card-body').insertAdjacentHTML('beforeend',
+                  `<div class="justificativa"><strong>Comentário:</strong> ${esc(body.comentario)}</div>`);
+              }
+            } else if (justEl) {
+              justEl.remove();
+            }
+            // Atualiza tags de área e curso no header
+            const tagArea = card.querySelector('.tag-area');
+            const tagCurso = card.querySelector('.tag-curso');
+            if (tagArea) tagArea.textContent = body.area_tematica;
+            if (tagCurso) tagCurso.textContent = body.curso;
             toast('Questão editada com sucesso.', 'sucesso');
             toggleEditForm(card, false);
           } catch {
@@ -596,6 +669,12 @@
           this.disabled = true;
           try {
             await PBM.Admin.aprovacoes.flashcards.editar(fc.id, body);
+            Object.assign(fc, body);
+            // Atualiza o card-body visualmente
+            card.querySelector('.flashcard-frente').textContent = body.frente;
+            card.querySelector('.flashcard-verso').textContent = body.verso;
+            const tagArea = card.querySelector('.tag-area');
+            if (tagArea) tagArea.textContent = body.area_tematica;
             toast('Flashcard editado.', 'sucesso');
             toggleEditForm(card, false);
           } catch {
@@ -620,19 +699,46 @@
   /* ════════════════════════════════════════════════
      ABA — INSTAGRAM (admin only)
   ════════════════════════════════════════════════ */
+  async function gerarPostInstagram() {
+    const btn = document.getElementById('btn-gerar-ig');
+    if (!btn) return;
+    btn.disabled = true;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Gerando...';
+    try {
+      const r = await PBM.Admin.aprovacoes.instagram.gerar();
+      if (!r.ok) { toast(r.msg || 'Nada gerado.', 'erro'); return; }
+      toast('Post gerado! Recarregando...', 'sucesso');
+      tabCarregadas['instagram'] = false;
+      await carregarInstagram();
+    } catch (err) {
+      toast((err?.erro || err?.message || 'Erro ao gerar post.'), 'erro');
+    } finally {
+      if (btn && !btn.closest('.card')) { btn.disabled = false; btn.innerHTML = orig; }
+    }
+  }
+
   async function carregarInstagram() {
     const container = document.getElementById('tab-content-instagram');
     container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
     try {
       const lista = await PBM.Admin.aprovacoes.instagram.listar();
+      const btnGerar = `<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+        <button id="btn-gerar-ig" class="btn btn-editar" style="gap:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Gerar post agora
+        </button>
+      </div>`;
       if (!lista || lista.length === 0) {
-        container.innerHTML = `<div class="empty">
+        container.innerHTML = btnGerar + `<div class="empty">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>
           <p>Nenhum post Instagram pendente.</p></div>`;
+        document.getElementById('btn-gerar-ig').addEventListener('click', gerarPostInstagram);
         tabCarregadas['instagram'] = true;
         return;
       }
-      container.innerHTML = '<div class="cards-list" id="list-instagram"></div>';
+      container.innerHTML = btnGerar + '<div class="cards-list" id="list-instagram"></div>';
+      document.getElementById('btn-gerar-ig').addEventListener('click', gerarPostInstagram);
       const list = document.getElementById('list-instagram');
       lista.forEach(post => {
         const card = document.createElement('div');
@@ -700,8 +806,23 @@
           });
         }
 
-        card.querySelector('.btn-publicar-ig').addEventListener('click', function() {
-          executarAcao(this, () => PBM.Admin.aprovacoes.instagram.publicar(post.id), 'Post publicado no Instagram!', 'Erro ao publicar.');
+        card.querySelector('.btn-publicar-ig').addEventListener('click', async function() {
+          const btn = this;
+          btn.disabled = true;
+          const orig = btn.innerHTML;
+          btn.innerHTML = '<span class="spinner"></span>';
+          try {
+            const sig = AbortSignal.timeout ? AbortSignal.timeout(90000) : undefined;
+            await PBM.Admin.aprovacoes.instagram.publicar(post.id, sig ? { signal: sig } : {});
+            toast('Post publicado no Instagram!', 'sucesso');
+            btn.closest('.card').remove();
+            await carregarResumo();
+          } catch (err) {
+            const detail = err?.erro || err?.message || '';
+            toast(detail ? `Erro ao publicar. ${detail}` : 'Erro ao publicar.', 'erro');
+            btn.disabled = false;
+            btn.innerHTML = orig;
+          }
         });
         card.querySelector('.btn-rejeitar-ig').addEventListener('click', function() {
           executarAcao(this, () => PBM.Admin.aprovacoes.instagram.rejeitar(post.id), 'Post rejeitado.', 'Erro ao rejeitar.');

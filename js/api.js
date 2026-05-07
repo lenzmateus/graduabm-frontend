@@ -200,6 +200,12 @@ const PBM = {
       listar(qs = '') {
         return request('/api/flashcards' + (qs ? '?' + qs : ''));
       },
+      revisar(id, qualidade) {
+        return request(`/api/flashcards/${id}/revisar`, {
+          method: 'POST',
+          body: JSON.stringify({ qualidade }),
+        });
+      },
     },
   },
 
@@ -403,7 +409,8 @@ const PBM = {
       },
       instagram: {
         listar()           { return PBM.Admin.req('/api/admin/aprovacoes/instagram'); },
-        publicar(id)       { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/publicar`, { method: 'POST' }); },
+        gerar()            { return PBM.Admin.req('/api/admin/aprovacoes/instagram/gerar', { method: 'POST' }); },
+        publicar(id, opts) { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/publicar`, { method: 'POST', ...(opts || {}) }); },
         rejeitar(id, obs)  { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         editar(id, caption){ return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}`, { method: 'PATCH', body: JSON.stringify({ caption }) }); },
       },
