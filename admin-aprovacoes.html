@@ -119,8 +119,24 @@
   .assertivas-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 1rem; }
   .assertiva-item { font-size: 13px; color: var(--branco); padding: 5px 12px; border-left: 2px solid rgba(127,119,221,0.4); line-height: 1.6; }
   .assertiva-item strong { font-family: 'IBM Plex Mono', monospace; color: var(--roxo); margin-right: 6px; }
-  .juiz-feedback { margin-top: 1rem; padding: 10px 14px; background: rgba(127,119,221,0.08); border-radius: 6px; font-size: 12px; color: #9B96E8; border-left: 2px solid rgba(127,119,221,0.4); }
+  .juiz-feedback { margin-top: 1rem; padding: 12px 14px; background: rgba(127,119,221,0.07); border-radius: 8px; font-size: 12px; color: #9B96E8; border-left: 2px solid rgba(127,119,221,0.4); }
   .juiz-feedback strong { color: var(--roxo); }
+  .juiz-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; color: var(--roxo); text-transform: uppercase; letter-spacing: 0.06em; }
+  .juiz-scores-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 11px; }
+  .juiz-scores-table th { color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; font-weight: 400; text-align: center; padding: 3px 6px; border-bottom: 1px solid rgba(127,119,221,0.2); white-space: nowrap; }
+  .juiz-scores-table th:first-child { text-align: left; }
+  .juiz-scores-table td { text-align: center; padding: 4px 6px; color: #9B96E8; }
+  .juiz-scores-table td:first-child { text-align: left; font-family: 'IBM Plex Mono', monospace; }
+  .juiz-scores-table tr.vencedora td { color: var(--branco); background: rgba(127,119,221,0.12); border-radius: 4px; }
+  .juiz-scores-table tr.vencedora td:first-child { color: var(--roxo); font-weight: 600; }
+  .juiz-scores-table .total-col { font-weight: 700; color: var(--verde) !important; }
+  .juiz-justificativa { font-size: 12px; color: var(--cinza-texto); line-height: 1.6; margin-bottom: 10px; }
+  .juiz-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .juiz-badge { font-size: 10px; font-family: 'IBM Plex Mono', monospace; padding: 2px 8px; border-radius: 20px; }
+  .juiz-badge.dificuldade { background: rgba(212,160,23,0.1); border: 1px solid rgba(212,160,23,0.3); color: var(--amarelo); }
+  .juiz-badge.similar-sim { background: rgba(192,39,15,0.1); border: 1px solid rgba(192,39,15,0.3); color: var(--vermelho); }
+  .juiz-badge.similar-nao { background: rgba(39,160,90,0.08); border: 1px solid rgba(39,160,90,0.25); color: var(--verde); }
+  .juiz-badge.tentativa { background: rgba(127,119,221,0.08); border: 1px solid rgba(127,119,221,0.25); color: var(--roxo); }
   .topicos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
   .topico-chip { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(39,160,90,0.08); border: 1px solid rgba(39,160,90,0.25); color: var(--verde); }
 
@@ -213,9 +229,16 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         Assinaturas
       </a>
-      <a class="nav-item" href="/admin#denuncias">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-        Relatórios de Problemas
+      <a class="nav-item" href="/admin-relatorios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Relatórios
+      </a>
+      <a class="nav-item" href="/admin-denuncias" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Relatórios de Problemas
+        </span>
+        <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
       </a>
       <div class="nav-label">Sistema</div>
       <a class="nav-item ativo" href="/admin-aprovacoes" style="justify-content:space-between;">
@@ -285,7 +308,7 @@
   <img id="lightbox-img" src="" alt="">
 </div>
 
-<script src="/js/api.js"></script>
+<script src="/js/api.js?v=2"></script>
 <script>
 (async () => {
   if (!PBM.isAdmin()) { window.location.href = '/admin-login'; return; }
@@ -346,20 +369,88 @@
     return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  function renderJuizFeedback(notasRaw) {
+    if (!notasRaw) return '';
+    let dados;
+    try { dados = typeof notasRaw === 'string' ? JSON.parse(notasRaw) : notasRaw; }
+    catch { return `<div class="juiz-feedback"><span class="juiz-header">⚖ Juiz IA</span><p class="juiz-justificativa">${esc(notasRaw)}</p></div>`; }
+
+    const criterios = [
+      { key: 'precisao_factual',    label: 'Precisão' },
+      { key: 'clareza',             label: 'Clareza' },
+      { key: 'distratores',         label: 'Distratores' },
+      { key: 'conformidade_edital', label: 'Edital' },
+      { key: 'dificuldade_adequada',label: 'Dificuldade' },
+    ];
+
+    const scores = dados.juiz_scores || [];
+    const melhorTotal = scores.length ? Math.max(...scores.map(s => s.total || 0)) : 0;
+
+    const thCriterios = criterios.map(c => `<th>${c.label}</th>`).join('');
+    const linhas = scores.map(s => {
+      const vencedora = (s.total || 0) === melhorTotal && scores.length > 1;
+      const cls = vencedora ? ' class="vencedora"' : '';
+      const prefixo = vencedora ? '★ Cand. ' : 'Cand. ';
+      const tds = criterios.map(c => `<td>${s[c.key] ?? '–'}/10</td>`).join('');
+      return `<tr${cls}><td>${prefixo}${s.candidata}</td>${tds}<td class="total-col">${s.total ?? '–'}/50</td></tr>`;
+    }).join('');
+
+    const tabelaHtml = scores.length ? `
+      <table class="juiz-scores-table">
+        <thead><tr><th>Candidata</th>${thCriterios}<th>Total</th></tr></thead>
+        <tbody>${linhas}</tbody>
+      </table>` : '';
+
+    const justificativa = dados.juiz_justificativa
+      ? `<p class="juiz-justificativa">${esc(dados.juiz_justificativa)}</p>` : '';
+
+    const sim = dados.similaridade || {};
+    const simBadge = sim.similar
+      ? `<span class="juiz-badge similar-sim">⚠ Similar (score ${sim.score})</span>`
+      : `<span class="juiz-badge similar-nao">✓ Sem duplicatas</span>`;
+
+    const difBadge = dados.dificuldade
+      ? `<span class="juiz-badge dificuldade">Dificuldade: ${dados.dificuldade}</span>` : '';
+
+    const tentBadge = dados.tentativa > 0
+      ? `<span class="juiz-badge tentativa">Tentativa ${dados.tentativa + 1}</span>` : '';
+
+    return `<div class="juiz-feedback">
+      <div class="juiz-header">⚖ Avaliação do Juiz IA</div>
+      ${tabelaHtml}
+      ${justificativa}
+      <div class="juiz-meta">${difBadge}${simBadge}${tentBadge}</div>
+    </div>`;
+  }
+
   /* ── Carregar resumo + badges ── */
-  async function carregarResumo() {
+  async function carregarBadgeAprovacoes() {
     try {
       _resumo = await PBM.Admin.aprovacoes.resumo();
       ['q', 'f', 'ig', 's'].forEach((k, i) => {
         const tabKey = ['questoes_ia','flashcards','instagram','simulados'][i];
         const count = _resumo[tabKey] || 0;
         const el = document.getElementById('badge-' + k);
-        if (count > 0) { el.textContent = count; el.classList.add('visivel'); }
+        if (el) {
+          if (count > 0) { el.textContent = count; el.classList.add('visivel'); }
+          else { el.classList.remove('visivel'); }
+        }
       });
-      if (_resumo.total > 0) {
-        const nb = document.getElementById('nav-aprovacoes-badge');
-        if (nb) { nb.textContent = _resumo.total; nb.style.display = 'inline'; }
+      const nb = document.getElementById('nav-aprovacoes-badge');
+      if (nb) {
+        if (_resumo.total > 0) { nb.textContent = _resumo.total; nb.style.display = 'inline'; }
+        else { nb.style.display = 'none'; }
       }
+    } catch {}
+  }
+
+  async function carregarBadgeDenuncias() {
+    try {
+      const r = await PBM.Admin.denuncias.resumo();
+      const el = document.getElementById('badge-denuncias');
+      if (!el) return;
+      if (r?.total > 0) { el.textContent = r.total; el.style.display = 'inline'; }
+      else { el.style.display = 'none'; }
     } catch {}
   }
 
@@ -372,7 +463,8 @@
       await fn();
       toast(msgOk, 'sucesso');
       btn.closest('.card').remove();
-      await carregarResumo();
+      await carregarBadgeAprovacoes();
+      await carregarBadgeDenuncias();
     } catch (err) {
       const detail = err?.erro || err?.message || '';
       toast(detail ? `${msgErro || 'Erro.'} ${detail}` : (msgErro || 'Erro ao executar ação.'), 'erro');
@@ -395,20 +487,46 @@
   /* ════════════════════════════════════════════════
      ABA — QUESTÕES IA
   ════════════════════════════════════════════════ */
+  async function gerarQuestoes() {
+    const btn = document.getElementById('btn-gerar-questoes');
+    if (!btn) return;
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Gerando...';
+    try {
+      await PBM.Admin.automatizar.gerarQuestoes();
+      toast('Geração iniciada! Aguarde alguns minutos e recarregue.', 'sucesso');
+      tabCarregadas['questoes'] = false;
+      await carregarQuestoes();
+    } catch (err) {
+      toast(err?.erro || err?.message || 'Erro ao gerar questões.', 'erro');
+    } finally {
+      if (btn && !btn.closest('.card')) { btn.disabled = false; btn.innerHTML = orig; }
+    }
+  }
+
   async function carregarQuestoes() {
     const container = document.getElementById('tab-content-questoes');
     container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
     try {
       const lista = await PBM.Admin.aprovacoes.questoesIa.listar();
+      const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
+        <button id="btn-gerar-questoes" class="btn btn-editar" style="gap:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Gerar questões agora
+        </button>
+      </div>`;
       if (!lista || lista.length === 0) {
-        container.innerHTML = `<div class="empty">
+        container.innerHTML = btnGerar + `<div class="empty">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
           <p>Nenhuma questão pendente de aprovação.</p></div>`;
+        document.getElementById('btn-gerar-questoes').addEventListener('click', gerarQuestoes);
         tabCarregadas['questoes'] = true;
         return;
       }
       const altLetras = ['A','B','C','D','E'];
-      container.innerHTML = '<div class="cards-list" id="list-questoes"></div>';
+      container.innerHTML = btnGerar + '<div class="cards-list" id="list-questoes"></div>';
+      document.getElementById('btn-gerar-questoes').addEventListener('click', gerarQuestoes);
       const list = document.getElementById('list-questoes');
       lista.forEach(q => {
         const card = document.createElement('div');
@@ -459,7 +577,7 @@
             <p class="enunciado">${esc(q.enunciado)}</p>
             ${assertivasHtml}
             <div class="alternativas">${alts}</div>
-            ${q.revisao_notas ? `<div class="juiz-feedback"><strong>Juiz IA:</strong> ${esc(q.revisao_notas)}</div>` : ''}
+            ${renderJuizFeedback(q.revisao_notas)}
             ${topicosHtml}
             ${q.comentario ? `<div class="justificativa"><strong>Comentário:</strong> ${esc(q.comentario)}</div>` : ''}
           </div>
@@ -590,19 +708,48 @@
   /* ════════════════════════════════════════════════
      ABA — FLASHCARDS
   ════════════════════════════════════════════════ */
+  async function gerarFlashcard() {
+    const btn = document.getElementById('btn-gerar-flashcard');
+    if (!btn) return;
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Gerando...';
+    try {
+      await PBM.Admin.automatizar.gerarFlashcard();
+      toast('Geração iniciada! Atualizando em 60 segundos...', 'sucesso');
+      tabCarregadas['flashcards'] = false;
+      setTimeout(async () => {
+        tabCarregadas['flashcards'] = false;
+        await carregarFlashcards();
+      }, 60000);
+    } catch (err) {
+      toast(err?.erro || err?.message || 'Erro ao gerar flashcard.', 'erro');
+    } finally {
+      if (btn && !btn.closest('.card')) { btn.disabled = false; btn.innerHTML = orig; }
+    }
+  }
+
   async function carregarFlashcards() {
     const container = document.getElementById('tab-content-flashcards');
     container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
     try {
       const lista = await PBM.Admin.aprovacoes.flashcards.listar();
+      const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
+        <button id="btn-gerar-flashcard" class="btn btn-editar" style="gap:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Gerar flashcard agora
+        </button>
+      </div>`;
       if (!lista || lista.length === 0) {
-        container.innerHTML = `<div class="empty">
+        container.innerHTML = btnGerar + `<div class="empty">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
           <p>Nenhum flashcard pendente.</p></div>`;
+        document.getElementById('btn-gerar-flashcard').addEventListener('click', gerarFlashcard);
         tabCarregadas['flashcards'] = true;
         return;
       }
-      container.innerHTML = '<div class="cards-list" id="list-flashcards"></div>';
+      container.innerHTML = btnGerar + '<div class="cards-list" id="list-flashcards"></div>';
+      document.getElementById('btn-gerar-flashcard').addEventListener('click', gerarFlashcard);
       const list = document.getElementById('list-flashcards');
       lista.forEach(fc => {
         const card = document.createElement('div');
@@ -701,12 +848,14 @@
   ════════════════════════════════════════════════ */
   async function gerarPostInstagram() {
     const btn = document.getElementById('btn-gerar-ig');
+    const sel = document.getElementById('sel-area-ig');
     if (!btn) return;
     btn.disabled = true;
     const orig = btn.innerHTML;
     btn.innerHTML = '<span class="spinner"></span> Gerando...';
     try {
-      const r = await PBM.Admin.aprovacoes.instagram.gerar();
+      const area = sel ? (sel.value || null) : null;
+      const r = await PBM.Admin.aprovacoes.instagram.gerar(area);
       if (!r.ok) { toast(r.msg || 'Nada gerado.', 'erro'); return; }
       toast('Post gerado! Recarregando...', 'sucesso');
       tabCarregadas['instagram'] = false;
@@ -723,7 +872,15 @@
     container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
     try {
       const lista = await PBM.Admin.aprovacoes.instagram.listar();
-      const btnGerar = `<div style="display:flex;justify-content:flex-end;margin-bottom:1rem;">
+      const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
+        <select id="sel-area-ig" style="background:#1a1a1a;color:#ccc;border:1px solid #333;border-radius:4px;padding:6px 10px;font-size:12px;cursor:pointer;">
+          <option value="">Área automática</option>
+          <option value="AT1">AT1 — Seg. Incêndios</option>
+          <option value="AT2">AT2 — Combate</option>
+          <option value="AT3">AT3 — Buscas/APH</option>
+          <option value="AT4">AT4 — Direito Militar</option>
+          <option value="AT5">AT5 — Normas Admin.</option>
+        </select>
         <button id="btn-gerar-ig" class="btn btn-editar" style="gap:6px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
           Gerar post agora
@@ -816,7 +973,8 @@
             await PBM.Admin.aprovacoes.instagram.publicar(post.id, sig ? { signal: sig } : {});
             toast('Post publicado no Instagram!', 'sucesso');
             btn.closest('.card').remove();
-            await carregarResumo();
+            await carregarBadgeAprovacoes();
+            await carregarBadgeDenuncias();
           } catch (err) {
             const detail = err?.erro || err?.message || '';
             toast(detail ? `Erro ao publicar. ${detail}` : 'Erro ao publicar.', 'erro');
@@ -956,8 +1114,16 @@
   }
 
   /* ── Init ── */
-  await carregarResumo();
-  await carregarTab('questoes');
+  carregarBadgeAprovacoes();
+  carregarBadgeDenuncias();
+  carregarTab('questoes');
+
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      carregarBadgeAprovacoes();
+      carregarBadgeDenuncias();
+    }
+  });
 })();
 </script>
 </body>

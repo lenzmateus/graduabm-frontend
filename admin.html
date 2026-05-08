@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -196,7 +196,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         Relatórios
       </a>
-      <a class="nav-item" href="#denuncias" onclick="scrollToDenuncias()" style="justify-content:space-between;">
+      <a class="nav-item" href="/admin-denuncias" style="justify-content:space-between;">
         <span style="display:flex;align-items:center;gap:10px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
           Relatórios de Problemas
@@ -1176,7 +1176,12 @@
     } catch {}
   }
   carregarBadgeAprovacoes();
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) carregarBadgeAprovacoes(); });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      carregarBadgeAprovacoes();
+      carregarDenuncias();
+    }
+  });
 }());
 </script>
 <style>

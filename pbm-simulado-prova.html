@@ -363,6 +363,55 @@
     .gab-footer { padding: 0.75rem; gap: 8px; }
   }
 
+  /* ── AT JUMP BUTTONS (sidebar) ── */
+  .nav-at-jumps {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .nav-at-jump-btn {
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    border: 1px solid;
+    cursor: pointer;
+    background: transparent;
+    letter-spacing: 0.05em;
+    transition: background 0.15s;
+  }
+  .nav-at-jump-btn:hover { background: rgba(255,255,255,0.07); }
+
+  /* ── AT SECTION LABEL dentro do grid ── */
+  .nav-at-header {
+    grid-column: 1 / -1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--cinza-texto);
+    padding: 10px 0 4px;
+    border-top: 1px solid var(--cinza-borda);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .nav-at-header:first-child { border-top: none; margin-top: 0; padding-top: 2px; }
+  .nav-at-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* ── AT BADGE na questão ── */
+  .q-area-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 20px; border: 1px solid;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+
   /* ── SETAS LATERAIS ── */
   .seta-sim {
     position: fixed;
@@ -451,6 +500,7 @@
     
     <aside class="nav-sidebar">
       <div class="nav-header">Caderno de Questões</div>
+      <div class="nav-at-jumps" id="nav-at-jumps"></div>
       <div class="nav-grid" id="nav-grid">
         <!-- Gerado via JS -->
       </div>
@@ -602,10 +652,11 @@ async function init() {
     } catch(e) { console.error("Erro ao criar sessão", e); }
 
     document.getElementById('tela-loading').style.display = 'none';
-    
+
     // C4: Garante 4h desde o início — limpa timer de prova anterior do mesmo curso
     sessionStorage.removeItem('pbm_timer_' + curso);
     iniciarCronometro();
+    renderizarATJumps();
     renderizarNav();
     carregarQuestao(0);
 
@@ -642,10 +693,48 @@ function iniciarCronometro() {
   }, 1000);
 }
 
+const CORES_AT = { 'AT1':'#C0270F','AT2':'#BA7517','AT3':'#185FA5','AT4':'#27A05A','AT5':'#7F77DD' };
+const NOMES_AT = {
+  'AT1':'Seg. Incêndio','AT2':'Combate','AT3':'Resgate / APH',
+  'AT4':'Direito Militar','AT5':'Normas Admin.'
+};
+
+function renderizarATJumps() {
+  const jumpsEl = document.getElementById('nav-at-jumps');
+  if (!jumpsEl) return;
+  jumpsEl.innerHTML = '';
+  const atFirstIndex = {};
+  questoes.forEach((q, i) => {
+    const at = (q.area_tematica || 'GERAL').toUpperCase();
+    if (!(at in atFirstIndex)) atFirstIndex[at] = i;
+  });
+  Object.entries(atFirstIndex).forEach(([at, idx]) => {
+    const cor = CORES_AT[at] || '#888';
+    const btn = document.createElement('button');
+    btn.className = 'nav-at-jump-btn';
+    btn.textContent = at;
+    btn.style.borderColor = cor;
+    btn.style.color = cor;
+    btn.title = NOMES_AT[at] || at;
+    btn.onclick = () => carregarQuestao(idx);
+    jumpsEl.appendChild(btn);
+  });
+}
+
 function renderizarNav() {
   const grid = document.getElementById('nav-grid');
   grid.innerHTML = '';
-  questoes.forEach((_, i) => {
+  let currentAT = null;
+  questoes.forEach((q, i) => {
+    const at = (q.area_tematica || 'GERAL').toUpperCase();
+    if (at !== currentAT) {
+      currentAT = at;
+      const label = document.createElement('div');
+      label.className = 'nav-at-header';
+      const dot = `<span class="nav-at-dot" style="background:${CORES_AT[at]||'#888'}"></span>`;
+      label.innerHTML = `${dot}${at}`;
+      grid.appendChild(label);
+    }
     const btn = document.createElement('button');
     btn.className = `nav-btn ${i === currentIndex ? 'ativo' : ''} ${respostas[i].rascunho ? 'marcada' : ''}`;
     btn.textContent = i + 1;
@@ -660,7 +749,10 @@ function carregarQuestao(index) {
   
   const q = questoes[index];
   document.getElementById('q-num').textContent = `Q. ${String(index + 1).padStart(2, '0')}`;
-  document.getElementById('q-area').textContent = (q.area_tematica || q.area || 'GERAL').toUpperCase();
+  const atKey = (q.area_tematica || q.area || 'GERAL').toUpperCase();
+  const atCor = CORES_AT[atKey] || '#888';
+  const areaEl = document.getElementById('q-area');
+  areaEl.innerHTML = `<span class="q-area-badge" style="color:${atCor};border-color:${atCor}33">${atKey} — ${NOMES_AT[atKey] || atKey}</span>`;
   document.getElementById('q-enunciado').textContent = q.enunciado || q.texto || q.questao || '';
 
   const lista = document.getElementById('alts-lista');
@@ -709,7 +801,16 @@ function abrirDrawerNav() {
   const overlay = document.getElementById('nav-drawer-overlay');
   const grid = document.getElementById('nav-drawer-grid');
   grid.innerHTML = '';
-  questoes.forEach((_, i) => {
+  let currentAT = null;
+  questoes.forEach((q, i) => {
+    const at = (q.area_tematica || 'GERAL').toUpperCase();
+    if (at !== currentAT) {
+      currentAT = at;
+      const label = document.createElement('div');
+      label.className = 'nav-at-header';
+      label.innerHTML = `<span class="nav-at-dot" style="background:${CORES_AT[at]||'#888'}"></span>${at}`;
+      grid.appendChild(label);
+    }
     const btn = document.createElement('button');
     btn.className = `nav-btn ${i === currentIndex ? 'ativo' : ''} ${respostas[i].rascunho ? 'marcada' : ''}`;
     btn.textContent = i + 1;

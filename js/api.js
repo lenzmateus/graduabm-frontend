@@ -280,7 +280,8 @@ const PBM = {
       window.location.href = '/admin-login';
     },
     req(path, opts = {}) {
-      return request(path, { ...opts, headers: { ...PBM.Admin._authHeader(), ...(opts.headers || {}) } });
+      const signal = opts.signal || (AbortSignal.timeout ? AbortSignal.timeout(60000) : undefined);
+      return request(path, { ...opts, signal, headers: { ...PBM.Admin._authHeader(), ...(opts.headers || {}) } });
     },
     Auth: {
       async login({ email, senha }) {
@@ -341,8 +342,19 @@ const PBM = {
     },
     simuladosMensais: {
       listar() { return PBM.Admin.req('/api/simulados-mensais/admin/listar'); },
-      habilitar(id, body) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
+      atualizar(id, body) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
       gerar(body) { return PBM.Admin.req('/api/simulados-mensais/admin/gerar', { method: 'POST', body: JSON.stringify(body) }); },
+      criar(body) { return PBM.Admin.req('/api/simulados-mensais/admin/criar', { method: 'POST', body: JSON.stringify(body) }); },
+      statusGeracao() { return PBM.Admin.req('/api/simulados-mensais/admin/status-geracao'); },
+      questoesDisponiveis(params = {}) {
+        const qs = new URLSearchParams(params).toString();
+        return PBM.Admin.req('/api/simulados-mensais/admin/questoes-disponiveis' + (qs ? '?' + qs : ''));
+      },
+      questoes(id) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/questoes`); },
+      adicionarQuestoes(id, ids) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/questoes`, { method: 'POST', body: JSON.stringify({ questao_ids: ids }) }); },
+      removerQuestao(id, questaoId) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/questoes/${questaoId}`, { method: 'DELETE' }); },
+      incorporar(id) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/incorporar`, { method: 'POST' }); },
+      ranking(id) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/ranking`); },
     },
     assinaturas: {
       stats() {
@@ -393,6 +405,14 @@ const PBM = {
         return request(`/api/admin/convites/${id}`, { method: 'DELETE', headers: PBM.Admin._authHeader() });
       },
     },
+    denuncias: {
+      resumo() { return PBM.Admin.req('/api/admin/denuncias/resumo'); },
+    },
+    automatizar: {
+      gerarQuestoes()  { return PBM.Admin.req('/api/admin/automatizar/gerar-questoes', { method: 'POST' }); },
+      gerarFlashcard() { return PBM.Admin.req('/api/admin/automatizar/gerar-flashcard', { method: 'POST' }); },
+      cronLogs()       { return PBM.Admin.req('/api/admin/cron-logs'); },
+    },
     aprovacoes: {
       resumo() { return PBM.Admin.req('/api/admin/aprovacoes/resumo'); },
       questoesIa: {
@@ -409,7 +429,7 @@ const PBM = {
       },
       instagram: {
         listar()           { return PBM.Admin.req('/api/admin/aprovacoes/instagram'); },
-        gerar()            { return PBM.Admin.req('/api/admin/aprovacoes/instagram/gerar', { method: 'POST' }); },
+        gerar(area)        { return PBM.Admin.req('/api/admin/aprovacoes/instagram/gerar', { method: 'POST', body: JSON.stringify({ area: area || null }) }); },
         publicar(id, opts) { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/publicar`, { method: 'POST', ...(opts || {}) }); },
         rejeitar(id, obs)  { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         editar(id, caption){ return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}`, { method: 'PATCH', body: JSON.stringify({ caption }) }); },

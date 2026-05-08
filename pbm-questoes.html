@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -1605,7 +1605,10 @@ function reabrirPomodoro() {
   document.getElementById('pom-reabrir').style.display = 'none';
 }
 
+let pomDragged = false;
+
 document.getElementById('pom-float-bar').addEventListener('click', function(e) {
+  if (pomDragged) { pomDragged = false; return; }
   const win = document.getElementById('pom-float');
   if (win.classList.contains('minimizado') && !e.target.closest('#pom-float-actions')) {
     toggleMinimizarPom();
@@ -1621,6 +1624,7 @@ document.getElementById('pom-float-bar').addEventListener('click', function(e) {
   bar.addEventListener('mousedown', function(e) {
     if (e.target.closest('.pom-win-btn')) return;
     dragging = true;
+    pomDragged = false;
     const rect = win.getBoundingClientRect();
     startX = e.clientX - rect.left;
     startY = e.clientY - rect.top;
@@ -1631,6 +1635,7 @@ document.getElementById('pom-float-bar').addEventListener('click', function(e) {
   });
   document.addEventListener('mousemove', function(e) {
     if (!dragging) return;
+    pomDragged = true;
     let nx = Math.max(0, Math.min(window.innerWidth  - win.offsetWidth,  e.clientX - startX));
     let ny = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, e.clientY - startY));
     win.style.left = nx + 'px'; win.style.top = ny + 'px';
@@ -1644,11 +1649,13 @@ document.getElementById('pom-float-bar').addEventListener('click', function(e) {
     const rect = win.getBoundingClientRect();
     startX = t.clientX - rect.left; startY = t.clientY - rect.top;
     dragging = true;
+    pomDragged = false;
     win.style.right = 'auto'; win.style.bottom = 'auto';
     win.style.left = rect.left + 'px'; win.style.top = rect.top + 'px';
   }, { passive: true });
   document.addEventListener('touchmove', function(e) {
     if (!dragging) return;
+    pomDragged = true;
     const t = e.touches[0];
     let nx = Math.max(0, Math.min(window.innerWidth  - win.offsetWidth,  t.clientX - startX));
     let ny = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, t.clientY - startY));
@@ -1717,24 +1724,28 @@ document.getElementById('pom-float-bar').addEventListener('click', function(e) {
     document.getElementById('pom-reabrir').style.display = 'flex';
   }
   if (minimizado) pomWin.classList.add('minimizado');
-  if (posLeft) {
-    const left = parseInt(posLeft);
-    const winW = pomWin.offsetWidth || 280;
-    if (left >= 0 && left + winW <= window.innerWidth) {
-      pomWin.style.left = posLeft; pomWin.style.right = 'auto';
-    }
-  } else if (posRight) {
+  if (posLeft && posLeft !== 'auto') {
+    pomWin.style.left = posLeft; pomWin.style.right = 'auto';
+  } else if (posRight && posRight !== 'auto') {
     pomWin.style.right = posRight;
   }
-  if (posTop) {
-    const top = parseInt(posTop);
-    const winH = pomWin.offsetHeight || 200;
-    if (top >= 0 && top + winH <= window.innerHeight) {
-      pomWin.style.top = posTop; pomWin.style.bottom = 'auto';
-    }
-  } else if (posBottom) {
+  if (posTop && posTop !== 'auto') {
+    pomWin.style.top = posTop; pomWin.style.bottom = 'auto';
+  } else if (posBottom && posBottom !== 'auto') {
     pomWin.style.bottom = posBottom;
   }
+  // Clamp to viewport after layout so real dimensions are available
+  requestAnimationFrame(function() {
+    if (!pomWin.style.left || pomWin.style.left === 'auto') return;
+    const winW = pomWin.offsetWidth;
+    const winH = pomWin.offsetHeight;
+    const cx = parseInt(pomWin.style.left) || 0;
+    const cy = parseInt(pomWin.style.top) || 0;
+    pomWin.style.left = Math.min(Math.max(0, cx), Math.max(0, window.innerWidth - winW)) + 'px';
+    if (pomWin.style.top && pomWin.style.top !== 'auto') {
+      pomWin.style.top = Math.min(Math.max(0, cy), Math.max(0, window.innerHeight - winH)) + 'px';
+    }
+  });
 
   atualizarDisplayPom();
   updatePlayBtn();
@@ -1759,10 +1770,12 @@ window.addEventListener('beforeunload', function() {
   const pomWin = document.getElementById('pom-float');
   sessionStorage.setItem('pom_minimizado', pomWin.classList.contains('minimizado') ? '1' : '0');
   sessionStorage.setItem('pom_fechado', pomWin.style.display === 'none' ? '1' : '0');
-  sessionStorage.setItem('pom_pos_left',   pomWin.style.left   || '');
-  sessionStorage.setItem('pom_pos_top',    pomWin.style.top    || '');
-  sessionStorage.setItem('pom_pos_right',  pomWin.style.right  || '');
-  sessionStorage.setItem('pom_pos_bottom', pomWin.style.bottom || '');
+  const _sl = pomWin.style.left,   _st = pomWin.style.top;
+  const _sr = pomWin.style.right,  _sb = pomWin.style.bottom;
+  sessionStorage.setItem('pom_pos_left',   (_sl && _sl !== 'auto') ? _sl : '');
+  sessionStorage.setItem('pom_pos_top',    (_st && _st !== 'auto') ? _st : '');
+  sessionStorage.setItem('pom_pos_right',  (_sr && _sr !== 'auto') ? _sr : '');
+  sessionStorage.setItem('pom_pos_bottom', (_sb && _sb !== 'auto') ? _sb : '');
 });
 </script>
 <style>

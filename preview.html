@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DESIGN.md Preview — Protocolo Bravo Mike</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --carvao:          #0F0F0F;
+    --cinza-escuro:    #1A1A1A;
+    --cinza-medio:     #2A2A2A;
+    --cinza-borda:     #333333;
+    --cinza-texto:     #888888;
+    --vermelho:        #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --azul:            #185FA5;
+    --branco:          #F8F6F2;
+    --branco-suave:    #EFEFEA;
+    --sucesso:         #27A060;
+    --atencao:         #BA7517;
+    --at1-color: #C0270F;
+    --at2-color: #BA7517;
+    --at3-color: #185FA5;
+    --at4-color: #27A060;
+    --at5-color: #7F77DD;
+    --font-display: 'Bebas Neue', Impact, sans-serif;
+    --font-body:    'Inter', system-ui, sans-serif;
+    --font-mono:    'IBM Plex Mono', monospace;
+    --radius-sm:   4px;
+    --radius-md:   8px;
+    --radius-lg:   12px;
+    --shadow-card: 0 2px 12px rgba(0,0,0,0.4);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 48px 32px;
+  }
+
+  /* Layout */
+  .preview-header {
+    border-bottom: 1px solid var(--cinza-borda);
+    padding-bottom: 24px;
+    margin-bottom: 48px;
+  }
+  .preview-header h1 {
+    font-family: var(--font-display);
+    font-size: 48px;
+    letter-spacing: 0.03em;
+    color: var(--branco);
+  }
+  .preview-header p {
+    color: var(--cinza-texto);
+    font-size: 14px;
+    margin-top: 4px;
+    font-family: var(--font-mono);
+  }
+
+  .section {
+    margin-bottom: 56px;
+  }
+  .section-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--cinza-texto);
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+
+  /* Color Swatches */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 16px;
+  }
+  .swatch {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--cinza-borda);
+  }
+  .swatch-color { height: 64px; }
+  .swatch-info {
+    background: var(--cinza-escuro);
+    padding: 10px 12px;
+  }
+  .swatch-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--branco);
+  }
+  .swatch-hex {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--cinza-texto);
+    margin-top: 2px;
+  }
+
+  /* Typography Samples */
+  .type-sample {
+    padding: 20px 0;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+  }
+  .type-sample:last-child { border-bottom: none; }
+  .type-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--cinza-texto);
+    white-space: nowrap;
+    min-width: 180px;
+    text-align: right;
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    font: 500 15px/1 var(--font-body);
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .btn-primary { background: var(--vermelho); color: var(--branco); }
+  .btn-primary:hover { background: var(--vermelho-escuro); }
+  .btn-secondary { background: transparent; color: var(--branco); border: 1px solid var(--cinza-borda); }
+  .btn-secondary:hover { background: var(--cinza-escuro); border-color: #555; }
+  .btn-ghost { background: transparent; color: var(--cinza-texto); border: none; }
+  .btn-ghost:hover { color: var(--branco); }
+  .btn-azul { background: var(--azul); color: var(--branco); }
+  .btn-sucesso { background: var(--sucesso); color: var(--branco); }
+
+  /* Badges */
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+  }
+  .badge-at1 { background: rgba(192,39,15,0.15); color: #C0270F; border: 1px solid rgba(192,39,15,0.3); }
+  .badge-at2 { background: rgba(186,117,23,0.15); color: #BA7517; border: 1px solid rgba(186,117,23,0.3); }
+  .badge-at3 { background: rgba(24,95,165,0.15); color: #185FA5; border: 1px solid rgba(24,95,165,0.3); }
+  .badge-at4 { background: rgba(39,160,90,0.15); color: #27A060; border: 1px solid rgba(39,160,90,0.3); }
+  .badge-at5 { background: rgba(127,119,221,0.15); color: #7F77DD; border: 1px solid rgba(127,119,221,0.3); }
+  .badge-ctsp { background: rgba(192,39,15,0.15); color: #C0270F; border: 1px solid rgba(192,39,15,0.3); }
+  .badge-cba  { background: rgba(24,95,165,0.15); color: #185FA5; border: 1px solid rgba(24,95,165,0.3); }
+  .badge-ativo   { background: rgba(39,160,90,0.15); color: #27A060; border: 1px solid rgba(39,160,90,0.3); }
+  .badge-inativo { background: rgba(136,136,136,0.15); color: #888; border: 1px solid rgba(136,136,136,0.3); }
+  .badge-vencido { background: rgba(192,39,15,0.15); color: #C0270F; border: 1px solid rgba(192,39,15,0.3); }
+
+  /* Cards */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+  }
+  .card-active { border-color: var(--vermelho); box-shadow: 0 0 0 1px var(--vermelho), var(--shadow-card); }
+  .card-title { font-family: var(--font-display); font-size: 22px; letter-spacing: 0.02em; margin-bottom: 8px; }
+  .card-body { font-size: 14px; color: var(--cinza-texto); line-height: 1.6; }
+
+  /* Stat Cards */
+  .stat-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+  }
+  .stat-value { font-family: var(--font-display); font-size: 40px; color: var(--branco); line-height: 1; }
+  .stat-label { font: 500 12px/1 var(--font-body); color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 6px; }
+
+  /* AT Cards */
+  .at-card {
+    position: relative;
+    height: 120px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    transition: filter 0.15s;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+  }
+  .at-card:hover { filter: brightness(1.1); }
+  .at-card-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+  }
+  .at-watermark {
+    position: absolute;
+    right: -8px;
+    font-family: var(--font-display);
+    font-size: 96px;
+    opacity: 0.07;
+    line-height: 1;
+    user-select: none;
+  }
+  .at-code { font-family: var(--font-display); font-size: 28px; letter-spacing: 0.02em; }
+  .at-name { font: 500 14px/1.4 var(--font-body); color: var(--branco-suave); }
+
+  /* Question Sample */
+  .questao-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    position: relative;
+    border-left: 3px solid var(--vermelho);
+  }
+  .questao-numero-watermark {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    font-family: var(--font-display);
+    font-size: 48px;
+    color: rgba(255,255,255,0.06);
+    user-select: none;
+    pointer-events: none;
+    line-height: 1;
+  }
+  .questao-enunciado { font-size: 16px; line-height: 1.7; margin: 16px 0 24px; }
+  .alternativa {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 12px 16px;
+    border: 1px solid var(--cinza-medio);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+    margin-bottom: 8px;
+  }
+  .alternativa:hover { background: var(--cinza-medio); border-color: #444; }
+  .alternativa.correta { border-color: var(--sucesso); background: rgba(39,160,90,0.1); }
+  .alternativa.errada  { border-color: var(--vermelho); background: rgba(192,39,15,0.1); }
+  .alternativa-letra { font: 700 14px/1 var(--font-mono); color: var(--cinza-texto); min-width: 20px; padding-top: 2px; }
+  .alternativa-texto { font-size: 14px; }
+
+  /* Input */
+  .form-group { margin-bottom: 16px; }
+  .form-label {
+    display: block;
+    font: 500 12px/1 var(--font-body);
+    color: var(--cinza-texto);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+  }
+  .form-input {
+    width: 100%;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-md);
+    color: var(--branco);
+    font: 400 15px/1 var(--font-body);
+    padding: 10px 14px;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .form-input::placeholder { color: #555; }
+  .form-input:focus { border-color: var(--vermelho); box-shadow: 0 0 0 2px rgba(192,39,15,0.15); }
+
+  /* Progress Bar */
+  .progress-track {
+    background: var(--cinza-medio);
+    border-radius: 9999px;
+    height: 6px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: var(--vermelho);
+    transition: width 0.3s ease;
+  }
+
+  /* Timer */
+  .timer-sample {
+    font-family: var(--font-display);
+    font-size: 48px;
+    letter-spacing: 0.04em;
+    color: var(--branco);
+  }
+  .timer-sample.critico { color: var(--vermelho); animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0.4; } }
+
+  /* Sidebar preview */
+  .sidebar-preview {
+    background: var(--carvao);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-lg);
+    padding: 16px 0;
+    width: 240px;
+  }
+  .sidebar-logo {
+    padding: 0 20px 16px;
+    border-bottom: 1px solid var(--cinza-borda);
+    font: 700 16px/1 var(--font-body);
+    color: var(--branco);
+    margin-bottom: 8px;
+  }
+  .sidebar-logo strong { color: var(--vermelho); }
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    margin: 0 8px;
+    color: var(--cinza-texto);
+    font: 500 14px/1 var(--font-body);
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+    cursor: pointer;
+  }
+  .sidebar-item.active {
+    background: var(--cinza-escuro);
+    color: var(--branco);
+    border-left: 3px solid var(--vermelho);
+    padding-left: 17px;
+    margin-left: 8px;
+  }
+  .sidebar-item:hover:not(.active) { background: var(--cinza-escuro); color: var(--branco-suave); }
+
+  /* Bolinhas */
+  .bolinha-row { display: flex; gap: 8px; }
+  .bolinha {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 2px solid var(--cinza-borda);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 600 13px/1 var(--font-mono);
+    color: var(--cinza-texto);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .bolinha:hover { border-color: #555; color: var(--branco-suave); }
+  .bolinha.marcada { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
+
+  /* Divider */
+  .divider { height: 1px; background: var(--cinza-borda); margin: 0 0 8px; }
+</style>
+</head>
+<body>
+
+<div class="preview-header">
+  <h1>DESIGN SYSTEM — PROTOCOLO BM</h1>
+  <p>design-md/protocolo-bravo-mike/DESIGN.md · dark military · vermelho #C0270F · Inter + Bebas Neue + IBM Plex Mono</p>
+</div>
+
+<!-- COLORS -->
+<div class="section">
+  <div class="section-title">1 · Color Palette</div>
+  <div class="color-grid">
+    <div class="swatch">
+      <div class="swatch-color" style="background:#0F0F0F; border-bottom:1px solid #333;"></div>
+      <div class="swatch-info"><div class="swatch-name">Carvão</div><div class="swatch-hex">#0F0F0F · Page bg</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#1A1A1A;"></div>
+      <div class="swatch-info"><div class="swatch-name">Cinza Escuro</div><div class="swatch-hex">#1A1A1A · Cards</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#2A2A2A;"></div>
+      <div class="swatch-info"><div class="swatch-name">Cinza Médio</div><div class="swatch-hex">#2A2A2A · Hover</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#333333;"></div>
+      <div class="swatch-info"><div class="swatch-name">Cinza Borda</div><div class="swatch-hex">#333333 · Borders</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#888888;"></div>
+      <div class="swatch-info"><div class="swatch-name">Cinza Texto</div><div class="swatch-hex">#888888 · Muted text</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#C0270F;"></div>
+      <div class="swatch-info"><div class="swatch-name">Vermelho</div><div class="swatch-hex">#C0270F · Primary CTA</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#8B1A08;"></div>
+      <div class="swatch-info"><div class="swatch-name">Vermelho Escuro</div><div class="swatch-hex">#8B1A08 · Hover</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#185FA5;"></div>
+      <div class="swatch-info"><div class="swatch-name">Azul</div><div class="swatch-hex">#185FA5 · CBA course</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#F8F6F2;"></div>
+      <div class="swatch-info"><div class="swatch-name">Branco</div><div class="swatch-hex">#F8F6F2 · Primary text</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#27A060;"></div>
+      <div class="swatch-info"><div class="swatch-name">Sucesso</div><div class="swatch-hex">#27A060 · Correct / AT4</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#BA7517;"></div>
+      <div class="swatch-info"><div class="swatch-name">Atenção</div><div class="swatch-hex">#BA7517 · Warning / AT2</div></div>
+    </div>
+    <div class="swatch">
+      <div class="swatch-color" style="background:#7F77DD;"></div>
+      <div class="swatch-info"><div class="swatch-name">Roxo</div><div class="swatch-hex">#7F77DD · AT5</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TYPOGRAPHY -->
+<div class="section">
+  <div class="section-title">2 · Typography</div>
+
+  <div class="type-sample">
+    <span style="font-family:'Bebas Neue'; font-size:64px; letter-spacing:0.04em; line-height:1;">PROTOCOLO BRAVO MIKE</span>
+    <div class="type-meta">Bebas Neue · 64px · Page Hero</div>
+  </div>
+  <div class="type-sample">
+    <span style="font-family:'Bebas Neue'; font-size:40px; letter-spacing:0.03em; line-height:1;">ÁREA TEMÁTICA 1</span>
+    <div class="type-meta">Bebas Neue · 40px · Section Title</div>
+  </div>
+  <div class="type-sample">
+    <span style="font-family:'Bebas Neue'; font-size:28px; letter-spacing:0.02em;">SEGURANÇA CONTRA INCÊNDIOS</span>
+    <div class="type-meta">Bebas Neue · 28px · Card Headline</div>
+  </div>
+  <div class="type-sample">
+    <span style="font-family:'Bebas Neue'; font-size:48px; color:#C0270F; line-height:1;">03:47:21</span>
+    <div class="type-meta">Bebas Neue · 48px · Timer / Large Stat</div>
+  </div>
+  <div class="type-sample">
+    <span style="font-family:'Inter'; font-size:18px; font-weight:400; line-height:1.7;">A questão trata da resistência ao fogo de elementos estruturais conforme as Resoluciones Técnicas vigentes.</span>
+    <div class="type-meta">Inter · 18px · 400 · Body Large</div>
+  </div>
+  <div class="type-sample">
+    <span style="font-family:'Inter'; font-size:16px; font-weight:500;">Dashboard · Estudar · Simulados · Flashcards · Ranking</span>
+    <div class="type-meta">Inter · 16px · 500 · UI / Navigation</div>
+  </div>
+  <div class="type-sample">
+    <span style="font-family:'Inter'; font-size:12px; font-weight:400; color:#888888; text-transform:uppercase; letter-spacing:0.05em;">LEGISLAÇÃO SELECIONADA</span>
+    <div class="type-meta">Inter · 12px · 500 · Form Label</div>
+  </div>
+  <div class="type-sample">
+    <span style="font-family:'IBM Plex Mono'; font-size:13px; font-weight:500; text-transform:uppercase; letter-spacing:0.06em;">AT1 · RT01/2022 · SESSAO-0042</span>
+    <div class="type-meta">IBM Plex Mono · 13px · 500 · Technical ID</div>
+  </div>
+</div>
+
+<!-- BUTTONS -->
+<div class="section">
+  <div class="section-title">3 · Buttons</div>
+  <div class="btn-row">
+    <button class="btn btn-primary">Iniciar Sessão</button>
+    <button class="btn btn-secondary">Ver Gabarito</button>
+    <button class="btn btn-ghost">Cancelar</button>
+    <button class="btn btn-azul">Curso CBA</button>
+    <button class="btn btn-sucesso">Correto!</button>
+  </div>
+</div>
+
+<!-- BADGES -->
+<div class="section">
+  <div class="section-title">4 · Badges & Tags</div>
+  <div class="badge-row" style="margin-bottom:12px;">
+    <span class="badge badge-at1">AT1</span>
+    <span class="badge badge-at2">AT2</span>
+    <span class="badge badge-at3">AT3</span>
+    <span class="badge badge-at4">AT4</span>
+    <span class="badge badge-at5">AT5</span>
+  </div>
+  <div class="badge-row" style="margin-bottom:12px;">
+    <span class="badge badge-ctsp">CTSP · Sargentos</span>
+    <span class="badge badge-cba">CBA · Tenentes</span>
+  </div>
+  <div class="badge-row">
+    <span class="badge badge-ativo">Ativo</span>
+    <span class="badge badge-inativo">Inativo</span>
+    <span class="badge badge-vencido">Vencido</span>
+  </div>
+</div>
+
+<!-- CARDS -->
+<div class="section">
+  <div class="section-title">5 · Cards</div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-title">Card Padrão</div>
+      <div class="card-body">Usado para painéis de informação, listas de legislação e conteúdo geral da plataforma.</div>
+    </div>
+    <div class="card card-active">
+      <div class="card-title">Card Ativo / Selecionado</div>
+      <div class="card-body">Estado ativo — borda vermelha + ring. Indica seleção atual ou foco primário.</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">87%</div>
+      <div class="stat-label">Taxa de Acerto</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--vermelho);">1.204</div>
+      <div class="stat-label">Questões Respondidas</div>
+    </div>
+  </div>
+</div>
+
+<!-- AT CARDS -->
+<div class="section">
+  <div class="section-title">6 · Área Temática Cards</div>
+  <div style="display:flex; flex-direction:column; gap:12px; max-width:640px;">
+    <div class="at-card" style="background:rgba(192,39,15,0.18); border-left:3px solid #C0270F;">
+      <div class="at-watermark" style="color:#C0270F;">AT1</div>
+      <div class="at-card-inner">
+        <div>
+          <div class="at-code" style="color:#C0270F;">AT1</div>
+          <div class="at-name">Segurança Contra Incêndios</div>
+        </div>
+      </div>
+    </div>
+    <div class="at-card" style="background:rgba(186,117,23,0.18); border-left:3px solid #BA7517;">
+      <div class="at-watermark" style="color:#BA7517;">AT2</div>
+      <div class="at-card-inner">
+        <div>
+          <div class="at-code" style="color:#BA7517;">AT2</div>
+          <div class="at-name">Combate a Incêndios</div>
+        </div>
+      </div>
+    </div>
+    <div class="at-card" style="background:rgba(24,95,165,0.18); border-left:3px solid #185FA5;">
+      <div class="at-watermark" style="color:#185FA5;">AT3</div>
+      <div class="at-card-inner">
+        <div>
+          <div class="at-code" style="color:#185FA5;">AT3</div>
+          <div class="at-name">Buscas, Salvamentos e APH</div>
+        </div>
+      </div>
+    </div>
+    <div class="at-card" style="background:rgba(39,160,90,0.18); border-left:3px solid #27A060;">
+      <div class="at-watermark" style="color:#27A060;">AT4</div>
+      <div class="at-card-inner">
+        <div>
+          <div class="at-code" style="color:#27A060;">AT4</div>
+          <div class="at-name">Direito Institucional e Militar</div>
+        </div>
+      </div>
+    </div>
+    <div class="at-card" style="background:rgba(127,119,221,0.18); border-left:3px solid #7F77DD;">
+      <div class="at-watermark" style="color:#7F77DD;">AT5</div>
+      <div class="at-card-inner">
+        <div>
+          <div class="at-code" style="color:#7F77DD;">AT5</div>
+          <div class="at-name">Normas Administrativas e Doc. Técnica</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUESTION CARD -->
+<div class="section">
+  <div class="section-title">7 · Question Card</div>
+  <div class="questao-card" style="max-width:720px;">
+    <div class="questao-numero-watermark">07</div>
+    <div style="display:flex; gap:8px; align-items:center; margin-bottom:12px;">
+      <span class="badge badge-at1">AT1</span>
+      <span class="badge badge-ctsp">CTSP</span>
+      <span style="font-family:var(--font-mono); font-size:11px; color:var(--cinza-texto);">RT01/2022 · Art. 4º</span>
+    </div>
+    <div class="questao-enunciado">
+      De acordo com a Resolução Técnica CBMRS nº 01/2022, o sistema de sprinklers em edificações de grande porte deve ser dimensionado considerando a área de operação mínima de:
+    </div>
+    <div class="alternativa">
+      <span class="alternativa-letra">A</span>
+      <span class="alternativa-texto">72 m², com densidade de aplicação de 5 mm/min</span>
+    </div>
+    <div class="alternativa correta">
+      <span class="alternativa-letra">B</span>
+      <span class="alternativa-texto">130 m², com densidade mínima conforme o grupo de ocupação</span>
+    </div>
+    <div class="alternativa errada">
+      <span class="alternativa-letra">C</span>
+      <span class="alternativa-texto">96 m², independente da classificação de risco</span>
+    </div>
+    <div class="alternativa">
+      <span class="alternativa-letra">D</span>
+      <span class="alternativa-texto">200 m², apenas para ocupações de alto risco</span>
+    </div>
+    <div class="alternativa">
+      <span class="alternativa-letra">E</span>
+      <span class="alternativa-texto">48 m², com pressão mínima de 0,5 bar nos aspersores</span>
+    </div>
+  </div>
+</div>
+
+<!-- INPUTS -->
+<div class="section">
+  <div class="section-title">8 · Form Inputs</div>
+  <div style="max-width:400px; display:flex; flex-direction:column; gap:16px;">
+    <div class="form-group">
+      <label class="form-label">E-mail</label>
+      <input class="form-input" type="email" placeholder="seu@email.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Senha</label>
+      <input class="form-input" type="password" placeholder="••••••••">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Curso</label>
+      <select class="form-input">
+        <option value="">Selecione</option>
+        <option>CTSP — Sargentos</option>
+        <option>CBA — Tenentes</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="section">
+  <div class="section-title">9 · Progress Bar & Timer</div>
+  <div style="max-width:480px; margin-bottom:24px;">
+    <div style="display:flex; justify-content:space-between; font-size:13px; color:var(--cinza-texto); margin-bottom:4px;">
+      <span>Progresso da sessão</span>
+      <span style="font-family:var(--font-mono);">23 / 30 questões</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" style="width:77%;"></div>
+    </div>
+  </div>
+  <div style="display:flex; gap:32px; align-items:center;">
+    <div>
+      <div class="timer-sample">03:47:21</div>
+      <div style="font-size:11px; color:var(--cinza-texto); font-family:var(--font-mono); margin-top:4px;">Normal</div>
+    </div>
+    <div>
+      <div class="timer-sample critico">00:04:58</div>
+      <div style="font-size:11px; color:var(--cinza-texto); font-family:var(--font-mono); margin-top:4px;">Crítico — últimos 5min</div>
+    </div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="section">
+  <div class="section-title">10 · Sidebar Navigation</div>
+  <div class="sidebar-preview">
+    <div class="sidebar-logo">PROTOCOLO <strong>BM</strong></div>
+    <div class="sidebar-item active">⬛ Dashboard</div>
+    <div class="sidebar-item">📚 Estudar Legislação</div>
+    <div class="sidebar-item">📋 Simulados Oficiais</div>
+    <div class="sidebar-item">🎯 Missão FDS</div>
+    <div class="sidebar-item">⚡ Flashcards</div>
+    <div class="sidebar-item">🏆 Ranking</div>
+  </div>
+</div>
+
+<!-- CARTAO RESPOSTA -->
+<div class="section">
+  <div class="section-title">11 · Cartão Resposta (Simulado)</div>
+  <div style="background:var(--cinza-escuro); border:1px solid var(--cinza-borda); border-radius:var(--radius-lg); padding:24px; max-width:500px;">
+    <div style="font-family:var(--font-display); font-size:22px; letter-spacing:0.02em; margin-bottom:16px;">CARTÃO RESPOSTA</div>
+    <div style="display:flex; flex-direction:column; gap:10px;">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-family:var(--font-mono); font-size:12px; color:var(--cinza-texto); min-width:30px;">Q01</span>
+        <div class="bolinha-row">
+          <div class="bolinha">A</div>
+          <div class="bolinha marcada">B</div>
+          <div class="bolinha">C</div>
+          <div class="bolinha">D</div>
+          <div class="bolinha">E</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-family:var(--font-mono); font-size:12px; color:var(--cinza-texto); min-width:30px;">Q02</span>
+        <div class="bolinha-row">
+          <div class="bolinha">A</div>
+          <div class="bolinha">B</div>
+          <div class="bolinha">C</div>
+          <div class="bolinha marcada">D</div>
+          <div class="bolinha">E</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:12px;">
+        <span style="font-family:var(--font-mono); font-size:12px; color:var(--cinza-texto); min-width:30px;">Q03</span>
+        <div class="bolinha-row">
+          <div class="bolinha">A</div>
+          <div class="bolinha">B</div>
+          <div class="bolinha">C</div>
+          <div class="bolinha">D</div>
+          <div class="bolinha">E</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

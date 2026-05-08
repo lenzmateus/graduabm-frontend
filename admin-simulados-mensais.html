@@ -74,6 +74,7 @@
   .status-aberto { background: rgba(192,39,15,0.15); color: #E8866E; border: 1px solid rgba(192,39,15,0.3); }
   .status-aguardando { background: rgba(240,192,80,0.1); color: var(--dourado); border: 1px solid rgba(240,192,80,0.3); }
   .status-encerrado { background: rgba(125,217,154,0.1); color: var(--verde); border: 1px solid rgba(125,217,154,0.3); }
+  .status-inativo { background: rgba(136,136,136,0.1); color: #888; border: 1px solid rgba(136,136,136,0.25); }
   .sim-acoes { display: flex; gap: 6px; }
   .sim-corpo { display: none; border-top: 1px solid var(--cinza-borda); padding: 1.25rem; }
   .sim-corpo.aberto { display: block; }
@@ -90,6 +91,8 @@
   .btn-remover:hover { border-color: #E24B4A; color: #E24B4A; }
   .btn-ver { background: none; border: 1px solid #333; color: var(--cinza-texto); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
   .btn-ver:hover { border-color: #555; color: var(--branco); }
+  .btn-editar { background: none; border: 1px solid #333; color: var(--cinza-texto); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
+  .btn-editar:hover { border-color: rgba(240,192,80,0.5); color: var(--dourado); }
 
   /* Detalhe expandido de questão */
   .q-detalhe { padding: 10px 10px 12px 44px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--cinza-borda); border-radius: 0 0 6px 6px; }
@@ -124,17 +127,10 @@
   .adicionar-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
   .selecionados-count { font-size: 12px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; }
 
-  /* Formulário novo simulado */
-  .form-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; display: none; }
-  .form-card.visivel { display: block; }
-  .form-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 1rem; }
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
   .form-group { display: flex; flex-direction: column; gap: 4px; }
-  .form-group.full { grid-column: 1 / -1; }
   .form-label { font-size: 11px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; }
   .form-input { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 8px 12px; border-radius: 6px; font-size: 13px; font-family: 'Inter', sans-serif; }
   .form-input:focus { outline: none; border-color: var(--vermelho); }
-  .form-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
 
   /* Toast */
   .toast {
@@ -153,6 +149,10 @@
     .page-header { flex-direction: column; }
     .busca-row { flex-direction: column; }
   }
+
+  /* Status badges extras */
+  .status-inativo { background: rgba(136,136,136,0.1); color: #888; border: 1px solid rgba(136,136,136,0.3); }
+
 </style>
 </head>
 <body>
@@ -191,9 +191,12 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         Assinaturas
       </a>
-      <a class="nav-item" href="/admin#denuncias">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-        Relatórios de Problemas
+      <a class="nav-item" href="/admin-denuncias" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Relatórios de Problemas
+        </span>
+        <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
       </a>
       <div class="nav-label">Sistema</div>
       <a class="nav-item" href="/admin-aprovacoes" style="justify-content:space-between;">
@@ -221,39 +224,45 @@
       <div class="page-sub">Gerencie simulados exclusivos, questões e acompanhe participações. Os simulados criados aqui aparecem como <strong>Protocolo QAP</strong> para os alunos.</div>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button class="btn-sm" id="btn-gerar" onclick="abrirModalGerar()">Gerar Simulado do Mês (IA)</button>
-      <button class="btn-sm btn-primary" onclick="toggleFormNovo()">+ Novo Simulado</button>
+      <button class="btn-sm btn-primary" onclick="abrirModalGerar()">+ Gerar via IA</button>
       <button class="btn-topbar-sair" onclick="encerrarSessao()">Encerrar sessão</button>
     </div>
   </div>
 
-  <!-- FORMULÁRIO NOVO SIMULADO -->
-  <div class="form-card" id="form-novo">
-    <div class="form-titulo">Criar Novo Simulado Mensal</div>
-    <div class="form-row">
-      <div class="form-group full">
-        <div class="form-label">Título</div>
-        <input class="form-input" id="f-titulo" type="text" placeholder="Ex: Simulado Mensal CTSP — Junho 2025">
+  <!-- BANNER STATUS GERAÇÃO -->
+  <div id="banner-geracao" style="display:none;background:#1A1A1A;border:1px solid #2A2A2A;border-radius:8px;padding:12px 16px;margin-bottom:1.5rem;font-family:'IBM Plex Mono',monospace;font-size:12px;align-items:center;gap:12px;"></div>
+
+  <!-- MODAL GERAR SIMULADO VIA IA -->
+  <div id="modal-gerar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:480px;width:90%;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;">
+        <span>Gerar Simulado via IA</span>
+        <button onclick="fecharModalGerar()" style="background:none;border:none;color:#888;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;">✕</button>
       </div>
-      <div class="form-group">
-        <div class="form-label">Curso</div>
-        <select class="form-input" id="f-curso">
-          <option value="ctsp">CTSP</option>
-          <option value="cba">CBA</option>
-        </select>
+      <div style="display:grid;gap:1rem;">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Curso</div>
+          <select id="gerar-curso" class="select-sm" style="width:100%;">
+            <option value="ctsp">CTSP — 60 questões</option>
+            <option value="cba">CBA — 40 questões</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Abertura</div>
+          <input id="gerar-abertura" type="datetime-local" class="form-input" style="width:100%;">
+        </div>
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Encerramento</div>
+          <input id="gerar-encerramento" type="datetime-local" class="form-input" style="width:100%;">
+        </div>
+        <div style="background:rgba(240,192,80,0.08);border:1px solid rgba(240,192,80,0.2);border-radius:6px;padding:10px 12px;font-size:12px;color:#F0C050;line-height:1.5;">
+          ⚠ A geração roda em background e pode levar 15–30 min. O status aparece no banner acima após iniciar.
+        </div>
       </div>
-      <div class="form-group">
-        <div class="form-label">Abertura (sexta 12:00 BRT = 15:00 UTC)</div>
-        <input class="form-input" id="f-abertura" type="datetime-local">
+      <div style="display:flex;gap:8px;margin-top:1.5rem;">
+        <button onclick="fecharModalGerar()" class="btn-sm" style="flex:1;">Cancelar</button>
+        <button id="btn-confirmar-gerar" onclick="confirmarGerar()" class="btn-sm btn-primary" style="flex:2;">Iniciar Geração</button>
       </div>
-      <div class="form-group">
-        <div class="form-label">Encerramento (domingo 23:59 BRT = segunda 02:59 UTC)</div>
-        <input class="form-input" id="f-encerramento" type="datetime-local">
-      </div>
-    </div>
-    <div class="form-footer">
-      <button class="btn-sm" onclick="toggleFormNovo()">Cancelar</button>
-      <button class="btn-sm btn-primary" onclick="criarSimulado()">Criar Simulado</button>
     </div>
   </div>
 
@@ -289,34 +298,11 @@ function formatarData(iso) {
 }
 
 function getStatus(sim) {
+  if (!sim.ativo) return { cls: 'status-inativo', label: 'INATIVO' };
   const now = new Date().toISOString();
   if (now < sim.abertura) return { cls: 'status-aguardando', label: 'AGUARDANDO' };
   if (now <= sim.encerramento) return { cls: 'status-aberto', label: 'ABERTO' };
   return { cls: 'status-encerrado', label: 'ENCERRADO' };
-}
-
-function toggleFormNovo() {
-  const f = document.getElementById('form-novo');
-  f.classList.toggle('visivel');
-}
-
-async function criarSimulado() {
-  const titulo = document.getElementById('f-titulo').value.trim();
-  const curso = document.getElementById('f-curso').value;
-  const aberturaLocal = document.getElementById('f-abertura').value;
-  const encerramentoLocal = document.getElementById('f-encerramento').value;
-  if (!titulo || !aberturaLocal || !encerramentoLocal) { toast('Preencha todos os campos.', 'err'); return; }
-  // Converte para UTC (o input datetime-local está em horário local do navegador)
-  const abertura = new Date(aberturaLocal).toISOString();
-  const encerramento = new Date(encerramentoLocal).toISOString();
-  try {
-    await req('/api/simulados-mensais/admin/criar', {
-      method: 'POST', body: JSON.stringify({ titulo, curso, abertura, encerramento }),
-    });
-    toast('Simulado criado com sucesso!');
-    toggleFormNovo();
-    carregarSimulados();
-  } catch (err) { toast(err.erro || 'Erro ao criar.', 'err'); }
 }
 
 // Estado das questões carregadas por simulado
@@ -328,7 +314,7 @@ const simuladosData = {};
 
 const toLocal = d => new Date(new Date(d).getTime() - new Date(d).getTimezoneOffset() * 60000).toISOString().slice(0, 16);
 
-async function carregarSimulados() {
+async function carregarSimulados(tentativa = 1) {
   const grid = document.getElementById('simulados-grid');
   try {
     const data = await req('/api/simulados-mensais/admin/listar');
@@ -398,7 +384,14 @@ async function carregarSimulados() {
           </div>
         </div>`;
     }).join('');
-  } catch (err) { grid.innerHTML = `<div style="color:#F09595;padding:2rem;">${err.erro || 'Erro ao carregar.'}</div>`; }
+  } catch (err) {
+    if (tentativa < 3) {
+      grid.innerHTML = `<div style="color:var(--cinza-texto);text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:13px;">Conectando ao servidor (tentativa ${tentativa}/3)…</div>`;
+      setTimeout(() => carregarSimulados(tentativa + 1), 3000);
+    } else {
+      grid.innerHTML = `<div style="color:#F09595;padding:2rem;">${err.erro || 'Erro ao carregar.'} <button class="btn-sm" style="margin-left:12px;" onclick="carregarSimulados()">Tentar novamente</button></div>`;
+    }
+  }
 }
 
 function toggleSimulado(id) {
@@ -435,6 +428,7 @@ function renderizarQuestoesDo(id) {
         <span class="q-enun">${q.enunciado || ''}</span>
         <div style="display:flex;gap:4px;flex-shrink:0;">
           <button class="btn-ver" onclick="toggleDetalhe('${q.id}')">Ver</button>
+          <button class="btn-editar" onclick="abrirModalEditar('${id}','${q.id}')">Editar</button>
           <button class="btn-remover" onclick="removerQuestao('${id}','${q.id}')">Remover</button>
         </div>
       </div>
@@ -592,95 +586,201 @@ async function toggleAtivo(simId, novoAtivo) {
   } catch (err) { toast(err.erro || 'Erro.', 'err'); }
 }
 
-function abrirModalGerar() {
-  const agora = new Date();
-  const diasParaSexta = (5 - agora.getDay() + 7) % 7 || 7;
-  const sexta = new Date(agora); sexta.setDate(agora.getDate() + diasParaSexta);
-  sexta.setHours(12, 0, 0, 0);
-  const domingo = new Date(sexta); domingo.setDate(sexta.getDate() + 2);
-  domingo.setHours(23, 59, 0, 0);
-  const toLocal = d => new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function abrirModalEditar(simId, questaoId) {
+  const entrada = (questoesSimulado[simId] || []).find(e => e.questoes?.id === questaoId);
+  if (!entrada) { toast('Questão não encontrada. Feche e reabra o simulado.', 'err'); return; }
+  const q = entrada.questoes;
 
   const ov = document.createElement('div');
-  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;';
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;';
   ov.innerHTML = `
-    <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:420px;width:90%;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.25rem;">Gerar Simulado do M\xeas</div>
-      <div style="font-size:12px;color:#666;margin-bottom:1.25rem;line-height:1.6;">
-        Os simulados ficam inativos at\xe9 voc\xea clicar em <strong style="color:#AAA">Habilitar</strong>.
+    <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:700px;width:100%;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;">
+        <span>Editar Questão</span>
+        <button id="eq-fechar" style="background:none;border:none;color:#888;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;">✕</button>
       </div>
-      <div style="margin-bottom:1.25rem;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Curso</div>
-        <div style="display:flex;gap:8px;">
-          <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:6px;padding:8px 10px;cursor:pointer;font-size:12px;color:var(--cinza-texto);">
-            <input type="radio" name="g-curso" value="ambos" checked style="accent-color:var(--vermelho);"> CTSP + CBA
-          </label>
-          <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:6px;padding:8px 10px;cursor:pointer;font-size:12px;color:var(--cinza-texto);">
-            <input type="radio" name="g-curso" value="ctsp" style="accent-color:var(--vermelho);"> Só CTSP
-          </label>
-          <label style="flex:1;display:flex;align-items:center;gap:6px;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:6px;padding:8px 10px;cursor:pointer;font-size:12px;color:var(--cinza-texto);">
-            <input type="radio" name="g-curso" value="cba" style="accent-color:var(--vermelho);"> Só CBA
-          </label>
+      <div style="margin-bottom:1rem;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Enunciado</div>
+        <textarea id="eq-enunciado" rows="5" style="width:100%;background:#2A2A2A;border:1px solid #333;color:#F8F6F2;padding:10px 12px;border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;resize:vertical;line-height:1.6;"></textarea>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Alternativas</div>
+        ${['a','b','c','d','e'].map(l => `
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">${l.toUpperCase()}.</span>
+          <input id="eq-alt-${l}" type="text" style="flex:1;background:#2A2A2A;border:1px solid #333;color:#F8F6F2;padding:7px 10px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;">
+        </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:1rem;">
+        <div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Gabarito</div>
+          <select id="eq-gabarito" style="background:#2A2A2A;border:1px solid #333;color:#F8F6F2;padding:7px 14px;border-radius:6px;font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:600;">
+            ${['A','B','C','D','E'].map(l => `<option value="${l}">${l}</option>`).join('')}
+          </select>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem;">
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Abertura</div>
-          <input id="g-abertura" type="datetime-local" class="form-input" value="${toLocal(sexta)}">
-        </div>
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Encerramento</div>
-          <input id="g-encerramento" type="datetime-local" class="form-input" value="${toLocal(domingo)}">
-        </div>
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Justificativa</div>
+        <textarea id="eq-justificativa" rows="3" style="width:100%;background:#2A2A2A;border:1px solid #333;color:#F8F6F2;padding:10px 12px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;resize:vertical;line-height:1.6;"></textarea>
       </div>
       <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button id="g-cancelar" class="btn-sm">Cancelar</button>
-        <button id="g-confirmar" class="btn-sm btn-primary">Gerar com IA (Opus)</button>
+        <button id="eq-cancelar" class="btn-sm">Cancelar</button>
+        <button id="eq-salvar" class="btn-sm btn-primary">Salvar Alterações</button>
       </div>
     </div>`;
   document.body.appendChild(ov);
 
-  document.getElementById('g-cancelar').addEventListener('click', () => ov.remove());
-  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
+  document.getElementById('eq-enunciado').value = q.enunciado || '';
+  document.getElementById('eq-alt-a').value = q.alternativa_a || '';
+  document.getElementById('eq-alt-b').value = q.alternativa_b || '';
+  document.getElementById('eq-alt-c').value = q.alternativa_c || '';
+  document.getElementById('eq-alt-d').value = q.alternativa_d || '';
+  document.getElementById('eq-alt-e').value = q.alternativa_e || '';
+  document.getElementById('eq-gabarito').value = (q.resposta_correta || 'A').toUpperCase();
+  document.getElementById('eq-justificativa').value = q.justificativa || '';
 
-  document.getElementById('g-confirmar').addEventListener('click', async () => {
-    const aberturaLocal = document.getElementById('g-abertura').value;
-    const encerramentoLocal = document.getElementById('g-encerramento').value;
-    const curso = document.querySelector('input[name="g-curso"]:checked')?.value || 'ambos';
-    if (!aberturaLocal || !encerramentoLocal) { toast('Preencha as datas.', 'err'); return; }
-    if (new Date(encerramentoLocal) <= new Date(aberturaLocal)) { toast('Encerramento deve ser depois da abertura.', 'err'); return; }
+  const fechar = () => ov.remove();
+  document.getElementById('eq-fechar').addEventListener('click', fechar);
+  document.getElementById('eq-cancelar').addEventListener('click', fechar);
+  ov.addEventListener('click', e => { if (e.target === ov) fechar(); });
 
-    const abertura = new Date(aberturaLocal).toISOString();
-    const encerramento = new Date(encerramentoLocal).toISOString();
+  document.getElementById('eq-salvar').addEventListener('click', async () => {
+    const enunciado = document.getElementById('eq-enunciado').value.trim();
+    if (!enunciado) { toast('O enunciado não pode estar vazio.', 'err'); return; }
 
-    ov.remove();
-    const btn = document.getElementById('btn-gerar');
+    const body = {
+      enunciado,
+      alternativa_a: document.getElementById('eq-alt-a').value.trim(),
+      alternativa_b: document.getElementById('eq-alt-b').value.trim(),
+      alternativa_c: document.getElementById('eq-alt-c').value.trim(),
+      alternativa_d: document.getElementById('eq-alt-d').value.trim(),
+      alternativa_e: document.getElementById('eq-alt-e').value.trim(),
+      resposta_correta: document.getElementById('eq-gabarito').value,
+      justificativa: document.getElementById('eq-justificativa').value.trim() || null,
+    };
+
+    const btn = document.getElementById('eq-salvar');
     btn.disabled = true;
-    btn.textContent = 'Gerando… (Opus, ~20–30 min)';
-    toast('Gera\xe7\xe3o iniciada com Opus. Aguarde — pode demorar 20–30 minutos.', 'ok');
+    btn.textContent = 'Salvando…';
 
     try {
-      const res = await req('/api/simulados-mensais/admin/gerar', {
-        method: 'POST', body: JSON.stringify({ abertura, encerramento, curso }),
-      });
-      const ctsp = res.resultado?.ctsp;
-      const cba = res.resultado?.cba;
-      const msg = [
-        ctsp?.simulado_id ? `CTSP: ${ctsp.questoes}q` : ctsp ? `CTSP: erro` : null,
-        cba?.simulado_id  ? `CBA: ${cba.questoes}q`   : cba  ? `CBA: erro`  : null,
-      ].join(' \xb7 ');
-      toast(`Simulados gerados! ${msg} — clique em Habilitar para liberar.`, 'ok');
-      carregarSimulados();
+      const r = await PBM.Admin.query(
+        `/rest/v1/questoes?id=eq.${questaoId}`,
+        'return=representation',
+        'PATCH',
+        body
+      );
+      if (!r.ok) throw r;
+      toast('Questão atualizada.');
+      fechar();
+      delete questoesSimulado[simId];
+      carregarQuestoesDoSimulado(simId);
     } catch (err) {
-      toast(err.erro || 'Erro ao gerar simulados.', 'err');
-    } finally {
+      toast(err.erro || (err.data && err.data[0]?.message) || 'Erro ao salvar.', 'err');
       btn.disabled = false;
-      btn.textContent = 'Gerar Simulado do M\xeas (IA)';
+      btn.textContent = 'Salvar Alterações';
     }
   });
 }
 
 carregarSimulados();
+
+// ── MODAL GERAR VIA IA ─────────────────────────────────────────────────────
+function abrirModalGerar() {
+  const agora = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const toDatetimeLocal = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const abertura = new Date(agora.getTime() + 2 * 24 * 60 * 60 * 1000);
+  const encerramento = new Date(agora.getTime() + 4 * 24 * 60 * 60 * 1000);
+  document.getElementById('gerar-abertura').value = toDatetimeLocal(abertura);
+  document.getElementById('gerar-encerramento').value = toDatetimeLocal(encerramento);
+  const modal = document.getElementById('modal-gerar');
+  modal.style.display = 'flex';
+}
+
+function fecharModalGerar() {
+  document.getElementById('modal-gerar').style.display = 'none';
+}
+
+async function confirmarGerar() {
+  const curso = document.getElementById('gerar-curso').value;
+  const abertura = document.getElementById('gerar-abertura').value;
+  const encerramento = document.getElementById('gerar-encerramento').value;
+  if (!abertura || !encerramento) { toast('Informe abertura e encerramento.', 'err'); return; }
+  if (new Date(encerramento) <= new Date(abertura)) { toast('Encerramento deve ser depois da abertura.', 'err'); return; }
+  const btn = document.getElementById('btn-confirmar-gerar');
+  btn.disabled = true; btn.textContent = 'Iniciando…';
+  try {
+    await req('/api/simulados-mensais/admin/gerar', {
+      method: 'POST',
+      body: JSON.stringify({ curso, abertura: new Date(abertura).toISOString(), encerramento: new Date(encerramento).toISOString() }),
+    });
+    toast('Geração iniciada! Acompanhe o status no banner acima.');
+    fecharModalGerar();
+    iniciarPollingStatus();
+  } catch (err) {
+    toast(err.erro || 'Erro ao iniciar geração.', 'err');
+  }
+  btn.disabled = false; btn.textContent = 'Iniciar Geração';
+}
+
+// ── POLLING STATUS GERAÇÃO ─────────────────────────────────────────────────
+let pollingInterval = null;
+
+async function atualizarBannerStatus() {
+  try {
+    const logs = await req('/api/simulados-mensais/admin/status-geracao');
+    const banner = document.getElementById('banner-geracao');
+    if (!logs || !logs.length) { banner.style.display = 'none'; return; }
+    const ultimo = logs[0];
+    if (ultimo.status === 'running') {
+      const det = typeof ultimo.detalhes === 'string' ? ultimo.detalhes : JSON.stringify(ultimo.detalhes || {});
+      banner.style.display = 'flex';
+      banner.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#F0C050;animation:pulse 1s infinite;flex-shrink:0;"></span><span style="color:#F0C050;">GERANDO</span><span style="color:#888;margin-left:4px;">${det}</span><button class="btn-sm" onclick="cancelarGeracao()" style="margin-left:auto;">Cancelar</button>`;
+    } else if (ultimo.status === 'failed') {
+      const err = ultimo.erro || (typeof ultimo.detalhes === 'string' ? ultimo.detalhes : JSON.stringify(ultimo.detalhes || {}));
+      banner.style.display = 'flex';
+      banner.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#E24B4A;flex-shrink:0;"></span><span style="color:#F09595;">FALHOU</span><span style="color:#888;margin-left:4px;">${err}</span><button class="btn-sm" onclick="document.getElementById('banner-geracao').style.display='none'" style="margin-left:auto;">Fechar</button>`;
+      pararPolling();
+    } else if (ultimo.status === 'done') {
+      banner.style.display = 'flex';
+      banner.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7DD99A;flex-shrink:0;"></span><span style="color:#7DD99A;">CONCLUÍDO</span><span style="color:#888;margin-left:4px;">Simulado(s) criado(s) com sucesso.</span><button class="btn-sm" onclick="document.getElementById('banner-geracao').style.display='none'" style="margin-left:auto;">Fechar</button>`;
+      pararPolling();
+      carregarSimulados();
+    } else {
+      banner.style.display = 'none';
+    }
+  } catch {}
+}
+
+function iniciarPollingStatus() {
+  atualizarBannerStatus();
+  if (!pollingInterval) pollingInterval = setInterval(atualizarBannerStatus, 10000);
+}
+
+function pararPolling() {
+  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
+}
+
+async function cancelarGeracao() {
+  try {
+    await req('/api/simulados-mensais/admin/cancelar-geracao', { method: 'POST' });
+    toast('Geração cancelada.');
+    pararPolling();
+    atualizarBannerStatus();
+  } catch (err) { toast(err.erro || 'Erro ao cancelar.', 'err'); }
+}
+
+// Verifica se há geração em andamento ao carregar a página
+atualizarBannerStatus().then(() => {
+  const logs_check = req('/api/simulados-mensais/admin/status-geracao').then(logs => {
+    if (logs && logs[0]?.status === 'running') iniciarPollingStatus();
+  }).catch(() => {});
+});
+
 async function carregarBadgeAprovacoes() {
   try {
     const r = await PBM.Admin.aprovacoes.resumo();
@@ -690,10 +790,21 @@ async function carregarBadgeAprovacoes() {
     else { el.style.display = 'none'; }
   } catch {}
 }
+async function carregarBadgeDenuncias() {
+  try {
+    const r = await PBM.Admin.denuncias.resumo();
+    const el = document.getElementById('badge-denuncias');
+    if (!el) return;
+    if (r?.total > 0) { el.textContent = r.total; el.style.display = 'inline'; }
+    else { el.style.display = 'none'; }
+  } catch {}
+}
 carregarBadgeAprovacoes();
-document.addEventListener('visibilitychange', () => { if (!document.hidden) carregarBadgeAprovacoes(); });
+carregarBadgeDenuncias();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { carregarBadgeAprovacoes(); carregarBadgeDenuncias(); } });
 </script>
 <style>
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
 .pbm-watermark {
   pointer-events: none; user-select: none;
   position: fixed; top: 50%; left: 50%;

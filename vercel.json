@@ -13,10 +13,8 @@
     { "source": "/questoes", "destination": "/pbm-questoes" },
     { "source": "/simulados", "destination": "/pbm-simulados" },
     { "source": "/simulado-prova", "destination": "/pbm-simulado-prova" },
-    { "source": "/redefinir-senha", "destination": "/redefinir-senha" },
     { "source": "/ranking", "destination": "/pbm-ranking" },
     { "source": "/flashcards", "destination": "/pbm-flashcards" },
-    { "source": "/regras", "destination": "/regras" },
     { "source": "/simulado-mensal", "destination": "/pbm-simulado-mensal" },
     { "source": "/simulado-mensal-ranking", "destination": "/pbm-simulado-mensal-ranking" },
     { "source": "/admin-simulados-mensais", "destination": "/admin-simulados-mensais" },
@@ -26,7 +24,8 @@
     { "source": "/gestor-cadastro", "destination": "/gestor-cadastro" },
     { "source": "/gestor-painel", "destination": "/gestor-painel" },
     { "source": "/admin-cadastro", "destination": "/admin-cadastro" },
-    { "source": "/admin-aprovacoes", "destination": "/admin-aprovacoes" }
+    { "source": "/admin-aprovacoes", "destination": "/admin-aprovacoes" },
+    { "source": "/admin-denuncias", "destination": "/admin-denuncias" }
   ],
   "headers": [
     {

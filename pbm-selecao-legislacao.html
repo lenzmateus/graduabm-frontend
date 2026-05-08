@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -1617,8 +1617,19 @@ function toggleMinimizarPom() {
   btn.innerHTML = '&#8722;';
 }
 
+let pomStartX = 0, pomStartY = 0;
+document.getElementById('pom-float-bar').addEventListener('mousedown', function(e) {
+  pomStartX = e.clientX; pomStartY = e.clientY;
+});
+document.getElementById('pom-float-bar').addEventListener('touchstart', function(e) {
+  pomStartX = e.touches[0].clientX; pomStartY = e.touches[0].clientY;
+}, { passive: true });
+
 document.getElementById('pom-float-bar').addEventListener('click', function(e) {
   const win = document.getElementById('pom-float');
+  const dist = Math.hypot(e.clientX - pomStartX, e.clientY - pomStartY);
+  if (dist > 6) return; // Se moveu mais de 6px, ignora o click (foi drag)
+
   if (win.classList.contains('minimizado') && !e.target.closest('#pom-float-actions')) {
     toggleMinimizarPom();
   }

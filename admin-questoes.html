@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -996,7 +996,14 @@ function buildSidebar() {
         <a class="nav-item" href="/admin-simulados-mensais">${svgSim} Simulados Mensais</a>
         <div class="nav-label">Alunos</div>
         <a class="nav-item" href="/admin-assinaturas">${svgAluno} Assinaturas</a>
-        <a class="nav-item" href="/admin#denuncias">${svgDen} Relatórios de Problemas</a>
+        <a class="nav-item" href="/admin-relatorios">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Relatórios
+        </a>
+        <a class="nav-item" href="/admin-denuncias" style="justify-content:space-between;">
+          <span style="display:flex;align-items:center;gap:10px;">${svgDen} Relatórios de Problemas</span>
+          <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
+        </a>
         <div class="nav-label">Sistema</div>
         <a class="nav-item" href="/admin-aprovacoes" style="justify-content:space-between;">
           <span style="display:flex;align-items:center;gap:10px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> Aprovações IA</span>
@@ -1017,8 +1024,18 @@ async function carregarBadgeAprovacoes() {
     else { el.style.display = 'none'; }
   } catch {}
 }
+async function carregarBadgeDenuncias() {
+  try {
+    const r = await PBM.Admin.denuncias.resumo();
+    const el = document.getElementById('badge-denuncias');
+    if (!el) return;
+    if (r?.total > 0) { el.textContent = r.total; el.style.display = 'inline'; }
+    else { el.style.display = 'none'; }
+  } catch {}
+}
 carregarBadgeAprovacoes();
-document.addEventListener('visibilitychange', () => { if (!document.hidden) carregarBadgeAprovacoes(); });
+carregarBadgeDenuncias();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { carregarBadgeAprovacoes(); carregarBadgeDenuncias(); } });
 
 /* ── Event listeners ── */
 document.getElementById('btn-sair').addEventListener('click', () => _isGestor ? PBM.Gestor.logout() : PBM.Admin.logout());
