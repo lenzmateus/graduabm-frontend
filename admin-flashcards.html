@@ -31,8 +31,6 @@
   .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
   .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
   .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
-  .gestor-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: rgba(39,160,90,0.1); border: 1px solid rgba(39,160,90,0.3); color: #7DD99A; }
-  .nav-item.ativo-g { color: var(--branco); border-left-color: var(--verde); background: var(--verde-bg); }
   .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
   .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
   .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #AFA9EC; letter-spacing: 0.04em; }
@@ -136,9 +134,8 @@
 <script src="/js/api.js"></script>
 <script>
 const _isAdmin  = PBM.isAdmin();
-const _isGestor = PBM.isGestor();
-if (!_isAdmin && !_isGestor) window.location.href = '/admin-login';
-if (_isAdmin && !sessionStorage.getItem('pbm_admin_jwt')) window.location.href = '/admin-login';
+if (!_isAdmin) window.location.href = '/admin-login';
+if (!sessionStorage.getItem('pbm_admin_jwt')) window.location.href = '/admin-login';
 </script>
 
 <div class="layout">
@@ -281,9 +278,7 @@ let todosCards = [];
 let deleteId = null;
 
 function supaFetch(path, method = 'GET', body = null) {
-  return _isGestor
-    ? PBM.Gestor.query(path, 'return=representation', method, body)
-    : PBM.Admin.query(path, 'return=representation', method, body);
+  return PBM.Admin.query(path, 'return=representation', method, body);
 }
 
 async function carregarCards() {
@@ -453,25 +448,10 @@ async function confirmarDelete() {
   const svgQ     = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
   const svgFlash = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`;
   const svgAluno = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>`;
-  const svgGest  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`;
   const svgSim   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>`;
   const svgDen   = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>`;
   const svgSite  = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>`;
-  if (_isGestor) {
-    const nome = sessionStorage.getItem('pbm_gestor_nome') || 'Gestor';
-    document.getElementById('sidebar').innerHTML = `
-      <div class="sidebar-logo"><a href="/gestor-painel" class="logo-text">Protocolo Bravo Mike</a><span class="gestor-chip">GESTOR</span></div>
-      <div class="sidebar-usuario"><div class="usuario-nome">${nome}</div><div class="usuario-status" style="color:#7DD99A"><span class="status-dot" style="background:#27A05A"></span>Gestor ativo</div></div>
-      <nav class="sidebar-nav">
-        <div class="nav-label">Conteúdo</div>
-        <a class="nav-item" href="/admin-questoes">${svgQ} Questões</a>
-        <a class="nav-item ativo-g" href="/admin-flashcards">${svgFlash} Flashcards</a>
-        <div class="nav-label">Alunos</div>
-        <a class="nav-item" href="/gestor-painel">${svgGest} Gestão de Alunos</a>
-      </nav>
-      <div class="sidebar-footer"><button class="btn-sair" id="btn-sair">Sair</button></div>`;
-  } else {
-    document.getElementById('sidebar').innerHTML = `
+  document.getElementById('sidebar').innerHTML = `
       <div class="sidebar-logo"><a href="/admin" class="logo-text">Protocolo Bravo Mike</a><span class="admin-chip">ADMIN</span></div>
       <div class="sidebar-usuario"><div class="usuario-nome">Administrador</div><div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div></div>
       <nav class="sidebar-nav">
@@ -495,7 +475,6 @@ async function confirmarDelete() {
         <a class="nav-item" href="/" target="_blank">${svgSite} Ver site</a>
       </nav>
       <div class="sidebar-footer"><button class="btn-sair" id="btn-sair">Encerrar sessão</button></div>`;
-  }
 })();
 async function carregarBadgeAprovacoes() {
   try {
@@ -519,7 +498,7 @@ carregarBadgeAprovacoes();
 carregarBadgeDenuncias();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { carregarBadgeAprovacoes(); carregarBadgeDenuncias(); } });
 
-document.getElementById('btn-sair').addEventListener('click', () => _isGestor ? PBM.Gestor.logout() : PBM.Admin.logout());
+document.getElementById('btn-sair').addEventListener('click', () => PBM.Admin.logout());
 document.getElementById('btn-novo').addEventListener('click', abrirModalNova);
 document.getElementById('btn-fechar-modal').addEventListener('click', fecharModal);
 document.getElementById('btn-cancelar-modal').addEventListener('click', fecharModal);

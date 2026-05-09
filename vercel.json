@@ -20,12 +20,10 @@
     { "source": "/admin-simulados-mensais", "destination": "/admin-simulados-mensais" },
     { "source": "/admin-assinaturas", "destination": "/admin-assinaturas" },
     { "source": "/admin-relatorios", "destination": "/admin-relatorios" },
-    { "source": "/gestor-login", "destination": "/gestor-login" },
-    { "source": "/gestor-cadastro", "destination": "/gestor-cadastro" },
-    { "source": "/gestor-painel", "destination": "/gestor-painel" },
     { "source": "/admin-cadastro", "destination": "/admin-cadastro" },
     { "source": "/admin-aprovacoes", "destination": "/admin-aprovacoes" },
-    { "source": "/admin-denuncias", "destination": "/admin-denuncias" }
+    { "source": "/admin-denuncias", "destination": "/admin-denuncias" },
+    { "source": "/admin-analytics", "destination": "/admin-analytics" }
   ],
   "headers": [
     {

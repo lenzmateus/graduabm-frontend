@@ -645,12 +645,6 @@ async function init() {
       gabaritoReal: typeof q.gabarito === 'number' ? String.fromCharCode(65 + q.gabarito) : (q.resposta_correta || q.gabarito || '').toString().toUpperCase().trim().charAt(0)
     }));
 
-    // Cria sessão no banco
-    try {
-      const s = await PBM.api.sessoes.criar({ curso, area: 'SIMULADO', legislacoes: [], quantidade: questoes.length });
-      sessaoId = s.id;
-    } catch(e) { console.error("Erro ao criar sessão", e); }
-
     document.getElementById('tela-loading').style.display = 'none';
 
     // C4: Garante 4h desde o início — limpa timer de prova anterior do mesmo curso
@@ -903,6 +897,14 @@ async function entregarProva(porTempoEsgotado) {
   // Mostrar loading over the whole page
   document.getElementById('loading-msg').textContent = 'CORRIGINDO PROVA E SALVANDO GABARITO...';
   document.getElementById('tela-loading').style.display = 'flex';
+
+  if (!sessaoId) {
+    const cursoProv = sessionStorage.getItem('pbm_simulado_curso');
+    try {
+      const s = await PBM.api.sessoes.criar({ curso: cursoProv, area: 'SIMULADO', legislacoes: [], quantidade: questoes.length });
+      sessaoId = s.id;
+    } catch(e) { console.error("Erro ao criar sessão", e); }
+  }
 
   if (!sessaoId) {
     mostrarResultado();

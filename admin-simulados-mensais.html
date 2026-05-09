@@ -299,46 +299,8 @@
       <div class="page-titulo">Simulados Mensais</div>
       <div class="page-sub">Gerencie simulados exclusivos, questões e acompanhe participações. Os simulados criados aqui aparecem como <strong>Protocolo QAP</strong> para os alunos.</div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-      <button class="btn-sm btn-primary" onclick="abrirModalGerar()">+ Gerar via IA</button>
+    <div>
       <button class="btn-topbar-sair" onclick="encerrarSessao()">Encerrar sessão</button>
-    </div>
-  </div>
-
-  <!-- BANNER STATUS GERAÇÃO -->
-  <div id="banner-geracao" style="display:none;background:#1A1A1A;border:1px solid #2A2A2A;border-radius:8px;padding:12px 16px;margin-bottom:1.5rem;font-family:'IBM Plex Mono',monospace;font-size:12px;align-items:center;gap:12px;"></div>
-
-  <!-- MODAL GERAR SIMULADO VIA IA -->
-  <div id="modal-gerar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:480px;width:90%;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;">
-        <span>Gerar Simulado via IA</span>
-        <button onclick="fecharModalGerar()" style="background:none;border:none;color:#888;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;">✕</button>
-      </div>
-      <div style="display:grid;gap:1rem;">
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Curso</div>
-          <select id="gerar-curso" class="select-sm" style="width:100%;">
-            <option value="ctsp">CTSP — 60 questões</option>
-            <option value="cba">CBA — 40 questões</option>
-          </select>
-        </div>
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Abertura</div>
-          <input id="gerar-abertura" type="datetime-local" class="form-input" style="width:100%;">
-        </div>
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Encerramento</div>
-          <input id="gerar-encerramento" type="datetime-local" class="form-input" style="width:100%;">
-        </div>
-        <div style="background:rgba(240,192,80,0.08);border:1px solid rgba(240,192,80,0.2);border-radius:6px;padding:10px 12px;font-size:12px;color:#F0C050;line-height:1.5;">
-          ⚠ A geração roda em background e pode levar 15–30 min. O status aparece no banner acima após iniciar.
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:1.5rem;">
-        <button onclick="fecharModalGerar()" class="btn-sm" style="flex:1;">Cancelar</button>
-        <button id="btn-confirmar-gerar" onclick="confirmarGerar()" class="btn-sm btn-primary" style="flex:2;">Iniciar Geração</button>
-      </div>
     </div>
   </div>
 
@@ -417,6 +379,7 @@
       <div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:6px;padding:10px 12px;font-size:12px;color:#A78BFA;line-height:1.5;">
         O simulado será ativado automaticamente ao chegar na data de abertura.
       </div>
+      <div id="pub-aviso-reap" style="display:none;background:rgba(124,58,237,.05);border:1px solid rgba(124,58,237,.2);border-radius:6px;padding:8px 12px;font-size:12px;color:#A78BFA;"></div>
     </div>
     <div style="display:flex;gap:8px;margin-top:1.5rem;">
       <button onclick="fecharModalPublicar()" class="btn-sm" style="flex:1;">Cancelar</button>
@@ -917,98 +880,6 @@ function abrirModalEditar(simId, questaoId) {
 
 carregarSimulados();
 
-// ── MODAL GERAR VIA IA ─────────────────────────────────────────────────────
-function abrirModalGerar() {
-  const agora = new Date();
-  const pad = n => String(n).padStart(2, '0');
-  const toDatetimeLocal = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-  const abertura = new Date(agora.getTime() + 2 * 24 * 60 * 60 * 1000);
-  const encerramento = new Date(agora.getTime() + 4 * 24 * 60 * 60 * 1000);
-  document.getElementById('gerar-abertura').value = toDatetimeLocal(abertura);
-  document.getElementById('gerar-encerramento').value = toDatetimeLocal(encerramento);
-  const modal = document.getElementById('modal-gerar');
-  modal.style.display = 'flex';
-}
-
-function fecharModalGerar() {
-  document.getElementById('modal-gerar').style.display = 'none';
-}
-
-async function confirmarGerar() {
-  const curso = document.getElementById('gerar-curso').value;
-  const abertura = document.getElementById('gerar-abertura').value;
-  const encerramento = document.getElementById('gerar-encerramento').value;
-  if (!abertura || !encerramento) { toast('Informe abertura e encerramento.', 'err'); return; }
-  if (new Date(encerramento) <= new Date(abertura)) { toast('Encerramento deve ser depois da abertura.', 'err'); return; }
-  const btn = document.getElementById('btn-confirmar-gerar');
-  btn.disabled = true; btn.textContent = 'Iniciando…';
-  try {
-    await req('/api/simulados-mensais/admin/gerar', {
-      method: 'POST',
-      body: JSON.stringify({ curso, abertura: new Date(abertura).toISOString(), encerramento: new Date(encerramento).toISOString() }),
-    });
-    toast('Geração iniciada! Acompanhe o status no banner acima.');
-    fecharModalGerar();
-    iniciarPollingStatus();
-  } catch (err) {
-    toast(err.erro || 'Erro ao iniciar geração.', 'err');
-  }
-  btn.disabled = false; btn.textContent = 'Iniciar Geração';
-}
-
-// ── POLLING STATUS GERAÇÃO ─────────────────────────────────────────────────
-let pollingInterval = null;
-
-async function atualizarBannerStatus() {
-  try {
-    const logs = await req('/api/simulados-mensais/admin/status-geracao');
-    const banner = document.getElementById('banner-geracao');
-    if (!logs || !logs.length) { banner.style.display = 'none'; return; }
-    const ultimo = logs[0];
-    if (ultimo.status === 'running') {
-      const det = typeof ultimo.detalhes === 'string' ? ultimo.detalhes : JSON.stringify(ultimo.detalhes || {});
-      banner.style.display = 'flex';
-      banner.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#F0C050;animation:pulse 1s infinite;flex-shrink:0;"></span><span style="color:#F0C050;">GERANDO</span><span style="color:#888;margin-left:4px;">${det}</span><button class="btn-sm" onclick="cancelarGeracao()" style="margin-left:auto;">Cancelar</button>`;
-    } else if (ultimo.status === 'failed') {
-      const err = ultimo.erro || (typeof ultimo.detalhes === 'string' ? ultimo.detalhes : JSON.stringify(ultimo.detalhes || {}));
-      banner.style.display = 'flex';
-      banner.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#E24B4A;flex-shrink:0;"></span><span style="color:#F09595;">FALHOU</span><span style="color:#888;margin-left:4px;">${err}</span><button class="btn-sm" onclick="document.getElementById('banner-geracao').style.display='none'" style="margin-left:auto;">Fechar</button>`;
-      pararPolling();
-    } else if (ultimo.status === 'done') {
-      banner.style.display = 'flex';
-      banner.innerHTML = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#7DD99A;flex-shrink:0;"></span><span style="color:#7DD99A;">CONCLUÍDO</span><span style="color:#888;margin-left:4px;">Simulado(s) criado(s) com sucesso.</span><button class="btn-sm" onclick="document.getElementById('banner-geracao').style.display='none'" style="margin-left:auto;">Fechar</button>`;
-      pararPolling();
-      carregarSimulados();
-    } else {
-      banner.style.display = 'none';
-    }
-  } catch {}
-}
-
-function iniciarPollingStatus() {
-  atualizarBannerStatus();
-  if (!pollingInterval) pollingInterval = setInterval(atualizarBannerStatus, 10000);
-}
-
-function pararPolling() {
-  if (pollingInterval) { clearInterval(pollingInterval); pollingInterval = null; }
-}
-
-async function cancelarGeracao() {
-  try {
-    await req('/api/simulados-mensais/admin/cancelar-geracao', { method: 'POST' });
-    toast('Geração cancelada.');
-    pararPolling();
-    atualizarBannerStatus();
-  } catch (err) { toast(err.erro || 'Erro ao cancelar.', 'err'); }
-}
-
-// Verifica se há geração em andamento ao carregar a página
-atualizarBannerStatus().then(() => {
-  const logs_check = req('/api/simulados-mensais/admin/status-geracao').then(logs => {
-    if (logs && logs[0]?.status === 'running') iniciarPollingStatus();
-  }).catch(() => {});
-});
 
 async function carregarBadgeAprovacoes() {
   try {
@@ -1120,13 +991,31 @@ function renderBlocoCard(bloco) {
           <button class="btn-sm" onclick="abrirModalQuestaoManual('${bloco.id}','${bloco.curso}')">+ Criar Questão Manual</button>
         </div>
       </div>
+      <!-- Seção de reaproveitamento (apenas blocos CBA ainda não agendados) -->
+      ${bloco.curso === 'cba' && !bloco.simulado_id ? `
+      <div style="padding:1rem 1.25rem;border-top:1px solid #222;border-bottom:1px solid #222;">
+        <div class="bloco-section-label" style="margin-bottom:8px;">Questões Reaproveitadas do CTSP <span id="reap-count-${bloco.id}" style="color:#A78BFA;font-family:'IBM Plex Mono',monospace;font-size:10px;"></span></div>
+        <div style="font-size:11px;color:#555;margin-bottom:10px;">Questões marcadas como "Para Ambos" em blocos CTSP aprovados podem ser incluídas aqui sem gerar duplicatas no banco.</div>
+        <button class="btn-sm" onclick="toggleReaproveitamento('${bloco.id}')">Ver Disponíveis</button>
+        <div id="reap-panel-${bloco.id}" style="display:none;margin-top:10px;">
+          <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
+            <select class="select-sm" id="reap-filtro-at-${bloco.id}" onchange="carregarQuestoesReaproveitaveis('${bloco.id}')">
+              <option value="">Todas as ATs</option>
+              ${['AT1','AT2','AT3','AT4','AT5'].map(at => `<option value="${at}">${at}</option>`).join('')}
+            </select>
+            <button class="btn-sm" onclick="carregarQuestoesReaproveitaveis('${bloco.id}')">Atualizar</button>
+          </div>
+          <div id="reap-lista-${bloco.id}" style="display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;"></div>
+        </div>
+      </div>` : ''}
       <!-- Footer ações -->
       <div class="bloco-footer">
         ${bloco.status === 'agendado' || bloco.simulado_id
           ? `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#A78BFA;">Simulado agendado · Abertura: ${formatarDataBloco(bloco.abertura)}</span>
              <a href="/admin-simulados-mensais#sim-${bloco.simulado_id}" class="btn-sm" style="margin-left:auto;">Ver Simulado ↓</a>`
-          : `<button class="btn-sm btn-primary" ${tot.completo ? '' : 'disabled title="Atingir todas as metas para publicar"'} onclick="abrirModalPublicar('${bloco.id}')">Publicar Protocolo QAP</button>`}
-        ${(bloco.status === 'encerrado') ? `<button class="btn-sm" onclick="liberarBanco('${bloco.id}')">Liberar ao Banco</button>` : ''}
+          : `<button class="btn-sm btn-primary" ${(tot.completo || (bloco.curso === 'cba' && podePublicarComReap(bloco.id, bloco.contadores))) ? '' : 'disabled title="Atingir todas as metas para publicar"'} onclick="abrirModalPublicar('${bloco.id}')">Publicar Protocolo QAP</button>`}
+        ${bloco.status === 'em_andamento' ? `<button class="btn-sm" onclick="encerrarEvento('${bloco.id}')">Encerrar Evento</button>` : ''}
+        ${bloco.status === 'encerrado' ? `<button class="btn-sm" onclick="liberarBanco('${bloco.id}')">Liberar ao Banco</button>` : ''}
         <button class="btn-sm" style="margin-left:auto;color:#F09595;" onclick="confirmarExcluirBloco('${bloco.id}')">Excluir Bloco</button>
       </div>
     </div>
@@ -1245,6 +1134,7 @@ function renderQuestaoDoBloco(q, blocoId) {
       <div class="bq-acoes">
         ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--verde);border-color:rgba(125,217,154,.3);" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Aprovar</button>` : ''}
         ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" style="color:#F09595;border-color:rgba(240,149,149,.3);" onclick="rejeitarQuestaoBloco('${q.id}','${blocoId}')">Rejeitar</button>` : ''}
+        ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" id="btn-ambos-${q.id}" style="${q.curso==='ambos'?'color:#A78BFA;border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.08);':''}" onclick="toggleCursoAmbos('${q.id}','${blocoId}')" title="Marcar como válida para CTSP e CBA">${q.curso==='ambos'?'✓ Ambos':'Para Ambos'}</button>` : ''}
         ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--dourado);border-color:rgba(240,192,80,.3);" onclick="abrirEditarQuestaoBloco('${blocoId}','${q.id}')">Editar</button>` : ''}
         ${q.revisao_status === 'rejeitado'   ? `<button class="btn-sm" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Restaurar</button>` : ''}
         <button class="btn-sm" onclick="removerQuestaoDoBloco('${blocoId}','${q.id}')">Remover</button>
@@ -1494,6 +1384,98 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
   });
 }
 
+// ── Toggle curso=ambos ───────────────────────────────────────────────────────
+
+async function toggleCursoAmbos(questaoId, blocoId) {
+  try {
+    const data = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/questoes/${questaoId}/curso-toggle`, { method: 'PATCH' });
+    toast(data.curso === 'ambos' ? '✓ Questão marcada como válida para Ambos os cursos.' : 'Questão revertida para o curso do bloco.');
+    delete questoesPorBloco[blocoId];
+    await recarregarBlocoCard(blocoId);
+  } catch(err) { toast(err.erro || 'Erro ao alterar curso.', 'err'); }
+}
+
+// ── Reaproveitamento CTSP→CBA ────────────────────────────────────────────────
+
+const reaproveitadasPorBloco = {};
+
+function podePublicarComReap(blocoId, contadores) {
+  const sel = reaproveitadasPorBloco[blocoId] || new Set();
+  const cnt = contadores || {};
+  return ['AT1','AT2','AT3','AT4','AT5'].every(at => {
+    const c = cnt[at] || { aprovadas: 0, meta: 0 };
+    const reapNaAt = [...sel].filter(id => {
+      const lista = reapDisponiveisPorBloco[blocoId] || [];
+      return lista.find(q => q.id === id && q.area_tematica === at);
+    }).length;
+    return (c.aprovadas + reapNaAt) >= c.meta;
+  });
+}
+
+const reapDisponiveisPorBloco = {};
+
+function toggleReaproveitamento(blocoId) {
+  const panel = document.getElementById(`reap-panel-${blocoId}`);
+  if (!panel) return;
+  const aberto = panel.style.display === 'none';
+  panel.style.display = aberto ? 'block' : 'none';
+  if (aberto && !reapDisponiveisPorBloco[blocoId]) carregarQuestoesReaproveitaveis(blocoId);
+}
+
+async function carregarQuestoesReaproveitaveis(blocoId) {
+  const lista = document.getElementById(`reap-lista-${blocoId}`);
+  if (!lista) return;
+  lista.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:4px;">Carregando…</div>';
+  const at = document.getElementById(`reap-filtro-at-${blocoId}`)?.value || '';
+  try {
+    const qs = new URLSearchParams();
+    if (at) qs.set('at', at);
+    const data = await req(`/api/simulados-mensais/admin/blocos/questoes-reaproveitaveis?${qs}`);
+    reapDisponiveisPorBloco[blocoId] = data;
+    if (!reaproveitadasPorBloco[blocoId]) reaproveitadasPorBloco[blocoId] = new Set();
+    renderizarReaproveitaveis(blocoId);
+  } catch(err) {
+    lista.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro || 'Erro ao carregar.'}</div>`;
+  }
+}
+
+function renderizarReaproveitaveis(blocoId) {
+  const lista = document.getElementById(`reap-lista-${blocoId}`);
+  if (!lista) return;
+  const data = reapDisponiveisPorBloco[blocoId] || [];
+  const sel  = reaproveitadasPorBloco[blocoId] || new Set();
+
+  if (!data.length) {
+    lista.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:4px;">Nenhuma questão disponível. Marque questões como "Para Ambos" em blocos CTSP primeiro.</div>';
+    return;
+  }
+
+  lista.innerHTML = data.map(q => `
+    <div class="busca-item ${sel.has(q.id) ? 'selecionado' : ''}" onclick="toggleReapSelecionada('${blocoId}','${q.id}')">
+      <input type="checkbox" ${sel.has(q.id) ? 'checked' : ''} onclick="event.stopPropagation();" onchange="toggleReapSelecionada('${blocoId}','${q.id}')">
+      <div class="busca-item-info">
+        <div class="busca-item-enun">${q.enunciado || ''}</div>
+        <div class="busca-item-meta">${q.area_tematica} · ${q.legislacao_nome || '—'} · <span style="color:#A78BFA;">AMBOS</span></div>
+      </div>
+    </div>`).join('');
+
+  atualizarBadgeReap(blocoId);
+}
+
+function toggleReapSelecionada(blocoId, questaoId) {
+  const sel = reaproveitadasPorBloco[blocoId] || new Set();
+  if (sel.has(questaoId)) sel.delete(questaoId); else sel.add(questaoId);
+  reaproveitadasPorBloco[blocoId] = sel;
+  renderizarReaproveitaveis(blocoId);
+}
+
+function atualizarBadgeReap(blocoId) {
+  const el = document.getElementById(`reap-count-${blocoId}`);
+  if (!el) return;
+  const n = (reaproveitadasPorBloco[blocoId] || new Set()).size;
+  el.textContent = n > 0 ? `· ${n} selecionada${n !== 1 ? 's' : ''}` : '';
+}
+
 // ── Criar / destruir bloco ───────────────────────────────────────────────────
 
 function abrirModalNovoBloco() {
@@ -1545,8 +1527,7 @@ async function confirmarExcluirBloco(blocoId) {
     toast('Bloco excluído.');
     carregarBlocos();
   } catch(err) {
-    // Se o backend não tiver DELETE de bloco, ignora silenciosamente
-    toast('Para excluir um bloco, entre em contato com o suporte técnico.', 'err');
+    toast(err.erro || 'Erro ao excluir bloco.', 'err');
   }
 }
 
@@ -1560,24 +1541,45 @@ function abrirModalPublicar(blocoId) {
   const encerramento= new Date(agora.getTime() + 4*24*60*60*1000);
   document.getElementById('pub-abertura').value    = toLocal(abertura);
   document.getElementById('pub-encerramento').value= toLocal(encerramento);
+
+  // Exibe aviso de questões reaproveitadas selecionadas (se bloco CBA)
+  const avisoEl = document.getElementById('pub-aviso-reap');
+  if (avisoEl) {
+    const n = (reaproveitadasPorBloco[blocoId] || new Set()).size;
+    if (n > 0) {
+      avisoEl.style.display = 'block';
+      avisoEl.textContent = `${n} questão(ões) reaproveitada(s) do CTSP serão incluídas neste simulado.`;
+    } else {
+      avisoEl.style.display = 'none';
+    }
+  }
+
   document.getElementById('modal-publicar').style.display = 'flex';
 }
 function fecharModalPublicar() { document.getElementById('modal-publicar').style.display = 'none'; }
 
 async function confirmarPublicar() {
-  const blocoId      = document.getElementById('pub-bloco-id').value;
+  const blocoId       = document.getElementById('pub-bloco-id').value;
   const aberturaLocal = document.getElementById('pub-abertura').value;
-  const encLocal     = document.getElementById('pub-encerramento').value;
+  const encLocal      = document.getElementById('pub-encerramento').value;
   if (!aberturaLocal || !encLocal) { toast('Informe abertura e encerramento.', 'err'); return; }
   if (new Date(encLocal) <= new Date(aberturaLocal)) { toast('Encerramento deve ser depois da abertura.', 'err'); return; }
   const btn = document.getElementById('pub-confirmar');
   btn.disabled = true; btn.textContent = 'Publicando…';
+
+  const questoes_reaproveitadas = [...(reaproveitadasPorBloco[blocoId] || new Set())];
+
   try {
     const r = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/publicar`, {
       method: 'POST',
-      body: JSON.stringify({ abertura: new Date(aberturaLocal).toISOString(), encerramento: new Date(encLocal).toISOString() }),
+      body: JSON.stringify({
+        abertura: new Date(aberturaLocal).toISOString(),
+        encerramento: new Date(encLocal).toISOString(),
+        questoes_reaproveitadas,
+      }),
     });
-    toast(`Protocolo QAP publicado! Simulado ID: ${r.simulado_id}`);
+    const reapMsg = r.reaproveitadas_incluidas > 0 ? ` (${r.reaproveitadas_incluidas} reaproveitadas do CTSP)` : '';
+    toast(`Protocolo QAP publicado! ${r.questoes_vinculadas} questões${reapMsg}.`);
     fecharModalPublicar();
     carregarBlocos();
     carregarSimulados();
@@ -1585,11 +1587,25 @@ async function confirmarPublicar() {
   btn.disabled = false; btn.textContent = 'Publicar';
 }
 
+// ── Encerrar evento ──────────────────────────────────────────────────────────
+
+async function encerrarEvento(blocoId) {
+  if (!confirm('Encerrar o evento deste bloco? O simulado ficará indisponível para os alunos e você poderá liberar as questões ao banco.')) return;
+  try {
+    await req(`/api/simulados-mensais/admin/blocos/${blocoId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status: 'encerrado' }),
+    });
+    toast('Evento encerrado. Agora você pode liberar as questões ao banco.');
+    await recarregarBlocoCard(blocoId);
+  } catch(err) { toast(err.erro || 'Erro ao encerrar.', 'err'); }
+}
+
 // ── Liberar ao banco ─────────────────────────────────────────────────────────
 
 async function liberarBanco(blocoId) {
-  const { bloco } = await req(`/api/simulados-mensais/admin/blocos/${blocoId}`).catch(() => ({ bloco: {} }));
-  const cnt = bloco?.contadores?.total?.aprovadas || '?';
+  const resp = await req(`/api/simulados-mensais/admin/blocos/${blocoId}`).catch(() => ({ contadores: { total: {} } }));
+  const cnt = resp?.contadores?.total?.aprovadas ?? '?';
   if (!confirm(`Liberar ${cnt} questões aprovadas ao banco geral? Elas ficam visíveis no modo estudo para os alunos.`)) return;
   try {
     const r = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/liberar`, { method: 'POST' });

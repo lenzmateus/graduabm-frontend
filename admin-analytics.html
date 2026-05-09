@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --vermelho: #C0270F;
+    --vermelho-bg: rgba(192,39,15,0.08);
+    --vermelho-borda: rgba(192,39,15,0.3);
+    --roxo: #7F77DD;
+    --roxo-bg: rgba(127,119,221,0.08);
+    --roxo-borda: rgba(127,119,221,0.3);
+    --verde: #27A05A;
+    --verde-bg: rgba(39,160,90,0.08);
+    --verde-borda: rgba(39,160,90,0.3);
+    --amarelo: #BA7517;
+    --amarelo-bg: rgba(186,117,23,0.1);
+    --amarelo-borda: rgba(186,117,23,0.3);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #AFA9EC; letter-spacing: 0.04em; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--roxo); }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .topbar-dir { display: flex; align-items: center; gap: 12px; }
+  .btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; animation: fadeUp 0.3s ease both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* KPI GRID */
+  .grid-kpi { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .kpi-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.25rem; }
+  .kpi-card.destaque { border-color: var(--roxo-borda); }
+  .kpi-card.alerta { border-color: var(--amarelo-borda); }
+  .kpi-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; }
+  .kpi-val { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 0.03em; color: var(--branco); line-height: 1; }
+  .kpi-card.destaque .kpi-val { color: #AFA9EC; }
+  .kpi-card.alerta .kpi-val { color: #EF9F27; }
+  .kpi-sub { font-size: 11px; color: var(--cinza-texto); margin-top: 4px; }
+
+  /* SEÇÃO */
+  .secao { margin-bottom: 2.5rem; }
+  .secao-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+  .secao-titulo::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+
+  /* GRIDS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+
+  /* CARD */
+  .card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.25rem; }
+  .card-titulo { font-size: 11px; color: #555; font-family: 'IBM Plex Mono', monospace; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+
+  /* GRÁFICO */
+  .chart-wrap { position: relative; height: 220px; }
+
+  /* TABELA */
+  .tabela-wrap { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; overflow: hidden; }
+  .tabela { width: 100%; border-collapse: collapse; }
+  .tabela th { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--cinza-borda); background: var(--carvao); font-weight: 500; }
+  .tabela td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #222; vertical-align: middle; }
+  .tabela tr:last-child td { border-bottom: none; }
+  .tabela tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* BADGES AT */
+  .badge { display: inline-flex; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
+  .badge-at1 { background: rgba(192,39,15,0.1); border: 1px solid rgba(192,39,15,0.3); color: #F09595; }
+  .badge-at2 { background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
+  .badge-at3 { background: rgba(24,95,165,0.1); border: 1px solid rgba(24,95,165,0.3); color: #79ABDD; }
+  .badge-at4 { background: rgba(39,160,90,0.08); border: 1px solid rgba(39,160,90,0.3); color: #7DD99A; }
+  .badge-at5 { background: rgba(127,119,221,0.08); border: 1px solid rgba(127,119,221,0.3); color: #AFA9EC; }
+
+  /* FUNIL */
+  .funil { display: flex; flex-direction: column; gap: 8px; }
+  .funil-item { display: flex; align-items: center; gap: 10px; }
+  .funil-label { font-size: 11px; color: var(--cinza-texto); min-width: 150px; }
+  .funil-barra-wrap { flex: 1; background: var(--cinza-medio); border-radius: 4px; height: 8px; overflow: hidden; }
+  .funil-barra { height: 100%; background: var(--roxo); border-radius: 4px; transition: width 0.6s ease; }
+  .funil-val { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--branco); min-width: 50px; text-align: right; }
+
+  /* HEAT-MAP */
+  .cohorte-wrap { overflow-x: auto; }
+  .cohorte-table { border-collapse: collapse; width: 100%; }
+  .cohorte-table th { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 12px; text-align: center; border-bottom: 1px solid var(--cinza-borda); background: var(--carvao); }
+  .cohorte-table th:first-child { text-align: left; }
+  .cohorte-table td { padding: 8px 12px; font-size: 12px; text-align: center; border-bottom: 1px solid #222; }
+  .cohorte-table tr:last-child td { border-bottom: none; }
+  .cohorte-table td:first-child { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .cell-verde { background: rgba(39,160,90,0.15); color: #7DD99A; font-weight: 600; border-radius: 4px; }
+  .cell-amarelo { background: rgba(186,117,23,0.15); color: #EF9F27; font-weight: 600; border-radius: 4px; }
+  .cell-vermelho { background: rgba(192,39,15,0.12); color: #F09595; font-weight: 600; border-radius: 4px; }
+  .cell-cinza { color: #444; }
+
+  /* DIST FREQ */
+  .dist-bars { display: flex; flex-direction: column; gap: 6px; }
+  .dist-item { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+  .dist-nome { color: var(--cinza-texto); min-width: 90px; }
+  .dist-bar-wrap { flex: 1; background: var(--cinza-medio); border-radius: 3px; height: 6px; overflow: hidden; }
+  .dist-bar { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .dist-val { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #888; min-width: 32px; text-align: right; }
+
+  /* ORIGEM */
+  .origem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .origem-item { background: var(--cinza-medio); border-radius: 8px; padding: 12px; text-align: center; }
+  .origem-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--branco); }
+  .origem-label { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; }
+
+  /* LEMBRETE */
+  .btn-lembrete { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
+  .btn-lembrete:hover { border-color: var(--roxo-borda); color: #AFA9EC; }
+  .btn-lembrete:disabled { opacity: 0.4; cursor: default; }
+
+  /* SKELETON */
+  .skeleton { display: inline-block; background: linear-gradient(90deg, #1A1A1A 25%, #222 50%, #1A1A1A 75%); background-size: 400% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; height: 34px; width: 70px; }
+  @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
+  .toast.visivel { transform: translateX(-50%) translateY(0); }
+  .toast.verde { border-color: var(--verde-borda); color: #7DD99A; }
+  .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
+
+  @media (max-width: 900px) {
+    .grid-kpi { grid-template-columns: repeat(3, 1fr); }
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    .grid-kpi { grid-template-columns: repeat(2, 1fr); }
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; }
+    .topbar { padding: 0 1rem; }
+    .conteudo { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
+      <span class="admin-chip">ADMIN</span>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome" id="sb-nome">Administrador</div>
+      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Painel</div>
+      <a class="nav-item" href="/admin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item ativo" href="/admin-analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
+      </a>
+      <div class="nav-label">Conteúdo</div>
+      <a class="nav-item" href="/admin-questoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        Questões
+      </a>
+      <a class="nav-item" href="/admin-flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+      <a class="nav-item" href="/admin-simulados-mensais">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>
+        Simulados Mensais
+      </a>
+      <div class="nav-label">Alunos</div>
+      <a class="nav-item" href="/admin-assinaturas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Assinaturas
+      </a>
+      <a class="nav-item" href="/admin-relatorios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Relatórios
+      </a>
+      <a class="nav-item" href="/admin-denuncias" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          Problemas
+        </span>
+        <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
+      </a>
+      <div class="nav-label">Sistema</div>
+      <a class="nav-item" href="/admin-aprovacoes" style="justify-content:space-between;">
+        <span style="display:flex;align-items:center;gap:10px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          Aprovações IA
+        </span>
+        <span id="nav-aprovacoes-badge" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
+      </a>
+      <a class="nav-item" href="/" target="_blank">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver site
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="encerrarSessao()">Encerrar sessão admin</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Analytics &amp; Business Intelligence</span>
+      <div class="topbar-dir">
+        <span class="topbar-mono" id="topbar-ts">—</span>
+        <button class="btn-topbar-sair" onclick="encerrarSessao()">Encerrar sessão</button>
+      </div>
+    </div>
+
+    <div class="conteudo">
+
+      <!-- SEÇÃO 1: KPIs -->
+      <div class="secao">
+        <div class="secao-titulo">Visão Geral do Negócio</div>
+        <div class="grid-kpi">
+          <div class="kpi-card destaque">
+            <div class="kpi-label">Alunos Ativos</div>
+            <div class="kpi-val" id="kpi-ativos"><span class="skeleton"></span></div>
+            <div class="kpi-sub">assinaturas vigentes</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Trials Ativos</div>
+            <div class="kpi-val" id="kpi-trials"><span class="skeleton"></span></div>
+            <div class="kpi-sub">acesso experimental</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Novos Este Mês</div>
+            <div class="kpi-val" id="kpi-novos"><span class="skeleton"></span></div>
+            <div class="kpi-sub">cadastros no mês</div>
+          </div>
+          <div class="kpi-card alerta">
+            <div class="kpi-label">Expirando em 7 Dias</div>
+            <div class="kpi-val" id="kpi-expirando"><span class="skeleton"></span></div>
+            <div class="kpi-sub">assinaturas em risco</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Conversão Trial→Pago</div>
+            <div class="kpi-val" id="kpi-conversao"><span class="skeleton"></span></div>
+            <div class="kpi-sub">taxa histórica</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 2: Engajamento -->
+      <div class="secao">
+        <div class="secao-titulo">Engajamento de Alunos</div>
+        <div class="grid-3">
+          <div class="card">
+            <div class="card-titulo">DAU / MAU — Últimos 90 dias</div>
+            <div class="chart-wrap">
+              <canvas id="chart-dau"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-titulo">Frequência no Último Mês</div>
+            <div class="dist-bars" id="dist-freq" style="margin-top:8px;">
+              <div style="color:#555;font-size:12px;">Carregando...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEÇÃO 3: Qualidade do Banco -->
+      <div class="secao">
+        <div class="secao-titulo">Qualidade do Banco de Questões</div>
+        <div class="grid-2" style="margin-bottom:1rem;">
+          <div class="card">
+            <div class="card-titulo">Funil de Questões</div>
+            <div class="funil" id="funil-questoes">
+              <div style="color:#555;font-size:12px;">Carregando...</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-titulo">Top 10 Legislações Mais Erradas</div>
+            <div id="top-legislacoes" style="font-size:12px;color:#555;">Carregando...</div>
+          </div>
+        </div>
+        <div style="margin-bottom:0.5rem;font-size:11px;color:#555;">Top 10 questões com maior taxa de erro (mín. 20 respostas)</div>
+        <div class="tabela-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Enunciado</th>
+                <th>Área</th>
+                <th>Legislação</th>
+                <th>Taxa Erro</th>
+                <th>Total Resp.</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-questoes">
+              <tr><td colspan="6" style="text-align:center;color:#555;padding:2rem;">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#555;" id="denuncias-info"></div>
+      </div>
+
+      <!-- SEÇÃO 4: Coortes e Risco -->
+      <div class="secao">
+        <div class="secao-titulo">Funil de Conversão e Coortes</div>
+        <div class="grid-2" style="margin-bottom:1.5rem;">
+          <div class="card">
+            <div class="card-titulo">Retenção por Coorte Mensal</div>
+            <div class="cohorte-wrap">
+              <table class="cohorte-table">
+                <thead><tr><th>Coorte</th><th>Total</th><th>Mês 0</th><th>Mês 1</th><th>Mês 2</th><th>Mês 3</th></tr></thead>
+                <tbody id="tbody-cohorte"><tr><td colspan="6" style="color:#555;padding:1.5rem;">Carregando...</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-titulo">Origem dos Cadastros</div>
+            <div class="origem-grid" id="origem-grid">
+              <div style="color:#555;font-size:12px;">Carregando...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="secao-titulo">Alunos em Risco de Churn</div>
+        <div class="tabela-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Aluno</th>
+                <th>Último Estudo</th>
+                <th>Dias Parado</th>
+                <th>Dias Restantes</th>
+                <th>Questões Totais</th>
+                <th>Ação</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-risco">
+              <tr><td colspan="6" style="text-align:center;color:#555;padding:2rem;">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/api.js"></script>
+<script>
+const API = 'https://graduabm-backend-production.up.railway.app/api';
+let adminJwt = null;
+
+function adminHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminJwt}` };
+}
+
+async function apiGet(path) {
+  const r = await fetch(API + path, { headers: adminHeaders() });
+  if (r.status === 401) { encerrarSessao(); return null; }
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+async function apiPost(path) {
+  const r = await fetch(API + path, { method: 'POST', headers: adminHeaders() });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+function encerrarSessao() {
+  sessionStorage.removeItem('pbm_admin_jwt');
+  sessionStorage.removeItem('pbm_admin');
+  window.location.href = '/admin-login';
+}
+
+function toast(msg, tipo = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast visivel ' + tipo;
+  setTimeout(() => { el.className = 'toast'; }, 3000);
+}
+
+function fmtData(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+function badgeAt(area) {
+  const cls = { AT1: 'badge-at1', AT2: 'badge-at2', AT3: 'badge-at3', AT4: 'badge-at4', AT5: 'badge-at5' };
+  return `<span class="badge ${cls[area] || ''}">${area || '—'}</span>`;
+}
+
+let dauChart = null;
+
+async function carregarKPIs() {
+  try {
+    const d = await apiGet('/admin/analytics/kpis');
+    if (!d) return;
+    document.getElementById('kpi-ativos').textContent = d.alunos_ativos ?? '—';
+    document.getElementById('kpi-trials').textContent = d.trials_ativos ?? '—';
+    document.getElementById('kpi-novos').textContent = d.novos_esse_mes ?? '—';
+    document.getElementById('kpi-expirando').textContent = d.expirando_7d ?? '—';
+    document.getElementById('kpi-conversao').textContent = d.conversao_trial_pct != null ? d.conversao_trial_pct + '%' : '—';
+  } catch (e) {
+    console.error('kpis:', e);
+    ['kpi-ativos','kpi-trials','kpi-novos','kpi-expirando','kpi-conversao'].forEach(id => {
+      document.getElementById(id).textContent = '—';
+    });
+  }
+}
+
+async function carregarEngajamento() {
+  try {
+    const d = await apiGet('/admin/analytics/engajamento?periodo=90');
+    if (!d) return;
+
+    const labels = d.dau.map(x => {
+      const [, m, day] = x.dia.split('-');
+      return `${day}/${m}`;
+    });
+
+    const ctx = document.getElementById('chart-dau').getContext('2d');
+    if (dauChart) dauChart.destroy();
+    dauChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          {
+            label: 'DAU',
+            data: d.dau.map(x => x.usuarios),
+            borderColor: '#C0270F',
+            backgroundColor: 'rgba(192,39,15,0.08)',
+            fill: true,
+            tension: 0.3,
+            pointRadius: 0,
+            borderWidth: 2,
+          },
+          {
+            label: 'MAU (rolling 30d)',
+            data: d.mau.map(x => x.usuarios),
+            borderColor: '#7F77DD',
+            backgroundColor: 'transparent',
+            fill: false,
+            tension: 0.3,
+            pointRadius: 0,
+            borderWidth: 2,
+            borderDash: [4, 3],
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#888', font: { family: 'IBM Plex Mono', size: 10 }, boxWidth: 14 } },
+        },
+        scales: {
+          x: { ticks: { color: '#555', font: { size: 10 }, maxTicksLimit: 8 }, grid: { color: '#1E1E1E' } },
+          y: { ticks: { color: '#555', font: { size: 10 } }, grid: { color: '#1E1E1E' }, beginAtZero: true },
+        },
+      },
+    });
+
+    const freq = d.distribuicao_frequencia;
+    const totalAlunos = Math.max(freq.zero + freq.um_tres + freq.quatro_sete + freq.oito_quatorze + freq.quinze_mais, 1);
+    const cats = [
+      { label: '0 dias', val: freq.zero, color: '#C0270F' },
+      { label: '1–3 dias', val: freq.um_tres, color: '#BA7517' },
+      { label: '4–7 dias', val: freq.quatro_sete, color: '#185FA5' },
+      { label: '8–14 dias', val: freq.oito_quatorze, color: '#27A05A' },
+      { label: '15+ dias', val: freq.quinze_mais, color: '#7F77DD' },
+    ];
+    document.getElementById('dist-freq').innerHTML = cats.map(c => {
+      const pct = Math.round((c.val / totalAlunos) * 100);
+      return `<div class="dist-item">
+        <span class="dist-nome">${c.label}</span>
+        <div class="dist-bar-wrap"><div class="dist-bar" style="width:${pct}%;background:${c.color};"></div></div>
+        <span class="dist-val">${c.val}</span>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error('engajamento:', e);
+  }
+}
+
+async function carregarQuestoes() {
+  try {
+    const d = await apiGet('/admin/analytics/questoes-problematicas');
+    if (!d) return;
+
+    const f = d.funil;
+    const max = Math.max(f.total_cadastradas, 1);
+    const etapas = [
+      { label: 'Total cadastradas', val: f.total_cadastradas },
+      { label: 'Ativas', val: f.ativas },
+      { label: 'Com legislação', val: f.com_legislacao },
+      { label: 'Respondidas ≥ 1x', val: f.respondidas_ao_menos_uma },
+    ];
+    document.getElementById('funil-questoes').innerHTML = etapas.map(e => {
+      const pct = Math.round((e.val / max) * 100);
+      return `<div class="funil-item">
+        <span class="funil-label">${e.label}</span>
+        <div class="funil-barra-wrap"><div class="funil-barra" style="width:${pct}%;"></div></div>
+        <span class="funil-val">${e.val}</span>
+      </div>`;
+    }).join('');
+
+    document.getElementById('denuncias-info').textContent =
+      `${f.denuncias_abertas} denúncia(s) abertas — acesse Problemas para resolver.`;
+
+    if (d.top_legislacoes.length === 0) {
+      document.getElementById('top-legislacoes').innerHTML = '<div style="color:#555;padding:8px 0;">Sem dados suficientes.</div>';
+    } else {
+      const maxErro = Math.max(d.top_legislacoes[0].taxa_erro, 1);
+      document.getElementById('top-legislacoes').innerHTML = `<div class="dist-bars">${
+        d.top_legislacoes.map(l => {
+          const color = l.taxa_erro >= 70 ? '#C0270F' : l.taxa_erro >= 50 ? '#BA7517' : '#27A05A';
+          return `<div class="dist-item">
+            <span class="dist-nome" title="${l.legislacao}" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${l.legislacao}</span>
+            <div class="dist-bar-wrap"><div class="dist-bar" style="width:${Math.round((l.taxa_erro/maxErro)*100)}%;background:${color};"></div></div>
+            <span class="dist-val">${l.taxa_erro}%</span>
+          </div>`;
+        }).join('')
+      }</div>`;
+    }
+
+    if (d.top_questoes.length === 0) {
+      document.getElementById('tbody-questoes').innerHTML =
+        '<tr><td colspan="6" style="text-align:center;color:#555;padding:2rem;">Sem questões com dados suficientes (mín. 20 respostas).</td></tr>';
+    } else {
+      document.getElementById('tbody-questoes').innerHTML = d.top_questoes.map(q => {
+        const corErro = q.taxa_erro >= 80 ? '#F09595' : q.taxa_erro >= 60 ? '#EF9F27' : '#7DD99A';
+        const enunciado = q.trecho.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return `<tr>
+          <td style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${enunciado}">${enunciado}...</td>
+          <td>${badgeAt(q.area_tematica)}</td>
+          <td style="font-size:11px;color:#888;">${q.legislacao_nome || '—'}</td>
+          <td><strong style="color:${corErro};font-family:'IBM Plex Mono',monospace;">${q.taxa_erro}%</strong></td>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;">${q.total}</td>
+          <td><a href="/admin-questoes?id=${q.id}" style="font-size:11px;color:#AFA9EC;text-decoration:none;">Editar →</a></td>
+        </tr>`;
+      }).join('');
+    }
+  } catch (e) {
+    console.error('questoes:', e);
+  }
+}
+
+async function carregarCohortes() {
+  try {
+    const d = await apiGet('/admin/analytics/cohortes');
+    if (!d) return;
+
+    if (!d.cohortes || d.cohortes.length === 0) {
+      document.getElementById('tbody-cohorte').innerHTML =
+        '<tr><td colspan="6" style="color:#555;padding:1rem;">Sem dados de coortes.</td></tr>';
+    } else {
+      document.getElementById('tbody-cohorte').innerHTML = d.cohortes.map(c => {
+        const meses = [0, 1, 2, 3].map(off => {
+          const m = c.meses.find(x => x.offset === off);
+          if (!m) return '<td class="cell-cinza">—</td>';
+          if (off === 0) return `<td>100%</td>`;
+          const cls = m.pct >= 70 ? 'cell-verde' : m.pct >= 40 ? 'cell-amarelo' : 'cell-vermelho';
+          return `<td class="${cls}">${m.pct}%</td>`;
+        }).join('');
+        return `<tr>
+          <td>${c.label}</td>
+          <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;">${c.total}</td>
+          ${meses}
+        </tr>`;
+      }).join('');
+    }
+
+    const o = d.origem;
+    document.getElementById('origem-grid').innerHTML = `
+      <div class="origem-item">
+        <div class="origem-val">${o.pagamento}</div>
+        <div class="origem-label">Pagamento direto</div>
+      </div>
+      <div class="origem-item">
+        <div class="origem-val">${o.trial}</div>
+        <div class="origem-label">Trial (convite)</div>
+      </div>
+      <div class="origem-item">
+        <div class="origem-val">${o.organico}</div>
+        <div class="origem-label">Orgânico</div>
+      </div>`;
+  } catch (e) {
+    console.error('cohortes:', e);
+  }
+}
+
+async function carregarRisco() {
+  try {
+    const d = await apiGet('/admin/analytics/alunos-risco');
+    if (!d) return;
+
+    if (!d.alunos || d.alunos.length === 0) {
+      document.getElementById('tbody-risco').innerHTML =
+        '<tr><td colspan="6" style="text-align:center;color:#555;padding:2rem;">Nenhum aluno em risco de churn no momento.</td></tr>';
+      return;
+    }
+
+    document.getElementById('tbody-risco').innerHTML = d.alunos.map(u => {
+      const diasCor = (u.dias_sem_estudar || 0) > 20 ? '#F09595' : '#EF9F27';
+      return `<tr>
+        <td>
+          <div style="font-weight:500;font-size:13px;">${u.nome}</div>
+          <div style="font-size:11px;color:#555;">${u.email}</div>
+        </td>
+        <td style="font-size:12px;color:#888;">${u.ultimo_estudo ? fmtData(u.ultimo_estudo) : 'Nunca'}</td>
+        <td><strong style="color:${diasCor};font-family:'IBM Plex Mono',monospace;">${u.dias_sem_estudar != null ? u.dias_sem_estudar + 'd' : '—'}</strong></td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;">${u.dias_restantes_assinatura != null ? u.dias_restantes_assinatura + 'd' : '—'}</td>
+        <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;">${u.total_questoes}</td>
+        <td><button class="btn-lembrete" onclick="enviarLembrete('${u.id}', this)">Enviar lembrete</button></td>
+      </tr>`;
+    }).join('');
+  } catch (e) {
+    console.error('risco:', e);
+  }
+}
+
+async function enviarLembrete(userId, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+  try {
+    await apiPost(`/admin/analytics/alunos-risco/${userId}/lembrete`);
+    btn.textContent = 'Enviado';
+    toast('Lembrete enviado com sucesso.', 'verde');
+  } catch {
+    btn.disabled = false;
+    btn.textContent = 'Enviar lembrete';
+    toast('Erro ao enviar lembrete.', 'erro');
+  }
+}
+
+async function init() {
+  adminJwt = sessionStorage.getItem('pbm_admin_jwt');
+  if (!adminJwt) return encerrarSessao();
+
+  const agora = new Date();
+  document.getElementById('topbar-ts').textContent = agora.toLocaleString('pt-BR', {
+    day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
+
+  await Promise.all([
+    carregarKPIs(),
+    carregarEngajamento(),
+    carregarQuestoes(),
+    carregarCohortes(),
+    carregarRisco(),
+  ]);
+}
+
+init();
+</script>
+</body>
+</html>

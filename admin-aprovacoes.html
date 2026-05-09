@@ -969,7 +969,7 @@
           const orig = btn.innerHTML;
           btn.innerHTML = '<span class="spinner"></span>';
           try {
-            const sig = AbortSignal.timeout ? AbortSignal.timeout(90000) : undefined;
+            const sig = AbortSignal.timeout ? AbortSignal.timeout(180000) : undefined;
             await PBM.Admin.aprovacoes.instagram.publicar(post.id, sig ? { signal: sig } : {});
             toast('Post publicado no Instagram!', 'sucesso');
             btn.closest('.card').remove();

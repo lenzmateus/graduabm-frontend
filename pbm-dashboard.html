@@ -264,6 +264,84 @@
   .btn-iniciar:hover { background: var(--vermelho-escuro); }
 
   /* ── GRÁFICO ── */
+  /* ── CARD INDICAÇÃO ── */
+  .card-indicacao {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .indicacao-icon {
+    width: 40px; height: 40px; flex-shrink: 0;
+    background: rgba(192,39,15,0.1);
+    border: 1px solid rgba(192,39,15,0.25);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .indicacao-body { flex: 1; min-width: 0; }
+  .indicacao-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 17px; letter-spacing: 0.05em;
+    color: var(--branco); margin-bottom: 2px;
+  }
+  .indicacao-desc {
+    font-size: 12px; color: var(--cinza-texto); line-height: 1.5;
+  }
+  .indicacao-link-row {
+    display: flex; gap: 6px; align-items: center;
+    margin-top: 10px; flex-wrap: wrap;
+  }
+  .indicacao-link-box {
+    flex: 1; min-width: 160px;
+    background: var(--carvao);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 7px;
+    padding: 7px 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: #666;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .btn-copiar-ref {
+    background: var(--vermelho); color: #fff; border: none;
+    border-radius: 7px; padding: 7px 14px;
+    font-size: 12px; font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn-copiar-ref:hover { background: var(--vermelho-escuro); }
+  .btn-wpp {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: transparent;
+    border: 1px solid #2A5A2A;
+    color: #7DD99A;
+    border-radius: 7px; padding: 7px 14px;
+    font-size: 12px; font-weight: 500;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer; white-space: nowrap; text-decoration: none;
+    transition: background 0.15s;
+  }
+  .btn-wpp:hover { background: rgba(39,160,90,0.1); }
+  .indicacao-stats {
+    display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap;
+  }
+  .ind-stat {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: #555;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .ind-stat strong {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 0.04em;
+    color: var(--branco); display: block;
+    line-height: 1.1; margin-bottom: 1px;
+  }
+
   .chart-section {
     margin-bottom: 30px;
   }
@@ -334,6 +412,86 @@
   @media (max-width: 480px) {
     .dash-grid { grid-template-columns: 1fr; }
   }
+
+  /* ── PUSH BANNER ── */
+  .push-banner {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #1A1A1A;
+    border: 1px solid #2A2A2A;
+    border-left: 3px solid var(--vermelho);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 1.25rem;
+  }
+  .push-banner.visible { display: flex; }
+  .push-banner-body { flex: 1; min-width: 180px; }
+  .push-banner-titulo { font-size: 13px; font-weight: 600; color: var(--branco); }
+  .push-banner-desc { font-size: 12px; color: #666; margin-top: 2px; }
+  .push-banner-btns { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-push-ativar {
+    background: var(--vermelho); color: #fff; border: none;
+    padding: 7px 14px; border-radius: 6px; font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em;
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn-push-ativar:hover { background: var(--vermelho-escuro); }
+  .btn-push-nao {
+    background: transparent; color: #555; border: 1px solid #2A2A2A;
+    padding: 7px 12px; border-radius: 6px; font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em;
+    cursor: pointer; white-space: nowrap;
+    transition: color 0.15s;
+  }
+  .btn-push-nao:hover { color: #888; }
+
+  /* ── CARD NOTIFICAÇÕES ── */
+  .card-notificacoes {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .notif-titulo {
+    font-size: 15px; font-weight: 500; color: var(--cinza-texto);
+    margin-bottom: 1rem;
+  }
+  .notif-toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #222;
+  }
+  .notif-toggle-row:last-of-type { border-bottom: none; }
+  .notif-toggle-label { font-size: 13px; color: var(--branco); }
+  .notif-toggle-desc { font-size: 11px; color: #555; margin-top: 2px; }
+  .toggle-switch {
+    position: relative; width: 36px; height: 20px; flex-shrink: 0;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute; inset: 0; background: #333; border-radius: 20px;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .toggle-slider::before {
+    content: ''; position: absolute;
+    width: 14px; height: 14px; left: 3px; top: 3px;
+    background: #888; border-radius: 50%; transition: transform 0.2s, background 0.2s;
+  }
+  .toggle-switch input:checked + .toggle-slider { background: rgba(192,39,15,0.25); }
+  .toggle-switch input:checked + .toggle-slider::before {
+    background: var(--vermelho); transform: translateX(16px);
+  }
+  .btn-push-testar {
+    margin-top: 1rem; background: transparent;
+    border: 1px solid #2A2A2A; color: #555; border-radius: 6px;
+    padding: 7px 14px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.06em; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-push-testar:hover { border-color: #444; color: #888; }
 
   /* ── BOTTOMBAR MOBILE ── */
   .bottombar {
@@ -450,6 +608,19 @@
           <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.08em;color:#C0270F;margin-top:5px;opacity:0.7;">Você não estuda. Você Treina.</div>
         </div>
       </div>
+      <!-- PUSH BANNER (aparece após 1ª sessão, se suportado) -->
+      <div class="push-banner" id="push-banner" role="banner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2" flex-shrink="0" style="flex-shrink:0"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="push-banner-body">
+          <div class="push-banner-titulo">Ativar lembretes de estudo?</div>
+          <div class="push-banner-desc">Receba notificações diárias para manter o ritmo de preparação.</div>
+        </div>
+        <div class="push-banner-btns">
+          <button class="btn-push-ativar" id="btn-push-ativar">Ativar</button>
+          <button class="btn-push-nao" id="btn-push-nao">Agora não</button>
+        </div>
+      </div>
+
       <div class="header-actions">
         <h2 style="font-size: 20px; font-weight: 500;">Visão Geral</h2>
         <a href="/area-estudos" class="btn-iniciar">
@@ -470,6 +641,30 @@
         <div class="dash-card" style="border-top-color: #85B7EB;">
           <div class="dash-val" id="stat-sessoes">—</div>
           <div class="dash-label">Sessões Concluídas</div>
+        </div>
+      </div>
+
+      <!-- CARD INDICAÇÃO -->
+      <div class="card-indicacao" id="card-indicacao" style="display:none;">
+        <div class="indicacao-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div class="indicacao-body">
+          <div class="indicacao-titulo">Indique um Colega</div>
+          <div class="indicacao-desc">Ganhe <strong style="color:var(--branco);">+30 dias</strong> por cada indicação que assinar.</div>
+          <div class="indicacao-link-row">
+            <div class="indicacao-link-box" id="indicacao-link-texto">carregando...</div>
+            <button class="btn-copiar-ref" onclick="copiarLinkIndicacao()">COPIAR</button>
+            <a class="btn-wpp" id="btn-indicacao-wpp" href="#" target="_blank" rel="noopener">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.996 0C5.373 0 0 5.373 0 12c0 2.116.555 4.103 1.527 5.83L.057 24l6.335-1.661A11.953 11.953 0 0 0 11.996 24C18.619 24 24 18.627 24 12S18.619 0 11.996 0zm0 21.818a9.808 9.808 0 0 1-5.031-1.382l-.361-.214-3.741.981 1-3.636-.237-.374A9.789 9.789 0 0 1 2.182 12c0-5.414 4.4-9.818 9.814-9.818 5.414 0 9.818 4.404 9.818 9.818 0 5.414-4.404 9.818-9.818 9.818z"/></svg>
+              WhatsApp
+            </a>
+          </div>
+          <div class="indicacao-stats">
+            <div class="ind-stat"><strong id="ind-total">0</strong>Indicações</div>
+            <div class="ind-stat"><strong id="ind-convertidas">0</strong>Convertidas</div>
+            <div class="ind-stat"><strong id="ind-dias">0</strong>Dias ganhos</div>
+          </div>
         </div>
       </div>
 
@@ -495,6 +690,37 @@
       <h2 style="font-size: 16px; font-weight: 500; margin-bottom: 15px; color: var(--cinza-texto);">Sessões Recentes</h2>
       <div class="sessoes-list" id="sessoes-list">
         <div style="color: var(--cinza-texto); font-size: 13px;">Carregando sessões...</div>
+      </div>
+
+      <!-- CARD NOTIFICAÇÕES -->
+      <div class="card-notificacoes" id="card-notificacoes" style="display:none;">
+        <div class="notif-titulo">Notificações</div>
+
+        <div class="notif-toggle-row">
+          <div>
+            <div class="notif-toggle-label">Lembretes push</div>
+            <div class="notif-toggle-desc">Avisos diários no navegador quando não estudar</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-push" onchange="salvarPreferenciasNotif()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="notif-toggle-row">
+          <div>
+            <div class="notif-toggle-label">Relatório semanal por e-mail</div>
+            <div class="notif-toggle-desc">Resumo toda segunda com suas estatísticas da semana</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggle-email" onchange="salvarPreferenciasNotif()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <button class="btn-push-testar" id="btn-push-testar" onclick="testarPushNotif()">
+          Testar notificação
+        </button>
       </div>
     </div>
   </div>
@@ -700,8 +926,151 @@ async function carregarGrafico() {
   }
 }
 
+// ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────────
+
+let _swRegistration = null;
+
+async function registrarServiceWorker() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  try {
+    _swRegistration = await navigator.serviceWorker.register('/sw.js');
+  } catch (e) {
+    console.warn('[SW] Registro falhou:', e);
+  }
+}
+
+async function mostrarBannerPush(totalSessoes) {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (localStorage.getItem('pbm_push_prompted')) return;
+  if (totalSessoes < 1) return;
+
+  const permissao = Notification.permission;
+  if (permissao === 'granted') {
+    await assinarPush();
+    return;
+  }
+  if (permissao === 'denied') return;
+
+  document.getElementById('push-banner').classList.add('visible');
+
+  document.getElementById('btn-push-ativar').addEventListener('click', async () => {
+    document.getElementById('push-banner').classList.remove('visible');
+    localStorage.setItem('pbm_push_prompted', '1');
+    await solicitarPermissaoPush();
+  });
+
+  document.getElementById('btn-push-nao').addEventListener('click', () => {
+    document.getElementById('push-banner').classList.remove('visible');
+    localStorage.setItem('pbm_push_prompted', '1');
+  });
+}
+
+async function solicitarPermissaoPush() {
+  try {
+    const permissao = await Notification.requestPermission();
+    if (permissao === 'granted') await assinarPush();
+  } catch (e) {
+    console.warn('[Push] Permissão negada:', e);
+  }
+}
+
+async function assinarPush() {
+  if (!_swRegistration) return;
+  try {
+    const { publicKey } = await PBM.Notificacoes.vapidPublicKey();
+    if (!publicKey) return;
+
+    const sub = await _swRegistration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(publicKey),
+    });
+
+    await PBM.Notificacoes.subscribe(sub);
+    document.getElementById('toggle-push').checked = true;
+  } catch (e) {
+    console.warn('[Push] Subscrição falhou:', e);
+  }
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
+}
+
+async function carregarPreferenciasNotif() {
+  try {
+    const { notif_prefs } = await PBM.Notificacoes.obterPreferencias();
+    const prefs = notif_prefs || { push: true, email_semanal: true };
+    document.getElementById('toggle-push').checked = prefs.push !== false;
+    document.getElementById('toggle-email').checked = prefs.email_semanal !== false;
+    document.getElementById('card-notificacoes').style.display = '';
+  } catch (e) { /* silencioso */ }
+}
+
+async function salvarPreferenciasNotif() {
+  try {
+    const push = document.getElementById('toggle-push').checked;
+    const email_semanal = document.getElementById('toggle-email').checked;
+    await PBM.Notificacoes.salvarPreferencias({ push, email_semanal });
+    if (!push) await PBM.Notificacoes.unsubscribe();
+    else if (push && Notification.permission === 'granted') await assinarPush();
+  } catch (e) { /* silencioso */ }
+}
+
+async function testarPushNotif() {
+  const btn = document.getElementById('btn-push-testar');
+  const orig = btn.textContent;
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+  try {
+    await PBM.Notificacoes.testarPush();
+    btn.textContent = 'Enviado!';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+  } catch (e) {
+    btn.textContent = 'Falhou — ative push primeiro';
+    setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2500);
+  }
+}
+
+let _linkIndicacao = '';
+
+function copiarLinkIndicacao() {
+  if (!_linkIndicacao) return;
+  navigator.clipboard.writeText(_linkIndicacao).then(() => {
+    const btn = document.querySelector('.btn-copiar-ref');
+    const orig = btn.textContent;
+    btn.textContent = 'COPIADO!';
+    btn.style.background = '#27A05A';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; }, 1800);
+  });
+}
+
+async function carregarIndicacao() {
+  try {
+    const data = await PBM.Indicacoes.meuLink();
+    _linkIndicacao = data.link;
+
+    document.getElementById('indicacao-link-texto').textContent = data.link.replace('https://', '');
+    document.getElementById('ind-total').textContent = data.stats.total;
+    document.getElementById('ind-convertidas').textContent = data.stats.convertidas;
+    document.getElementById('ind-dias').textContent = data.stats.diasGanhos;
+
+    const msg = encodeURIComponent(
+      `Estou estudando pelo Protocolo Bravo Mike para o concurso. Tá muito bom!\nCria sua conta aqui: ${data.link}`
+    );
+    document.getElementById('btn-indicacao-wpp').href = `https://wa.me/?text=${msg}`;
+
+    document.getElementById('card-indicacao').style.display = '';
+  } catch {
+    // silencioso — card simplesmente não aparece
+  }
+}
+
 async function init() {
   await PBM.protegerRota();
+  registrarServiceWorker();
 
   const user = PBM.getUsuario();
   if (user) {
@@ -748,6 +1117,13 @@ async function init() {
 
     // Carregar gráfico de evolução
     carregarGrafico();
+
+    // Carregar card de indicação
+    carregarIndicacao();
+
+    // Push banner + card de preferências
+    mostrarBannerPush(desempenho.total_sessoes || 0);
+    carregarPreferenciasNotif();
 
     const sessoes = await PBM.Progresso.sessoesRecentes();
     const list = document.getElementById('sessoes-list');

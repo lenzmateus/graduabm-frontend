@@ -363,6 +363,26 @@
         </table>
       </div>
 
+      <!-- INDICAÇÕES -->
+      <div class="secao-titulo" style="margin-top:2rem;">Programa de Indicação</div>
+      <div class="tabela-wrap">
+        <table class="tabela">
+          <thead>
+            <tr>
+              <th>Indicador</th>
+              <th>Indicado</th>
+              <th>Código</th>
+              <th>Pago?</th>
+              <th>Recompensa</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-indicacoes">
+            <tr class="loading-row"><td colspan="6">Carregando…</td></tr>
+          </tbody>
+        </table>
+      </div>
+
     </div>
   </div>
 </div>
@@ -919,6 +939,45 @@
   }
 
   carregarRelatorio();
+  carregarIndicacoes();
+
+  // ── Indicações ─────────────────────────────────────────────
+  async function carregarIndicacoes() {
+    const tbody = document.getElementById('tbody-indicacoes');
+    try {
+      const data = await PBM.Admin.indicacoes.listar();
+      const lista = data.indicacoes || [];
+      if (!lista.length) {
+        tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Nenhuma indicação registrada.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = lista.map(i => {
+        const dataFmt = new Date(i.criado_em).toLocaleDateString('pt-BR');
+        const badgePago = i.pago
+          ? '<span class="badge badge-ativo"><span class="badge-dot"></span>Sim</span>'
+          : '<span class="badge badge-inativo"><span class="badge-dot"></span>Não</span>';
+        const badgeRecomp = i.recompensa_aplicada
+          ? '<span class="badge badge-ativo"><span class="badge-dot"></span>+30 dias</span>'
+          : '<span style="font-size:11px;color:#555;">pendente</span>';
+        return `<tr>
+          <td>
+            <div style="font-size:13px;">${esc(i.indicador?.nome || '—')}</div>
+            <div style="font-size:11px;color:var(--cinza-texto);">${esc(i.indicador?.email || '')}</div>
+          </td>
+          <td>
+            <div style="font-size:13px;">${esc(i.indicado?.nome || '—')}</div>
+            <div style="font-size:11px;color:var(--cinza-texto);">${esc(i.indicado?.email || '')}</div>
+          </td>
+          <td><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#888;">${esc(i.codigo)}</span></td>
+          <td>${badgePago}</td>
+          <td>${badgeRecomp}</td>
+          <td style="font-size:11px;color:var(--cinza-texto);">${dataFmt}</td>
+        </tr>`;
+      }).join('');
+    } catch {
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Erro ao carregar indicações.</td></tr>';
+    }
+  }
 
   // ── Fechar modal ao clicar fora ────────────────────────────
   document.querySelectorAll('.modal-overlay').forEach(overlay => {

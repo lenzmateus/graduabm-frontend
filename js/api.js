@@ -29,7 +29,7 @@ async function request(path, options = {}) {
       sessionStorage.setItem('pbm_session_msg', data.erro);
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('usuario');
-      const loginRedir = PBM?.isAdmin?.() ? '/admin-login' : PBM?.isGestor?.() ? '/gestor-login' : '/login';
+      const loginRedir = PBM?.isAdmin?.() ? '/admin-login' : '/login';
       window.location.href = loginRedir;
       throw new Error('Sessão encerrada');
     }
@@ -56,12 +56,8 @@ const PBM = {
     return sessionStorage.getItem('pbm_admin') === '1';
   },
 
-  isGestor() {
-    return sessionStorage.getItem('pbm_gestor') === '1';
-  },
-
   isStaff() {
-    return PBM.isAdmin() || PBM.isGestor();
+    return PBM.isAdmin();
   },
 
   async protegerRota() {
@@ -100,10 +96,10 @@ const PBM = {
       if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
       return data;
     },
-    async cadastrar({ nome, email, senha, curso, nickname, trial_token }) {
+    async cadastrar({ nome, email, senha, curso, nickname, trial_token, ref }) {
       const data = await request('/api/auth/cadastro', {
         method: 'POST',
-        body: JSON.stringify({ nome, email, senha, curso, nickname: nickname || undefined, trial_token: trial_token || undefined }),
+        body: JSON.stringify({ nome, email, senha, curso, nickname: nickname || undefined, trial_token: trial_token || undefined, ref: ref || undefined }),
       });
       if (data.token) sessionStorage.setItem('token', data.token);
       if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
@@ -209,59 +205,6 @@ const PBM = {
     },
   },
 
-  Gestor: {
-    getToken() {
-      return sessionStorage.getItem('pbm_gestor_token') || '';
-    },
-    logout() {
-      ['pbm_gestor','pbm_gestor_token','pbm_gestor_nome','pbm_gestor_email'].forEach(k => sessionStorage.removeItem(k));
-      window.location.href = '/gestor-login';
-    },
-    async query(path, prefer, method, body) {
-      const res = await fetch(API_URL + '/api/gestor/query', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${PBM.Gestor.getToken()}`,
-        },
-        body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
-      });
-      if (res.status === 401) { PBM.Gestor.logout(); return { ok: false, status: 401, data: null, contentRange: null }; }
-      const text = await res.text();
-      const contentRange = res.headers.get('Content-Range');
-      return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null, contentRange };
-    },
-    Auth: {
-      async login({ email, senha }) {
-        const data = await request('/api/gestor/auth/login', {
-          method: 'POST', body: JSON.stringify({ email, senha }),
-        });
-        if (data.token) {
-          sessionStorage.setItem('pbm_gestor', '1');
-          sessionStorage.setItem('pbm_gestor_token', data.token);
-          sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
-          sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
-        }
-        return data;
-      },
-      validarConvite(token) {
-        return request('/api/gestor/auth/validar-convite?token=' + encodeURIComponent(token));
-      },
-      async cadastrar({ email, nome, senha, token_convite }) {
-        const data = await request('/api/gestor/auth/cadastro', {
-          method: 'POST', body: JSON.stringify({ email, nome, senha, token_convite }),
-        });
-        if (data.token) {
-          sessionStorage.setItem('pbm_gestor', '1');
-          sessionStorage.setItem('pbm_gestor_token', data.token);
-          sessionStorage.setItem('pbm_gestor_nome', data.gestor.nome);
-          sessionStorage.setItem('pbm_gestor_email', data.gestor.email);
-        }
-        return data;
-      },
-    },
-  },
-
   Admin: {
     _authHeader() {
       const jwt = sessionStorage.getItem('pbm_admin_jwt') || '';
@@ -328,12 +271,6 @@ const PBM = {
       zerarProgresso(id) {
         return PBM.Admin.req(`/api/admin/usuarios/${id}/zerar-progresso`, { method: 'POST' });
       },
-    },
-    gestores: {
-      listar() { return PBM.Admin.req('/api/admin/gestores'); },
-      atualizar(id, body) { return PBM.Admin.req(`/api/admin/gestores/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
-      excluir(id) { return PBM.Admin.req(`/api/admin/gestores/${id}`, { method: 'DELETE' }); },
-      convidar(body) { return PBM.Admin.req('/api/admin/gestores/convidar', { method: 'POST', body: JSON.stringify(body) }); },
     },
     admins: {
       listar() { return PBM.Admin.req('/api/admin/admins'); },
@@ -404,6 +341,9 @@ const PBM = {
       excluir(id) {
         return request(`/api/admin/convites/${id}`, { method: 'DELETE', headers: PBM.Admin._authHeader() });
       },
+    },
+    indicacoes: {
+      listar() { return PBM.Admin.req('/api/admin/indicacoes'); },
     },
     denuncias: {
       resumo() { return PBM.Admin.req('/api/admin/denuncias/resumo'); },
@@ -477,6 +417,43 @@ const PBM = {
       } catch {
         return { estado: 'encerrado', ultimo: null };
       }
+    },
+  },
+
+  Indicacoes: {
+    meuLink() {
+      return request('/api/indicacoes/meu-link');
+    },
+    historico() {
+      return request('/api/indicacoes/historico');
+    },
+  },
+
+  Notificacoes: {
+    vapidPublicKey() {
+      return request('/api/notificacoes/vapid-public-key');
+    },
+    obterPreferencias() {
+      return request('/api/notificacoes/preferencias');
+    },
+    subscribe(subscription) {
+      const sub = subscription.toJSON();
+      return request('/api/notificacoes/push/subscribe', {
+        method: 'POST',
+        body: JSON.stringify({ endpoint: sub.endpoint, keys: sub.keys }),
+      });
+    },
+    unsubscribe() {
+      return request('/api/notificacoes/push/unsubscribe', { method: 'DELETE' });
+    },
+    salvarPreferencias(prefs) {
+      return request('/api/notificacoes/preferencias', {
+        method: 'PATCH',
+        body: JSON.stringify(prefs),
+      });
+    },
+    testarPush() {
+      return request('/api/notificacoes/push/testar', { method: 'POST' });
     },
   },
 

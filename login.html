@@ -290,6 +290,22 @@
   .termos a { color: var(--cinza-texto); text-decoration: none; }
   .termos a:hover { color: var(--branco); }
 
+  /* ── Referral Banner ── */
+  .ref-banner {
+    display: none;
+    background: rgba(192,39,15,0.08);
+    border: 1px solid rgba(192,39,15,0.3);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 1.25rem;
+    animation: fadeUp 0.4s ease both;
+    font-size: 12px;
+    color: #aaa;
+    line-height: 1.5;
+  }
+  .ref-banner.visivel { display: block; }
+  .ref-banner strong { color: var(--branco); }
+
   /* ── Trial Banner ── */
   .trial-banner {
     display: none;
@@ -659,6 +675,11 @@
 
       <!-- TABS + FORMULÁRIOS -->
       <div id="area-forms">
+        <!-- Banner referral — visível quando ?ref= presente na URL -->
+        <div class="ref-banner" id="ref-banner">
+          <strong>Você foi indicado por um colega!</strong> Crie sua conta abaixo e comece a estudar.
+        </div>
+
         <!-- Banner trial — visível apenas quando ?trial= válido -->
         <div class="trial-banner" id="trial-banner">
           <div class="trial-banner-titulo">
@@ -884,6 +905,9 @@
   // ── Trial token (capturado da URL) ───────────────────────
   let trialTokenAtivo = null;
 
+  // ── Referral code (capturado da URL ou sessionStorage) ───
+  let refAtivo = sessionStorage.getItem('pbm_ref') || null;
+
   // ── Seleção de curso no cadastro ─────────────────────────
   let cursoCadastro = '';
 
@@ -941,7 +965,7 @@
     limparMsgs();
 
     try {
-      const data = await PBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro, nickname, trial_token: trialTokenAtivo || undefined });
+      const data = await PBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro, nickname, trial_token: trialTokenAtivo || undefined, ref: refAtivo || undefined });
       mostrarPainel(data.usuario, !!trialTokenAtivo && data.usuario?.ativo);
     } catch (err) {
       mostrarMsg('msg-cadastro', err.erro || err.message || 'Erro ao criar conta.', 'erro');
@@ -1112,6 +1136,18 @@
 
     // Seleciona a tab correta se houver hash na URL
     if (window.location.hash === '#cadastro') {
+      trocarTab('cadastro');
+    }
+
+    // Detecta ?ref= e exibe banner de indicação
+    const refParam = new URLSearchParams(location.search).get('ref');
+    if (refParam && /^[a-f0-9]{6}$/.test(refParam)) {
+      sessionStorage.setItem('pbm_ref', refParam);
+      refAtivo = refParam;
+      document.getElementById('ref-banner').classList.add('visivel');
+      trocarTab('cadastro');
+    } else if (refAtivo) {
+      document.getElementById('ref-banner').classList.add('visivel');
       trocarTab('cadastro');
     }
 
