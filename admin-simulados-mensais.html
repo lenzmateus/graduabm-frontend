@@ -229,6 +229,28 @@
   /* Ações do bloco (publicar, liberar) */
   .bloco-footer { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 1rem 1.25rem; border-top: 1px solid #222; background: rgba(0,0,0,.15); }
 
+  /* F3A — Déficit AT no painel de reaproveitamento CBA */
+  .deficit-at-grid { display: flex; flex-direction: column; gap: 3px; margin-bottom: 10px; padding: 8px 10px; background: rgba(124,58,237,.05); border: 1px solid rgba(124,58,237,.15); border-radius: 6px; }
+  .deficit-at-row { display: flex; align-items: center; gap: 8px; }
+  .deficit-at-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #888; min-width: 28px; }
+  .deficit-at-info { flex: 1; font-size: 11px; color: var(--cinza-texto); }
+  .deficit-at-ok { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; color: var(--verde); }
+  .deficit-at-warn { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; color: var(--dourado); }
+
+  /* F3B — Lembrete CTSP Para Ambos */
+  .ctsp-ambos-lembrete { padding: 6px 1.25rem; border-bottom: 1px solid #222; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: rgba(124,58,237,.03); }
+  .ctsp-ambos-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: .1em; margin-right: 4px; }
+  .ctsp-ambos-at { font-family: 'IBM Plex Mono', monospace; font-size: 10px; }
+  .ctsp-ambos-at.ok { color: var(--verde); }
+  .ctsp-ambos-at.warn { color: #888; }
+
+  /* F2 — Badge "Elegível CBA" */
+  .bq-elegivel-cba { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 1px 7px; border-radius: 10px; background: rgba(240,192,80,.08); color: #D97706; border: 1px solid rgba(240,192,80,.3); white-space: nowrap; cursor: default; }
+
+  /* F6 — Pencil rename */
+  .bloco-rename-btn { background: none; border: none; cursor: pointer; color: #444; padding: 2px 3px; flex-shrink: 0; line-height: 1; display: flex; align-items: center; }
+  .bloco-rename-btn:hover { color: #888; }
+
 </style>
 </head>
 <body>
@@ -248,6 +270,10 @@
       <a class="nav-item" href="/admin">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Dashboard
+      </a>
+      <a class="nav-item" href="/admin-analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Analytics
       </a>
       <div class="nav-label">Conteúdo</div>
       <a class="nav-item" href="/admin-questoes">
@@ -943,7 +969,16 @@ async function carregarBlocos() {
       grid.innerHTML = '<div style="color:var(--cinza-texto);text-align:center;padding:1.5rem;font-family:\'IBM Plex Mono\',monospace;font-size:12px;">Nenhum bloco criado. Clique em "+ Novo Bloco" para começar.</div>';
       return;
     }
+    blocos.forEach(b => { blocosDadosPorId[b.id] = b; });
     grid.innerHTML = blocos.map(b => renderBlocoCard(b)).join('');
+    // Restaura seleções de reaproveitamento salvas no banco
+    blocos.forEach(b => {
+      if (b.curso !== 'cba' || !b.reap_bloco_ctsp_id) return;
+      reapBlocoCtspId[b.id] = b.reap_bloco_ctsp_id;
+      reaproveitadasPorBloco[b.id] = new Set(b.reap_questao_ids || []);
+      atualizarBadgeReap(b.id);
+      atualizarBotaoPublicar(b.id);
+    });
   } catch(err) {
     grid.innerHTML = `<div style="color:#F09595;padding:1rem;">${err.erro||'Erro ao carregar blocos.'} <button class="btn-sm" onclick="carregarBlocos()" style="margin-left:8px;">Tentar novamente</button></div>`;
   }
@@ -961,15 +996,18 @@ function renderBlocoCard(bloco) {
     <div class="bloco-header" onclick="toggleBlocoCorpo('${bloco.id}')">
       <div class="bloco-curso ${bloco.curso}">${bloco.curso.toUpperCase()}</div>
       <div class="bloco-titulo-wrap">
-        <div class="bloco-titulo-text">${bloco.titulo}</div>
-        <div class="bloco-resumo">${tot.aprovadas||0}/${tot.meta||0} aprovadas · ${tot.pendentes||0} pendentes · ${pct}%</div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div class="bloco-titulo-text" id="btitulo-${bloco.id}">${bloco.titulo}</div>
+          <button class="bloco-rename-btn" title="Renomear bloco" onclick="event.stopPropagation();renomearBlocoInline('${bloco.id}')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        </div>
+        <div class="bloco-resumo">${tot.aprovadas||0}/${tot.meta||0} aprovadas${tot.reaproveitadas > 0 ? ` (${tot.reaproveitadas} reap.)` : ''} · ${tot.pendentes||0} pendentes · ${pct}%</div>
       </div>
       <span class="bloco-status-badge ${statusCls}">${labelStatus(bloco.status)}</span>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:#555;flex-shrink:0;transition:transform .2s;" id="chevron-${bloco.id}"><polyline points="6 9 12 15 18 9"/></svg>
     </div>
     <div class="bloco-corpo" id="bcorpo-${bloco.id}">
       <!-- Progress AT -->
-      ${renderAtProgress(bloco)}
+      <div id="bat-progress-${bloco.id}">${renderAtProgress(bloco)}</div>
       <!-- Gerar questões -->
       ${renderGerarSection(bloco)}
       <!-- Questões -->
@@ -995,9 +1033,15 @@ function renderBlocoCard(bloco) {
       ${bloco.curso === 'cba' && !bloco.simulado_id ? `
       <div style="padding:1rem 1.25rem;border-top:1px solid #222;border-bottom:1px solid #222;">
         <div class="bloco-section-label" style="margin-bottom:8px;">Questões Reaproveitadas do CTSP <span id="reap-count-${bloco.id}" style="color:#A78BFA;font-family:'IBM Plex Mono',monospace;font-size:10px;"></span></div>
-        <div style="font-size:11px;color:#555;margin-bottom:10px;">Questões marcadas como "Para Ambos" em blocos CTSP aprovados podem ser incluídas aqui sem gerar duplicatas no banco.</div>
+        <div style="font-size:11px;color:#555;margin-bottom:10px;">Questões marcadas como "Para Ambos" em blocos CTSP podem ser incluídas sem gerar duplicatas no banco.</div>
         <button class="btn-sm" onclick="toggleReaproveitamento('${bloco.id}')">Ver Disponíveis</button>
         <div id="reap-panel-${bloco.id}" style="display:none;margin-top:10px;">
+          <div style="margin-bottom:8px;">
+            <div class="form-label" style="margin-bottom:4px;">Bloco CTSP fonte</div>
+            <select class="select-sm" id="reap-bloco-ctsp-${bloco.id}" onchange="onChangeBlocoCtsp('${bloco.id}')" style="width:100%;max-width:400px;">
+              <option value="">Carregando blocos CTSP…</option>
+            </select>
+          </div>
           <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap;">
             <select class="select-sm" id="reap-filtro-at-${bloco.id}" onchange="carregarQuestoesReaproveitaveis('${bloco.id}')">
               <option value="">Todas as ATs</option>
@@ -1005,7 +1049,12 @@ function renderBlocoCard(bloco) {
             </select>
             <button class="btn-sm" onclick="carregarQuestoesReaproveitaveis('${bloco.id}')">Atualizar</button>
           </div>
+          <div class="deficit-at-grid" id="reap-deficit-${bloco.id}"></div>
           <div id="reap-lista-${bloco.id}" style="display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;"></div>
+          <div style="margin-top:10px;">
+            <button class="btn-sm btn-primary" id="reap-salvar-btn-${bloco.id}" onclick="salvarSelecaoReap('${bloco.id}')">Salvar Seleção</button>
+            <span id="reap-salvar-msg-${bloco.id}" style="font-size:11px;color:#7DD99A;margin-left:8px;display:none;">Salvo!</span>
+          </div>
         </div>
       </div>` : ''}
       <!-- Footer ações -->
@@ -1013,7 +1062,7 @@ function renderBlocoCard(bloco) {
         ${bloco.status === 'agendado' || bloco.simulado_id
           ? `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#A78BFA;">Simulado agendado · Abertura: ${formatarDataBloco(bloco.abertura)}</span>
              <a href="/admin-simulados-mensais#sim-${bloco.simulado_id}" class="btn-sm" style="margin-left:auto;">Ver Simulado ↓</a>`
-          : `<button class="btn-sm btn-primary" ${(tot.completo || (bloco.curso === 'cba' && podePublicarComReap(bloco.id, bloco.contadores))) ? '' : 'disabled title="Atingir todas as metas para publicar"'} onclick="abrirModalPublicar('${bloco.id}')">Publicar Protocolo QAP</button>`}
+          : `<button id="pub-btn-${bloco.id}" class="btn-sm btn-primary" ${tot.completo ? '' : 'disabled title="Atingir todas as metas (próprias + reaproveitadas) para publicar"'} onclick="abrirModalPublicar('${bloco.id}')">Publicar Protocolo QAP</button>`}
         ${bloco.status === 'em_andamento' ? `<button class="btn-sm" onclick="encerrarEvento('${bloco.id}')">Encerrar Evento</button>` : ''}
         ${bloco.status === 'encerrado' ? `<button class="btn-sm" onclick="liberarBanco('${bloco.id}')">Liberar ao Banco</button>` : ''}
         <button class="btn-sm" style="margin-left:auto;color:#F09595;" onclick="confirmarExcluirBloco('${bloco.id}')">Excluir Bloco</button>
@@ -1022,10 +1071,13 @@ function renderBlocoCard(bloco) {
   </div>`;
 }
 
+const AMBOS_CTSP_ALVO = { AT1: 3, AT2: 3, AT3: 5, AT4: 5, AT5: 10 };
+const CTSP_METAS_DEFAULT = { AT1: 14, AT2: 8, AT3: 14, AT4: 12, AT5: 12 };
+
 function renderAtProgress(bloco) {
   const cnt = bloco.contadores || {};
   const CORES_AT = { AT1:'#C0270F', AT2:'#D97706', AT3:'#185FA5', AT4:'#059669', AT5:'#7C3AED' };
-  return `<div class="at-progress-grid">${['AT1','AT2','AT3','AT4','AT5'].map(at => {
+  const grid = `<div class="at-progress-grid">${['AT1','AT2','AT3','AT4','AT5'].map(at => {
     const c = cnt[at] || { aprovadas:0, pendentes:0, rejeitadas:0, meta:0, faltando:0 };
     const pct = c.meta ? Math.min(100, Math.round(c.aprovadas/c.meta*100)) : 0;
     const ok  = c.faltando === 0;
@@ -1034,9 +1086,19 @@ function renderAtProgress(bloco) {
       <div class="at-bar-wrap">
         <div class="at-bar ${ok ? 'completo' : ''}" style="width:${pct}%;background:${ok ? 'var(--verde)' : CORES_AT[at]};"></div>
       </div>
-      <span class="at-counter ${ok ? 'ok' : ''}">${c.aprovadas}/${c.meta}${ok ? ' ✓' : (c.pendentes ? ` (${c.pendentes}⏳)` : '')}</span>
+      <span class="at-counter ${ok ? 'ok' : ''}">${c.aprovadas}/${c.meta}${c.reaproveitadas > 0 ? ` <span style="color:#A78BFA;font-size:10px;">(+${c.reaproveitadas}reap)</span>` : ''}${ok ? ' ✓' : (c.pendentes ? ` (${c.pendentes}⏳)` : '')}</span>
     </div>`;
   }).join('')}</div>`;
+
+  // F3B — lembrete "Para Ambos" apenas em blocos CTSP ainda em construção
+  if (bloco.curso !== 'ctsp' || bloco.simulado_id) return grid;
+  const chips = ['AT1','AT2','AT3','AT4','AT5'].map(at => {
+    const alvo = AMBOS_CTSP_ALVO[at];
+    const atual = cnt[at]?.ambos_aprovados ?? 0;
+    const ok = atual >= alvo;
+    return `<span class="ctsp-ambos-at ${ok ? 'ok' : 'warn'}" title="${at}: ${atual} de ${alvo} 'Para Ambos' aprovadas">${at} ${atual}/${alvo}</span>`;
+  }).join('');
+  return grid + `<div class="ctsp-ambos-lembrete"><span class="ctsp-ambos-label">Para Ambos</span>${chips}</div>`;
 }
 
 function renderGerarSection(bloco) {
@@ -1121,15 +1183,27 @@ function renderizarQuestoesDoBlocoNoDOM(blocoId) {
 }
 
 function renderQuestaoDoBloco(q, blocoId) {
+  const bloco = blocosDadosPorId[blocoId] || {};
   const alts = Array.isArray(q.alternativas) ? q.alternativas : [];
   const gabLetra = alts.length > 0 && q.gabarito != null ? (LETRA[q.gabarito] || '?') : (q.resposta_correta || '?');
   const enun = q.enunciado || '';
+
+  // F2 — Badge "Elegível CBA": mostrado em questões CTSP aprovadas ainda não marcadas como "ambos"
+  // quando o AT delas ainda não atingiu o alvo de questões "Para Ambos"
+  let elegivel_cba_badge = '';
+  if (bloco.curso === 'ctsp' && q.revisao_status === 'aprovado' && q.curso !== 'ambos') {
+    const alvo  = AMBOS_CTSP_ALVO[q.area_tematica] || 0;
+    const atual = bloco.contadores?.[q.area_tematica]?.ambos_aprovados ?? 0;
+    if (alvo > 0 && atual < alvo) {
+      elegivel_cba_badge = `<span class="bq-elegivel-cba" title="${q.area_tematica}: ${atual}/${alvo} questões marcadas p/ CBA — considere marcar esta como 'Para Ambos'">CBA ✦</span>`;
+    }
+  }
 
   return `<div class="bq-card status-${q.revisao_status}" id="bqcard-${q.id}">
     <div class="bq-header">
       <span class="bq-area-badge">${q.area_tematica||'?'}</span>
       <span class="bq-status-chip bq-s-${q.revisao_status}">${{ pendente_ia:'PENDENTE', aprovado:'APROVADO', rejeitado:'REJEITADO' }[q.revisao_status]||q.revisao_status}</span>
-      <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;">${q.curso?.toUpperCase()||''}</span>
+      ${elegivel_cba_badge}
       <span class="bq-enun" onclick="toggleBqDetalhe('${q.id}')" title="Clique para expandir">${enun}</span>
       <div class="bq-acoes">
         ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--verde);border-color:rgba(125,217,154,.3);" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Aprovar</button>` : ''}
@@ -1255,6 +1329,7 @@ async function recarregarBlocoCard(blocoId) {
     const card = document.getElementById(`bloco-card-${blocoId}`);
     if (!card) return;
     const novo = Object.assign({}, bloco, { contadores });
+    blocosDadosPorId[blocoId] = novo;
     const novoHtml = renderBlocoCard(novo);
     const tmp = document.createElement('div');
     tmp.innerHTML = novoHtml;
@@ -1398,6 +1473,8 @@ async function toggleCursoAmbos(questaoId, blocoId) {
 // ── Reaproveitamento CTSP→CBA ────────────────────────────────────────────────
 
 const reaproveitadasPorBloco = {};
+const reapBlocoCtspId = {};        // bloco_ctsp_id selecionado por bloco CBA
+const blocosDadosPorId = {};       // cache de dados+contadores dos blocos
 
 function podePublicarComReap(blocoId, contadores) {
   const sel = reaproveitadasPorBloco[blocoId] || new Set();
@@ -1414,21 +1491,71 @@ function podePublicarComReap(blocoId, contadores) {
 
 const reapDisponiveisPorBloco = {};
 
-function toggleReaproveitamento(blocoId) {
+async function toggleReaproveitamento(blocoId) {
   const panel = document.getElementById(`reap-panel-${blocoId}`);
   if (!panel) return;
   const aberto = panel.style.display === 'none';
   panel.style.display = aberto ? 'block' : 'none';
-  if (aberto && !reapDisponiveisPorBloco[blocoId]) carregarQuestoesReaproveitaveis(blocoId);
+  if (aberto) await carregarBlocosCtspParaSelector(blocoId);
+}
+
+async function carregarBlocosCtspParaSelector(blocoId) {
+  const sel = document.getElementById(`reap-bloco-ctsp-${blocoId}`);
+  if (!sel) return;
+  try {
+    const blocos = await req('/api/simulados-mensais/admin/blocos?curso=ctsp');
+    if (!blocos || !blocos.length) {
+      sel.innerHTML = '<option value="">Nenhum bloco CTSP encontrado</option>';
+      return;
+    }
+    const prev = reapBlocoCtspId[blocoId] || '';
+    const ALVO_AMBOS_TOTAL = Object.values(AMBOS_CTSP_ALVO).reduce((s, v) => s + v, 0); // 26
+    sel.innerHTML = '<option value="">Selecionar bloco CTSP fonte…</option>' +
+      blocos.map(b => {
+        const aprov = b.contadores?.total?.aprovadas || 0;
+        const ambos = ['AT1','AT2','AT3','AT4','AT5'].reduce((s, at) => s + (b.contadores?.[at]?.ambos_aprovados || 0), 0);
+        const ambosLabel = ambos > 0 ? ` · ${ambos}/${ALVO_AMBOS_TOTAL} p/ambos` : '';
+        return `<option value="${b.id}" ${b.id === prev ? 'selected' : ''}>${b.titulo} · ${aprov} apr.${ambosLabel}</option>`;
+      }).join('');
+    if (prev) {
+      carregarQuestoesReaproveitaveis(blocoId);
+    } else if (blocos.length === 1) {
+      sel.value = blocos[0].id;
+      carregarQuestoesReaproveitaveis(blocoId);
+    } else {
+      const lista = document.getElementById(`reap-lista-${blocoId}`);
+      if (lista) lista.innerHTML = '<div style="color:#888;font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:4px;">Selecione um bloco CTSP acima para ver as questões disponíveis.</div>';
+    }
+  } catch(err) {
+    sel.innerHTML = '<option value="">Erro ao carregar blocos CTSP</option>';
+  }
+}
+
+function onChangeBlocoCtsp(blocoId) {
+  const sel = document.getElementById(`reap-bloco-ctsp-${blocoId}`);
+  reapBlocoCtspId[blocoId] = sel?.value || '';
+  // Limpa seleção anterior se mudou de bloco
+  reaproveitadasPorBloco[blocoId] = new Set();
+  delete reapDisponiveisPorBloco[blocoId];
+  atualizarBadgeReap(blocoId);
+  carregarQuestoesReaproveitaveis(blocoId);
 }
 
 async function carregarQuestoesReaproveitaveis(blocoId) {
   const lista = document.getElementById(`reap-lista-${blocoId}`);
   if (!lista) return;
+
+  const blocoCtspId = document.getElementById(`reap-bloco-ctsp-${blocoId}`)?.value || '';
+  if (!blocoCtspId) {
+    lista.innerHTML = '<div style="color:#888;font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:4px;">Selecione um bloco CTSP acima para ver as questões disponíveis.</div>';
+    return;
+  }
+  reapBlocoCtspId[blocoId] = blocoCtspId;
+
   lista.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:4px;">Carregando…</div>';
   const at = document.getElementById(`reap-filtro-at-${blocoId}`)?.value || '';
   try {
-    const qs = new URLSearchParams();
+    const qs = new URLSearchParams({ bloco_ctsp_id: blocoCtspId });
     if (at) qs.set('at', at);
     const data = await req(`/api/simulados-mensais/admin/blocos/questoes-reaproveitaveis?${qs}`);
     reapDisponiveisPorBloco[blocoId] = data;
@@ -1460,6 +1587,40 @@ function renderizarReaproveitaveis(blocoId) {
     </div>`).join('');
 
   atualizarBadgeReap(blocoId);
+  renderDeficitAT(blocoId);
+}
+
+async function salvarSelecaoReap(blocoId) {
+  const btn = document.getElementById(`reap-salvar-btn-${blocoId}`);
+  const msg = document.getElementById(`reap-salvar-msg-${blocoId}`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando…'; }
+  try {
+    await req(`/api/simulados-mensais/admin/blocos/${blocoId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        reap_bloco_ctsp_id: reapBlocoCtspId[blocoId] || null,
+        reap_questao_ids: [...(reaproveitadasPorBloco[blocoId] || new Set())],
+      }),
+    });
+    // Recarrega contadores do backend para atualizar header e botão de publicar
+    const { bloco, contadores } = await req(`/api/simulados-mensais/admin/blocos/${blocoId}`);
+    const novo = Object.assign({}, bloco, { contadores });
+    blocosDadosPorId[blocoId] = novo;
+    // Atualiza resumo no header do card
+    const tot = contadores?.total || {};
+    const pct = tot.meta ? Math.round(tot.aprovadas / tot.meta * 100) : 0;
+    const resumoEl = document.querySelector(`#bloco-card-${blocoId} .bloco-resumo`);
+    if (resumoEl) resumoEl.innerHTML = `${tot.aprovadas||0}/${tot.meta||0} aprovadas${tot.reaproveitadas > 0 ? ` (${tot.reaproveitadas} reap.)` : ''} · ${tot.pendentes||0} pendentes · ${pct}%`;
+    // Atualiza barras AT em-lugar
+    const atEl = document.getElementById(`bat-progress-${blocoId}`);
+    if (atEl) atEl.innerHTML = renderAtProgress(novo);
+    atualizarBotaoPublicar(blocoId);
+    renderDeficitAT(blocoId);
+    if (msg) { msg.style.display = 'inline'; setTimeout(() => { if (msg) msg.style.display = 'none'; }, 2500); }
+  } catch(e) {
+    toast(e.erro || 'Erro ao salvar seleção.', 'err');
+  }
+  if (btn) { btn.disabled = false; btn.textContent = 'Salvar Seleção'; }
 }
 
 function toggleReapSelecionada(blocoId, questaoId) {
@@ -1467,6 +1628,18 @@ function toggleReapSelecionada(blocoId, questaoId) {
   if (sel.has(questaoId)) sel.delete(questaoId); else sel.add(questaoId);
   reaproveitadasPorBloco[blocoId] = sel;
   renderizarReaproveitaveis(blocoId);
+  atualizarBotaoPublicar(blocoId);
+  renderDeficitAT(blocoId);
+}
+
+function atualizarBotaoPublicar(blocoId) {
+  const btn = document.getElementById(`pub-btn-${blocoId}`);
+  if (!btn) return;
+  const bloco = blocosDadosPorId[blocoId];
+  if (!bloco) return;
+  const tot = (bloco.contadores || {}).total || {};
+  btn.disabled = !tot.completo;
+  btn.title = tot.completo ? '' : 'Atingir todas as metas (próprias + reaproveitadas) para publicar';
 }
 
 function atualizarBadgeReap(blocoId) {
@@ -1474,6 +1647,77 @@ function atualizarBadgeReap(blocoId) {
   if (!el) return;
   const n = (reaproveitadasPorBloco[blocoId] || new Set()).size;
   el.textContent = n > 0 ? `· ${n} selecionada${n !== 1 ? 's' : ''}` : '';
+}
+
+// F3A — Déficit AT: mostra quanto ainda falta por AT no bloco CBA, contando reaproveitadas selecionadas
+function renderDeficitAT(blocoId) {
+  const el = document.getElementById(`reap-deficit-${blocoId}`);
+  if (!el) return;
+  const bloco = blocosDadosPorId[blocoId];
+  if (!bloco) { el.style.display = 'none'; return; }
+  const cnt = bloco.contadores || {};
+  const sel = reaproveitadasPorBloco[blocoId] || new Set();
+  const disponiveis = reapDisponiveisPorBloco[blocoId] || [];
+
+  const rows = ['AT1','AT2','AT3','AT4','AT5'].map(at => {
+    const c = cnt[at] || { aprovadas: 0, proprias: 0, meta: 0 };
+    const propriasCount = typeof c.proprias === 'number' ? c.proprias : c.aprovadas;
+    const reapNaAt = [...sel].filter(id => disponiveis.find(q => q.id === id && q.area_tematica === at)).length;
+    const total = propriasCount + reapNaAt;
+    const falta = Math.max(0, c.meta - total);
+    const ok = falta === 0;
+    const sugestaoMax = c.meta > 0 ? Math.floor((c.meta * c.meta) / (CTSP_METAS_DEFAULT[at] || 14)) : 0;
+    const excede = reapNaAt > sugestaoMax;
+    const sugestaoHint = reapNaAt > 0
+      ? (excede
+          ? `<span style="color:#D97706;font-size:10px;"> ⚠ ${reapNaAt}/${sugestaoMax} reap. (excede sugestão)</span>`
+          : `<span style="color:#555;font-size:10px;"> (max sugerido: ${sugestaoMax} reap.)</span>`)
+      : `<span style="color:#555;font-size:10px;"> (max sugerido: ${sugestaoMax} reap.)</span>`;
+    return `<div class="deficit-at-row">
+      <span class="deficit-at-label">${at}</span>
+      <span class="deficit-at-info">${total}/${c.meta} (${propriasCount} prop. + ${reapNaAt} reap.)${sugestaoHint}</span>
+      <span class="${ok ? 'deficit-at-ok' : 'deficit-at-warn'}">${ok ? '✓ OK' : `-${falta}`}</span>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = rows;
+  el.style.display = 'flex';
+}
+
+// F6 — Rename inline do título do bloco
+async function renomearBlocoInline(blocoId) {
+  const el = document.getElementById(`btitulo-${blocoId}`);
+  if (!el) return;
+  const atual = el.textContent.trim();
+  const input = document.createElement('input');
+  input.value = atual;
+  input.style.cssText = 'background:#1A1A1A;border:1px solid #555;border-radius:4px;color:#F8F6F2;font-size:14px;font-weight:600;font-family:Inter,sans-serif;padding:2px 6px;width:260px;';
+  el.replaceWith(input);
+  input.focus();
+  input.select();
+
+  const confirmar = async () => {
+    const novo = input.value.trim();
+    const span = document.createElement('div');
+    span.className = 'bloco-titulo-text';
+    span.id = `btitulo-${blocoId}`;
+    span.textContent = novo || atual;
+    input.replaceWith(span);
+    if (!novo || novo === atual) return;
+    try {
+      await req(`/api/simulados-mensais/admin/blocos/${blocoId}`, { method: 'PATCH', body: JSON.stringify({ titulo: novo }) });
+      if (blocosDadosPorId[blocoId]) blocosDadosPorId[blocoId].titulo = novo;
+    } catch(e) {
+      span.textContent = atual;
+      toast(e.erro || 'Erro ao renomear bloco.', 'err');
+    }
+  };
+
+  input.addEventListener('blur', confirmar);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    if (e.key === 'Escape') { input.value = atual; input.blur(); }
+  });
 }
 
 // ── Criar / destruir bloco ───────────────────────────────────────────────────
@@ -1568,6 +1812,7 @@ async function confirmarPublicar() {
   btn.disabled = true; btn.textContent = 'Publicando…';
 
   const questoes_reaproveitadas = [...(reaproveitadasPorBloco[blocoId] || new Set())];
+  const bloco_ctsp_id = reapBlocoCtspId[blocoId] || null;
 
   try {
     const r = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/publicar`, {
@@ -1576,6 +1821,7 @@ async function confirmarPublicar() {
         abertura: new Date(aberturaLocal).toISOString(),
         encerramento: new Date(encLocal).toISOString(),
         questoes_reaproveitadas,
+        bloco_ctsp_id,
       }),
     });
     const reapMsg = r.reaproveitadas_incluidas > 0 ? ` (${r.reaproveitadas_incluidas} reaproveitadas do CTSP)` : '';
