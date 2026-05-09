@@ -3,6 +3,13 @@
 <head>
 <meta charset="UTF-8">
   <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PBM">
+<link rel="apple-touch-icon" href="/images/pwa-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -448,6 +455,41 @@
   }
   .btn-push-nao:hover { color: #888; }
 
+  /* ── INSTALL BANNER ── */
+  .install-banner {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    background: #1A1A1A;
+    border: 1px solid #2A2A2A;
+    border-left: 3px solid #185FA5;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 1.25rem;
+  }
+  .install-banner.visible { display: flex; }
+  .install-banner-body { flex: 1; min-width: 180px; }
+  .install-banner-titulo { font-size: 13px; font-weight: 600; color: var(--branco); }
+  .install-banner-desc { font-size: 12px; color: #666; margin-top: 2px; }
+  .install-banner-btns { display: flex; gap: 8px; flex-shrink: 0; }
+  .btn-install-sim {
+    background: #185FA5; color: #fff; border: none;
+    padding: 7px 14px; border-radius: 6px; font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.06em;
+    cursor: pointer; white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .btn-install-sim:hover { background: #144d87; }
+  .btn-install-nao {
+    background: transparent; color: #555; border: 1px solid #2A2A2A;
+    padding: 7px 12px; border-radius: 6px; font-size: 12px;
+    font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em;
+    cursor: pointer; white-space: nowrap;
+    transition: color 0.15s;
+  }
+  .btn-install-nao:hover { color: #888; }
+
   /* ── CARD NOTIFICAÇÕES ── */
   .card-notificacoes {
     background: var(--cinza-escuro);
@@ -606,6 +648,29 @@
           <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#C0270F;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Protocolo Bravo Mike</div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:#F8F6F2;line-height:1.1;">Bem-vindo, <span id="dash-hero-nome" style="color:#C0270F;">Combatente</span></div>
           <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.08em;color:#C0270F;margin-top:5px;opacity:0.7;">Você não estuda. Você Treina.</div>
+        </div>
+      </div>
+      <!-- INSTALL BANNER (Android/Chrome: após 2ª sessão) -->
+      <div class="install-banner" id="install-banner" role="banner">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2" style="flex-shrink:0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <div class="install-banner-body">
+          <div class="install-banner-titulo">Instale o PBM no celular</div>
+          <div class="install-banner-desc">Acesse mais rápido direto da tela inicial, sem precisar abrir o browser.</div>
+        </div>
+        <div class="install-banner-btns">
+          <button class="btn-install-sim" id="btn-install-sim">INSTALAR</button>
+          <button class="btn-install-nao" id="btn-install-nao">Agora não</button>
+        </div>
+      </div>
+      <!-- iOS INSTALL TIP (Safari/iOS, aparece após 2ª sessão) -->
+      <div class="install-banner" id="ios-install-banner" role="banner" style="border-left-color:#185FA5;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2" style="flex-shrink:0"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        <div class="install-banner-body">
+          <div class="install-banner-titulo">Instale o PBM no iPhone</div>
+          <div class="install-banner-desc">Toque em <strong style="color:#aaa">Compartilhar</strong> <span style="color:#555">⬆</span> e depois em <strong style="color:#aaa">Adicionar à Tela de Início</strong>.</div>
+        </div>
+        <div class="install-banner-btns">
+          <button class="btn-install-nao" id="btn-ios-fechar">OK</button>
         </div>
       </div>
       <!-- PUSH BANNER (aparece após 1ª sessão, se suportado) -->
@@ -931,11 +996,72 @@ async function carregarGrafico() {
 let _swRegistration = null;
 
 async function registrarServiceWorker() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+  if (!('serviceWorker' in navigator)) return;
   try {
     _swRegistration = await navigator.serviceWorker.register('/sw.js');
   } catch (e) {
     console.warn('[SW] Registro falhou:', e);
+  }
+}
+
+// ── INSTALL BANNER ──────────────────────────────────────────────────────────
+
+let _installPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _installPrompt = e;
+});
+
+function mostrarBannerInstall(totalSessoes) {
+  if (localStorage.getItem('pbm_install_prompted')) return;
+  if (totalSessoes < 2) return;
+
+  // Android/Chrome
+  const isInStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+  if (isInStandalone) return;
+
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (isIOS) {
+    const banner = document.getElementById('ios-install-banner');
+    if (!banner) return;
+    banner.classList.add('visible');
+    document.getElementById('btn-ios-fechar').addEventListener('click', () => {
+      banner.classList.remove('visible');
+      localStorage.setItem('pbm_install_prompted', '1');
+    });
+    return;
+  }
+
+  // Aguarda o evento beforeinstallprompt (pode chegar assíncrono)
+  const tentarMostrar = () => {
+    if (!_installPrompt) return;
+    const banner = document.getElementById('install-banner');
+    if (!banner) return;
+    banner.classList.add('visible');
+
+    document.getElementById('btn-install-sim').addEventListener('click', async () => {
+      banner.classList.remove('visible');
+      _installPrompt.prompt();
+      const { outcome } = await _installPrompt.userChoice;
+      if (outcome === 'accepted') localStorage.setItem('pbm_app_instalado', '1');
+      localStorage.setItem('pbm_install_prompted', '1');
+      _installPrompt = null;
+    });
+
+    document.getElementById('btn-install-nao').addEventListener('click', () => {
+      banner.classList.remove('visible');
+      localStorage.setItem('pbm_install_prompted', '1');
+    });
+  };
+
+  // Tenta imediatamente; se o evento ainda não chegou, aguarda até 3s
+  if (_installPrompt) {
+    tentarMostrar();
+  } else {
+    const onPrompt = () => { tentarMostrar(); window.removeEventListener('beforeinstallprompt', onPrompt); };
+    window.addEventListener('beforeinstallprompt', onPrompt);
+    setTimeout(() => window.removeEventListener('beforeinstallprompt', onPrompt), 3000);
   }
 }
 
@@ -1057,10 +1183,8 @@ async function carregarIndicacao() {
     document.getElementById('ind-convertidas').textContent = data.stats.convertidas;
     document.getElementById('ind-dias').textContent = data.stats.diasGanhos;
 
-    const _lightning = String.fromCodePoint(0x26A1);
-    const _finger = String.fromCodePoint(0x1F447);
     const msg = encodeURIComponent(
-      `O jogo mudou. No Protocolo Bravo Mike, a regra é uma só: Você não estuda. Você treina. ${_lightning}\nSe você busca o próximo nível na carreira e quer uma preparação de elite com simulados e ranking em tempo real, seu lugar é aqui. O convite está na mesa.\nBora lá? ${_finger}\n${data.link}`
+      `O jogo mudou. No Protocolo Bravo Mike, a regra é uma só: Você não estuda. Você treina.\nSe você busca o próximo nível na carreira e quer uma preparação de elite com simulados e ranking em tempo real, seu lugar é aqui. O convite está na mesa.\nBora lá?\n${data.link}`
     );
     document.getElementById('btn-indicacao-wpp').href = `https://wa.me/?text=${msg}`;
 
@@ -1123,7 +1247,8 @@ async function init() {
     // Carregar card de indicação
     carregarIndicacao();
 
-    // Push banner + card de preferências
+    // Install banner + Push banner + card de preferências
+    mostrarBannerInstall(desempenho.total_sessoes || 0);
     mostrarBannerPush(desempenho.total_sessoes || 0);
     carregarPreferenciasNotif();
 

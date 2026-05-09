@@ -1,8 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PBM">
+<link rel="apple-touch-icon" href="/images/pwa-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Aprovações IA (Admin)</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -494,12 +501,15 @@
   async function gerarQuestoes() {
     const btn = document.getElementById('btn-gerar-questoes');
     if (!btn) return;
+    const area = document.getElementById('sel-area-questao')?.value || 'todas';
+    const quantidade = parseInt(document.getElementById('sel-qtd-questao')?.value || '1', 10);
     const orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Gerando...';
     try {
-      await PBM.Admin.automatizar.gerarQuestoes();
-      toast('Geração iniciada! Aguarde alguns minutos e recarregue.', 'sucesso');
+      await PBM.Admin.automatizar.gerarQuestoes(area, quantidade);
+      const areaLabel = area === 'todas' ? 'todas as áreas' : area;
+      toast(`Geração iniciada! ${quantidade}x ${areaLabel}. Aguarde alguns minutos e recarregue.`, 'sucesso');
       tabCarregadas['questoes'] = false;
       await carregarQuestoes();
     } catch (err) {
@@ -514,10 +524,25 @@
     container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
     try {
       const lista = await PBM.Admin.aprovacoes.questoesIa.listar();
-      const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
+      const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+        <select id="sel-area-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+          <option value="todas">Todas as áreas</option>
+          <option value="AT1">AT1 — Segurança Incêndio</option>
+          <option value="AT2">AT2 — Combate a Incêndio</option>
+          <option value="AT3">AT3 — Buscas e APH</option>
+          <option value="AT4">AT4 — Direito Militar</option>
+          <option value="AT5">AT5 — Normas Administrativas</option>
+        </select>
+        <select id="sel-qtd-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+          <option value="1">1 questão</option>
+          <option value="2">2 questões</option>
+          <option value="3">3 questões</option>
+          <option value="4">4 questões</option>
+          <option value="5">5 questões</option>
+        </select>
         <button id="btn-gerar-questoes" class="btn btn-editar" style="gap:6px;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          Gerar questões agora
+          Gerar questões
         </button>
       </div>`;
       if (!lista || lista.length === 0) {

@@ -1,8 +1,15 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PBM">
+<link rel="apple-touch-icon" href="/images/pwa-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Analytics</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -338,6 +345,87 @@
           </table>
         </div>
         <div style="margin-top:8px;font-size:11px;color:#555;" id="denuncias-info"></div>
+      </div>
+
+      <!-- SEÇÃO IA: Custos de IA -->
+      <div class="secao" id="secao-ia">
+        <div class="secao-titulo">
+          Custos de IA
+          <select id="ia-periodo" style="background:var(--cinza-escuro);border:1px solid var(--cinza-borda);color:var(--branco);padding:3px 8px;border-radius:6px;font-size:11px;font-family:'IBM Plex Mono',monospace;cursor:pointer;" onchange="carregarIaCustos()">
+            <option value="7">7 dias</option>
+            <option value="30" selected>30 dias</option>
+            <option value="90">90 dias</option>
+          </select>
+          <span id="ia-refresh-label" style="font-size:10px;color:#444;margin-left:auto;font-family:'IBM Plex Mono',monospace;"></span>
+        </div>
+
+        <!-- KPIs de custo -->
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">
+          <div class="kpi-card">
+            <div class="kpi-label">Custo Total (USD)</div>
+            <div class="kpi-val" id="ia-kpi-custo" style="font-size:28px;"><span class="skeleton" style="height:28px;width:80px;"></span></div>
+            <div class="kpi-sub" id="ia-kpi-periodo-label">no período</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Total de Chamadas</div>
+            <div class="kpi-val" id="ia-kpi-chamadas"><span class="skeleton"></span></div>
+            <div class="kpi-sub">requisições à API Anthropic</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Tokens de Entrada</div>
+            <div class="kpi-val" id="ia-kpi-input" style="font-size:26px;"><span class="skeleton" style="height:26px;width:80px;"></span></div>
+            <div class="kpi-sub">input tokens totais</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Tokens de Saída</div>
+            <div class="kpi-val" id="ia-kpi-output" style="font-size:26px;"><span class="skeleton" style="height:26px;width:80px;"></span></div>
+            <div class="kpi-sub">output tokens totais</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Projeção do Mês (USD)</div>
+            <div class="kpi-val" id="ia-kpi-projecao" style="font-size:28px;"><span class="skeleton" style="height:28px;width:80px;"></span></div>
+            <div class="kpi-sub" id="ia-kpi-projecao-sub">calculando...</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Custo por Aluno Ativo (USD)</div>
+            <div class="kpi-val" id="ia-kpi-por-aluno" style="font-size:24px;"><span class="skeleton" style="height:24px;width:80px;"></span></div>
+            <div class="kpi-sub" id="ia-kpi-por-aluno-sub">no período</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-bottom:1.5rem;">
+          <!-- Gráfico por dia -->
+          <div class="card">
+            <div class="card-titulo">Custo Diário (USD)</div>
+            <div class="chart-wrap"><canvas id="ia-chart-dia"></canvas></div>
+          </div>
+          <!-- Breakdown por tipo -->
+          <div class="card">
+            <div class="card-titulo">Breakdown por Tipo</div>
+            <div id="ia-breakdown-tipo" style="display:flex;flex-direction:column;gap:8px;min-height:80px;">
+              <div style="color:#555;font-size:12px;">Carregando...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Log ao vivo -->
+        <div class="tabela-wrap">
+          <table class="tabela">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Modelo</th>
+                <th>Input Tokens</th>
+                <th>Output Tokens</th>
+                <th>Custo (USD)</th>
+                <th>Data/Hora</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-ia-log">
+              <tr><td colspan="6" style="text-align:center;color:#555;padding:2rem;">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- SEÇÃO 4: Coortes e Risco -->
@@ -677,6 +765,114 @@ async function enviarLembrete(userId, btn) {
   }
 }
 
+let iaChart = null;
+
+async function carregarIaCustos() {
+  const periodo = document.getElementById('ia-periodo').value;
+  try {
+    const d = await apiGet(`/admin/analytics/ia-custos?periodo=${periodo}`);
+    if (!d) return;
+
+    // KPIs
+    document.getElementById('ia-kpi-custo').textContent = '$' + d.kpis.total_custo_usd.toFixed(4);
+    document.getElementById('ia-kpi-chamadas').textContent = d.kpis.total_chamadas;
+    document.getElementById('ia-kpi-input').textContent = fmtTokens(d.kpis.total_input_tokens);
+    document.getElementById('ia-kpi-output').textContent = fmtTokens(d.kpis.total_output_tokens);
+    document.getElementById('ia-kpi-periodo-label').textContent = `últimos ${d.periodo_dias} dias`;
+
+    // Projeção do mês
+    if (d.projecao) {
+      document.getElementById('ia-kpi-projecao').textContent = '$' + d.projecao.projecao_mes_usd.toFixed(4);
+      document.getElementById('ia-kpi-projecao-sub').textContent =
+        `acumulado $${d.projecao.custo_mes_atual_usd.toFixed(4)} · média $${d.projecao.media_diaria_7d_usd.toFixed(4)}/dia · ${d.projecao.dias_restantes_mes}d restantes`;
+    }
+
+    // Custo por aluno ativo
+    document.getElementById('ia-kpi-por-aluno').textContent = '$' + d.custo_por_aluno_usd.toFixed(6);
+    document.getElementById('ia-kpi-por-aluno-sub').textContent = `sobre ${d.alunos_ativos} alunos ativos · últimos ${d.periodo_dias} dias`;
+
+    // Gráfico por dia
+    const labels = d.por_dia.map(r => r.dia.slice(5)); // MM-DD
+    const vals = d.por_dia.map(r => r.custo_usd);
+
+    if (iaChart) iaChart.destroy();
+    const ctx = document.getElementById('ia-chart-dia').getContext('2d');
+    iaChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'USD',
+          data: vals,
+          backgroundColor: 'rgba(192,39,15,0.5)',
+          borderColor: '#C0270F',
+          borderWidth: 1,
+          borderRadius: 3,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#555', font: { size: 10 } }, grid: { color: '#1A1A1A' } },
+          y: { ticks: { color: '#555', font: { size: 10 }, callback: v => '$' + v.toFixed(4) }, grid: { color: '#1A1A1A' } },
+        },
+      },
+    });
+
+    // Breakdown por tipo
+    const maxCusto = d.breakdown_tipo[0]?.custo_usd || 1;
+    const TIPO_LABELS = {
+      questao_diaria: 'Questão Diária',
+      questao_bloco: 'Questão Bloco',
+      flashcard: 'Flashcard',
+      simulado_mensal: 'Simulado Mensal',
+      instagram: 'Instagram',
+      juiz: 'Juiz IA',
+      similaridade: 'Similaridade',
+    };
+    document.getElementById('ia-breakdown-tipo').innerHTML = d.breakdown_tipo.map(t => {
+      const pct = Math.round((t.custo_usd / maxCusto) * 100);
+      return `<div style="display:flex;align-items:center;gap:8px;font-size:11px;">
+        <div style="min-width:120px;color:var(--cinza-texto);">${TIPO_LABELS[t.tipo] || t.tipo}</div>
+        <div style="flex:1;background:var(--cinza-medio);border-radius:3px;height:6px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:#C0270F;border-radius:3px;transition:width 0.5s ease;"></div>
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#888;min-width:60px;text-align:right;">$${t.custo_usd.toFixed(4)}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;min-width:36px;text-align:right;">${t.chamadas}x</div>
+      </div>`;
+    }).join('') || '<div style="color:#555;font-size:12px;padding:8px 0;">Sem dados no período.</div>';
+
+    // Log ao vivo
+    document.getElementById('tbody-ia-log').innerHTML = d.log_recente.length === 0
+      ? '<tr><td colspan="6" style="text-align:center;color:#555;padding:2rem;">Nenhuma chamada registrada no período.</td></tr>'
+      : d.log_recente.map(r => {
+          const modeloCor = r.modelo.includes('opus') ? '#F09595' : '#79ABDD';
+          const ts = new Date(r.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          return `<tr>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;">${TIPO_LABELS[r.tipo] || r.tipo}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${modeloCor};">${r.modelo}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;">${r.input_tokens.toLocaleString('pt-BR')}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;">${r.output_tokens.toLocaleString('pt-BR')}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7DD99A;">$${r.custo_usd.toFixed(6)}</td>
+            <td style="font-size:11px;color:#555;">${ts}</td>
+          </tr>`;
+        }).join('');
+
+    // Atualiza label de refresh
+    document.getElementById('ia-refresh-label').textContent = 'Atualizado ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  } catch (e) {
+    console.error('ia-custos:', e);
+  }
+}
+
+function fmtTokens(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(2) + 'M';
+  if (n >= 1_000) return (n / 1_000).toFixed(1) + 'K';
+  return String(n);
+}
+
 async function init() {
   adminJwt = sessionStorage.getItem('pbm_admin_jwt');
   if (!adminJwt) return encerrarSessao();
@@ -692,7 +888,11 @@ async function init() {
     carregarQuestoes(),
     carregarCohortes(),
     carregarRisco(),
+    carregarIaCustos(),
   ]);
+
+  // Auto-refresh de custos IA a cada 30s
+  setInterval(carregarIaCustos, 30_000);
 }
 
 init();
