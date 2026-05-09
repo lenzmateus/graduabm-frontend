@@ -1057,8 +1057,10 @@ async function carregarIndicacao() {
     document.getElementById('ind-convertidas').textContent = data.stats.convertidas;
     document.getElementById('ind-dias').textContent = data.stats.diasGanhos;
 
+    const _lightning = String.fromCodePoint(0x26A1);
+    const _finger = String.fromCodePoint(0x1F447);
     const msg = encodeURIComponent(
-      `O jogo mudou. No Protocolo Bravo Mike, a regra é uma só: Você não estuda. Você treina. ⚡\n\nSe você busca o próximo nível na carreira e quer uma preparação de elite com simulados e ranking em tempo real, seu lugar é aqui. O convite está na mesa.\n\nEntra comigo 👇\n${data.link}`
+      `O jogo mudou. No Protocolo Bravo Mike, a regra é uma só: Você não estuda. Você treina. ${_lightning}\nSe você busca o próximo nível na carreira e quer uma preparação de elite com simulados e ranking em tempo real, seu lugar é aqui. O convite está na mesa.\nBora lá? ${_finger}\n${data.link}`
     );
     document.getElementById('btn-indicacao-wpp').href = `https://wa.me/?text=${msg}`;
 
