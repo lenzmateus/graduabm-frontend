@@ -153,6 +153,82 @@
   /* Status badges extras */
   .status-inativo { background: rgba(136,136,136,0.1); color: #888; border: 1px solid rgba(136,136,136,0.3); }
 
+  /* ── CONSTRUTOR DE BLOCOS ─────────────────────────────────────────── */
+  .secao-blocos { margin-bottom: 3rem; }
+  .secao-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: .04em; color: var(--roxo); margin-bottom: .35rem; }
+  .secao-sub { font-size: 12px; color: var(--cinza-texto); margin-bottom: 1.25rem; }
+
+  .bloco-card { background: var(--cinza-escuro); border: 1px solid #333; border-radius: 10px; margin-bottom: 14px; }
+  .bloco-card.status-pronto { border-color: rgba(125,217,154,.35); }
+  .bloco-card.status-agendado { border-color: rgba(240,192,80,.35); }
+  .bloco-card.status-em_andamento { border-color: rgba(192,39,15,.35); }
+  .bloco-card.status-encerrado { border-color: rgba(136,136,136,.25); }
+
+  .bloco-header { display: flex; align-items: center; gap: 12px; padding: 1rem 1.25rem; cursor: pointer; }
+  .bloco-curso { font-family: 'Bebas Neue', sans-serif; font-size: 22px; min-width: 52px; text-align: center; }
+  .bloco-curso.ctsp { color: var(--vermelho); }
+  .bloco-curso.cba  { color: #185FA5; }
+  .bloco-titulo-wrap { flex: 1; min-width: 0; }
+  .bloco-titulo-text { font-size: 14px; font-weight: 600; color: var(--branco); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .bloco-resumo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); margin-top: 3px; }
+  .bloco-status-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 20px; letter-spacing: .06em; white-space: nowrap; }
+  .bstatus-construindo { background: rgba(124,58,237,.12); color: #A78BFA; border: 1px solid rgba(124,58,237,.3); }
+  .bstatus-pronto { background: rgba(125,217,154,.1); color: var(--verde); border: 1px solid rgba(125,217,154,.3); }
+  .bstatus-agendado { background: rgba(240,192,80,.1); color: var(--dourado); border: 1px solid rgba(240,192,80,.3); }
+  .bstatus-em_andamento { background: rgba(192,39,15,.15); color: #E8866E; border: 1px solid rgba(192,39,15,.3); }
+  .bstatus-encerrado,
+  .bstatus-incorporado { background: rgba(136,136,136,.1); color: #888; border: 1px solid rgba(136,136,136,.25); }
+
+  .bloco-corpo { display: none; border-top: 1px solid #2A2A2A; }
+  .bloco-corpo.aberto { display: block; }
+
+  /* Progress bars AT */
+  .at-progress-grid { display: grid; gap: 6px; padding: 1rem 1.25rem; border-bottom: 1px solid #222; }
+  .at-row { display: flex; align-items: center; gap: 10px; }
+  .at-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); min-width: 32px; }
+  .at-bar-wrap { flex: 1; background: #1F1F1F; border-radius: 4px; height: 8px; overflow: hidden; }
+  .at-bar { height: 100%; border-radius: 4px; transition: width .4s; background: var(--vermelho); }
+  .at-bar.completo { background: var(--verde); }
+  .at-counter { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); white-space: nowrap; min-width: 80px; text-align: right; }
+  .at-counter.ok { color: var(--verde); }
+
+  /* Seção gerar questões dentro do bloco */
+  .bloco-gerar-section { padding: 1rem 1.25rem; border-bottom: 1px solid #222; }
+  .bloco-section-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
+  .gerar-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end; }
+  .instrucao-input { flex: 1 1 200px; min-width: 0; }
+
+  /* Status de geração por bloco */
+  .status-geracao-bloco { margin-top: 10px; display: none; padding: 8px 12px; border-radius: 6px; border: 1px solid #333; background: #1A1A1A; font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+
+  /* Questões do bloco */
+  .bloco-questoes-section { padding: 1rem 1.25rem; }
+  .filtros-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+  .chip-filtro { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 3px 10px; border: 1px solid #333; border-radius: 20px; cursor: pointer; color: var(--cinza-texto); background: transparent; }
+  .chip-filtro.ativo { border-color: var(--roxo); color: #A78BFA; background: rgba(124,58,237,.1); }
+
+  .bloco-q-lista { display: flex; flex-direction: column; gap: 8px; }
+  .bq-card { background: var(--cinza-medio); border: 1px solid #333; border-radius: 6px; overflow: hidden; }
+  .bq-card.status-aprovado { border-color: rgba(125,217,154,.3); }
+  .bq-card.status-rejeitado { border-color: rgba(240,149,149,.25); opacity: .6; }
+  .bq-header { display: flex; align-items: center; gap: 8px; padding: 8px 10px; }
+  .bq-area-badge { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 1px 7px; border-radius: 4px; background: rgba(255,255,255,.05); border: 1px solid #333; color: var(--cinza-texto); }
+  .bq-status-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 1px 7px; border-radius: 10px; }
+  .bq-s-pendente_ia  { background: rgba(240,192,80,.1); color: var(--dourado); border: 1px solid rgba(240,192,80,.3); }
+  .bq-s-aprovado     { background: rgba(125,217,154,.1); color: var(--verde); border: 1px solid rgba(125,217,154,.3); }
+  .bq-s-rejeitado    { background: rgba(240,149,149,.1); color: #F09595; border: 1px solid rgba(240,149,149,.3); }
+  .bq-enun { flex: 1; font-size: 12px; color: var(--branco); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; cursor: pointer; }
+  .bq-acoes { display: flex; gap: 4px; flex-shrink: 0; }
+  .bq-detalhe { display: none; padding: 10px 12px; border-top: 1px solid #2A2A2A; }
+  .bq-detalhe.aberto { display: block; }
+  .bq-detalhe-enun { font-size: 13px; color: var(--branco); line-height: 1.6; margin-bottom: 10px; }
+  .bq-alt { font-size: 12px; color: var(--cinza-texto); padding: 2px 0; line-height: 1.5; }
+  .bq-alt.correta { color: var(--verde); font-weight: 600; }
+  .bq-coment { font-size: 11px; color: #777; margin-top: 8px; line-height: 1.5; border-top: 1px solid #2A2A2A; padding-top: 8px; font-style: italic; }
+
+  /* Ações do bloco (publicar, liberar) */
+  .bloco-footer { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 1rem 1.25rem; border-top: 1px solid #222; background: rgba(0,0,0,.15); }
+
 </style>
 </head>
 <body>
@@ -266,9 +342,162 @@
     </div>
   </div>
 
+  <!-- ── SEÇÃO CONSTRUTOR DE BLOCOS ─────────────────────────────────── -->
+  <div class="secao-blocos">
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px;">
+      <div>
+        <div class="secao-titulo">Construtor de Blocos</div>
+        <div class="secao-sub">Crie simulados QAP por área temática com revisão incremental antes de publicar.</div>
+      </div>
+      <button class="btn-sm btn-primary" style="background:var(--roxo);border-color:var(--roxo);" onclick="abrirModalNovoBloco()">+ Novo Bloco</button>
+    </div>
+    <div id="blocos-grid">
+      <div style="color:var(--cinza-texto);text-align:center;padding:1.5rem;font-family:'IBM Plex Mono',monospace;font-size:12px;">Carregando blocos…</div>
+    </div>
+  </div>
+
+  <!-- DIVISOR -->
+  <div style="border-top:1px solid #222;margin-bottom:2rem;"></div>
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--cinza-texto);margin-bottom:1rem;">Simulados Publicados</div>
+
   <!-- LISTA DE SIMULADOS -->
   <div class="simulados-grid" id="simulados-grid">
     <div style="color:var(--cinza-texto);text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:13px;">Carregando...</div>
+  </div>
+</div>
+
+<!-- ── MODAL NOVO BLOCO ──────────────────────────────────────────────── -->
+<div id="modal-novo-bloco" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:520px;width:90%;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;">
+      <span>Novo Bloco</span>
+      <button onclick="fecharModalNovoBloco()" style="background:none;border:none;color:#888;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;">✕</button>
+    </div>
+    <div style="display:grid;gap:1rem;">
+      <div class="form-group">
+        <div class="form-label">Título</div>
+        <input id="nb-titulo" class="form-input" type="text" placeholder="Ex: Protocolo QAP — CTSP — Junho 2026">
+      </div>
+      <div class="form-group">
+        <div class="form-label">Curso</div>
+        <select id="nb-curso" class="select-sm" style="width:100%;" onchange="atualizarMetasBloco()">
+          <option value="ctsp">CTSP — 60 questões</option>
+          <option value="cba">CBA — 40 questões</option>
+        </select>
+      </div>
+      <div style="background:#1F1F1F;border:1px solid #2A2A2A;border-radius:8px;padding:12px;">
+        <div class="form-label" style="margin-bottom:10px;">Metas por Área Temática</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div class="form-group"><div class="form-label">AT1</div><input id="nb-at1" class="form-input" type="number" min="1" max="30"></div>
+          <div class="form-group"><div class="form-label">AT2</div><input id="nb-at2" class="form-input" type="number" min="1" max="30"></div>
+          <div class="form-group"><div class="form-label">AT3</div><input id="nb-at3" class="form-input" type="number" min="1" max="30"></div>
+          <div class="form-group"><div class="form-label">AT4</div><input id="nb-at4" class="form-input" type="number" min="1" max="30"></div>
+          <div class="form-group" style="grid-column:1/-1;"><div class="form-label">AT5</div><input id="nb-at5" class="form-input" type="number" min="1" max="30"></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1.5rem;">
+      <button onclick="fecharModalNovoBloco()" class="btn-sm" style="flex:1;">Cancelar</button>
+      <button id="nb-confirmar" onclick="criarBloco()" class="btn-sm btn-primary" style="flex:2;background:var(--roxo);border-color:var(--roxo);">Criar Bloco</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL PUBLICAR PROTOCOLO QAP ─────────────────────────────────── -->
+<div id="modal-publicar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:480px;width:90%;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;">
+      <span>Publicar Protocolo QAP</span>
+      <button onclick="fecharModalPublicar()" style="background:none;border:none;color:#888;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;">✕</button>
+    </div>
+    <input type="hidden" id="pub-bloco-id">
+    <div style="display:grid;gap:1rem;">
+      <div class="form-group"><div class="form-label">Abertura</div><input id="pub-abertura" type="datetime-local" class="form-input" style="width:100%;"></div>
+      <div class="form-group"><div class="form-label">Encerramento</div><input id="pub-encerramento" type="datetime-local" class="form-input" style="width:100%;"></div>
+      <div style="background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:6px;padding:10px 12px;font-size:12px;color:#A78BFA;line-height:1.5;">
+        O simulado será ativado automaticamente ao chegar na data de abertura.
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1.5rem;">
+      <button onclick="fecharModalPublicar()" class="btn-sm" style="flex:1;">Cancelar</button>
+      <button id="pub-confirmar" onclick="confirmarPublicar()" class="btn-sm btn-primary" style="flex:2;">Publicar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL QUESTÃO MANUAL ──────────────────────────────────────────── -->
+<div id="modal-questao-manual" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;">
+  <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:700px;width:100%;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;">
+      <span>Criar Questão Manual</span>
+      <button onclick="fecharModalQuestaoManual()" style="background:none;border:none;color:#888;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;">✕</button>
+    </div>
+    <input type="hidden" id="qm-bloco-id">
+    <div style="display:grid;gap:1rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="form-group">
+          <div class="form-label">Área Temática</div>
+          <select id="qm-area" class="select-sm" style="width:100%;">
+            <option value="AT1">AT1 — Segurança Incêndios</option>
+            <option value="AT2">AT2 — Combate Incêndios</option>
+            <option value="AT3">AT3 — Buscas/Salvamentos/APH</option>
+            <option value="AT4">AT4 — Direito Militar</option>
+            <option value="AT5">AT5 — Normas Administrativas</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Curso</div>
+          <select id="qm-curso" class="select-sm" style="width:100%;">
+            <option value="ctsp">CTSP</option>
+            <option value="cba">CBA</option>
+            <option value="ambos">Ambos</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Dificuldade</div>
+          <select id="qm-dificuldade" class="select-sm" style="width:100%;">
+            <option value="média">Média</option>
+            <option value="fácil">Fácil</option>
+            <option value="difícil">Difícil</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Legislação (nome)</div>
+          <input id="qm-legislacao-nome" class="form-input" type="text" placeholder="Ex: RT-01/2011">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Enunciado</div>
+        <textarea id="qm-enunciado" rows="4" class="form-input" style="resize:vertical;line-height:1.6;"></textarea>
+      </div>
+      <div>
+        <div class="form-label" style="margin-bottom:8px;">Alternativas</div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">A.</span><input id="qm-alt-A" type="text" class="form-input" style="flex:1;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">B.</span><input id="qm-alt-B" type="text" class="form-input" style="flex:1;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">C.</span><input id="qm-alt-C" type="text" class="form-input" style="flex:1;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">D.</span><input id="qm-alt-D" type="text" class="form-input" style="flex:1;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">E.</span><input id="qm-alt-E" type="text" class="form-input" style="flex:1;"></div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Gabarito</div>
+        <select id="qm-gabarito" class="select-sm" style="width:120px;">
+          <option value="0">A</option>
+          <option value="1">B</option>
+          <option value="2">C</option>
+          <option value="3">D</option>
+          <option value="4">E</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Comentário / Justificativa</div>
+        <textarea id="qm-comentario" rows="3" class="form-input" style="resize:vertical;line-height:1.6;"></textarea>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1.5rem;">
+      <button onclick="fecharModalQuestaoManual()" class="btn-sm" style="flex:1;">Cancelar</button>
+      <button id="qm-salvar" onclick="salvarQuestaoManual(false)" class="btn-sm" style="flex:1;">Salvar (Pendente)</button>
+      <button id="qm-salvar-aprovar" onclick="salvarQuestaoManual(true)" class="btn-sm btn-primary" style="flex:1.5;">Salvar e Aprovar</button>
+    </div>
   </div>
 </div>
 
@@ -802,6 +1031,618 @@ async function carregarBadgeDenuncias() {
 carregarBadgeAprovacoes();
 carregarBadgeDenuncias();
 document.addEventListener('visibilitychange', () => { if (!document.hidden) { carregarBadgeAprovacoes(); carregarBadgeDenuncias(); } });
+
+// ═══════════════════════════════════════════════════════════════════════════
+// CONSTRUTOR DE BLOCOS — Sprint 3
+// ═══════════════════════════════════════════════════════════════════════════
+
+const METAS_DEFAULT_BLOCOS = {
+  ctsp: { at1: 14, at2: 8, at3: 14, at4: 12, at5: 12 },
+  cba:  { at1: 7,  at2: 5, at3: 9,  at4: 8,  at5: 11 },
+};
+
+const LETRA = ['A','B','C','D','E'];
+
+// Estado por bloco
+const blocoCorpoAberto = {};
+const questoesPorBloco = {};
+const filtroAreaBloco  = {};
+const filtroStatusBloco= {};
+const pollingBloco     = {};
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+function labelStatus(s) {
+  return { construindo:'CONSTRUINDO', pronto:'PRONTO', agendado:'AGENDADO',
+           em_andamento:'EM ANDAMENTO', encerrado:'ENCERRADO', incorporado:'INCORPORADO' }[s] || s.toUpperCase();
+}
+
+function formatarDataBloco(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// ── Listar / Renderizar Blocos ───────────────────────────────────────────────
+
+async function carregarBlocos() {
+  const grid = document.getElementById('blocos-grid');
+  try {
+    const blocos = await req('/api/simulados-mensais/admin/blocos');
+    if (!blocos.length) {
+      grid.innerHTML = '<div style="color:var(--cinza-texto);text-align:center;padding:1.5rem;font-family:\'IBM Plex Mono\',monospace;font-size:12px;">Nenhum bloco criado. Clique em "+ Novo Bloco" para começar.</div>';
+      return;
+    }
+    grid.innerHTML = blocos.map(b => renderBlocoCard(b)).join('');
+  } catch(err) {
+    grid.innerHTML = `<div style="color:#F09595;padding:1rem;">${err.erro||'Erro ao carregar blocos.'} <button class="btn-sm" onclick="carregarBlocos()" style="margin-left:8px;">Tentar novamente</button></div>`;
+  }
+}
+
+function renderBlocoCard(bloco) {
+  const cnt = bloco.contadores || {};
+  const tot = cnt.total || {};
+  const pct = tot.meta ? Math.round(tot.aprovadas / tot.meta * 100) : 0;
+  const statusCls = `bstatus-${bloco.status}`;
+  const cardCls   = `status-${bloco.status}`;
+
+  return `
+  <div class="bloco-card ${cardCls}" id="bloco-card-${bloco.id}">
+    <div class="bloco-header" onclick="toggleBlocoCorpo('${bloco.id}')">
+      <div class="bloco-curso ${bloco.curso}">${bloco.curso.toUpperCase()}</div>
+      <div class="bloco-titulo-wrap">
+        <div class="bloco-titulo-text">${bloco.titulo}</div>
+        <div class="bloco-resumo">${tot.aprovadas||0}/${tot.meta||0} aprovadas · ${tot.pendentes||0} pendentes · ${pct}%</div>
+      </div>
+      <span class="bloco-status-badge ${statusCls}">${labelStatus(bloco.status)}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:#555;flex-shrink:0;transition:transform .2s;" id="chevron-${bloco.id}"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="bloco-corpo" id="bcorpo-${bloco.id}">
+      <!-- Progress AT -->
+      ${renderAtProgress(bloco)}
+      <!-- Gerar questões -->
+      ${renderGerarSection(bloco)}
+      <!-- Questões -->
+      <div class="bloco-questoes-section">
+        <div class="bloco-section-label">Questões do Bloco</div>
+        <div class="filtros-row">
+          <button class="chip-filtro ativo" id="fatodo-${bloco.id}" onclick="setFiltroArea('${bloco.id}','')">Todas</button>
+          ${['AT1','AT2','AT3','AT4','AT5'].map(at => `<button class="chip-filtro" id="fat${at}-${bloco.id}" onclick="setFiltroArea('${bloco.id}','${at}')">${at}</button>`).join('')}
+          <span style="width:1px;background:#333;margin:0 4px;"></span>
+          <button class="chip-filtro ativo" id="fstodo-${bloco.id}" onclick="setFiltroStatus('${bloco.id}','')">Todos</button>
+          <button class="chip-filtro" id="fspend-${bloco.id}" onclick="setFiltroStatus('${bloco.id}','pendente_ia')">Pendentes</button>
+          <button class="chip-filtro" id="fsaprov-${bloco.id}" onclick="setFiltroStatus('${bloco.id}','aprovado')">Aprovadas</button>
+          <button class="chip-filtro" id="fsrej-${bloco.id}" onclick="setFiltroStatus('${bloco.id}','rejeitado')">Rejeitadas</button>
+        </div>
+        <div class="bloco-q-lista" id="bq-lista-${bloco.id}">
+          <div style="color:var(--cinza-texto);font-size:12px;font-family:'IBM Plex Mono',monospace;padding:8px 0;">Abra o card para ver as questões.</div>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn-sm" onclick="abrirModalQuestaoManual('${bloco.id}','${bloco.curso}')">+ Criar Questão Manual</button>
+        </div>
+      </div>
+      <!-- Footer ações -->
+      <div class="bloco-footer">
+        ${bloco.status === 'agendado' || bloco.simulado_id
+          ? `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#A78BFA;">Simulado agendado · Abertura: ${formatarDataBloco(bloco.abertura)}</span>
+             <a href="/admin-simulados-mensais#sim-${bloco.simulado_id}" class="btn-sm" style="margin-left:auto;">Ver Simulado ↓</a>`
+          : `<button class="btn-sm btn-primary" ${tot.completo ? '' : 'disabled title="Atingir todas as metas para publicar"'} onclick="abrirModalPublicar('${bloco.id}')">Publicar Protocolo QAP</button>`}
+        ${(bloco.status === 'encerrado') ? `<button class="btn-sm" onclick="liberarBanco('${bloco.id}')">Liberar ao Banco</button>` : ''}
+        <button class="btn-sm" style="margin-left:auto;color:#F09595;" onclick="confirmarExcluirBloco('${bloco.id}')">Excluir Bloco</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderAtProgress(bloco) {
+  const cnt = bloco.contadores || {};
+  const CORES_AT = { AT1:'#C0270F', AT2:'#D97706', AT3:'#185FA5', AT4:'#059669', AT5:'#7C3AED' };
+  return `<div class="at-progress-grid">${['AT1','AT2','AT3','AT4','AT5'].map(at => {
+    const c = cnt[at] || { aprovadas:0, pendentes:0, rejeitadas:0, meta:0, faltando:0 };
+    const pct = c.meta ? Math.min(100, Math.round(c.aprovadas/c.meta*100)) : 0;
+    const ok  = c.faltando === 0;
+    return `<div class="at-row">
+      <span class="at-label">${at}</span>
+      <div class="at-bar-wrap">
+        <div class="at-bar ${ok ? 'completo' : ''}" style="width:${pct}%;background:${ok ? 'var(--verde)' : CORES_AT[at]};"></div>
+      </div>
+      <span class="at-counter ${ok ? 'ok' : ''}">${c.aprovadas}/${c.meta}${ok ? ' ✓' : (c.pendentes ? ` (${c.pendentes}⏳)` : '')}</span>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function renderGerarSection(bloco) {
+  return `<div class="bloco-gerar-section">
+    <div class="bloco-section-label">Gerar Questões via IA</div>
+    <div class="gerar-row">
+      <div class="form-group" style="min-width:0;">
+        <div class="form-label">Área</div>
+        <select class="select-sm" id="g-area-${bloco.id}">
+          ${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}">${a}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Qtd</div>
+        <select class="select-sm" id="g-qtd-${bloco.id}">
+          ${[1,2,3,4,5].map(n => `<option value="${n}"${n===2?' selected':''}>${n}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Curso</div>
+        <select class="select-sm" id="g-curso-${bloco.id}">
+          <option value="${bloco.curso}">${bloco.curso.toUpperCase()}</option>
+          <option value="ambos">Ambos</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Dificuldade</div>
+        <select class="select-sm" id="g-dif-${bloco.id}">
+          <option value="">Auto</option>
+          <option value="fácil">Fácil</option>
+          <option value="média">Média</option>
+          <option value="difícil">Difícil</option>
+        </select>
+      </div>
+      <div class="form-group instrucao-input">
+        <div class="form-label">Instrução livre (opcional)</div>
+        <input class="form-input" id="g-instrucao-${bloco.id}" type="text" placeholder="Ex: Foque no Art. 14 da RT-01">
+      </div>
+      <button class="btn-sm btn-primary" onclick="gerarQuestoes('${bloco.id}')" style="align-self:flex-end;">Gerar</button>
+      <button class="btn-sm" onclick="verificarStatusGeracao('${bloco.id}')" style="align-self:flex-end;">Status</button>
+    </div>
+    <div class="status-geracao-bloco" id="sg-${bloco.id}"></div>
+  </div>`;
+}
+
+// ── Toggle corpo ─────────────────────────────────────────────────────────────
+
+async function toggleBlocoCorpo(id) {
+  const corpo = document.getElementById(`bcorpo-${id}`);
+  const chev  = document.getElementById(`chevron-${id}`);
+  const aberto = corpo.classList.toggle('aberto');
+  if (chev) chev.style.transform = aberto ? 'rotate(180deg)' : '';
+  if (aberto && !questoesPorBloco[id]) await carregarQuestoesDoBlocoFiltradas(id);
+}
+
+// ── Carregar questões ────────────────────────────────────────────────────────
+
+async function carregarQuestoesDoBlocoFiltradas(blocoId) {
+  const lista = document.getElementById(`bq-lista-${blocoId}`);
+  if (!lista) return;
+  lista.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;font-family:\'IBM Plex Mono\',monospace;">Carregando…</div>';
+  try {
+    const area   = filtroAreaBloco[blocoId]   || '';
+    const status = filtroStatusBloco[blocoId] || '';
+    const qs     = new URLSearchParams();
+    if (area)   qs.set('area', area);
+    if (status) qs.set('status', status);
+    const data = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/questoes?${qs}`);
+    questoesPorBloco[blocoId] = data;
+    renderizarQuestoesDoBlocoNoDOM(blocoId);
+  } catch(err) {
+    if (lista) lista.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro||'Erro'}</div>`;
+  }
+}
+
+function renderizarQuestoesDoBlocoNoDOM(blocoId) {
+  const lista  = document.getElementById(`bq-lista-${blocoId}`);
+  const data   = questoesPorBloco[blocoId] || [];
+  if (!lista) return;
+  if (!data.length) { lista.innerHTML = '<div style="color:var(--cinza-texto);font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:8px 0;">Nenhuma questão encontrada para este filtro.</div>'; return; }
+  lista.innerHTML = data.map(q => renderQuestaoDoBloco(q, blocoId)).join('');
+}
+
+function renderQuestaoDoBloco(q, blocoId) {
+  const alts = Array.isArray(q.alternativas) ? q.alternativas : [];
+  const gabLetra = alts.length > 0 && q.gabarito != null ? (LETRA[q.gabarito] || '?') : (q.resposta_correta || '?');
+  const enun = q.enunciado || '';
+
+  return `<div class="bq-card status-${q.revisao_status}" id="bqcard-${q.id}">
+    <div class="bq-header">
+      <span class="bq-area-badge">${q.area_tematica||'?'}</span>
+      <span class="bq-status-chip bq-s-${q.revisao_status}">${{ pendente_ia:'PENDENTE', aprovado:'APROVADO', rejeitado:'REJEITADO' }[q.revisao_status]||q.revisao_status}</span>
+      <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;">${q.curso?.toUpperCase()||''}</span>
+      <span class="bq-enun" onclick="toggleBqDetalhe('${q.id}')" title="Clique para expandir">${enun}</span>
+      <div class="bq-acoes">
+        ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--verde);border-color:rgba(125,217,154,.3);" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Aprovar</button>` : ''}
+        ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" style="color:#F09595;border-color:rgba(240,149,149,.3);" onclick="rejeitarQuestaoBloco('${q.id}','${blocoId}')">Rejeitar</button>` : ''}
+        ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--dourado);border-color:rgba(240,192,80,.3);" onclick="abrirEditarQuestaoBloco('${blocoId}','${q.id}')">Editar</button>` : ''}
+        ${q.revisao_status === 'rejeitado'   ? `<button class="btn-sm" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Restaurar</button>` : ''}
+        <button class="btn-sm" onclick="removerQuestaoDoBloco('${blocoId}','${q.id}')">Remover</button>
+      </div>
+    </div>
+    <div class="bq-detalhe" id="bqdet-${q.id}">
+      <div class="bq-detalhe-enun">${enun}</div>
+      ${alts.length
+        ? alts.map((a,i) => `<div class="bq-alt ${i===q.gabarito?'correta':''}">${LETRA[i]}. ${a}</div>`).join('')
+        : (q.alternativa_a ? ['a','b','c','d','e'].map(l => `<div class="bq-alt ${(q.resposta_correta||'').toUpperCase()===l.toUpperCase()?'correta':''}">${l.toUpperCase()}. ${q[`alternativa_${l}`]||''}</div>`).join('') : '')
+      }
+      <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--verde);">Gabarito: ${gabLetra}</div>
+      ${q.legislacao_nome ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-top:4px;">Legislação: ${q.legislacao_nome}</div>` : ''}
+      ${q.comentario || q.justificativa ? `<div class="bq-coment">${q.comentario||q.justificativa}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+function toggleBqDetalhe(qId) {
+  const el = document.getElementById(`bqdet-${qId}`);
+  if (el) el.classList.toggle('aberto');
+}
+
+// ── Filtros ──────────────────────────────────────────────────────────────────
+
+function setFiltroArea(blocoId, area) {
+  filtroAreaBloco[blocoId] = area;
+  ['','AT1','AT2','AT3','AT4','AT5'].forEach(a => {
+    const el = document.getElementById(`fat${a||'todo'}-${blocoId}`);
+    if (el) el.classList.toggle('ativo', a === area);
+  });
+  delete questoesPorBloco[blocoId];
+  carregarQuestoesDoBlocoFiltradas(blocoId);
+}
+
+function setFiltroStatus(blocoId, status) {
+  filtroStatusBloco[blocoId] = status;
+  const ids = { '':'fstodo', 'pendente_ia':'fspend', 'aprovado':'fsaprov', 'rejeitado':'fsrej' };
+  Object.keys(ids).forEach(k => {
+    const el = document.getElementById(`${ids[k]}-${blocoId}`);
+    if (el) el.classList.toggle('ativo', k === status);
+  });
+  delete questoesPorBloco[blocoId];
+  carregarQuestoesDoBlocoFiltradas(blocoId);
+}
+
+// ── Gerar questões ───────────────────────────────────────────────────────────
+
+async function gerarQuestoes(blocoId) {
+  const area      = document.getElementById(`g-area-${blocoId}`)?.value;
+  const quantidade= document.getElementById(`g-qtd-${blocoId}`)?.value;
+  const curso     = document.getElementById(`g-curso-${blocoId}`)?.value;
+  const dificuldade = document.getElementById(`g-dif-${blocoId}`)?.value || null;
+  const instrucoes= document.getElementById(`g-instrucao-${blocoId}`)?.value?.trim() || null;
+
+  const sgEl = document.getElementById(`sg-${blocoId}`);
+  if (sgEl) { sgEl.style.display = 'block'; sgEl.style.borderColor = 'rgba(240,192,80,.3)'; sgEl.style.color = 'var(--dourado)'; sgEl.textContent = `Gerando ${quantidade}x ${area}… aguarde.`; }
+
+  try {
+    await req(`/api/simulados-mensais/admin/blocos/${blocoId}/gerar`, {
+      method: 'POST',
+      body: JSON.stringify({ area, quantidade: parseInt(quantidade), curso, dificuldade, instrucoes }),
+    });
+    toast(`Geração de ${quantidade}x ${area} iniciada em background.`);
+    iniciarPollingBlocoStatus(blocoId);
+  } catch(err) {
+    toast(err.erro || 'Erro ao iniciar geração.', 'err');
+    if (sgEl) sgEl.style.display = 'none';
+  }
+}
+
+async function verificarStatusGeracao(blocoId) {
+  const sgEl = document.getElementById(`sg-${blocoId}`);
+  if (sgEl) { sgEl.style.display = 'block'; sgEl.textContent = 'Verificando…'; }
+  try {
+    const logs = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/status-geracao`);
+    if (!logs || !logs.length) {
+      if (sgEl) { sgEl.style.display = 'block'; sgEl.style.color = '#888'; sgEl.textContent = 'Nenhum log de geração ainda.'; }
+      return;
+    }
+    const linhas = logs.slice(0, 8).map(l => {
+      const icone = l.status === 'done' ? '✓' : l.status === 'failed' ? '✗' : '⏳';
+      const cor   = l.status === 'done' ? 'var(--verde)' : l.status === 'failed' ? '#F09595' : 'var(--dourado)';
+      const det   = typeof l.detalhes === 'string' ? l.detalhes : JSON.stringify(l.detalhes||{});
+      return `<span style="color:${cor};">${icone} ${l.job_name?.split('-').slice(2).join('-')||l.job_name} — ${det}</span>`;
+    });
+    if (sgEl) { sgEl.style.display = 'block'; sgEl.style.color = '#ccc'; sgEl.innerHTML = linhas.join('<br>'); }
+  } catch(err) {
+    if (sgEl) { sgEl.style.display = 'block'; sgEl.style.color = '#F09595'; sgEl.textContent = err.erro||'Erro'; }
+  }
+}
+
+function iniciarPollingBlocoStatus(blocoId) {
+  if (pollingBloco[blocoId]) return;
+  pollingBloco[blocoId] = setInterval(async () => {
+    try {
+      const logs = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/status-geracao`);
+      const recentes = (logs||[]).filter(l => {
+        const diffMs = Date.now() - new Date(l.criado_em).getTime();
+        return diffMs < 15 * 60 * 1000;
+      });
+      const running = recentes.some(l => l.status === 'running');
+      if (!running) {
+        clearInterval(pollingBloco[blocoId]);
+        delete pollingBloco[blocoId];
+        // Recarrega contadores e questões
+        const sgEl = document.getElementById(`sg-${blocoId}`);
+        if (sgEl) { sgEl.style.color='var(--verde)'; sgEl.textContent = 'Geração concluída! Recarregando…'; }
+        await recarregarBlocoCard(blocoId);
+      }
+    } catch {}
+  }, 5000);
+}
+
+async function recarregarBlocoCard(blocoId) {
+  try {
+    const { bloco, contadores } = await req(`/api/simulados-mensais/admin/blocos/${blocoId}`);
+    const card = document.getElementById(`bloco-card-${blocoId}`);
+    if (!card) return;
+    const novo = Object.assign({}, bloco, { contadores });
+    const novoHtml = renderBlocoCard(novo);
+    const tmp = document.createElement('div');
+    tmp.innerHTML = novoHtml;
+    const novoCard = tmp.firstElementChild;
+    card.replaceWith(novoCard);
+    // Reabrir corpo e recarregar questões
+    const corpo = document.getElementById(`bcorpo-${blocoId}`);
+    if (corpo) corpo.classList.add('aberto');
+    delete questoesPorBloco[blocoId];
+    await carregarQuestoesDoBlocoFiltradas(blocoId);
+  } catch {}
+}
+
+// ── Aprovar / Rejeitar inline ────────────────────────────────────────────────
+
+async function aprovarQuestaoBloco(questaoId, blocoId) {
+  try {
+    await req(`/api/admin/aprovacoes/questoes-ia/${questaoId}/aprovar`, { method: 'POST' });
+    toast('Questão aprovada.');
+    delete questoesPorBloco[blocoId];
+    await recarregarBlocoCard(blocoId);
+  } catch(err) { toast(err.erro||'Erro ao aprovar.', 'err'); }
+}
+
+async function rejeitarQuestaoBloco(questaoId, blocoId) {
+  try {
+    await req(`/api/admin/aprovacoes/questoes-ia/${questaoId}/rejeitar`, { method: 'POST' });
+    toast('Questão rejeitada.');
+    delete questoesPorBloco[blocoId];
+    await recarregarBlocoCard(blocoId);
+  } catch(err) { toast(err.erro||'Erro ao rejeitar.', 'err'); }
+}
+
+// ── Remover questão do bloco ─────────────────────────────────────────────────
+
+async function removerQuestaoDoBloco(blocoId, questaoId) {
+  if (!confirm('Remover esta questão do bloco? Ela permanecerá inativa no banco até uma revisão manual.')) return;
+  try {
+    await req(`/api/simulados-mensais/admin/blocos/${blocoId}/questoes/${questaoId}`, { method: 'DELETE' });
+    toast('Questão removida do bloco.');
+    delete questoesPorBloco[blocoId];
+    await recarregarBlocoCard(blocoId);
+  } catch(err) { toast(err.erro||'Erro ao remover.', 'err'); }
+}
+
+// ── Editar questão do bloco (inline modal) ───────────────────────────────────
+
+async function abrirEditarQuestaoBloco(blocoId, questaoId) {
+  const qs = questoesPorBloco[blocoId] || [];
+  const q  = qs.find(x => x.id === questaoId);
+  if (!q) { toast('Questão não encontrada. Recarregue o bloco.', 'err'); return; }
+
+  const alts = Array.isArray(q.alternativas) ? q.alternativas : [q.alternativa_a, q.alternativa_b, q.alternativa_c, q.alternativa_d, q.alternativa_e].filter(Boolean);
+  const gabIdx = q.gabarito != null ? q.gabarito : ['A','B','C','D','E'].indexOf((q.resposta_correta||'A').toUpperCase());
+
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:10000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;';
+  ov.innerHTML = `
+    <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:700px;width:100%;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1.5rem;display:flex;justify-content:space-between;align-items:center;">
+        <span>Editar Questão do Bloco</span>
+        <button id="beq-fechar" style="background:none;border:none;color:#888;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;">✕</button>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div class="form-label" style="margin-bottom:6px;">Enunciado</div>
+        <textarea id="beq-enunciado" rows="5" class="form-input" style="width:100%;resize:vertical;line-height:1.6;"></textarea>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <div class="form-label" style="margin-bottom:8px;">Alternativas</div>
+        ${['A','B','C','D','E'].map(l => `
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">${l}.</span>
+          <input id="beq-alt-${l}" type="text" class="form-input" style="flex:1;">
+        </div>`).join('')}
+      </div>
+      <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:1rem;">
+        <div>
+          <div class="form-label" style="margin-bottom:6px;">Gabarito</div>
+          <select id="beq-gabarito" style="background:#2A2A2A;border:1px solid #333;color:#F8F6F2;padding:7px 14px;border-radius:6px;font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:600;">
+            ${LETRA.map((l,i) => `<option value="${i}">${l}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <div class="form-label" style="margin-bottom:6px;">Comentário / Justificativa</div>
+        <textarea id="beq-comentario" rows="3" class="form-input" style="width:100%;resize:vertical;line-height:1.6;"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button id="beq-cancelar" class="btn-sm">Cancelar</button>
+        <button id="beq-salvar" class="btn-sm btn-primary">Salvar Alterações</button>
+      </div>
+    </div>`;
+  document.body.appendChild(ov);
+
+  document.getElementById('beq-enunciado').value = q.enunciado || '';
+  alts.forEach((a,i) => { const el = document.getElementById(`beq-alt-${LETRA[i]}`); if(el) el.value = a||''; });
+  document.getElementById('beq-gabarito').value = String(gabIdx >= 0 ? gabIdx : 0);
+  document.getElementById('beq-comentario').value = q.comentario || q.justificativa || '';
+
+  const fechar = () => ov.remove();
+  document.getElementById('beq-fechar').addEventListener('click', fechar);
+  document.getElementById('beq-cancelar').addEventListener('click', fechar);
+  ov.addEventListener('click', e => { if(e.target === ov) fechar(); });
+
+  document.getElementById('beq-salvar').addEventListener('click', async () => {
+    const enunciado = document.getElementById('beq-enunciado').value.trim();
+    if (!enunciado) { toast('O enunciado não pode estar vazio.', 'err'); return; }
+    const altsNew = LETRA.map(l => document.getElementById(`beq-alt-${l}`).value.trim());
+    const gabNew  = parseInt(document.getElementById('beq-gabarito').value, 10);
+    const coment  = document.getElementById('beq-comentario').value.trim() || null;
+
+    const btn = document.getElementById('beq-salvar');
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    try {
+      await req(`/api/admin/aprovacoes/questoes-ia/${questaoId}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ enunciado, alternativas: altsNew, gabarito: gabNew, comentario: coment }),
+      });
+      toast('Questão atualizada.');
+      fechar();
+      delete questoesPorBloco[blocoId];
+      await recarregarBlocoCard(blocoId);
+    } catch(err) {
+      toast(err.erro || 'Erro ao salvar.', 'err');
+      btn.disabled = false; btn.textContent = 'Salvar Alterações';
+    }
+  });
+}
+
+// ── Criar / destruir bloco ───────────────────────────────────────────────────
+
+function abrirModalNovoBloco() {
+  atualizarMetasBloco();
+  const d = new Date();
+  const pad = n => String(n).padStart(2,'0');
+  const mes = d.toLocaleString('pt-BR',{month:'long'});
+  const ano  = d.getFullYear();
+  document.getElementById('nb-titulo').value = `Protocolo QAP — CTSP — ${mes.charAt(0).toUpperCase()+mes.slice(1)} ${ano}`;
+  document.getElementById('modal-novo-bloco').style.display = 'flex';
+}
+function fecharModalNovoBloco() { document.getElementById('modal-novo-bloco').style.display = 'none'; }
+
+function atualizarMetasBloco() {
+  const curso = document.getElementById('nb-curso')?.value || 'ctsp';
+  const m = METAS_DEFAULT_BLOCOS[curso] || METAS_DEFAULT_BLOCOS.ctsp;
+  ['at1','at2','at3','at4','at5'].forEach(k => {
+    const el = document.getElementById(`nb-${k}`);
+    if (el) el.value = m[k];
+  });
+}
+
+async function criarBloco() {
+  const titulo = document.getElementById('nb-titulo').value.trim();
+  const curso  = document.getElementById('nb-curso').value;
+  if (!titulo) { toast('Informe um título para o bloco.', 'err'); return; }
+  const metas = {
+    meta_at1: parseInt(document.getElementById('nb-at1').value)||0,
+    meta_at2: parseInt(document.getElementById('nb-at2').value)||0,
+    meta_at3: parseInt(document.getElementById('nb-at3').value)||0,
+    meta_at4: parseInt(document.getElementById('nb-at4').value)||0,
+    meta_at5: parseInt(document.getElementById('nb-at5').value)||0,
+  };
+  const btn = document.getElementById('nb-confirmar');
+  btn.disabled = true; btn.textContent = 'Criando…';
+  try {
+    await req('/api/simulados-mensais/admin/blocos', { method:'POST', body: JSON.stringify({ titulo, curso, ...metas }) });
+    toast('Bloco criado!');
+    fecharModalNovoBloco();
+    carregarBlocos();
+  } catch(err) { toast(err.erro||'Erro ao criar bloco.', 'err'); }
+  btn.disabled = false; btn.textContent = 'Criar Bloco';
+}
+
+async function confirmarExcluirBloco(blocoId) {
+  if (!confirm('Tem certeza que deseja excluir este bloco? As questões geradas NÃO serão deletadas (apenas perdem o bloco_id).')) return;
+  try {
+    await req(`/api/simulados-mensais/admin/blocos/${blocoId}`, { method:'DELETE' });
+    toast('Bloco excluído.');
+    carregarBlocos();
+  } catch(err) {
+    // Se o backend não tiver DELETE de bloco, ignora silenciosamente
+    toast('Para excluir um bloco, entre em contato com o suporte técnico.', 'err');
+  }
+}
+
+// ── Publicar Protocolo QAP ───────────────────────────────────────────────────
+
+function abrirModalPublicar(blocoId) {
+  document.getElementById('pub-bloco-id').value = blocoId;
+  const agora = new Date();
+  const toLocal = d => { const dd = new Date(d.getTime() - d.getTimezoneOffset()*60000); return dd.toISOString().slice(0,16); };
+  const abertura    = new Date(agora.getTime() + 2*24*60*60*1000);
+  const encerramento= new Date(agora.getTime() + 4*24*60*60*1000);
+  document.getElementById('pub-abertura').value    = toLocal(abertura);
+  document.getElementById('pub-encerramento').value= toLocal(encerramento);
+  document.getElementById('modal-publicar').style.display = 'flex';
+}
+function fecharModalPublicar() { document.getElementById('modal-publicar').style.display = 'none'; }
+
+async function confirmarPublicar() {
+  const blocoId      = document.getElementById('pub-bloco-id').value;
+  const aberturaLocal = document.getElementById('pub-abertura').value;
+  const encLocal     = document.getElementById('pub-encerramento').value;
+  if (!aberturaLocal || !encLocal) { toast('Informe abertura e encerramento.', 'err'); return; }
+  if (new Date(encLocal) <= new Date(aberturaLocal)) { toast('Encerramento deve ser depois da abertura.', 'err'); return; }
+  const btn = document.getElementById('pub-confirmar');
+  btn.disabled = true; btn.textContent = 'Publicando…';
+  try {
+    const r = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/publicar`, {
+      method: 'POST',
+      body: JSON.stringify({ abertura: new Date(aberturaLocal).toISOString(), encerramento: new Date(encLocal).toISOString() }),
+    });
+    toast(`Protocolo QAP publicado! Simulado ID: ${r.simulado_id}`);
+    fecharModalPublicar();
+    carregarBlocos();
+    carregarSimulados();
+  } catch(err) { toast(err.erro||'Erro ao publicar.', 'err'); }
+  btn.disabled = false; btn.textContent = 'Publicar';
+}
+
+// ── Liberar ao banco ─────────────────────────────────────────────────────────
+
+async function liberarBanco(blocoId) {
+  const { bloco } = await req(`/api/simulados-mensais/admin/blocos/${blocoId}`).catch(() => ({ bloco: {} }));
+  const cnt = bloco?.contadores?.total?.aprovadas || '?';
+  if (!confirm(`Liberar ${cnt} questões aprovadas ao banco geral? Elas ficam visíveis no modo estudo para os alunos.`)) return;
+  try {
+    const r = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/liberar`, { method: 'POST' });
+    toast(`${r.questoes_liberadas} questão(ões) liberadas ao banco!`);
+    carregarBlocos();
+  } catch(err) { toast(err.erro||'Erro ao liberar.', 'err'); }
+}
+
+// ── Questão Manual ───────────────────────────────────────────────────────────
+
+function abrirModalQuestaoManual(blocoId, cursoPadrao) {
+  document.getElementById('qm-bloco-id').value = blocoId;
+  const cursoEl = document.getElementById('qm-curso');
+  if (cursoEl) cursoEl.value = cursoPadrao || 'ctsp';
+  // Limpar campos
+  ['enunciado','comentario'].forEach(f => { const el = document.getElementById(`qm-${f}`); if(el) el.value=''; });
+  ['A','B','C','D','E'].forEach(l => { const el = document.getElementById(`qm-alt-${l}`); if(el) el.value=''; });
+  document.getElementById('qm-gabarito').value = '0';
+  document.getElementById('qm-legislacao-nome').value = '';
+  document.getElementById('modal-questao-manual').style.display = 'flex';
+}
+function fecharModalQuestaoManual() { document.getElementById('modal-questao-manual').style.display = 'none'; }
+
+async function salvarQuestaoManual(salvarEAprovar) {
+  const blocoId = document.getElementById('qm-bloco-id').value;
+  const enunciado = document.getElementById('qm-enunciado').value.trim();
+  if (!enunciado) { toast('Informe o enunciado.', 'err'); return; }
+  const alternativas = ['A','B','C','D','E'].map(l => document.getElementById(`qm-alt-${l}`).value.trim());
+  if (alternativas.some(a => !a)) { toast('Preencha todas as alternativas.', 'err'); return; }
+  const gabarito = parseInt(document.getElementById('qm-gabarito').value, 10);
+  const comentario= document.getElementById('qm-comentario').value.trim() || null;
+  const area_tematica = document.getElementById('qm-area').value;
+  const curso     = document.getElementById('qm-curso').value;
+  const dificuldade = document.getElementById('qm-dificuldade').value;
+  const legislacao_nome = document.getElementById('qm-legislacao-nome').value.trim() || null;
+
+  const btn = document.getElementById(salvarEAprovar ? 'qm-salvar-aprovar' : 'qm-salvar');
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  try {
+    await req(`/api/simulados-mensais/admin/blocos/${blocoId}/questoes/manual`, {
+      method: 'POST',
+      body: JSON.stringify({ enunciado, alternativas, gabarito, comentario, area_tematica, curso, dificuldade, legislacao_nome, salvar_e_aprovar: salvarEAprovar }),
+    });
+    toast('Questão criada' + (salvarEAprovar ? ' e aprovada!' : '!'));
+    fecharModalQuestaoManual();
+    delete questoesPorBloco[blocoId];
+    await recarregarBlocoCard(blocoId);
+  } catch(err) { toast(err.erro||'Erro ao salvar.', 'err'); }
+  btn.disabled = false; btn.textContent = salvarEAprovar ? 'Salvar e Aprovar' : 'Salvar (Pendente)';
+}
+
+// Inicializar blocos na carga
+carregarBlocos();
 </script>
 <style>
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }

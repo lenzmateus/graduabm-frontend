@@ -438,7 +438,6 @@ let currentIndex = 0;
 let respostas = [];
 let tempoRestante = 14400;
 let timerInterval = null;
-let tempoInicio = parseInt(sessionStorage.getItem('pbm_sm_tempo_inicio') || '0') || Date.now();
 
 // ── LOBBY ────────────────────────────────────────────────────────────────────
 
@@ -675,20 +674,24 @@ async function init() {
     document.getElementById('topbar-titulo').innerHTML = `<strong style="color:var(--dourado);">PROTOCOLO QAP</strong><br>${simuladoTitulo}`;
 
     // Registra participação (cria sessão no backend)
+    let iniciadoEm = null;
     if (partExist) {
       sessaoId = partExist.sessao_id;
       participacaoId = partExist.id;
+      iniciadoEm = partExist.iniciado_em;
     } else {
       const part = await PBM.SimuladoMensal.participar(simuladoId);
       sessaoId = part.sessao_id;
       participacaoId = part.participacao_id;
+      iniciadoEm = part.iniciado_em;
     }
 
     respostas = questoes.map(q => ({ questao_id: q.id, rascunho: null, oficial: null }));
 
-    if (!sessionStorage.getItem('pbm_sm_tempo_inicio')) {
-      tempoInicio = Date.now();
-      sessionStorage.setItem('pbm_sm_tempo_inicio', String(tempoInicio));
+    // Calcula tempo restante com base no iniciado_em do servidor (fonte da verdade)
+    if (iniciadoEm) {
+      const msDecorrido = Date.now() - new Date(iniciadoEm).getTime();
+      tempoRestante = Math.max(0, 4 * 3600 - Math.floor(msDecorrido / 1000));
     }
 
     // Ajusta timer para não ultrapassar encerramento do simulado
@@ -708,6 +711,10 @@ async function init() {
     console.error(err);
     const msg = err?.erro || err?.message || 'Erro ao carregar simulado.';
     if (err?.codigo === 'JA_ENTREGUE') {
+      window.location.href = '/simulado-mensal-ranking?id=' + simuladoId;
+      return;
+    }
+    if (err?.codigo === 'TEMPO_EXPIRADO') {
       window.location.href = '/simulado-mensal-ranking?id=' + simuladoId;
       return;
     }
