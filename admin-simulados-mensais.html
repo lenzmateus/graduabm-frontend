@@ -143,7 +143,7 @@
   .toast {
     position: fixed; bottom: 2rem; right: 2rem; background: var(--cinza-escuro);
     border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 18px;
-    font-size: 13px; z-index: 999; opacity: 0; transition: opacity 0.3s;
+    font-size: 13px; z-index: 10000; opacity: 0; transition: opacity 0.3s;
     max-width: 320px;
   }
   .toast.visivel { opacity: 1; }
@@ -447,14 +447,6 @@
             <option value="ctsp">CTSP</option>
             <option value="cba">CBA</option>
             <option value="ambos">Ambos</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <div class="form-label">Dificuldade</div>
-          <select id="qm-dificuldade" class="select-sm" style="width:100%;">
-            <option value="média">Média</option>
-            <option value="fácil">Fácil</option>
-            <option value="difícil">Difícil</option>
           </select>
         </div>
         <div class="form-group">
@@ -1892,7 +1884,6 @@ async function salvarQuestaoManual(salvarEAprovar) {
   const comentario= document.getElementById('qm-comentario').value.trim() || null;
   const area_tematica = document.getElementById('qm-area').value;
   const curso     = document.getElementById('qm-curso').value;
-  const dificuldade = document.getElementById('qm-dificuldade').value;
   const legislacao_nome = document.getElementById('qm-legislacao-nome').value.trim() || null;
 
   const btn = document.getElementById(salvarEAprovar ? 'qm-salvar-aprovar' : 'qm-salvar');
@@ -1900,13 +1891,13 @@ async function salvarQuestaoManual(salvarEAprovar) {
   try {
     await req(`/api/simulados-mensais/admin/blocos/${blocoId}/questoes/manual`, {
       method: 'POST',
-      body: JSON.stringify({ enunciado, alternativas, gabarito, comentario, area_tematica, curso, dificuldade, legislacao_nome, salvar_e_aprovar: salvarEAprovar }),
+      body: JSON.stringify({ enunciado, alternativas, gabarito, comentario, area_tematica, curso, legislacao_nome, salvar_e_aprovar: salvarEAprovar }),
     });
     toast('Questão criada' + (salvarEAprovar ? ' e aprovada!' : '!'));
     fecharModalQuestaoManual();
     delete questoesPorBloco[blocoId];
     await recarregarBlocoCard(blocoId);
-  } catch(err) { toast(err.erro||'Erro ao salvar.', 'err'); }
+  } catch(err) { console.error('[salvarQuestaoManual]', err); toast(err.erro||err.message||'Erro ao salvar.', 'err'); }
   btn.disabled = false; btn.textContent = salvarEAprovar ? 'Salvar e Aprovar' : 'Salvar (Pendente)';
 }
 
@@ -1925,5 +1916,6 @@ carregarBlocos();
 }
 </style>
 <div class="pbm-watermark" aria-hidden="true"></div>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
 </body>
 </html>

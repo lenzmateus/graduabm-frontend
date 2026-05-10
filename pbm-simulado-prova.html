@@ -519,8 +519,9 @@
         <div class="q-area" id="q-area">Área Temática</div>
       </div>
 
+      <img id="q-imagem" src="" alt="Imagem da questão" style="display:none;max-width:100%;max-height:320px;border-radius:6px;object-fit:contain;margin-bottom:.75rem">
       <div class="enunciado" id="q-enunciado">Carregando...</div>
-      
+
       <div class="alts-lista" id="alts-lista">
         <!-- Alternativas injetadas via JS -->
       </div>
@@ -755,6 +756,9 @@ function carregarQuestao(index) {
   const areaEl = document.getElementById('q-area');
   areaEl.innerHTML = `<span class="q-area-badge" style="color:${atCor};border-color:${atCor}33">${atKey} — ${NOMES_AT[atKey] || atKey}</span>`;
   document.getElementById('q-enunciado').textContent = q.enunciado || q.texto || q.questao || '';
+  const imgElProva = document.getElementById('q-imagem');
+  if (q.imagem_url) { imgElProva.src = q.imagem_url; imgElProva.style.display = 'block'; }
+  else { imgElProva.src = ''; imgElProva.style.display = 'none'; }
 
   const lista = document.getElementById('alts-lista');
   lista.innerHTML = '';

@@ -349,7 +349,7 @@ const PBM = {
       resumo() { return PBM.Admin.req('/api/admin/denuncias/resumo'); },
     },
     automatizar: {
-      gerarQuestoes(area = 'todas', quantidade = 1) { return PBM.Admin.req('/api/admin/automatizar/gerar-questoes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ area, quantidade }) }); },
+      gerarQuestoes(area = 'todas', quantidade = 1, curso = 'ambos') { return PBM.Admin.req('/api/admin/automatizar/gerar-questoes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ area, quantidade, curso }) }); },
       gerarFlashcard() { return PBM.Admin.req('/api/admin/automatizar/gerar-flashcard', { method: 'POST' }); },
       cronLogs()       { return PBM.Admin.req('/api/admin/cron-logs'); },
     },

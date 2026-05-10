@@ -347,6 +347,7 @@
         <div class="q-num" id="q-num">Q. 01</div>
         <div class="q-area" id="q-area"></div>
       </div>
+      <img id="q-imagem" src="" alt="Imagem da questão" style="display:none;max-width:100%;max-height:320px;border-radius:6px;object-fit:contain;margin-bottom:.75rem">
       <div class="enunciado" id="q-enunciado">Carregando...</div>
       <div class="alts-lista" id="alts-lista"></div>
       <div class="q-actions">
@@ -775,6 +776,9 @@ function carregarQuestao(index) {
   document.getElementById('q-num').textContent = `Q. ${String(index + 1).padStart(2, '0')}`;
   document.getElementById('q-area').textContent = (q.area_tematica || 'GERAL').toUpperCase();
   document.getElementById('q-enunciado').textContent = q.enunciado || '';
+  const imgElMensal = document.getElementById('q-imagem');
+  if (q.imagem_url) { imgElMensal.src = q.imagem_url; imgElMensal.style.display = 'block'; }
+  else { imgElMensal.src = ''; imgElMensal.style.display = 'none'; }
 
   const lista = document.getElementById('alts-lista');
   lista.innerHTML = '';

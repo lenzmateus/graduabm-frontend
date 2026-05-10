@@ -501,15 +501,17 @@
   async function gerarQuestoes() {
     const btn = document.getElementById('btn-gerar-questoes');
     if (!btn) return;
+    const curso = document.getElementById('sel-curso-questao')?.value || 'ambos';
     const area = document.getElementById('sel-area-questao')?.value || 'todas';
     const quantidade = parseInt(document.getElementById('sel-qtd-questao')?.value || '1', 10);
     const orig = btn.innerHTML;
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner"></span> Gerando...';
     try {
-      await PBM.Admin.automatizar.gerarQuestoes(area, quantidade);
+      await PBM.Admin.automatizar.gerarQuestoes(area, quantidade, curso);
+      const cursoLabel = curso === 'ambos' ? '' : ` [${curso.toUpperCase()}]`;
       const areaLabel = area === 'todas' ? 'todas as áreas' : area;
-      toast(`Geração iniciada! ${quantidade}x ${areaLabel}. Aguarde alguns minutos e recarregue.`, 'sucesso');
+      toast(`Geração iniciada! ${quantidade}x ${areaLabel}${cursoLabel}. Aguarde alguns minutos e recarregue.`, 'sucesso');
       tabCarregadas['questoes'] = false;
       await carregarQuestoes();
     } catch (err) {
@@ -525,6 +527,11 @@
     try {
       const lista = await PBM.Admin.aprovacoes.questoesIa.listar();
       const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+        <select id="sel-curso-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+          <option value="ambos">CTSP + CBA</option>
+          <option value="ctsp">Só CTSP</option>
+          <option value="cba">Só CBA</option>
+        </select>
         <select id="sel-area-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
           <option value="todas">Todas as áreas</option>
           <option value="AT1">AT1 — Segurança Incêndio</option>
@@ -1155,5 +1162,6 @@
   });
 })();
 </script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
 </body>
 </html>
