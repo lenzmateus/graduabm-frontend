@@ -82,13 +82,9 @@ const AREAS = {
       badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;',
       grupos: [
         {
-          titulo: 'Manual CBMMG — Combate a Incêndio Urbano (1ª Ed. 2020)',
+          titulo: 'Manual de Combate a Incêndio Urbano CBMMG (1ª Ed. 2020)',
           items: [
-            { id:'cap1', nome:'Capítulo 1 — Fundamentos do incêndio', detalhe:'Teoria do fogo, triângulo e tetraedro do fogo, classes de incêndio, propagação do calor', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'cap2', nome:'Capítulo 2 — Agentes extintores', detalhe:'Tipos de agentes, mecanismos de extinção, aplicação por classe de incêndio', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'cap3', nome:'Capítulo 3 — Equipamentos e viaturas', detalhe:'Equipamentos de proteção individual, viaturas de combate, ferramentas operacionais', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'cap5', nome:'Capítulo 5 — Técnicas de combate', detalhe:'Táticas de ataque, posicionamento, ventilação, busca e resgate em incêndio', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'cap7', nome:'Capítulo 7 — Incêndios especiais', detalhe:'Incêndios em líquidos inflamáveis, gases, veículos, áreas rurais', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'manual_combate_cbmmg', nome:'Manual de Combate a Incêndio Urbano CBMMG (Caps. 1, 2, 3, 5 e 7)', detalhe:'Fundamentos do incêndio, agentes extintores, equipamentos, técnicas de combate e incêndios especiais', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
         }
       ]
@@ -100,13 +96,9 @@ const AREAS = {
       badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;',
       grupos: [
         {
-          titulo: 'Manual CBMMG — Combate a Incêndio Urbano (1ª Ed. 2020)',
+          titulo: 'Manual de Combate a Incêndio Urbano CBMMG (1ª Ed. 2020)',
           items: [
-            { id:'cap1', nome:'Capítulo 1 — Fundamentos do incêndio', detalhe:'Teoria do fogo, triângulo e tetraedro do fogo, classes de incêndio, propagação do calor', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'cap2', nome:'Capítulo 2 — Agentes extintores', detalhe:'Tipos de agentes, mecanismos de extinção, aplicação por classe de incêndio', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'cap3', nome:'Capítulo 3 — Equipamentos e viaturas', detalhe:'Equipamentos de proteção individual, viaturas de combate, ferramentas operacionais', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'cap5', nome:'Capítulo 5 — Técnicas de combate', detalhe:'Táticas de ataque, posicionamento, ventilação, busca e resgate em incêndio', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'cap7', nome:'Capítulo 7 — Incêndios especiais', detalhe:'Incêndios em líquidos inflamáveis, gases, veículos, áreas rurais', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'manual_combate_cbmmg', nome:'Manual de Combate a Incêndio Urbano CBMMG (Caps. 1, 2, 3, 5 e 7)', detalhe:'Fundamentos do incêndio, agentes extintores, equipamentos, técnicas de combate e incêndios especiais', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
         }
       ]

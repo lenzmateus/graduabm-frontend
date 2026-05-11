@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -982,7 +982,7 @@ const AREAS = {
         {
           titulo: 'Manual CBMMG — Combate a Incêndio Urbano (1ª Ed. 2020)',
           items: [
-            { id:'manual_combate_cbmmg', nome:'Manual de Combate a Incêndio Urbano CBMMG — completo', detalhe:'Fundamentos, agentes extintores, EPI, viaturas, táticas de ataque, ventilação, incêndios especiais (caps. 1–7)', tag:'comum', tagTxt:'CTSP e CBA', q:98 },
+            { id:'manual_combate_cbmmg', nome:'Manual de Combate a Incêndio Urbano CBMMG (Caps. 1, 2, 3, 5 e 7)', detalhe:'Fundamentos, agentes extintores, EPI, viaturas, táticas de ataque, ventilação, incêndios especiais', tag:'comum', tagTxt:'CTSP e CBA', q:98 },
           ]
         }
       ]
@@ -996,7 +996,7 @@ const AREAS = {
         {
           titulo: 'Manual CBMMG — Combate a Incêndio Urbano (1ª Ed. 2020)',
           items: [
-            { id:'manual_combate_cbmmg', nome:'Manual de Combate a Incêndio Urbano CBMMG — completo', detalhe:'Fundamentos, agentes extintores, EPI, viaturas, táticas de ataque, ventilação, incêndios especiais (caps. 1–7)', tag:'comum', tagTxt:'CTSP e CBA', q:98 },
+            { id:'manual_combate_cbmmg', nome:'Manual de Combate a Incêndio Urbano CBMMG (Caps. 1, 2, 3, 5 e 7)', detalhe:'Fundamentos, agentes extintores, EPI, viaturas, táticas de ataque, ventilação, incêndios especiais', tag:'comum', tagTxt:'CTSP e CBA', q:98 },
           ]
         }
       ]
@@ -1310,7 +1310,7 @@ function render() {
           </div>
         </div>
         <div class="leg-meta">
-          <span class="leg-tag ${tagClass(item.tag)}">${item.tagTxt}</span>
+          <!-- Tags removed per user request -->
         </div>
         <div class="leg-progresso ${progVisivel}">
           <div class="leg-progresso-fill ${progClass}" style="width:${progPct}%"></div>

@@ -1,4 +1,4 @@
-const CACHE = 'pbm-v1';
+const CACHE = 'pbm-v2';
 const CACHE_ASSETS = [
   '/dashboard',
   '/area-estudos',
@@ -26,9 +26,10 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Skip API calls and non-GET requests
+  // Skip API calls, non-GET requests and external URLs
   if (e.request.method !== 'GET') return;
   if (e.request.url.includes('/api/')) return;
+  if (!e.request.url.startsWith(self.location.origin)) return;
 
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))

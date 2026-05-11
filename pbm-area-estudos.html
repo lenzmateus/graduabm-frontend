@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -313,10 +313,8 @@
   }
   .area-legislacao {
     font-size: 11px; color: var(--cinza-texto);
-    line-height: 1.5; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis;
+    line-height: 1.5; white-space: normal;
   }
-  .area-legislacao.expandida { white-space: normal; }
 
   .area-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
   .tag {
@@ -649,45 +647,35 @@ const dados = {
         nome: 'Segurança contra incêndios',
         cor: '#C0270F',
         legislacao: 'Lei Federal 13.425/17 · LC 14.376/13 · Dec. Estadual 51.803/14 · RT CBMRS 01/2022 · SOL-CBMRS 4ª Ed. · RT 05 (Partes 1.1, 02, 3.1, 7.2, 08, 06) · RT 11 Pt.01/2016 · RT 14/2016 · RT 12/2021 · RT 15 Pt.01/2023',
-        tags: [
-          { txt: 'Lei 13.425/17 — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
-          { txt: 'RT 11, 12, 14 — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
-          { txt: 'RT 05 Partes 3.1 e 08 — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
-        ]
+        tags: []
       },
       {
         num: '02',
         nome: 'Combate a incêndios',
         cor: '#BA7517',
         legislacao: 'Manual de Bombeiro Militar — Combate a Incêndio Urbano CBMMG 1ª Ed. 2020 (Cap. 1, 2, 3, 5 e 7)',
-        tags: [{ txt: 'Igual ao CBA', tipo: 'igual' }]
+        tags: []
       },
       {
         num: '03',
         nome: 'Buscas e salvamentos / APH',
         cor: '#185FA5',
         legislacao: 'ITO 23 — Protocolo APH CBMMG 3ª Ed. 2021 (Mód. 100, 200, 500) · IT 010/AODC-GCG (busca, salvamento e resgate) · ITO 34 — Salvamento Veicular CBMMG 1ª Ed. 2023 (p. 24–154) · POP Salvamento Veicular RS',
-        tags: [{ txt: 'Igual ao CBA', tipo: 'igual' }]
+        tags: []
       },
       {
         num: '04',
         nome: 'Direito institucional, constitucional e militar',
         cor: '#27A05A',
         legislacao: 'LC 10.990/97 · LC 10.992/97 · LC 14.920/2016 · Dec. 53.897/2018 · LC 15.008/17 · LC 15.009/17 · CF/88 (arts. 37–42, 125–126, 142–143, 144) · CE/RS (arts. 46–48, 124–131) · CPM (arts. 1–9, 121–122, 149–334) · CPPM (arts. 7–253) · RDBM Dec. 43.245/2004 · IR 003.1 PADM · IR 006 Sindicância · IR 008 IPM',
-        tags: [
-          { txt: 'LC 10.992/97 — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
-          { txt: 'IR 003.1, 006, 008 — presentes', tipo: 'igual' },
-        ]
+        tags: []
       },
       {
         num: '05',
         nome: 'Normas administrativas e documentação técnica',
         cor: '#7F77DD',
         legislacao: 'Dec. 57.390/23 (Movimentação) · Lei 6.196/71 (Vencimentos) · Dec. 24.846/76 (Diárias) · Dec. 35.693/94 (Prestação de contas) · Dec. 35.818/95 (Substituições) · Dec. 49.113/2012 (Estágio Probatório) · Dec. 40.986/2001 (Serviço extraordinário) · IT 03 (E-193) · IT 04.2/2024 (FR2) · IT 09 · Caderno Temático ABM 2023 · Portaria 021/20 (Glossário)',
-        tags: [
-          { txt: 'Decretos administrativos — exclusivo CTSP', tipo: 'exclusivo-ctsp' },
-          { txt: 'IT 03, 04, 09 e Caderno ABM — presentes', tipo: 'igual' },
-        ]
+        tags: []
       },
     ]
   },
@@ -699,45 +687,35 @@ const dados = {
         nome: 'Segurança contra incêndios',
         cor: '#185FA5',
         legislacao: 'LC 14.376/13 · Dec. Estadual 51.803/14 · RT CBMRS 01/2022 · SOL-CBMRS 4ª Ed. · RT 05 (Partes 1.1, 02, 04A, 04B, 04C, 7.2, 06) · RT 15 Pt.01/2022',
-        tags: [
-          { txt: 'RT 05 Partes 04A, 04B, 04C — exclusivo CBA', tipo: 'exclusivo-cba' },
-          { txt: 'Sem Lei 13.425/17, RT 11, 12, 14', tipo: 'exclusivo-cba' },
-        ]
+        tags: []
       },
       {
         num: '02',
         nome: 'Combate a incêndios',
         cor: '#BA7517',
         legislacao: 'Manual de Bombeiro Militar — Combate a Incêndio Urbano CBMMG 1ª Ed. 2020 (Cap. 1, 2, 3, 5 e 7)',
-        tags: [{ txt: 'Igual ao CTSP', tipo: 'igual' }]
+        tags: []
       },
       {
         num: '03',
         nome: 'Buscas e salvamentos / APH',
         cor: '#C0270F',
         legislacao: 'ITO 23 — Protocolo APH CBMMG 3ª Ed. 2021 (Mód. 100, 200, 500) · IT 010/AODC-GCG (busca, salvamento e resgate) · ITO 34 — Salvamento Veicular CBMMG 1ª Ed. 2023 (p. 24–154) · POP Salvamento Veicular RS',
-        tags: [{ txt: 'Igual ao CTSP', tipo: 'igual' }]
+        tags: []
       },
       {
         num: '04',
         nome: 'Direito institucional, constitucional e militar',
         cor: '#27A05A',
         legislacao: 'LC 10.990/97 · LC 14.920/2016 · Dec. 53.897/2018 · LC 15.008/17 · LC 15.009/17 · Dec. 43.245/04 (RDBM) · CF/88 (arts. 37–42, 125–126, 142–143, 144) · CE/RS (arts. 46–48, 124–131) · CPM (arts. 1–9, 121–122, 149–334) · CPPM (arts. 7–253)',
-        tags: [
-          { txt: 'Sem LC 10.992/97', tipo: 'exclusivo-cba' },
-          { txt: 'Sem IR 003.1, 006, 008 (estão na AT5)', tipo: 'exclusivo-cba' },
-        ]
+        tags: []
       },
       {
         num: '05',
         nome: 'Normas institucionais e documentação técnica',
         cor: '#7F77DD',
         legislacao: 'IR 003/ADM/EXC-20 (Escalas e efetividade) · IR 002/Adm/RH-20 (Estágio Probatório) · IR 001.1/Corregedoria (Conselho de Disciplina) · IR 003.1/Corregedoria (PADM) · IR 006/Corregedoria (Sindicância) · IR 008/Corregedoria (IPM) · IT 03 (E-193) · IT 04.2/2024 (FR2) · IT 09 · Portaria 018/24 (Circunscrição Adm. e Operacional) · Caderno Temático ABM 2023 · Portaria 021/20 (Glossário)',
-        tags: [
-          { txt: 'IRs de RH e escalas — exclusivo CBA', tipo: 'exclusivo-cba' },
-          { txt: 'Portaria 018/24 — exclusivo CBA', tipo: 'exclusivo-cba' },
-          { txt: 'Sem decretos de diárias e movimentação', tipo: 'exclusivo-cba' },
-        ]
+        tags: []
       },
     ]
   }

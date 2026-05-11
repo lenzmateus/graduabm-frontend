@@ -11,14 +11,23 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 ### Conteúdo AT2 — CTSP e CBA (mesmo material para ambos os cursos)
 **Manual de Bombeiro Militar — Combate a Incêndio Urbano — CBMMG — 1ª Edição 2020**
 
-Os capítulos cobrados são **exclusivamente**:
-- **Capítulo 1** — Fundamentos do incêndio (teoria do fogo, propagação, Backdraft, Flashover)
-- **Capítulo 2** — Agentes extintores (água, espuma, pó químico, CO₂, novos agentes)
-- **Capítulo 3** — Equipamentos e viaturas (EPI, EPR, ABT, mangueiras, esguichos)
-- **Capítulo 5** — Técnicas de combate (ataque direto, indireto, ofensivo, defensivo, ventilação tática)
-- **Capítulo 7** — Incêndios especiais (gás combustível, veículos, líquidos inflamáveis, rede elétrica)
+Os capítulos cobrados são **exclusivamente** (conforme Portaria CBMRS nº 078/2024 — CTSP e Portaria nº 038/2024 — CBA):
+- **Capítulo 1 — Fundamentos e Comportamento do Fogo**: teoria do fogo, triângulo/tetraedro do fogo, combustão, propagação de calor (condução, convecção, irradiação), classificação de incêndios (A, B, C, D), fenômenos extremos (Backdraft, Flashover, Rollover), desenvolvimento do incêndio por fases
+- **Capítulo 2 — Equipamentos de Proteção Individual e Respiratória (EPI/EPR)**: capacetes, luvas, capas, botas de combate, aparelho de respiração autônoma (ARA), SCBA, máscara facial, linha de vida, EPI de proteção estrutural e de aproximação
+- **Capítulo 3 — Materiais Básicos de Combate a Incêndio Urbano**: agentes extintores (água, espuma mecânica, pó químico, CO₂), extintores portáteis, mangueiras (tipos, diâmetros, conexões), esguichos/agulhetas (jato sólido, regulável, neblinador), hidrantes, chaves de mangueira, adaptadores, engate rápido, capacete, bombas
+- **Capítulo 5 — Técnicas de Combate a Incêndio**: modalidades de ataque (direto, indireto, combinado/circulante), posições operacionais (ofensiva, defensiva, transitiva), técnicas de aplicação de jato (sólido, neblinado), controle de aberturas, proteção de expostos, resfriamento de estrutura
+- **Capítulo 7 — Entradas Forçadas**: técnicas e ferramentas de arrombamento, tipos de portas (madeira, metálica, corta-fogo), janelas, paredes e coberturas, ordem de tentativa (RICE: Reconhecer, Investigar, Confirmar, Executar), seleção de ponto de entrada, proteção de vítimas durante a entrada
 
-⚠️ **Os demais capítulos (4, 6, etc.) NÃO constam no edital de nenhum dos cursos. Não elabore questões sobre conteúdo fora dos cinco capítulos listados.**
+⚠️ **Os capítulos 4, 6, 8, 9, 10, 11, 12, 13, 14 e 15 NÃO constam no edital de nenhum dos cursos. Não elabore questões sobre:**
+- Cap 4 (Manobras com mangueiras e estabelecimentos)
+- Cap 6 (Passagem de porta e progressão em ambiente de incêndio)
+- Cap 8 (Salvamento em incêndio)
+- Cap 9 (Ventilação tática)
+- Cap 10 (Combate a incêndio em veículos)
+- Cap 11 (Combate a incêndio em caminhão-tanque)
+- Cap 12 (Incêndio em GLP)
+- Cap 13 (Tática de combate a incêndio)
+- Cap 14 e 15 (Segurança contra incêndio e danos estruturais)
 
 ### Diferenças entre os cursos
 | Aspecto | CTSP | CBA |

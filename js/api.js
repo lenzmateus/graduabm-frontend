@@ -495,3 +495,16 @@ const PBM = {
 };
 
 window.PBM = PBM;
+
+/* Injeção de CSS Global (Scrollbar Unificada) */
+(function() {
+  const style = document.createElement('style');
+  style.textContent = `
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #0F0F0F; }
+    ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; border: 2px solid #0F0F0F; }
+    ::-webkit-scrollbar-thumb:hover { background: #333333; }
+    * { scrollbar-width: thin; scrollbar-color: #2A2A2A #0F0F0F; }
+  `;
+  document.head.appendChild(style);
+})();

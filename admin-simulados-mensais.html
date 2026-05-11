@@ -258,6 +258,12 @@
   .bloco-rename-btn { background: none; border: none; cursor: pointer; color: #444; padding: 2px 3px; flex-shrink: 0; line-height: 1; display: flex; align-items: center; }
   .bloco-rename-btn:hover { color: #888; }
 
+  /* Scrollbar unificada PBM */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: #0F0F0F; }
+  ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; border: 2px solid #0F0F0F; }
+  ::-webkit-scrollbar-thumb:hover { background: #444; }
+  * { scrollbar-width: thin; scrollbar-color: #2A2A2A #0F0F0F; }
 </style>
 </head>
 <body>
@@ -449,10 +455,12 @@
             <option value="ambos">Ambos</option>
           </select>
         </div>
-        <div class="form-group">
-          <div class="form-label">Legislação (nome)</div>
-          <input id="qm-legislacao-nome" class="form-input" type="text" placeholder="Ex: RT-01/2011">
-        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Legislação <span style="color:#555;font-size:10px;">(filtra pela área acima)</span></div>
+        <select id="qm-legislacao-sel" class="form-input" style="cursor:pointer;">
+          <option value="">Carregando…</option>
+        </select>
       </div>
       <div class="form-group">
         <div class="form-label">Enunciado</div>
@@ -1007,6 +1015,8 @@ function renderBlocoCard(bloco) {
     <div class="bloco-corpo" id="bcorpo-${bloco.id}">
       <!-- Progress AT -->
       <div id="bat-progress-${bloco.id}">${renderAtProgress(bloco)}</div>
+      <!-- Legislações -->
+      <div id="bleg-${bloco.id}">${bloco.legislacoes_usadas ? renderLegislacoes(bloco.legislacoes_usadas, bloco.manifesto || null, bloco) : ''}</div>
       <!-- Gerar questões -->
       ${renderGerarSection(bloco)}
       <!-- Questões -->
@@ -1100,6 +1110,84 @@ function renderAtProgress(bloco) {
   return grid + `<div class="ctsp-ambos-lembrete"><span class="ctsp-ambos-label">Para Ambos</span>${chips}</div>`;
 }
 
+const CORES_AT = { AT1:'#C0270F', AT2:'#D97706', AT3:'#185FA5', AT4:'#059669', AT5:'#7C3AED' };
+
+function renderLegislacoes(usadas, manifesto, bloco) {
+  if (!manifesto || !Array.isArray(manifesto.todos) || !manifesto.total) return '';
+
+  const usadasMap = {};
+  for (const l of (usadas || [])) usadasMap[l.legislacao_id] = l;
+
+  const totalAprovadas = (usadas || []).reduce((s, l) => s + (l.aprovadas || 0), 0);
+  const cobertos = manifesto.todos.filter(l => usadasMap[l.legislacao_id]?.total > 0).length;
+  const corBadge = cobertos === manifesto.total ? '#7DD99A'
+                 : cobertos >= manifesto.total * 0.7 ? '#D97706' : '#F09595';
+  const badge = `<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${corBadge};">${cobertos}/${manifesto.total} leis</span>`;
+
+  const gruposHtml = ['AT1','AT2','AT3','AT4','AT5'].map(at => {
+    const items = manifesto.todos.filter(l => l.area_tematica === at);
+    if (!items.length) return '';
+    const rows = items.map(l => {
+      const uso = usadasMap[l.legislacao_id];
+      const nomeEsc = l.nome.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+      let countEl, gerarBtn = '';
+      if (!uso || uso.total === 0) {
+        countEl  = `<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#F09595;flex-shrink:0;">NÃO UTILIZADA</span>`;
+        gerarBtn = `<button class="btn-sm" style="font-size:10px;padding:2px 8px;flex-shrink:0;" onclick="preencherGerar('${bloco.id}','${at}','${nomeEsc}')">Gerar ↗</button>`;
+      } else if (uso.aprovadas > 0) {
+        const pct    = totalAprovadas > 0 ? Math.round(uso.aprovadas / totalAprovadas * 100) : 0;
+        const alerta = pct > 35 ? ` <span title="Alta concentração: ${pct}% do bloco nesta lei" style="color:#D97706;font-size:9px;">⚠${pct}%</span>` : '';
+        const pend   = uso.pendentes > 0 ? ` <span style="color:#D97706;font-size:10px;">(+${uso.pendentes}⏳)</span>` : '';
+        countEl = `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7DD99A;flex-shrink:0;">${uso.aprovadas}q${alerta}${pend}</span>`;
+      } else if (uso.pendentes > 0) {
+        countEl = `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#D97706;flex-shrink:0;">${uso.pendentes} pend.</span>`;
+      } else {
+        countEl = `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#555;flex-shrink:0;">${uso.rejeitadas} rej.</span>`;
+      }
+
+      const nomeCor = (!uso || uso.total === 0) ? '#555' : uso.aprovadas > 0 ? '#D4CFC9' : '#999';
+      return `<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #1A1A1A;flex-wrap:wrap;">
+        <span style="font-size:12px;color:${nomeCor};flex:1;min-width:100px;">${l.nome}</span>
+        ${countEl}${gerarBtn}
+      </div>`;
+    }).join('');
+    return `<div style="margin-bottom:4px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${CORES_AT[at]};font-weight:600;padding:6px 0 3px;border-bottom:1px solid #222;">${at}</div>
+      ${rows}
+    </div>`;
+  }).join('');
+
+  return `<div style="padding:0.75rem 1.25rem;border-top:1px solid #1E1E1E;">
+    <div class="bloco-section-label" style="margin-bottom:0;display:flex;align-items:center;gap:8px;cursor:pointer;" onclick="toggleLegislacoes('${bloco.id}')">
+      Legislações ${badge}
+      <span id="bleg-toggle-${bloco.id}" style="margin-left:auto;color:#444;font-size:10px;">▲</span>
+    </div>
+    <div id="bleg-content-${bloco.id}" style="margin-top:8px;">
+      <div class="bleg-scroll" style="max-height:300px;overflow-y:auto;">${gruposHtml}</div>
+    </div>
+  </div>`;
+}
+
+function toggleLegislacoes(blocoId) {
+  const content = document.getElementById(`bleg-content-${blocoId}`);
+  const btn     = document.getElementById(`bleg-toggle-${blocoId}`);
+  if (!content) return;
+  const hidden = content.style.display === 'none';
+  content.style.display = hidden ? '' : 'none';
+  if (btn) btn.textContent = hidden ? '▲' : '▼';
+}
+
+function preencherGerar(blocoId, at, legNome) {
+  const areaEl   = document.getElementById(`g-area-${blocoId}`);
+  const instrEl  = document.getElementById(`g-instrucao-${blocoId}`);
+  if (areaEl)  areaEl.value  = at;
+  if (instrEl) instrEl.value = `Foque na legislação: ${legNome}`;
+  const secao = areaEl?.closest('.bloco-gerar-section');
+  if (secao) secao.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  instrEl?.focus();
+}
+
 function renderGerarSection(bloco) {
   return `<div class="bloco-gerar-section">
     <div class="bloco-section-label">Gerar Questões via IA</div>
@@ -1150,7 +1238,31 @@ async function toggleBlocoCorpo(id) {
   const chev  = document.getElementById(`chevron-${id}`);
   const aberto = corpo.classList.toggle('aberto');
   if (chev) chev.style.transform = aberto ? 'rotate(180deg)' : '';
-  if (aberto && !questoesPorBloco[id]) await carregarQuestoesDoBlocoFiltradas(id);
+  if (aberto) {
+    if (!questoesPorBloco[id]) await carregarQuestoesDoBlocoFiltradas(id);
+    if (!blocosDadosPorId[id]?.manifesto) carregarLegislacoesDoBlocoNoDOM(id);
+  }
+}
+
+const manifestoCache = {};
+
+async function carregarLegislacoesDoBlocoNoDOM(blocoId) {
+  const blocoAtual = blocosDadosPorId[blocoId];
+  if (!blocoAtual) return;
+  try {
+    const curso = blocoAtual.curso;
+    const [{ bloco, contadores, legislacoes_usadas }, manifesto] = await Promise.all([
+      req(`/api/simulados-mensais/admin/blocos/${blocoId}`),
+      manifestoCache[curso]
+        ? Promise.resolve(manifestoCache[curso])
+        : req(`/api/simulados-mensais/admin/blocos/manifesto?curso=${curso}`)
+            .then(m => { manifestoCache[curso] = m; return m; }),
+    ]);
+    const novo = Object.assign({}, blocosDadosPorId[blocoId] || bloco, { contadores, legislacoes_usadas, manifesto });
+    blocosDadosPorId[blocoId] = novo;
+    const el = document.getElementById(`bleg-${blocoId}`);
+    if (el) el.innerHTML = renderLegislacoes(legislacoes_usadas, manifesto, bloco);
+  } catch {}
 }
 
 // ── Carregar questões ────────────────────────────────────────────────────────
@@ -1208,7 +1320,7 @@ function renderQuestaoDoBloco(q, blocoId) {
         ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--verde);border-color:rgba(125,217,154,.3);" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Aprovar</button>` : ''}
         ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" style="color:#F09595;border-color:rgba(240,149,149,.3);" onclick="rejeitarQuestaoBloco('${q.id}','${blocoId}')">Rejeitar</button>` : ''}
         ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" id="btn-ambos-${q.id}" style="${q.curso==='ambos'?'color:#A78BFA;border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.08);':''}" onclick="toggleCursoAmbos('${q.id}','${blocoId}')" title="Marcar como válida para CTSP e CBA">${q.curso==='ambos'?'✓ Ambos':'Para Ambos'}</button>` : ''}
-        ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--dourado);border-color:rgba(240,192,80,.3);" onclick="abrirEditarQuestaoBloco('${blocoId}','${q.id}')">Editar</button>` : ''}
+        <button class="btn-sm" style="color:var(--dourado);border-color:rgba(240,192,80,.3);" onclick="abrirEditarQuestaoBloco('${blocoId}','${q.id}')">Editar</button>
         ${q.revisao_status === 'rejeitado'   ? `<button class="btn-sm" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Restaurar</button>` : ''}
         <button class="btn-sm" onclick="removerQuestaoDoBloco('${blocoId}','${q.id}')">Remover</button>
       </div>
@@ -1324,10 +1436,11 @@ function iniciarPollingBlocoStatus(blocoId) {
 
 async function recarregarBlocoCard(blocoId) {
   try {
-    const { bloco, contadores } = await req(`/api/simulados-mensais/admin/blocos/${blocoId}`);
+    const { bloco, contadores, legislacoes_usadas } = await req(`/api/simulados-mensais/admin/blocos/${blocoId}`);
     const card = document.getElementById(`bloco-card-${blocoId}`);
     if (!card) return;
-    const novo = Object.assign({}, bloco, { contadores });
+    const manifesto = manifestoCache[bloco.curso] || null;
+    const novo = Object.assign({}, bloco, { contadores, legislacoes_usadas, manifesto });
     blocosDadosPorId[blocoId] = novo;
     const novoHtml = renderBlocoCard(novo);
     const tmp = document.createElement('div');
@@ -1404,11 +1517,17 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
           <input id="beq-alt-${l}" type="text" class="form-input" style="flex:1;">
         </div>`).join('')}
       </div>
-      <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:1rem;">
+      <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap;">
         <div>
           <div class="form-label" style="margin-bottom:6px;">Gabarito</div>
           <select id="beq-gabarito" style="background:#2A2A2A;border:1px solid #333;color:#F8F6F2;padding:7px 14px;border-radius:6px;font-size:13px;font-family:'IBM Plex Mono',monospace;font-weight:600;">
             ${LETRA.map((l,i) => `<option value="${i}">${l}</option>`).join('')}
+          </select>
+        </div>
+        <div style="flex:1;min-width:220px;">
+          <div class="form-label" style="margin-bottom:6px;">Legislação</div>
+          <select id="beq-legislacao-sel" class="form-input" style="width:100%;cursor:pointer;">
+            <option value="">Carregando…</option>
           </select>
         </div>
       </div>
@@ -1428,6 +1547,18 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
   document.getElementById('beq-gabarito').value = String(gabIdx >= 0 ? gabIdx : 0);
   document.getElementById('beq-comentario').value = q.comentario || q.justificativa || '';
 
+  // Popula select de legislação filtrado pela AT da questão
+  const bloco = blocosDadosPorId[blocoId] || {};
+  const cursoBloco = bloco.curso || 'ctsp';
+  const beqSel = document.getElementById('beq-legislacao-sel');
+  const popularBeqSel = () => {
+    const todos = manifestoCache[cursoBloco]?.todos || [];
+    const items = q.area_tematica ? todos.filter(l => l.area_tematica === q.area_tematica) : todos;
+    beqSel.innerHTML = `<option value="">— Selecione —</option>` +
+      items.map(l => `<option value="${l.legislacao_id}" data-nome="${l.nome.replace(/"/g,'&quot;')}"${q.legislacao_id === l.legislacao_id ? ' selected' : ''}>${l.nome}</option>`).join('');
+  };
+  garantirManifesto(cursoBloco).then(popularBeqSel);
+
   const fechar = () => ov.remove();
   document.getElementById('beq-fechar').addEventListener('click', fechar);
   document.getElementById('beq-cancelar').addEventListener('click', fechar);
@@ -1440,12 +1571,16 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
     const gabNew  = parseInt(document.getElementById('beq-gabarito').value, 10);
     const coment  = document.getElementById('beq-comentario').value.trim() || null;
 
+    const beqSelEl     = document.getElementById('beq-legislacao-sel');
+    const legislacao_id   = beqSelEl?.value || q.legislacao_id || null;
+    const legislacao_nome = beqSelEl?.selectedOptions[0]?.dataset?.nome || beqSelEl?.selectedOptions[0]?.textContent?.trim() || q.legislacao_nome || null;
+
     const btn = document.getElementById('beq-salvar');
     btn.disabled = true; btn.textContent = 'Salvando…';
     try {
       await req(`/api/admin/aprovacoes/questoes-ia/${questaoId}`, {
         method: 'PATCH',
-        body: JSON.stringify({ enunciado, alternativas: altsNew, gabarito: gabNew, comentario: coment }),
+        body: JSON.stringify({ enunciado, alternativas: altsNew, gabarito: gabNew, comentario: coment, legislacao_id, legislacao_nome }),
       });
       toast('Questão atualizada.');
       fechar();
@@ -1861,16 +1996,35 @@ async function liberarBanco(blocoId) {
 
 // ── Questão Manual ───────────────────────────────────────────────────────────
 
+function preencherSelectLegislacoes(blocoId, valorAtual) {
+  const bloco  = blocosDadosPorId[blocoId];
+  const at     = document.getElementById('qm-area')?.value;
+  const sel    = document.getElementById('qm-legislacao-sel');
+  if (!sel) return;
+  const todos  = manifestoCache[bloco?.curso]?.todos || [];
+  const items  = at ? todos.filter(l => l.area_tematica === at) : todos;
+  sel.innerHTML = `<option value="">— Selecione a legislação —</option>` +
+    items.map(l => `<option value="${l.legislacao_id}" data-nome="${l.nome.replace(/"/g,'&quot;')}"${valorAtual === l.legislacao_id ? ' selected' : ''}>${l.nome}</option>`).join('');
+}
+
+async function garantirManifesto(curso) {
+  if (manifestoCache[curso]) return;
+  const m = await req(`/api/simulados-mensais/admin/blocos/manifesto?curso=${curso}`);
+  manifestoCache[curso] = m;
+}
+
 function abrirModalQuestaoManual(blocoId, cursoPadrao) {
   document.getElementById('qm-bloco-id').value = blocoId;
   const cursoEl = document.getElementById('qm-curso');
   if (cursoEl) cursoEl.value = cursoPadrao || 'ctsp';
-  // Limpar campos
   ['enunciado','comentario'].forEach(f => { const el = document.getElementById(`qm-${f}`); if(el) el.value=''; });
   ['A','B','C','D','E'].forEach(l => { const el = document.getElementById(`qm-alt-${l}`); if(el) el.value=''; });
   document.getElementById('qm-gabarito').value = '0';
-  document.getElementById('qm-legislacao-nome').value = '';
+  const areaEl = document.getElementById('qm-area');
+  if (areaEl) areaEl.onchange = () => preencherSelectLegislacoes(blocoId);
   document.getElementById('modal-questao-manual').style.display = 'flex';
+  const cursoBloco = blocosDadosPorId[blocoId]?.curso || cursoPadrao || 'ctsp';
+  garantirManifesto(cursoBloco).then(() => preencherSelectLegislacoes(blocoId));
 }
 function fecharModalQuestaoManual() { document.getElementById('modal-questao-manual').style.display = 'none'; }
 
@@ -1880,18 +2034,21 @@ async function salvarQuestaoManual(salvarEAprovar) {
   if (!enunciado) { toast('Informe o enunciado.', 'err'); return; }
   const alternativas = ['A','B','C','D','E'].map(l => document.getElementById(`qm-alt-${l}`).value.trim());
   if (alternativas.some(a => !a)) { toast('Preencha todas as alternativas.', 'err'); return; }
-  const gabarito = parseInt(document.getElementById('qm-gabarito').value, 10);
-  const comentario= document.getElementById('qm-comentario').value.trim() || null;
+  const gabarito      = parseInt(document.getElementById('qm-gabarito').value, 10);
+  const comentario    = document.getElementById('qm-comentario').value.trim() || null;
   const area_tematica = document.getElementById('qm-area').value;
-  const curso     = document.getElementById('qm-curso').value;
-  const legislacao_nome = document.getElementById('qm-legislacao-nome').value.trim() || null;
+  const curso         = document.getElementById('qm-curso').value;
+  const sel           = document.getElementById('qm-legislacao-sel');
+  const legislacao_id   = sel?.value || null;
+  const legislacao_nome = sel?.selectedOptions[0]?.dataset?.nome || sel?.selectedOptions[0]?.textContent?.trim() || null;
+  if (!legislacao_id) { toast('Selecione a legislação.', 'err'); return; }
 
   const btn = document.getElementById(salvarEAprovar ? 'qm-salvar-aprovar' : 'qm-salvar');
   btn.disabled = true; btn.textContent = 'Salvando…';
   try {
     await req(`/api/simulados-mensais/admin/blocos/${blocoId}/questoes/manual`, {
       method: 'POST',
-      body: JSON.stringify({ enunciado, alternativas, gabarito, comentario, area_tematica, curso, legislacao_nome, salvar_e_aprovar: salvarEAprovar }),
+      body: JSON.stringify({ enunciado, alternativas, gabarito, comentario, area_tematica, curso, legislacao_id, legislacao_nome, salvar_e_aprovar: salvarEAprovar }),
     });
     toast('Questão criada' + (salvarEAprovar ? ' e aprovada!' : '!'));
     fecharModalQuestaoManual();
