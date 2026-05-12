@@ -1,8 +1,5 @@
-const CACHE = 'pbm-v2';
+const CACHE = 'pbm-v4';
 const CACHE_ASSETS = [
-  '/dashboard',
-  '/area-estudos',
-  '/js/api.js',
   '/images/emblem-pbm.png',
   '/images/pwa-192.png',
   '/images/pwa-512.png',
@@ -20,20 +17,65 @@ self.addEventListener('activate', e => {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-self.addEventListener('fetch', e => {
-  // Skip API calls, non-GET requests and external URLs
-  if (e.request.method !== 'GET') return;
-  if (e.request.url.includes('/api/')) return;
-  if (!e.request.url.startsWith(self.location.origin)) return;
+function isHtmlRequest(req) {
+  if (req.mode === 'navigate') return true;
+  const accept = req.headers.get('accept') || '';
+  return accept.includes('text/html');
+}
 
-  e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request))
-  );
+function isStaticAsset(url) {
+  return /\.(png|jpg|jpeg|svg|webp|ico|woff2?)$/i.test(url.pathname);
+}
+
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+  if (url.pathname.startsWith('/api/')) return;
+
+  // HTML / navigation: network-first com fallback ao cache
+  if (isHtmlRequest(req)) {
+    e.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        return res;
+      }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // JS/CSS dinâmicos: network-first também, evita servir api.js/tour.js antigos
+  if (/\.(js|css)$/i.test(url.pathname)) {
+    e.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        return res;
+      }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // Imagens e fontes: cache-first (mudam pouco)
+  if (isStaticAsset(url)) {
+    e.respondWith(
+      caches.match(req).then(cached => cached || fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        return res;
+      }))
+    );
+    return;
+  }
+
+  // Demais: network-first sem cachear
+  e.respondWith(fetch(req).catch(() => caches.match(req)));
 });
 
 // ── PUSH NOTIFICATIONS ──────────────────────────────────────────────────────
