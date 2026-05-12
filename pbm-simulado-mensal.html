@@ -670,7 +670,7 @@ async function init() {
     // Carrega questões (valida janela no backend)
     const res = await PBM.SimuladoMensal.questoes(simuladoId);
     questoes = res.questoes || [];
-    simuladoTitulo = res.simulado?.titulo || 'Simulado Mensal';
+    simuladoTitulo = res.simulado?.titulo || 'Protocolo QAP';
     simuladoEncerramento = res.simulado?.encerramento;
 
     if (questoes.length === 0) {

@@ -22,7 +22,8 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 - Decreto nº 40.986, de 17 de agosto de 2001 e suas alterações — Convocação para serviço extraordinário dos militares estaduais
 
 **Instruções Técnicas Operacionais:**
-- IT nº 03/AODC-GCG (atualizada até a Portaria nº 142/CBMRS de 18Dez23) — Sistema E-193
+
+- IT nº 03/AODC-GCG **(atualizada até a Portaria nº 026/CBMRS/2026)** — Sistema E-193
 - IT nº 04, atualizada até a IT 04.2/2024 — Força de Resposta Rápida (FR2)
 - IT nº 09/AODC-GCG — Sistema de Comando de Incidentes (SCI): estrutura de comando unificado para eventos de média e alta complexidade, incluindo Processo de Atuação Integrada (PAI), princípios do SIC4, níveis de criticidade (Ordinário a Nível 5), status operacionais (SOO/SOP) e os 8 passos do primeiro respondente
 
@@ -45,7 +46,8 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 - IR nº 008/Corregedoria Geral — Inquérito Policial Militar (IPM)
 
 **Instruções Técnicas Operacionais:**
-- IT nº 03/AODC-GCG (atualizada até a Portaria nº 142/CBMRS de 18Dez23) — Sistema E-193
+
+- IT nº 03/AODC-GCG **(atualizada até a Portaria nº 026/CBMRS/2026)** — Sistema E-193
 - IT nº 04, atualizada até a IT 04.2/2024 — Força de Resposta Rápida (FR2)
 - IT nº 09/AODC-GCG — Sistema de Comando de Incidentes (SCI): estrutura de comando unificado para eventos de média e alta complexidade, incluindo Processo de Atuação Integrada (PAI), princípios do SIC4, níveis de criticidade (Ordinário a Nível 5), status operacionais (SOO/SOP) e os 8 passos do primeiro respondente
 - Portaria nº 018/24 — Circunscrição Administrativa e Operacional

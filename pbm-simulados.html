@@ -572,9 +572,9 @@
         Gerar Simulado Inédito
       </button>
 
-      <!-- HISTÓRICO DE SIMULADOS MENSAIS -->
+      <!-- HISTÓRICO DE PROTOCOLOS QAP -->
       <div class="historico-section" id="historico-section" style="display:none;">
-        <div class="historico-titulo">Simulados Mensais Anteriores</div>
+        <div class="historico-titulo">Protocolos QAP Anteriores</div>
         <div class="historico-lista" id="historico-lista"></div>
       </div>
 
@@ -665,7 +665,7 @@ async function carregarSimuladoMensal() {
       const cursoLabel = ativo.curso.toUpperCase();
       wrap.innerHTML = `
         <div class="mensal-banner aberto">
-          <div class="mensal-badge badge-aberto"><span class="badge-dot"></span>Simulado Mensal Aberto</div>
+          <div class="mensal-badge badge-aberto"><span class="badge-dot"></span>Protocolo QAP Aberto</div>
           <div class="mensal-titulo">${ativo.titulo}</div>
           <div class="mensal-sub">Curso ${cursoLabel} — Encerra ${formatarData(ativo.encerramento)} às 23:59</div>
           <div id="countdown-display" class="mensal-meta" style="font-size:13px;color:var(--cinza-texto);">Calculando tempo restante...</div>
@@ -678,7 +678,7 @@ async function carregarSimuladoMensal() {
             <div class="mensal-acoes">
               <button class="btn-mensal-primary" onclick="irParaSimuladoMensal('${ativo.id}')">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                Participar do Simulado Mensal
+                Participar do Protocolo QAP
               </button>
             </div>`}
         </div>`;
@@ -687,7 +687,7 @@ async function carregarSimuladoMensal() {
     } else if (proximo) {
       wrap.innerHTML = `
         <div class="mensal-banner aguardando">
-          <div class="mensal-badge badge-aguardando">Próximo Simulado Mensal</div>
+          <div class="mensal-badge badge-aguardando">Próximo Protocolo QAP</div>
           <div class="mensal-titulo">${proximo.titulo}</div>
           <div class="mensal-sub">Curso ${proximo.curso.toUpperCase()} — Abre ${formatarData(proximo.abertura)} às 12:00</div>
           <div id="countdown-display" class="mensal-meta" style="font-size:13px;color:var(--cinza-texto);">Calculando...</div>

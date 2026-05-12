@@ -10,8 +10,8 @@ const AREAS = {
           titulo: 'Leis e Decretos',
           items: [
             { id:'lei13425', nome:'Lei Federal nº 13.425/2017', detalhe:'Prevenção e combate a incêndio e a desastres em estabelecimentos, edificações e áreas de reunião de público', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
-            { id:'lc14376', nome:'Lei Complementar nº 14.376/2013', detalhe:'Normas sobre segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'dec51803', nome:'Decreto Estadual nº 51.803/2014', detalhe:'Regulamenta a LC 14.376/2013', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc14376', nome:'Lei Complementar nº 14.376/2013 (atualizada até LC nº 16.280/2025)', detalhe:'Normas sobre segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'dec51803', nome:'Decreto Estadual nº 51.803/2014 (atualizado até Decreto nº 57.393/2023)', detalhe:'Regulamenta a LC 14.376/2013', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
         },
         {
@@ -24,7 +24,7 @@ const AREAS = {
             { id:'rt05p31', nome:'RT CBMRS nº 05 — Parte 3.1/2016', detalhe:'Instalações prediais de água para combate a incêndios', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
             { id:'rt05p72', nome:'RT CBMRS nº 05 — Parte 7.2/2021', detalhe:'Proteção por chuveiros automáticos', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'rt05p08', nome:'RT CBMRS nº 05 — Parte 08/2016', detalhe:'Símbolos gráficos para projetos de segurança contra incêndio', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
-            { id:'rt05p06', nome:'RT CBMRS nº 05 — Parte 06/2023', detalhe:'Saídas de emergência', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p06', nome:'RT CBMRS nº 05 — Parte 06/2025 (Fiscalização)', detalhe:'Fiscalização de edificações e aplicação de penalidades', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
         },
         {
@@ -47,8 +47,8 @@ const AREAS = {
         {
           titulo: 'Leis e Decretos',
           items: [
-            { id:'lc14376', nome:'Lei Complementar nº 14.376/2013', detalhe:'Normas sobre segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'dec51803', nome:'Decreto Estadual nº 51.803/2014', detalhe:'Regulamenta a LC 14.376/2013', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc14376', nome:'Lei Complementar nº 14.376/2013 (atualizada até LC nº 16.280/2025)', detalhe:'Normas sobre segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'dec51803', nome:'Decreto Estadual nº 51.803/2014 (atualizado até Decreto nº 57.393/2023)', detalhe:'Regulamenta a LC 14.376/2013', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
         },
         {
@@ -62,7 +62,7 @@ const AREAS = {
             { id:'rt05p04b', nome:'RT CBMRS nº 05 — Parte 04B/2017', detalhe:'Sistema de hidrantes e mangotinhos', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
             { id:'rt05p04c', nome:'RT CBMRS nº 05 — Parte 04C/2017', detalhe:'Chuveiros automáticos — complemento', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
             { id:'rt05p72', nome:'RT CBMRS nº 05 — Parte 7.2/2021', detalhe:'Proteção por chuveiros automáticos', tag:'comum', tagTxt:'CTSP e CBA' },
-            { id:'rt05p06', nome:'RT CBMRS nº 05 — Parte 06/2023', detalhe:'Saídas de emergência', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p06', nome:'RT CBMRS nº 05 — Parte 06/2025 (Fiscalização)', detalhe:'Fiscalização de edificações e aplicação de penalidades', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
         },
         {
@@ -153,7 +153,7 @@ const AREAS = {
         {
           titulo: 'Legislação Institucional',
           items: [
-            { id:'lc10990', nome:'LC nº 10.990/1997 — Estatuto dos Militares Estaduais', detalhe:'Situação, obrigações, deveres, direitos e prerrogativas dos servidores militares', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc10990', nome:'LC nº 10.990/1997 — Estatuto dos Militares Estaduais (atualizado até LC nº 15.454/2020)', detalhe:'Situação, obrigações, deveres, direitos e prerrogativas dos servidores militares', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'lc10992', nome:'LC nº 10.992/1997 — Carreira dos Militares Estaduais', detalhe:'Quadros, carreiras, promoções e acesso aos cursos', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
             { id:'lc14920', nome:'LC nº 14.920/2016 — Lei de Organização Básica do CBMRS', detalhe:'Estrutura, atribuições e organização do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'dec53897', nome:'Decreto nº 53.897/2018 — Regulamenta a LC 14.920/2016', detalhe:'Organização interna, departamentos e comandos regionais', tag:'comum', tagTxt:'CTSP e CBA' },
@@ -209,7 +209,7 @@ const AREAS = {
         {
           titulo: 'Legislação Institucional',
           items: [
-            { id:'lc10990', nome:'LC nº 10.990/1997 — Estatuto dos Militares Estaduais', detalhe:'Situação, obrigações, deveres, direitos e prerrogativas dos servidores militares', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'lc10990', nome:'LC nº 10.990/1997 — Estatuto dos Militares Estaduais (atualizado até LC nº 15.454/2020)', detalhe:'Situação, obrigações, deveres, direitos e prerrogativas dos servidores militares', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'lc14920', nome:'LC nº 14.920/2016 — Lei de Organização Básica do CBMRS', detalhe:'Estrutura, atribuições e organização do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'dec53897', nome:'Decreto nº 53.897/2018 — Regulamenta a LC 14.920/2016', detalhe:'Organização interna, departamentos e comandos regionais', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'lc15008', nome:'LC nº 15.008/2017 — Lei de Transição do CBMRS', detalhe:'Regras de transição para estruturação do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
@@ -265,7 +265,7 @@ const AREAS = {
         {
           titulo: 'Instruções Técnicas Operacionais',
           items: [
-            { id:'it03', nome:'IT nº 03/AODC-GCG — Sistema E-193', detalhe:'Regulamenta o Sistema de Emergência 193 do CBMRS (atualizada até Portaria 77/CBMRS de Jul/24)', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'it03', nome:'IT nº 03/AODC-GCG — Sistema E-193', detalhe:'Regulamenta o Sistema de Emergência 193 do CBMRS (atualizada até Portaria nº 026/CBMRS/2026)', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'it04', nome:'IT nº 04.2/2024 — Força de Resposta Rápida (FR2)', detalhe:'Estruturação e emprego da FR2 do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'it09', nome:'IT nº 09/AODC-GCG — Sistema de Comando de Incidentes', detalhe:'Utilização do SCI no âmbito do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
@@ -299,7 +299,7 @@ const AREAS = {
         {
           titulo: 'Instruções Técnicas Operacionais',
           items: [
-            { id:'it03', nome:'IT nº 03/AODC-GCG — Sistema E-193', detalhe:'Regulamenta o Sistema de Emergência 193 do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'it03', nome:'IT nº 03/AODC-GCG — Sistema E-193', detalhe:'Regulamenta o Sistema de Emergência 193 do CBMRS (atualizada até Portaria nº 026/CBMRS/2026)', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'it04', nome:'IT nº 04.2/2024 — Força de Resposta Rápida (FR2)', detalhe:'Estruturação e emprego da FR2 do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'it09', nome:'IT nº 09/AODC-GCG — Sistema de Comando de Incidentes', detalhe:'Utilização do SCI no âmbito do CBMRS', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'port018', nome:'Portaria nº 018/2024 — Circunscrição Administrativa e Operacional', detalhe:'Define circunscrições administrativas e operacionais do CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },

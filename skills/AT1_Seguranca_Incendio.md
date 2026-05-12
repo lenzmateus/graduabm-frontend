@@ -14,8 +14,8 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 
 **Leis e Decretos:**
 - Lei Federal nº 13.425, de 30 de março de 2017 — Prevenção e combate a incêndio e desastres em edificações e áreas de reunião de público
-- Lei Complementar nº 14.376, de 26 de dezembro de 2013 (Lei Kiss) — Normas de segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS
-- Decreto Estadual nº 51.803, de 10 de setembro de 2014 — Regulamenta a LC 14.376/2013 (APPCI, multas, interdições)
+- Lei Complementar nº 14.376, de 26 de dezembro de 2013 (Lei Kiss) **(atualizada até LC nº 16.280/2025)** — Normas de segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS
+- Decreto Estadual nº 51.803, de 10 de setembro de 2014 **(atualizado até Decreto nº 57.393/2023)** — Regulamenta a LC 14.376/2013 (APPCI, multas, interdições)
 
 **Resoluções Técnicas de Procedimentos Administrativos do CBMRS:**
 - RT CBMRS nº 01/2022 — Procedimentos Administrativos Gerais
@@ -23,7 +23,7 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 - RT CBMRS nº 05 — Parte 1.1/2016 — Disposições Gerais dos Procedimentos Administrativos
 - RT CBMRS nº 05 — Parte 02/2023 — Atividades Dispensadas do Licenciamento e Atividades Econômicas de Baixo Risco
 - RT CBMRS nº 05 — Parte 3.1/2016 — (exclusivo CTSP)
-- RT CBMRS nº 05 — Parte 06/2023 — Fiscalização das Edificações e Aplicação de Penalidades
+- RT CBMRS nº 05 — Parte 06/2025 — Fiscalização das Edificações e Aplicação de Penalidades
 - RT CBMRS nº 05 — Parte 7.2/2021 — Chuveiros Automáticos (Sprinklers)
 - RT CBMRS nº 05 — Parte 08/2016 — Símbolos Gráficos para Projeto de Proteção Contra Incêndio (exclusivo CTSP)
 
@@ -39,7 +39,7 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 
 **Leis e Decretos:**
 - Lei Complementar nº 14.376, de 26 de dezembro de 2013 (Lei Kiss) — Normas de segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS
-- Decreto Estadual nº 51.803, de 10 de setembro de 2014 — Regulamenta a LC 14.376/2013
+- Decreto Estadual nº 51.803, de 10 de setembro de 2014 **(atualizado até Decreto nº 57.393/2023)** — Regulamenta a LC 14.376/2013
 - ⚠️ **A Lei Federal nº 13.425/2017 NÃO consta no edital do CBA.**
 
 **Resoluções Técnicas de Procedimentos Administrativos do CBMRS:**
@@ -50,7 +50,7 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 - RT CBMRS nº 05 — Parte 04A/2017 — Eventos Temporários (exclusivo CBA)
 - RT CBMRS nº 05 — Parte 04B/2017 — Construções Provisórias (exclusivo CBA)
 - RT CBMRS nº 05 — Parte 04C/2017 — Espetáculos Pirotécnicos (exclusivo CBA)
-- RT CBMRS nº 05 — Parte 06/2023 — Fiscalização das Edificações e Aplicação de Penalidades
+- RT CBMRS nº 05 — Parte 06/2025 — Fiscalização das Edificações e Aplicação de Penalidades
 - RT CBMRS nº 05 — Parte 7.2/2021 — Chuveiros Automáticos (Sprinklers)
 
 **Resoluções Técnicas de Medidas de Segurança Contra Incêndios do CBMRS:**
@@ -74,11 +74,13 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 
 ## Resumo de Conteúdo das Principais Legislações
 
-### Lei Kiss (LC 14.376/2013)
-Norma estadual gaúcha que surgiu após o incêndio da Boate Kiss (2013). Estabelece as normas de segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco do RS. Define responsabilidades dos proprietários, constructores e poder público. Base para a exigência de APPCI (Auto de Prevenção e Proteção Contra Incêndio).
+### Lei Kiss (LC 14.376/2013, atualizada até LC 16.280/2025)
 
-### Decreto 51.803/2014
-Regulamenta a Lei Kiss. Define prazos para adequação de edificações existentes, critérios para APPCI, multas, interdições e o papel do CBMRS na fiscalização.
+Norma estadual gaúcha que surgiu após o incêndio da Boate Kiss (2013). Estabelece as normas de segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco do RS. Define responsabilidades dos proprietários, construtores e poder público. Base para a exigência de APPCI (Auto de Prevenção e Proteção Contra Incêndio). **Utilize sempre a versão consolidada até LC 16.280/2025.**
+
+### Decreto 51.803/2014 (atualizado até Decreto 57.393/2023)
+
+Regulamenta a Lei Kiss. Define prazos para adequação de edificações existentes, critérios para APPCI, multas, interdições e o papel do CBMRS na fiscalização. **Utilize sempre a versão consolidada até o Decreto nº 57.393/2023.**
 
 ### RT 01/2022 — Procedimentos Administrativos
 Estabelece os procedimentos gerais para licenciamento de edificações junto ao CBMRS, incluindo tipos de análise, documentação exigida e fluxo do processo.
@@ -101,7 +103,7 @@ Estabelece requisitos de segurança contra incêndio para construções provisó
 ### RT 05 — Parte 04C/2017 — Espetáculos Pirotécnicos (CBA)
 Normatiza o uso de fogos de artifício e espetáculos pirotécnicos, definindo distâncias de segurança, habilitação de operadores e procedimentos de licenciamento.
 
-### RT 05 — Parte 06/2023 — Fiscalização das Edificações e Aplicação de Penalidades
+### RT 05 — Parte 06/2025 — Fiscalização das Edificações e Aplicação de Penalidades
 Define os procedimentos de fiscalização das edificações pelo CBMRS, os critérios para aplicação de penalidades (advertência, multa, interdição) e os recursos cabíveis.
 
 ### RT 05 — Parte 7.2/2021 — Chuveiros Automáticos (Sprinklers)
