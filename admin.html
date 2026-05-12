@@ -855,7 +855,7 @@
 
   function escHtml(str) {
     if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
   async function carregarDenuncias() {
@@ -947,7 +947,7 @@
           <div style="display:flex;gap:8px;align-items:center;">
             <span style="font-size:11px;color:${a.ativo ? '#27A05A' : '#E24B4A'};font-weight:600;">${a.ativo ? 'Ativo' : 'Inativo'}</span>
             ${podeDeletar
-              ? `<button onclick="excluirAdmin('${a.id}', '${escHtml(a.nome)}')" style="background:transparent;border:1px solid #7A1A10;color:#E24B4A;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Excluir</button>`
+              ? `<button onclick="excluirAdmin('${escHtml(a.id)}', '${escHtml(a.nome)}')" style="background:transparent;border:1px solid #7A1A10;color:#E24B4A;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Excluir</button>`
               : ''}
           </div>
         </div>`;
