@@ -348,6 +348,11 @@ const PBM = {
     denuncias: {
       resumo() { return PBM.Admin.req('/api/admin/denuncias/resumo'); },
     },
+    legislacoes: {
+      listar()           { return PBM.Admin.req('/api/admin/legislacoes'); },
+      salvar(id, body)   { return PBM.Admin.req('/api/admin/legislacoes/' + encodeURIComponent(id), { method: 'PATCH', body: JSON.stringify(body) }); },
+      removerOverride(id){ return PBM.Admin.req('/api/admin/legislacoes/' + encodeURIComponent(id) + '/override', { method: 'DELETE' }); },
+    },
     automatizar: {
       gerarQuestoes(area = 'todas', quantidade = 1, curso = 'ambos') { return PBM.Admin.req('/api/admin/automatizar/gerar-questoes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ area, quantidade, curso }) }); },
       gerarFlashcard() { return PBM.Admin.req('/api/admin/automatizar/gerar-flashcard', { method: 'POST' }); },
@@ -426,6 +431,18 @@ const PBM = {
     },
     historico() {
       return request('/api/indicacoes/historico');
+    },
+  },
+
+  Editais: {
+    obter(curso) {
+      return request('/api/editais/' + encodeURIComponent(curso));
+    },
+    reportarMudanca(legislacao_id, comentario) {
+      return request('/api/editais/reportar-mudanca', {
+        method: 'POST',
+        body: JSON.stringify({ legislacao_id, comentario }),
+      });
     },
   },
 
