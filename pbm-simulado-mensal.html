@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -275,7 +275,7 @@
     background: var(--cinza-escuro);
     border-top: 1px solid var(--cinza-borda);
     z-index: 200;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(7, 1fr);
   }
   .bottombar a {
     display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -287,9 +287,10 @@
   .bottombar a svg { width: 20px; height: 20px; }
   .bottombar a.ativo { color: var(--vermelho); }
   .bottombar a:hover { color: var(--branco); }
+  /* Durante a prova do Protocolo QAP NÃO mostramos bottombar — evita que
+     o aluno saia por engano da prova cronometrada ao tocar em outro link. */
   @media (max-width: 768px) {
-    .bottombar { display: grid; }
-    .main-area { padding-bottom: 76px; }
+    .bottombar { display: none !important; }
   }
 
   /* ── SPRINT 4 — AJUSTES FINOS MOBILE ── */
@@ -318,6 +319,7 @@
     <div id="lobby-status-card" style="margin-bottom:1rem;"></div>
     <div id="lobby-admin-panel"></div>
     <a id="lobby-back-link" href="/dashboard" style="display:block;text-align:center;margin-top:1.5rem;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#333;text-decoration:none;letter-spacing:.08em;">← VOLTAR</a>
+    <button onclick="if(window.PBMTour)PBMTour.start()" style="display:block;margin:.75rem auto 0;background:transparent;border:none;color:#333;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;cursor:pointer;text-transform:uppercase;transition:color .15s;" onmouseover="this.style.color='#777'" onmouseout="this.style.color='#333'">? TUTORIAL</button>
   </div>
 </div>
 
@@ -431,6 +433,7 @@
 </div>
 
 <script src="/js/api.js"></script>
+<script src="/js/tour.js"></script>
 <script>
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('cut', e => e.preventDefault());
@@ -472,6 +475,8 @@ async function initLobby() {
   if (backLink) backLink.href = PBM.isAdmin() ? '/admin' : '/dashboard';
 
   if (PBM.isAdmin()) renderLobbyAdmin();
+
+  if (window.PBMTour) PBMTour.init();
 }
 
 function renderLobbyStatus(status) {
@@ -790,12 +795,21 @@ function carregarQuestao(index) {
     const div = document.createElement('div');
     div.className = `alt ${respostas[index].rascunho === letra ? 'selecionada' : ''}`;
     div.onclick = () => marcarRascunho(index, letra);
-    div.innerHTML = `<div class="alt-letra">${letra}</div><div class="alt-texto">${texto}</div>`;
+    const dLetra = document.createElement('div');
+    dLetra.className = 'alt-letra';
+    dLetra.textContent = letra;
+    const dTexto = document.createElement('div');
+    dTexto.className = 'alt-texto';
+    dTexto.textContent = texto;
+    div.appendChild(dLetra);
+    div.appendChild(dTexto);
     lista.appendChild(div);
   });
 
   document.getElementById('btn-prev').disabled = index === 0;
   document.getElementById('btn-next').disabled = index === questoes.length - 1;
+
+  if (window.PBMFerramentas) window.PBMFerramentas.onQuestaoChange(q.id);
 }
 
 function marcarRascunho(index, letra) {
@@ -888,6 +902,7 @@ async function entregarProva(porTempo) {
   try {
     const resultado = await PBM.SimuladoMensal.entregar(simuladoId, respostas_cartao);
     document.getElementById('tela-loading').style.display = 'none';
+    if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
     mostrarResultado(resultado);
   } catch (err) {
     console.error(err);
@@ -978,6 +993,7 @@ init();
 </style>
 <nav class="bottombar" id="bottombar">
   <a href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Início</a>
+  <a href="/editais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Editais</a>
   <a href="/area-estudos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Estudar</a>
   <a href="/simulados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Simulados</a>
   <a href="/simulado-mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>QAP</a>
@@ -989,5 +1005,16 @@ init();
 </script>
 <div class="pbm-watermark" aria-hidden="true"></div>
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
+<!-- FERRAMENTAS DE PROVA -->
+<script src="/js/ferramentas-prova.js?v=9"></script>
+<script>
+  if (window.PBMFerramentas) PBMFerramentas.init({
+    containerSelector:     '.questao-container',
+    enunciadoSelector:     '#q-enunciado',
+    altsContainerSelector: '#alts-lista',
+    altTextoSelector:      '.alt-texto'
+  });
+</script>
+
 </body>
 </html>
