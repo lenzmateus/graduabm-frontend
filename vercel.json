@@ -15,6 +15,7 @@
     { "source": "/simulado-prova", "destination": "/pbm-simulado-prova" },
     { "source": "/ranking", "destination": "/pbm-ranking" },
     { "source": "/flashcards", "destination": "/pbm-flashcards" },
+    { "source": "/editais", "destination": "/pbm-editais" },
     { "source": "/simulado-mensal", "destination": "/pbm-simulado-mensal" },
     { "source": "/simulado-mensal-ranking", "destination": "/pbm-simulado-mensal-ranking" },
     { "source": "/admin-simulados-mensais", "destination": "/admin-simulados-mensais" },
@@ -23,7 +24,8 @@
     { "source": "/admin-cadastro", "destination": "/admin-cadastro" },
     { "source": "/admin-aprovacoes", "destination": "/admin-aprovacoes" },
     { "source": "/admin-denuncias", "destination": "/admin-denuncias" },
-    { "source": "/admin-analytics", "destination": "/admin-analytics" }
+    { "source": "/admin-analytics", "destination": "/admin-analytics" },
+    { "source": "/admin-legislacoes", "destination": "/admin-legislacoes" }
   ],
   "headers": [
     {

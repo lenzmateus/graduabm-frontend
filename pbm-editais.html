@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PBM">
+<link rel="apple-touch-icon" href="/images/pwa-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Editais</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --ctsp: #C0270F;
+    --ctsp-bg: rgba(192,39,15,0.08);
+    --ctsp-borda: rgba(192,39,15,0.3);
+    --cba: #185FA5;
+    --cba-bg: rgba(24,95,165,0.08);
+    --cba-borda: rgba(24,95,165,0.3);
+    --amarelo: #BA7517;
+    --amarelo-bg: rgba(186,117,23,0.12);
+    --amarelo-borda: rgba(186,117,23,0.45);
+    --verde: #27A05A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+
+  /* SIDEBAR */
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; gap: 8px; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #7DD99A; letter-spacing: 0.04em; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; transition: background 0.12s, color 0.12s; border-left: 2px solid transparent; text-decoration: none; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: rgba(192,39,15,0.08); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .btn-logout-top { display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .btn-logout-top:hover { border-color: #E24B4A; color: #E24B4A; }
+  .btn-logout-top svg { width: 13px; height: 13px; }
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
+
+  /* HERO */
+  .editais-hero { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+  .editais-hero-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--vermelho); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+  .editais-hero-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.04em; color: var(--branco); line-height: 1.1; margin-bottom: 6px; }
+  .editais-hero-sub { font-size: 13px; color: var(--cinza-texto); max-width: 720px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 6px; margin-bottom: 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .tab { background: transparent; border: none; padding: 10px 18px; font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.06em; color: var(--cinza-texto); cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; }
+  .tab:hover { color: var(--branco); }
+  .tab.ativo[data-curso="ctsp"] { color: var(--branco); border-bottom-color: var(--ctsp); }
+  .tab.ativo[data-curso="cba"]  { color: var(--branco); border-bottom-color: var(--cba); }
+
+  /* LAYOUT 2 colunas */
+  .editais-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1.5rem; align-items: start; }
+
+  /* Coluna principal: AT cards */
+  .at-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
+  .at-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--cinza-medio); }
+  .at-codigo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 0.06em; }
+  .at-codigo[data-at="AT1"] { color: #F09595; }
+  .at-codigo[data-at="AT2"] { color: #E0A858; }
+  .at-codigo[data-at="AT3"] { color: #7AB6E0; }
+  .at-codigo[data-at="AT4"] { color: #7DD99A; }
+  .at-codigo[data-at="AT5"] { color: #AFA9EC; }
+  .at-label { font-size: 13px; color: var(--cinza-texto); font-family: 'Inter', sans-serif; }
+  .at-contagem { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #555; }
+
+  .leg-list { display: flex; flex-direction: column; gap: 6px; }
+  .leg-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 8px; transition: background 0.12s; }
+  .leg-row:hover { background: var(--cinza-medio); }
+  .leg-info { flex: 1; min-width: 0; }
+  .leg-nome { font-size: 13px; color: var(--branco); line-height: 1.4; word-break: break-word; }
+  .leg-meta { display: flex; gap: 8px; align-items: center; margin-top: 3px; flex-wrap: wrap; }
+  .leg-grupo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; letter-spacing: 0.04em; }
+  .badge-atualizada { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; background: var(--amarelo-bg); border: 1px solid var(--amarelo-borda); color: #E0A858; letter-spacing: 0.04em; text-transform: uppercase; }
+  .badge-atualizada svg { width: 9px; height: 9px; }
+  .btn-reportar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 11px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
+  .btn-reportar:hover { border-color: var(--vermelho); color: #F09595; }
+
+  /* Coluna lateral: atualizações */
+  .side-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem; position: sticky; top: 1rem; }
+  .side-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .side-titulo::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--amarelo); box-shadow: 0 0 6px rgba(186,117,23,0.6); }
+  .side-list { display: flex; flex-direction: column; gap: 10px; }
+  .side-item { padding: 10px; border: 1px solid var(--cinza-borda); border-radius: 8px; }
+  .side-item-at { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--cinza-texto); letter-spacing: 0.08em; margin-bottom: 4px; }
+  .side-item-nome { font-size: 12px; color: var(--branco); line-height: 1.4; margin-bottom: 6px; }
+  .side-item-obs { font-size: 11px; color: var(--cinza-texto); line-height: 1.4; margin-bottom: 6px; font-style: italic; }
+  .side-item-data { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; }
+  .side-vazio { font-size: 12px; color: #555; text-align: center; padding: 1.5rem 0.5rem; line-height: 1.5; }
+
+  /* ESTADOS */
+  .estado-vazio { text-align: center; padding: 3rem 2rem; color: #555; font-size: 13px; }
+  .skeleton { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; height: 120px; margin-bottom: 1rem; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 500; padding: 1rem; }
+  .modal-overlay.visivel { display: flex; }
+  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; max-width: 520px; width: 100%; padding: 1.5rem; animation: modalIn 0.2s ease both; }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; color: var(--branco); margin-bottom: 4px; }
+  .modal-sub { font-size: 12px; color: var(--cinza-texto); margin-bottom: 14px; }
+  .modal-leg-ref { background: rgba(192,39,15,0.05); border: 1px solid var(--ctsp-borda); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 12px; color: #F0BABA; line-height: 1.4; }
+  .modal textarea { width: 100%; background: var(--carvao); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 10px 12px; font-size: 13px; font-family: 'Inter', sans-serif; resize: vertical; min-height: 110px; outline: none; transition: border-color 0.15s; }
+  .modal textarea:focus { border-color: var(--vermelho); }
+  .modal-acoes { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  .btn-cancelar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 8px 16px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .btn-cancelar:hover { border-color: #555; color: var(--branco); }
+  .btn-enviar { background: var(--vermelho); border: 1px solid var(--vermelho); color: #fff; border-radius: 6px; padding: 8px 18px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; transition: opacity 0.15s; }
+  .btn-enviar:hover { opacity: 0.9; }
+  .btn-enviar:disabled { opacity: 0.5; cursor: default; }
+  .modal-help { font-size: 11px; color: #555; margin-top: 6px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
+  .toast.visivel { transform: translateX(-50%) translateY(0); }
+  .toast.verde { border-color: rgba(39,160,90,0.4); color: #7DD99A; }
+  .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
+
+  /* MOBILE */
+  .bottombar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--cinza-escuro); border-top: 1px solid var(--cinza-borda); z-index: 200; grid-template-columns: repeat(7, 1fr); }
+  .bottombar a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #555; text-decoration: none; font-size: 9px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.12s; }
+  .bottombar a svg { width: 20px; height: 20px; }
+  .bottombar a.ativo { color: var(--vermelho); }
+  .bottombar a:hover { color: var(--branco); }
+
+  @media (max-width: 1024px) {
+    .editais-grid { grid-template-columns: 1fr; }
+    .side-card { position: static; }
+  }
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .bottombar { display: grid; }
+    .conteudo { padding: 1rem 1rem 76px; }
+    .topbar { padding: 0 1rem; }
+    .topbar-mono { display: none; }
+    .editais-hero { padding: 1rem; }
+    .editais-hero-titulo { font-size: 22px; }
+    .at-card { padding: 1rem; }
+    .leg-row { flex-wrap: wrap; padding: 8px 6px; }
+    .btn-reportar { padding: 6px 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome" id="user-nome">Carregando…</div>
+      <div class="usuario-status"><div class="status-dot"></div>ALUNO PRO</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item" href="/dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item ativo" href="/editais">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        Editais
+      </a>
+      <a class="nav-item" href="/area-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Papirar
+      </a>
+      <a class="nav-item" href="#" onclick="sessionStorage.setItem('pbm_revisao_erros','1');window.location.href='/questoes';return false;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Caderno de Erros
+      </a>
+      <a class="nav-item" href="/simulados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados Oficiais
+      </a>
+      <a class="nav-item" href="/ranking">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+        Ranking
+      </a>
+      <a class="nav-item" href="/flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="/regras" style="display:block;font-size:11px;color:#555;text-decoration:none;margin-bottom:8px;">Regras & Informações</a>
+      <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Editais</span>
+      <div class="topbar-right">
+        <span class="topbar-mono" id="topbar-data"></span>
+        <button class="btn-logout-top" id="btn-logout-top">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sair
+        </button>
+      </div>
+    </div>
+
+    <div class="conteudo">
+      <div class="editais-hero">
+        <div class="editais-hero-eyebrow">Edital vigente</div>
+        <div class="editais-hero-titulo">Legislações cobradas</div>
+        <div class="editais-hero-sub">
+          Confira todas as legislações exigidas no último edital de cada curso, organizadas por área temática.
+          Se notar que algum diploma foi alterado, atualizado ou substituído, clique em <strong style="color:var(--branco)">Reportar mudança</strong>
+          ao lado do item — nossa equipe avalia e atualiza o conteúdo.
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab ativo" data-curso="ctsp" role="tab" aria-selected="true">CTSP — Sargentos</button>
+        <button class="tab" data-curso="cba" role="tab" aria-selected="false">CBA — Tenentes</button>
+      </div>
+
+      <div class="editais-grid">
+        <div id="editais-areas">
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+          <div class="skeleton"></div>
+        </div>
+
+        <aside class="side-card">
+          <div class="side-titulo">Atualizações recentes</div>
+          <div id="editais-atualizacoes" class="side-list">
+            <div class="side-vazio">Carregando…</div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOMBAR MOBILE -->
+<nav class="bottombar">
+  <a href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Início</span></a>
+  <a href="/editais" class="ativo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Editais</span></a>
+  <a href="/area-estudos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Estudar</span></a>
+  <a href="/simulados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Simulados</span></a>
+  <a href="/simulado-mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>QAP</span></a>
+  <a href="/flashcards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span>Cards</span></a>
+  <a href="/ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg><span>Ranking</span></a>
+</nav>
+
+<!-- MODAL REPORTAR -->
+<div class="modal-overlay" id="modal-reportar">
+  <div class="modal">
+    <div class="modal-titulo">Reportar mudança</div>
+    <div class="modal-sub">Notou que esta legislação sofreu alteração? Conte o que percebeu — vamos investigar.</div>
+    <div class="modal-leg-ref" id="modal-leg-ref"></div>
+    <textarea id="modal-comentario" placeholder="Ex.: a Lei 14.376/2013 foi alterada pela LC 16.500/2026 — novos artigos sobre saídas de emergência. Link: ..."></textarea>
+    <div class="modal-help">Inclua, se possível, o número da nova norma e onde você encontrou a informação.</div>
+    <div class="modal-acoes">
+      <button class="btn-cancelar" id="btn-cancelar">Cancelar</button>
+      <button class="btn-enviar" id="btn-enviar">Enviar reporte</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/api.js"></script>
+<script>
+  const usuario = PBM.getUsuario() || {};
+  document.getElementById('user-nome').textContent = usuario.nome || usuario.email || 'Aluno';
+
+  try {
+    document.getElementById('topbar-data').textContent =
+      new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  } catch (e) {}
+
+  document.getElementById('btn-sair').addEventListener('click', () => PBM.Auth.logout());
+  document.getElementById('btn-logout-top').addEventListener('click', () => PBM.Auth.logout());
+
+  function esc(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function toast(msg, tipo) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast visivel' + (tipo ? ' ' + tipo : '');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.classList.remove('visivel'); }, 3000);
+  }
+
+  function formatarData(iso) {
+    if (!iso) return '';
+    try {
+      return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch { return ''; }
+  }
+
+  // Define curso inicial: preferência do usuário, senão CTSP
+  let cursoAtivo = (usuario.curso || '').toLowerCase();
+  if (cursoAtivo !== 'ctsp' && cursoAtivo !== 'cba') cursoAtivo = 'ctsp';
+
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const c = btn.dataset.curso;
+      if (c === cursoAtivo) return;
+      cursoAtivo = c;
+      document.querySelectorAll('.tab').forEach(b => {
+        b.classList.toggle('ativo', b.dataset.curso === cursoAtivo);
+        b.setAttribute('aria-selected', String(b.dataset.curso === cursoAtivo));
+      });
+      carregarEdital();
+    });
+  });
+  // Sincronizar tab default
+  document.querySelectorAll('.tab').forEach(b => {
+    b.classList.toggle('ativo', b.dataset.curso === cursoAtivo);
+    b.setAttribute('aria-selected', String(b.dataset.curso === cursoAtivo));
+  });
+
+  function renderAreas(data) {
+    const cont = document.getElementById('editais-areas');
+    const corCurso = cursoAtivo === 'cba' ? 'var(--cba)' : 'var(--ctsp)';
+
+    const html = data.areas.map(area => {
+      if (!area.legislacoes.length) return '';
+      const linhas = area.legislacoes.map(l => `
+        <div class="leg-row">
+          <div class="leg-info">
+            <div class="leg-nome">${esc(l.nome)}</div>
+            <div class="leg-meta">
+              ${l.grupo ? `<span class="leg-grupo">${esc(l.grupo)}</span>` : ''}
+              ${l.atualizada ? `
+                <span class="badge-atualizada" title="${esc(l.observacao || 'Marcada como atualizada')}">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Atualizada
+                </span>` : ''}
+            </div>
+          </div>
+          <button class="btn-reportar" onclick="abrirModal('${esc(l.id)}', '${esc(l.nome).replace(/'/g, '&#39;')}')">Reportar mudança</button>
+        </div>
+      `).join('');
+
+      return `
+        <section class="at-card" style="border-color:${corCurso === 'var(--cba)' ? 'var(--cba-borda)' : 'var(--ctsp-borda)'};">
+          <header class="at-header">
+            <span class="at-codigo" data-at="${area.codigo}">${area.codigo}</span>
+            <span class="at-label">${esc(area.label)}</span>
+            <span class="at-contagem">${area.legislacoes.length} legislaç${area.legislacoes.length === 1 ? 'ão' : 'ões'}</span>
+          </header>
+          <div class="leg-list">${linhas}</div>
+        </section>
+      `;
+    }).join('');
+
+    cont.innerHTML = html || '<div class="estado-vazio">Nenhuma legislação encontrada para este curso.</div>';
+  }
+
+  function renderAtualizacoes(data) {
+    const cont = document.getElementById('editais-atualizacoes');
+    if (!data.atualizacoes || !data.atualizacoes.length) {
+      cont.innerHTML = '<div class="side-vazio">Nenhuma atualização recente sinalizada pela equipe.</div>';
+      return;
+    }
+    cont.innerHTML = data.atualizacoes.map(l => `
+      <div class="side-item">
+        <div class="side-item-at">${l.area_tematica}</div>
+        <div class="side-item-nome">${esc(l.nome)}</div>
+        ${l.observacao ? `<div class="side-item-obs">"${esc(l.observacao)}"</div>` : ''}
+        <div class="side-item-data">${formatarData(l.atualizada_em)}</div>
+      </div>
+    `).join('');
+  }
+
+  async function carregarEdital() {
+    const areasEl = document.getElementById('editais-areas');
+    const ladoEl = document.getElementById('editais-atualizacoes');
+    areasEl.innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+    ladoEl.innerHTML = '<div class="side-vazio">Carregando…</div>';
+    try {
+      const data = await PBM.Editais.obter(cursoAtivo);
+      renderAreas(data);
+      renderAtualizacoes(data);
+    } catch (e) {
+      areasEl.innerHTML = '<div class="estado-vazio" style="color:#F09595;">Erro ao carregar edital. Tente recarregar a página.</div>';
+      ladoEl.innerHTML = '<div class="side-vazio" style="color:#F09595;">Erro.</div>';
+    }
+  }
+
+  // Modal reportar
+  let legAtual = null;
+  window.abrirModal = function(id, nome) {
+    legAtual = { id, nome };
+    document.getElementById('modal-leg-ref').innerHTML = `<strong>${esc(nome)}</strong><br><span style="opacity:0.6;font-size:11px;font-family:'IBM Plex Mono',monospace;">${esc(id)}</span>`;
+    document.getElementById('modal-comentario').value = '';
+    document.getElementById('modal-reportar').classList.add('visivel');
+    setTimeout(() => document.getElementById('modal-comentario').focus(), 100);
+  };
+  document.getElementById('btn-cancelar').addEventListener('click', fecharModal);
+  document.getElementById('modal-reportar').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) fecharModal();
+  });
+  function fecharModal() {
+    document.getElementById('modal-reportar').classList.remove('visivel');
+    legAtual = null;
+  }
+  document.getElementById('btn-enviar').addEventListener('click', async () => {
+    if (!legAtual) return;
+    const comentario = (document.getElementById('modal-comentario').value || '').trim();
+    if (!comentario) {
+      toast('Descreva a mudança antes de enviar.', 'erro');
+      return;
+    }
+    if (comentario.length > 1000) {
+      toast('Comentário muito longo (máx. 1000).', 'erro');
+      return;
+    }
+    const btn = document.getElementById('btn-enviar');
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+    try {
+      await PBM.Editais.reportarMudanca(legAtual.id, comentario);
+      toast('Reporte enviado. Obrigado!', 'verde');
+      fecharModal();
+    } catch (e) {
+      toast(e.erro || 'Erro ao enviar reporte.', 'erro');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar reporte';
+    }
+  });
+
+  (async () => {
+    await PBM.protegerRota();
+    carregarEdital();
+  })();
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</body>
+</html>
