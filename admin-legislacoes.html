@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PBM Admin — Legislações</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --vermelho: #C0270F;
+    --vermelho-bg: rgba(192,39,15,0.08);
+    --vermelho-borda: rgba(192,39,15,0.3);
+    --roxo: #7F77DD;
+    --roxo-bg: rgba(127,119,221,0.08);
+    --roxo-borda: rgba(127,119,221,0.3);
+    --verde: #27A05A;
+    --verde-bg: rgba(39,160,90,0.08);
+    --verde-borda: rgba(39,160,90,0.3);
+    --amarelo: #BA7517;
+    --amarelo-bg: rgba(186,117,23,0.12);
+    --amarelo-borda: rgba(186,117,23,0.45);
+    --erro: #E24B4A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
+  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
+  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: #AFA9EC; }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--roxo); }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: var(--vermelho-bg); }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
+  .topbar-titulo { font-size: 14px; font-weight: 500; }
+  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
+
+  .hero { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
+  .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .hero p { font-size: 13px; color: var(--cinza-texto); max-width: 720px; }
+
+  .filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
+  .filtro-btn { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .filtro-btn:hover { border-color: #555; color: var(--branco); }
+  .filtro-btn.ativo { border-color: var(--vermelho-borda); color: #F09595; background: var(--vermelho-bg); }
+  .filtro-busca { flex: 1; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 12px; font-size: 12px; outline: none; min-width: 200px; max-width: 320px; }
+  .filtro-busca:focus { border-color: var(--vermelho); }
+  .stat-tag { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-left: auto; }
+
+  .leg-table { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; overflow: hidden; }
+  .leg-row { display: grid; grid-template-columns: 80px 1fr 100px 130px; gap: 1rem; padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); align-items: center; }
+  .leg-row:last-child { border-bottom: none; }
+  .leg-row.atualizada { background: rgba(186,117,23,0.04); }
+  .leg-row.tem-override { background: rgba(127,119,221,0.04); }
+  .leg-at { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.04em; }
+  .leg-at[data-at="AT1"] { color: #F09595; }
+  .leg-at[data-at="AT2"] { color: #E0A858; }
+  .leg-at[data-at="AT3"] { color: #7AB6E0; }
+  .leg-at[data-at="AT4"] { color: #7DD99A; }
+  .leg-at[data-at="AT5"] { color: #AFA9EC; }
+  .leg-nome { font-size: 13px; line-height: 1.4; }
+  .leg-nome-manifest { font-size: 11px; color: #555; font-family: 'IBM Plex Mono', monospace; margin-top: 3px; word-break: break-word; }
+  .leg-nome strong { color: var(--branco); }
+  .leg-meta-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .tag { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 6px; border-radius: 12px; letter-spacing: 0.04em; }
+  .tag-curso { background: rgba(255,255,255,0.04); color: var(--cinza-texto); border: 1px solid var(--cinza-borda); text-transform: uppercase; }
+  .tag-grupo { background: rgba(127,119,221,0.06); color: #AFA9EC; border: 1px solid var(--roxo-borda); }
+  .leg-curso { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); text-transform: uppercase; }
+  .leg-acoes { display: flex; gap: 6px; justify-content: flex-end; }
+  .btn-acao { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .btn-acao:hover { border-color: #555; color: var(--branco); }
+  .btn-acao.amarelo { border-color: var(--amarelo-borda); color: #E0A858; }
+  .btn-acao.amarelo.ativo { background: var(--amarelo-bg); }
+  .btn-acao.amarelo:hover { background: var(--amarelo-bg); }
+  .btn-acao.azul { border-color: var(--roxo-borda); color: #AFA9EC; }
+  .btn-acao.azul:hover { background: var(--roxo-bg); }
+  .badge-atualizada { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; background: var(--amarelo-bg); border: 1px solid var(--amarelo-borda); color: #E0A858; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 4px; }
+  .badge-override { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 4px; }
+
+  .empty { text-align: center; padding: 3rem 2rem; color: #555; font-size: 13px; }
+
+  /* MODAL */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 500; padding: 1rem; }
+  .modal-overlay.visivel { display: flex; }
+  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; max-width: 560px; width: 100%; padding: 1.5rem; }
+  .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .modal-sub { font-size: 12px; color: var(--cinza-texto); margin-bottom: 14px; }
+  .ref-bloco { background: rgba(127,119,221,0.05); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
+  .ref-bloco-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+  .ref-bloco-val { font-size: 12px; line-height: 1.4; color: #AFA9EC; }
+  .form-grupo { margin-bottom: 12px; }
+  .form-label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .form-input, .form-textarea { width: 100%; background: var(--carvao); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 9px 12px; font-size: 13px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s; }
+  .form-textarea { resize: vertical; min-height: 70px; }
+  .form-input:focus, .form-textarea:focus { border-color: var(--vermelho); }
+  .form-help { font-size: 10px; color: #555; margin-top: 4px; }
+  .check-linha { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--carvao); border: 1px solid var(--cinza-borda); border-radius: 6px; cursor: pointer; }
+  .check-linha input { width: 16px; height: 16px; accent-color: var(--vermelho); }
+  .check-linha-info { flex: 1; }
+  .check-linha-titulo { font-size: 12px; color: var(--branco); }
+  .check-linha-sub { font-size: 10px; color: var(--cinza-texto); margin-top: 2px; }
+  .modal-acoes { display: flex; gap: 8px; justify-content: space-between; align-items: center; margin-top: 14px; }
+  .modal-acoes-dir { display: flex; gap: 8px; }
+  .btn-cancelar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 8px 16px; font-size: 12px; cursor: pointer; }
+  .btn-cancelar:hover { border-color: #555; color: var(--branco); }
+  .btn-salvar { background: var(--vermelho); border: 1px solid var(--vermelho); color: #fff; border-radius: 6px; padding: 8px 18px; font-size: 12px; font-weight: 500; cursor: pointer; }
+  .btn-salvar:hover { opacity: 0.9; }
+  .btn-reset { background: transparent; border: 1px solid rgba(226,75,74,0.3); color: #888; border-radius: 6px; padding: 6px 12px; font-size: 10px; cursor: pointer; font-family: 'IBM Plex Mono', monospace; }
+  .btn-reset:hover { border-color: var(--erro); color: #F09595; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; transition: transform 0.25s ease; z-index: 999; }
+  .toast.visivel { transform: translateX(-50%) translateY(0); }
+  .toast.verde { border-color: var(--verde-borda); color: #7DD99A; }
+  .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
+
+  @media (max-width: 900px) {
+    .leg-row { grid-template-columns: 1fr; gap: 0.5rem; }
+    .leg-acoes { justify-content: flex-start; flex-wrap: wrap; }
+  }
+  @media (max-width: 768px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
+    .sidebar-logo { padding: 0; border-bottom: none; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-footer { border-top: none; padding: 0; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
+    .topbar { padding: 0 1rem; }
+    .conteudo { padding: 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
+      <span class="admin-chip">ADMIN</span>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome">Administrador</div>
+      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Painel</div>
+      <a class="nav-item" href="/admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
+      <a class="nav-item" href="/admin-analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analytics</a>
+      <div class="nav-label">Conteúdo</div>
+      <a class="nav-item" href="/admin-questoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Questões</a>
+      <a class="nav-item ativo" href="/admin-legislacoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>Legislações</a>
+      <a class="nav-item" href="/admin-flashcards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Flashcards</a>
+      <a class="nav-item" href="/admin-simulados-mensais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Protocolos QAP</a>
+      <div class="nav-label">Alunos</div>
+      <a class="nav-item" href="/admin-assinaturas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Assinaturas</a>
+      <a class="nav-item" href="/admin-relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Relatórios</a>
+      <a class="nav-item" href="/admin-denuncias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Relatórios de Problemas</a>
+      <div class="nav-label">Sistema</div>
+      <a class="nav-item" href="/admin-aprovacoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Aprovações IA</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" id="btn-sair">Encerrar sessão admin</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Gestão de Legislações</span>
+    </div>
+
+    <div class="conteudo">
+      <div class="hero">
+        <h1>Legislações cobradas nos editais</h1>
+        <p>
+          Renomeie legislações quando a norma original for substituída/atualizada e marque-as como <strong style="color:#E0A858">atualizadas</strong> para
+          destacá-las no painel do aluno. O nome original do manifesto continua salvo — você pode reverter o override a qualquer momento.
+        </p>
+      </div>
+
+      <div class="filtros">
+        <button class="filtro-btn ativo" data-curso="todos">Todos os cursos</button>
+        <button class="filtro-btn" data-curso="ctsp">CTSP</button>
+        <button class="filtro-btn" data-curso="cba">CBA</button>
+        <button class="filtro-btn" data-area="todas" style="margin-left:14px;">Todas AT</button>
+        <button class="filtro-btn" data-area="AT1">AT1</button>
+        <button class="filtro-btn" data-area="AT2">AT2</button>
+        <button class="filtro-btn" data-area="AT3">AT3</button>
+        <button class="filtro-btn" data-area="AT4">AT4</button>
+        <button class="filtro-btn" data-area="AT5">AT5</button>
+        <input class="filtro-busca" id="busca" placeholder="Buscar por nome ou ID…" oninput="renderLista()">
+        <span class="stat-tag" id="contador">—</span>
+      </div>
+
+      <div class="leg-table" id="lista">
+        <div class="empty">Carregando legislações…</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h2>Editar legislação</h2>
+    <div class="modal-sub">Defina um nome customizado e/ou marque como atualizada.</div>
+    <div class="ref-bloco">
+      <div class="ref-bloco-label">Nome no manifesto (original)</div>
+      <div class="ref-bloco-val" id="modal-manifest">—</div>
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label" for="modal-nome">Nome customizado (opcional)</label>
+      <input class="form-input" id="modal-nome" maxlength="300" placeholder="Deixe em branco para usar o nome do manifesto">
+      <div class="form-help">Use para renomear quando a norma foi alterada (ex.: "Lei 14.376/2013 — atualizada pela LC 16.500/2026").</div>
+    </div>
+
+    <div class="form-grupo">
+      <label class="form-label" for="modal-obs">Observação (opcional)</label>
+      <textarea class="form-textarea" id="modal-obs" maxlength="500" placeholder="Ex.: atualizada pela LC 16.500/2026 — novos artigos sobre saídas de emergência."></textarea>
+    </div>
+
+    <div class="form-grupo">
+      <label class="check-linha">
+        <input type="checkbox" id="modal-marcar">
+        <div class="check-linha-info">
+          <div class="check-linha-titulo">Marcar como atualizada agora</div>
+          <div class="check-linha-sub">Aparece destacada na tela do aluno durante 180 dias.</div>
+        </div>
+      </label>
+    </div>
+
+    <div class="modal-acoes">
+      <button class="btn-reset" id="btn-reset" title="Remove override e restaura nome do manifesto">↺ Resetar override</button>
+      <div class="modal-acoes-dir">
+        <button class="btn-cancelar" id="btn-cancelar">Cancelar</button>
+        <button class="btn-salvar" id="btn-salvar">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="/js/api.js"></script>
+<script>
+  PBM.Admin.protegerRota();
+
+  document.getElementById('btn-sair').addEventListener('click', () => PBM.Admin.logout());
+
+  function esc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function toast(msg, tipo) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = 'toast visivel' + (tipo ? ' ' + tipo : '');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('visivel'), 2800);
+  }
+  function fmtData(iso) {
+    if (!iso) return '';
+    try { return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' }); }
+    catch { return ''; }
+  }
+
+  let cache = [];
+  let filtroCurso = 'todos';
+  let filtroArea = 'todas';
+
+  document.querySelectorAll('.filtro-btn[data-curso]').forEach(b => {
+    b.addEventListener('click', () => {
+      filtroCurso = b.dataset.curso;
+      document.querySelectorAll('.filtro-btn[data-curso]').forEach(x => x.classList.toggle('ativo', x === b));
+      renderLista();
+    });
+  });
+  document.querySelectorAll('.filtro-btn[data-area]').forEach(b => {
+    b.addEventListener('click', () => {
+      filtroArea = b.dataset.area;
+      document.querySelectorAll('.filtro-btn[data-area]').forEach(x => x.classList.toggle('ativo', x === b));
+      renderLista();
+    });
+  });
+  // Marca os defaults
+  document.querySelector('.filtro-btn[data-area="todas"]').classList.add('ativo');
+
+  function aplicaFiltros(lista) {
+    const busca = (document.getElementById('busca').value || '').toLowerCase();
+    return lista.filter(l => {
+      if (filtroCurso !== 'todos' && l.curso !== filtroCurso && l.curso !== 'ambos') return false;
+      if (filtroArea !== 'todas' && l.area_tematica !== filtroArea) return false;
+      if (busca) {
+        const blob = (l.nome_exibicao + ' ' + l.nome_manifest + ' ' + l.id + ' ' + (l.grupo || '')).toLowerCase();
+        if (!blob.includes(busca)) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderLista() {
+    const cont = document.getElementById('lista');
+    const filtradas = aplicaFiltros(cache);
+
+    document.getElementById('contador').textContent =
+      `${filtradas.length} de ${cache.length}`;
+
+    if (!filtradas.length) {
+      cont.innerHTML = '<div class="empty">Nenhuma legislação encontrada com esses filtros.</div>';
+      return;
+    }
+
+    cont.innerHTML = filtradas.map(l => {
+      const temOverride = !!l.nome_custom;
+      const atualizada = !!l.atualizada_em;
+      const cssRow = atualizada ? 'leg-row atualizada' : (temOverride ? 'leg-row tem-override' : 'leg-row');
+      return `
+        <div class="${cssRow}">
+          <div class="leg-at" data-at="${l.area_tematica}">${l.area_tematica}</div>
+          <div class="leg-nome">
+            <strong>${esc(l.nome_exibicao)}</strong>
+            ${temOverride ? `<div class="leg-nome-manifest">manifest: ${esc(l.nome_manifest)}</div>` : ''}
+            ${temOverride ? '<span class="badge-override">Override</span>' : ''}
+            ${atualizada ? `<span class="badge-atualizada">✓ Atualizada · ${fmtData(l.atualizada_em)}</span>` : ''}
+            <div class="leg-meta-tags">
+              ${l.grupo ? `<span class="tag tag-grupo">${esc(l.grupo)}</span>` : ''}
+              <span class="tag tag-curso">${esc(l.curso)}</span>
+            </div>
+          </div>
+          <div class="leg-curso" style="font-size:10px;">${esc(l.id)}</div>
+          <div class="leg-acoes">
+            <button class="btn-acao amarelo ${atualizada ? 'ativo' : ''}" onclick="alternarAtualizada('${esc(l.id)}', ${atualizada})">
+              ${atualizada ? 'Desmarcar' : 'Marcar atualizada'}
+            </button>
+            <button class="btn-acao azul" onclick="abrirModal('${esc(l.id)}')">Editar</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  async function carregar() {
+    try {
+      const r = await PBM.Admin.legislacoes.listar();
+      cache = r.legislacoes || [];
+      renderLista();
+    } catch (e) {
+      document.getElementById('lista').innerHTML =
+        '<div class="empty" style="color:#F09595;">Erro ao carregar legislações.</div>';
+    }
+  }
+
+  window.alternarAtualizada = async function(id, atualEstava) {
+    try {
+      await PBM.Admin.legislacoes.salvar(id, { marcar_atualizada: !atualEstava });
+      toast(atualEstava ? 'Desmarcada como atualizada.' : 'Marcada como atualizada.', 'verde');
+      await carregar();
+    } catch (e) {
+      toast(e.erro || 'Erro ao salvar.', 'erro');
+    }
+  };
+
+  let legEdit = null;
+  window.abrirModal = function(id) {
+    const l = cache.find(x => x.id === id);
+    if (!l) return;
+    legEdit = l;
+    document.getElementById('modal-manifest').textContent = l.nome_manifest;
+    document.getElementById('modal-nome').value = l.nome_custom || '';
+    document.getElementById('modal-obs').value = l.observacao || '';
+    document.getElementById('modal-marcar').checked = !!l.atualizada_em;
+    document.getElementById('modal').classList.add('visivel');
+    setTimeout(() => document.getElementById('modal-nome').focus(), 100);
+  };
+  document.getElementById('btn-cancelar').addEventListener('click', fecharModal);
+  document.getElementById('modal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) fecharModal();
+  });
+  function fecharModal() {
+    document.getElementById('modal').classList.remove('visivel');
+    legEdit = null;
+  }
+
+  document.getElementById('btn-salvar').addEventListener('click', async () => {
+    if (!legEdit) return;
+    const nome = (document.getElementById('modal-nome').value || '').trim();
+    const obs = (document.getElementById('modal-obs').value || '').trim();
+    const marcar = document.getElementById('modal-marcar').checked;
+
+    const body = {
+      nome_custom: nome ? nome : null,
+      observacao: obs ? obs : null,
+      marcar_atualizada: marcar,
+    };
+
+    const btn = document.getElementById('btn-salvar');
+    btn.disabled = true; btn.textContent = 'Salvando…';
+    try {
+      await PBM.Admin.legislacoes.salvar(legEdit.id, body);
+      toast('Salvo.', 'verde');
+      fecharModal();
+      await carregar();
+    } catch (e) {
+      toast(e.erro || 'Erro ao salvar.', 'erro');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Salvar';
+    }
+  });
+
+  document.getElementById('btn-reset').addEventListener('click', async () => {
+    if (!legEdit) return;
+    if (!confirm('Remover override e restaurar nome do manifesto?\n\nO nome customizado, observação e marca de atualizada serão apagados.')) return;
+    try {
+      await PBM.Admin.legislacoes.removerOverride(legEdit.id);
+      toast('Override removido.', 'verde');
+      fecharModal();
+      await carregar();
+    } catch (e) {
+      toast(e.erro || 'Erro ao remover override.', 'erro');
+    }
+  });
+
+  carregar();
+</script>
+</body>
+</html>

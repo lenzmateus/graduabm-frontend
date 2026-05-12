@@ -86,6 +86,11 @@
   .filtro-btn { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .filtro-btn:hover { border-color: #555; color: var(--branco); }
   .filtro-btn.ativo { border-color: var(--vermelho-borda); color: #F09595; background: var(--vermelho-bg); }
+  .filtro-tipo-btn { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
+  .filtro-tipo-btn:hover { border-color: #555; color: var(--branco); }
+  .filtro-tipo-btn.ativo { border-color: var(--roxo-borda); color: #AFA9EC; background: var(--roxo-bg); }
+  .badge-tipo-legislacao { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; background: rgba(186,117,23,0.12); border: 1px solid rgba(186,117,23,0.45); color: #E0A858; letter-spacing: 0.04em; text-transform: uppercase; margin-right: 6px; }
+  .badge-tipo-questao { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; background: rgba(127,119,221,0.08); border: 1px solid rgba(127,119,221,0.3); color: #AFA9EC; letter-spacing: 0.04em; text-transform: uppercase; margin-right: 6px; }
   .filtro-busca { flex: 1; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 12px; font-size: 12px; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.15s; min-width: 180px; max-width: 280px; }
   .filtro-busca::placeholder { color: #555; }
   .filtro-busca:focus { border-color: var(--vermelho); }
@@ -169,6 +174,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         Questões
       </a>
+      <a class="nav-item" href="/admin-legislacoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        Legislações
+      </a>
       <a class="nav-item" href="/admin-flashcards">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
         Flashcards
@@ -247,6 +256,10 @@
         <button class="filtro-btn ativo" onclick="filtrar('pendente', this)">Pendentes</button>
         <button class="filtro-btn" onclick="filtrar('todas', this)">Todas</button>
         <button class="filtro-btn" onclick="filtrar('resolvida', this)">Resolvidas</button>
+        <span style="width:1px;height:18px;background:var(--cinza-borda);margin:0 4px;"></span>
+        <button class="filtro-tipo-btn ativo" data-tipo="tudo" onclick="filtrarTipo('tudo', this)">Tudo</button>
+        <button class="filtro-tipo-btn" data-tipo="questao" onclick="filtrarTipo('questao', this)">Questões</button>
+        <button class="filtro-tipo-btn" data-tipo="legislacao" onclick="filtrarTipo('legislacao', this)">Legislações</button>
         <input class="filtro-busca" id="busca-input" type="text" placeholder="Buscar por comentário ou legislação…" oninput="renderLista()">
       </div>
 
@@ -284,7 +297,7 @@
 
   function escHtml(str) {
     if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
 
   function toast(msg, tipo) {
@@ -297,10 +310,17 @@
 
   let cache = [];
   let filtroAtivo = 'pendente';
+  let filtroTipo = 'tudo';
 
   function filtrar(f, btn) {
     filtroAtivo = f;
     document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
+    if (btn) btn.classList.add('ativo');
+    renderLista();
+  }
+  function filtrarTipo(t, btn) {
+    filtroTipo = t;
+    document.querySelectorAll('.filtro-tipo-btn').forEach(b => b.classList.remove('ativo'));
     if (btn) btn.classList.add('ativo');
     renderLista();
   }
@@ -313,12 +333,17 @@
     if (filtroAtivo === 'pendente') itens = itens.filter(d => !d.resolvida);
     else if (filtroAtivo === 'resolvida') itens = itens.filter(d => d.resolvida);
 
+    if (filtroTipo === 'questao') itens = itens.filter(d => (d.tipo || 'questao') === 'questao');
+    else if (filtroTipo === 'legislacao') itens = itens.filter(d => d.tipo === 'legislacao');
+
     if (busca) {
       itens = itens.filter(d =>
         (d.comentario || '').toLowerCase().includes(busca) ||
         (d.questoes?.codigo || '').toLowerCase().includes(busca) ||
         (d.questoes?.legislacao_nome || '').toLowerCase().includes(busca) ||
         (d.questoes?.area_tematica || '').toLowerCase().includes(busca) ||
+        (d.legislacao_nome || '').toLowerCase().includes(busca) ||
+        (d.legislacao_id || '').toLowerCase().includes(busca) ||
         (d.users?.nome || '').toLowerCase().includes(busca) ||
         (d.users?.email || '').toLowerCase().includes(busca)
       );
@@ -336,22 +361,36 @@
     }
 
     container.innerHTML = itens.map(d => {
-      const questaoInfo = d.questoes;
-      const enunciado = questaoInfo?.enunciado || '';
-      const trecho = enunciado.length > 100 ? enunciado.slice(0, 100) + '…' : enunciado;
-      const area = questaoInfo?.area_tematica || '';
-      const leg = questaoInfo?.legislacao_nome || '';
-      const codigo = questaoInfo?.codigo || '';
       const aluno = d.users?.nome || d.users?.email || 'Aluno desconhecido';
       const data = d.created_at
         ? new Date(d.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
         : '';
       const resolvida = d.resolvida;
+      const tipo = d.tipo || 'questao';
+
+      let cabecalho = '';
+      let acaoAdmin = '';
+
+      if (tipo === 'legislacao') {
+        cabecalho = `<span class="badge-tipo-legislacao">Legislação</span>${escHtml(d.legislacao_nome || d.legislacao_id || '')}`;
+        acaoAdmin = `<a href="/admin-legislacoes" class="btn-editar-questao">📜 Gerenciar legislação</a>`;
+      } else {
+        const questaoInfo = d.questoes || {};
+        const enunciado = questaoInfo.enunciado || '';
+        const trecho = enunciado.length > 100 ? enunciado.slice(0, 100) + '…' : enunciado;
+        const area = questaoInfo.area_tematica || '';
+        const leg = questaoInfo.legislacao_nome || '';
+        const codigo = questaoInfo.codigo || '';
+        cabecalho = `<span class="badge-tipo-questao">Questão</span>${area ? `<strong style="color:#E0866E;">${area}</strong> · ` : ''}${codigo ? `<span style="color:#AFA9EC;margin-right:6px;">${escHtml(codigo)}</span>` : ''}${escHtml(leg ? leg + ' · ' : '')}${escHtml(trecho || d.questao_id || '')}`;
+        acaoAdmin = d.questao_id
+          ? `<a href="/admin-questoes?editar=${d.questao_id}" class="btn-editar-questao">✏ Editar Questão</a>`
+          : '';
+      }
 
       return `<div class="denuncia-card ${resolvida ? 'resolvida' : ''}" id="denuncia-${d.id}">
         <div class="denuncia-status ${resolvida ? 'resolvida-dot' : 'pendente'}"></div>
         <div class="denuncia-body">
-          <div class="denuncia-questao">${area ? `<strong style="color:#E0866E;">${area}</strong> · ` : ''}${codigo ? `<span style="color:#AFA9EC;margin-right:6px;">${escHtml(codigo)}</span>` : ''}${escHtml(leg ? leg + ' · ' : '')}${escHtml(trecho || d.questao_id)}</div>
+          <div class="denuncia-questao">${cabecalho}</div>
           <div class="denuncia-comentario">${escHtml(d.comentario)}</div>
           <div class="denuncia-meta">
             <span class="denuncia-aluno">${escHtml(aluno)}</span>
@@ -359,11 +398,11 @@
           </div>
         </div>
         <div class="denuncia-acoes">
-          <a href="/admin-questoes?editar=${d.questao_id}" class="btn-editar-questao">✏ Editar Questão</a>
+          ${acaoAdmin}
           ${!resolvida
-            ? `<button class="btn-resolver" onclick="resolverDenuncia('${d.id}', this)">✓ Resolver</button>`
+            ? `<button class="btn-resolver" onclick="resolverDenuncia('${escHtml(d.id)}', this)">✓ Resolver</button>`
             : `<span class="tag-resolvida">resolvida</span>
-               <button class="btn-excluir" onclick="excluirDenuncia('${d.id}', this)">🗑 Excluir</button>`}
+               <button class="btn-excluir" onclick="excluirDenuncia('${escHtml(d.id)}', this)">🗑 Excluir</button>`}
         </div>
       </div>`;
     }).join('');
@@ -400,7 +439,7 @@
     if (!ADMIN_JWT) return;
     try {
       const r = await supaQuery(
-        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,questoes(codigo,area_tematica,legislacao_nome,enunciado),users(nome,email)&order=created_at.desc&limit=500'
+        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,tipo,legislacao_id,legislacao_nome,questoes(codigo,area_tematica,legislacao_nome,enunciado),users(nome,email)&order=created_at.desc&limit=500'
       );
       if (!r.ok) throw new Error('Falha ao buscar denúncias');
       cache = Array.isArray(r.data) ? r.data : [];
