@@ -1,10 +1,16 @@
 /**
  * Protocolo Bravo Mike — Tour Universal Guiado
  * Suporta múltiplas páginas com steps independentes e persistência granular.
+ *
+ * Persistência: a marcação "tour já visto" vive PRIMÁRIAMENTE no backend
+ * (users.tours_completados via /api/auth/tours/completar), com cache em
+ * localStorage para evitar flicker. Isto resolve o reaparecimento do tour
+ * a cada login em mobile (iOS Safari ITP, PWA, navegador privado, etc.).
+ *
  * API pública: PBMTour.init() | PBMTour.start() | PBMTour.reset()
  */
 (function () {
-  const VERSION = 'v2';
+  const VERSION = 'v3';
 
   const TOUR_CONFIG = {
     '/dashboard': {
@@ -34,6 +40,24 @@
           target: 'a[href="/simulados"]',
           title: 'Simulados Oficiais',
           body: 'Ambiente de prova fechado: 4 horas de cronômetro, sem gabarito imediato e com Cartão Resposta. Treine como na prova real.',
+          position: 'right',
+        },
+        {
+          target: 'a[href="/simulado-mensal"]',
+          title: 'Protocolo QAP',
+          body: 'Evento periódico com ranking ao vivo entre todos os alunos. Encare uma prova completa contra o tempo e veja sua colocação em tempo real.',
+          position: 'right',
+        },
+        {
+          target: 'a[href="/flashcards"]',
+          title: 'Flashcards inteligentes',
+          body: 'Cartões diários gerados por IA com repetição espaçada (SRS). Memorize os pontos críticos de cada legislação sem esforço.',
+          position: 'right',
+        },
+        {
+          target: 'a[href="/ranking"]',
+          title: 'Ranking geral',
+          body: 'Veja sua posição entre todos os alunos, separado por curso (CTSP/CBA), e acompanhe o pódio dos top performers.',
           position: 'right',
         },
         {
@@ -167,6 +191,96 @@
       ],
     },
 
+    '/simulado-prova': {
+      key: 'simulado-prova',
+      welcomeTitle: 'Ambiente de Prova',
+      welcomeBody: 'Você está no modo prova fechado. Antes do cronômetro acelerar, conheça os 4 elementos essenciais.',
+      steps: [
+        {
+          target: '#timer',
+          title: 'Cronômetro de 4 horas',
+          body: 'Conta regressivo. Nos últimos 5 minutos pisca em vermelho e, ao zerar, o que estiver no Cartão Resposta é entregue automaticamente.',
+          position: 'bottom',
+        },
+        {
+          target: '#q-enunciado',
+          title: 'Sem feedback imediato',
+          body: 'A alternativa marcada fica apenas destacada — não indica se está certa ou errada. Você só verá o gabarito após entregar.',
+          position: 'bottom',
+        },
+        {
+          target: '.btn-toggle-nav',
+          title: 'Navegação livre',
+          body: 'Abra o mapa para pular para qualquer questão. Você pode marcar, voltar e revisar como quiser dentro das 4 horas.',
+          position: 'bottom',
+        },
+        {
+          target: '.btn-finalizar',
+          title: 'Cartão Resposta oficial',
+          body: 'Atenção: só o que você preencher no Cartão Resposta oficial conta para a nota. Rascunho sem cartão marcado = questão em branco.',
+          position: 'bottom',
+        },
+      ],
+    },
+
+    '/simulado-mensal': {
+      key: 'simulado-mensal',
+      welcomeTitle: 'Protocolo QAP',
+      welcomeBody: 'Evento periódico de simulado completo com ranking ao vivo. Veja como funciona antes de participar.',
+      steps: [
+        {
+          target: '#lobby-status-card',
+          title: 'Janela única',
+          body: 'O Protocolo QAP fica disponível por um período limitado (geralmente fim de semana). Você só pode participar uma vez por evento — leia o status antes de entrar.',
+          position: 'top',
+        },
+        {
+          target: '#lobby-status-card',
+          title: 'Cronômetro real',
+          body: 'Ao iniciar, 4 horas começam a correr. Se o tempo do evento encerrar antes, sua participação é entregue automaticamente.',
+          position: 'top',
+        },
+        {
+          target: '#lobby-status-card',
+          title: 'Ranking ao vivo',
+          body: 'Sua nota entra no ranking público assim que você entrega. Você poderá comparar-se com todos os alunos do seu curso em tempo real.',
+          position: 'top',
+        },
+      ],
+    },
+
+    '/ranking': {
+      key: 'ranking',
+      welcomeTitle: 'Ranking Geral',
+      welcomeBody: 'Veja sua posição entre todos os alunos. Você pode filtrar por curso e por critério de ordenação.',
+      steps: [
+        {
+          target: '#stats-strip',
+          title: 'Visão geral da plataforma',
+          body: 'Quantos alunos estão competindo, total de questões resolvidas, taxa média de acerto e horas de estudo acumuladas.',
+          position: 'bottom',
+        },
+        {
+          target: '#tabs-curso',
+          title: 'Filtre por curso',
+          body: 'Veja o ranking geral, somente CTSP ou somente CBA. O ranking é separado para garantir comparação justa dentro do seu edital.',
+          position: 'bottom',
+        },
+        {
+          target: '#podio',
+          title: 'Pódio dos líderes',
+          body: 'Top 3 do critério selecionado. Subir para o pódio rende reconhecimento entre os concorrentes — e dá uma boa pista de quanto falta na sua preparação.',
+          position: 'top',
+        },
+        {
+          target: '#minha-pos',
+          title: 'Sua posição',
+          body: 'Card fixo com seus números: colocação, total de questões, taxa de acerto, tempo de estudo e pontuação geral.',
+          position: 'top',
+        },
+      ],
+    },
+
     '/flashcards': {
       key: 'flashcards',
       welcomeTitle: 'Flashcards de Memorização',
@@ -194,26 +308,90 @@
     },
   };
 
-  /* ── UTILS ── */
-  function getPageKey() {
-    const path = window.location.pathname;
-    return TOUR_CONFIG[path] ? TOUR_CONFIG[path].key : null;
+  /* ── PERSISTÊNCIA (backend + cache local) ── */
+  const API_URL = 'https://graduabm-backend-production.up.railway.app';
+
+  function getUser() {
+    try { return JSON.parse(sessionStorage.getItem('usuario')); }
+    catch { return null; }
   }
 
-  function storageKey(pageKey) {
-    try {
-      const u = JSON.parse(localStorage.getItem('usuario'));
-      const uid = u && u.id ? u.id : 'default';
-      return `pbm_tour_${pageKey}_${VERSION}_${uid}`;
-    } catch { return `pbm_tour_${pageKey}_${VERSION}_default`; }
+  function getToken() {
+    return sessionStorage.getItem('token') || null;
+  }
+
+  function cacheKey(pageKey) {
+    const u = getUser();
+    const uid = u && u.id ? u.id : 'anon';
+    return `pbm_tour_${pageKey}_${VERSION}_${uid}`;
+  }
+
+  // Verdade: array de chaves em sessionStorage.usuario.tours_completados.
+  // localStorage[cacheKey] é só cache para evitar flicker entre páginas.
+  function tourJaVisto(pageKey) {
+    const u = getUser();
+    if (u && Array.isArray(u.tours_completados) && u.tours_completados.includes(pageKey)) {
+      return true;
+    }
+    try { return !!localStorage.getItem(cacheKey(pageKey)); } catch { return false; }
   }
 
   function shouldShow(pageKey) {
-    try { return !localStorage.getItem(storageKey(pageKey)); } catch { return false; }
+    return !tourJaVisto(pageKey);
   }
 
   function markDone(pageKey) {
-    try { localStorage.setItem(storageKey(pageKey), '1'); } catch {}
+    // Cache local imediato (evita reaparecimento durante a sessão)
+    try { localStorage.setItem(cacheKey(pageKey), '1'); } catch {}
+
+    // Atualiza sessionStorage.usuario para refletir o novo estado já neste tab
+    const u = getUser();
+    if (u) {
+      const arr = Array.isArray(u.tours_completados) ? u.tours_completados : [];
+      if (!arr.includes(pageKey)) {
+        arr.push(pageKey);
+        u.tours_completados = arr;
+        try { sessionStorage.setItem('usuario', JSON.stringify(u)); } catch {}
+      }
+    }
+
+    // Persiste no backend (fire-and-forget)
+    const token = getToken();
+    if (!token) return; // sem token = preview admin ou não-logado, fica só local
+    try {
+      fetch(`${API_URL}/api/auth/tours/completar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ tour: pageKey }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+  }
+
+  function resetAll() {
+    // limpa cache local
+    Object.values(TOUR_CONFIG).forEach(cfg => {
+      try { localStorage.removeItem(cacheKey(cfg.key)); } catch {}
+    });
+    // backend
+    const token = getToken();
+    if (token) {
+      try {
+        fetch(`${API_URL}/api/auth/tours/resetar`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+        }).then(() => {
+          const u = getUser();
+          if (u) { u.tours_completados = []; sessionStorage.setItem('usuario', JSON.stringify(u)); }
+        }).catch(() => {});
+      } catch {}
+    } else {
+      const u = getUser();
+      if (u) { u.tours_completados = []; try { sessionStorage.setItem('usuario', JSON.stringify(u)); } catch {} }
+    }
   }
 
   /* ── STATE ── */
@@ -247,6 +425,7 @@
         border-radius: 12px;
         padding: 1.25rem 1.5rem;
         width: 300px;
+        max-width: calc(100vw - 32px);
         box-shadow: 0 8px 32px rgba(0,0,0,0.7);
         transition: all 0.3s cubic-bezier(.4,0,.2,1);
         z-index: 99999;
@@ -267,7 +446,7 @@
       .pbm-tour-step { font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#C0270F;margin-bottom:8px; }
       .pbm-tour-title { font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em;color:#F8F6F2;margin-bottom:8px;line-height:1.2; }
       .pbm-tour-body { font-family:'Inter',sans-serif;font-size:13px;color:#888;line-height:1.6;margin-bottom:1.25rem; }
-      .pbm-tour-actions { display:flex;align-items:center;gap:8px;justify-content:flex-end; }
+      .pbm-tour-actions { display:flex;align-items:center;gap:8px;justify-content:flex-end;flex-wrap:wrap; }
       .pbm-tour-skip { margin-right:auto;background:none;border:none;color:#555;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;padding:0;transition:color .15s; }
       .pbm-tour-skip:hover { color:#888; }
       .pbm-tour-btn { background:transparent;border:1px solid #333;color:#888;border-radius:6px;padding:6px 14px;font-size:12px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s; }
@@ -281,17 +460,27 @@
         display:none;position:fixed;inset:0;z-index:99998;
         align-items:center;justify-content:center;
         background:rgba(0,0,0,0.82);
+        padding:16px;
       }
       #pbm-tour-modal-center.visible { display:flex; }
-      .pbm-modal-box { background:#1A1A1A;border:1px solid #2A2A2A;border-radius:16px;padding:2.5rem 2rem;max-width:400px;width:90%;text-align:center; }
+      .pbm-modal-box { background:#1A1A1A;border:1px solid #2A2A2A;border-radius:16px;padding:2.5rem 2rem;max-width:400px;width:100%;text-align:center; }
       .pbm-modal-icon { width:56px;height:56px;border-radius:50%;background:rgba(192,39,15,.12);border:1px solid rgba(192,39,15,.25);display:inline-flex;align-items:center;justify-content:center;margin-bottom:1.25rem; }
       .pbm-modal-box h2 { font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.04em;color:#F8F6F2;margin-bottom:10px; }
       .pbm-modal-box p { font-family:'Inter',sans-serif;font-size:14px;color:#888;line-height:1.65;margin-bottom:1.75rem; }
-      .pbm-modal-actions { display:flex;gap:10px;justify-content:center; }
+      .pbm-modal-actions { display:flex;gap:10px;justify-content:center;flex-wrap:wrap; }
       .pbm-modal-btn-skip { background:transparent;border:1px solid #333;color:#555;border-radius:8px;padding:10px 20px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s; }
       .pbm-modal-btn-skip:hover { border-color:#555;color:#888; }
       .pbm-modal-btn-start { background:#C0270F;border:1px solid #C0270F;color:#fff;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s; }
       .pbm-modal-btn-start:hover { background:#8B1A08;border-color:#8B1A08; }
+
+      @media (max-width: 540px) {
+        #pbm-tour-tooltip { width: calc(100vw - 32px); padding: 1rem 1.1rem; }
+        .pbm-tour-title { font-size: 18px; }
+        .pbm-tour-body { font-size: 12.5px; }
+        .pbm-tour-btn { padding: 7px 12px; font-size: 12px; }
+        .pbm-modal-box { padding: 2rem 1.4rem; }
+        .pbm-modal-box h2 { font-size: 24px; }
+      }
     `;
     document.head.appendChild(style);
   }
@@ -367,6 +556,7 @@
       showStep(currentStep);
     });
 
+    // Marca como visto assim que abre — evita re-disparar se o usuário recarrega
     markDone(config.key);
     modalCenter.classList.add('visible');
   }
@@ -378,10 +568,23 @@
     });
   }
 
+  function isVisible(el) {
+    if (!el) return false;
+    const rect = el.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return false;
+    const style = window.getComputedStyle(el);
+    if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
+    return true;
+  }
+
   function showStep(idx) {
     if (!activeConfig) return;
     const step = activeConfig.steps[idx];
     if (!step) { destroy(); return; }
+
+    // Sincroniza estado global ANTES de qualquer recursão — evita
+    // dessincronia entre o que está visível e o que o "Próximo →" avança.
+    currentStep = idx;
 
     overlay.classList.add('active');
     stepEl.textContent = `Passo ${idx + 1} de ${activeConfig.steps.length}`;
@@ -393,21 +596,46 @@
     btnNext.textContent = idx >= activeConfig.steps.length - 1 ? 'Concluir ✓' : 'Próximo →';
 
     const el = step.target ? document.querySelector(step.target) : null;
-    if (!el) { showStep(idx + 1); return; }
+    if (!el || !isVisible(el)) { showStep(idx + 1); return; }
 
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-    setTimeout(() => {
+    // Aguarda o scroll estabilizar antes de posicionar o spotlight —
+    // o setTimeout fixo de 320ms falhava em páginas longas, mobile com
+    // address bar dinâmica, ou layouts que recompõem após scroll.
+    let lastTop = null;
+    let stableFrames = 0;
+    let elapsed = 0;
+    const stepRef = step;
+    function settle() {
+      // Aborta se o tour mudou de step durante a espera
+      if (currentStep !== idx || activeConfig?.steps[idx] !== stepRef) return;
+
       const rect = el.getBoundingClientRect();
-      const pad = 8;
-      spotlight.style.cssText = `left:${rect.left - pad}px;top:${rect.top - pad}px;width:${rect.width + pad * 2}px;height:${rect.height + pad * 2}px;display:block;`;
-      positionTooltip(rect, step.position || 'bottom');
-    }, 320);
+      if (lastTop !== null && Math.abs(rect.top - lastTop) < 0.5) {
+        stableFrames++;
+      } else {
+        stableFrames = 0;
+      }
+      lastTop = rect.top;
+      elapsed += 16;
+
+      // Renderiza quando estabilizar (3 frames consecutivos) ou no timeout (700ms)
+      if (stableFrames >= 3 || elapsed >= 700) {
+        const pad = 8;
+        spotlight.style.cssText = `left:${rect.left - pad}px;top:${rect.top - pad}px;width:${rect.width + pad * 2}px;height:${rect.height + pad * 2}px;display:block;`;
+        positionTooltip(rect, step.position || 'bottom');
+        return;
+      }
+      requestAnimationFrame(settle);
+    }
+    requestAnimationFrame(settle);
   }
 
   function positionTooltip(rect, pos) {
-    const TW = 300, TH = 220, GAP = 16;
     const vw = window.innerWidth, vh = window.innerHeight;
+    const TW = Math.min(300, vw - 32);
+    const TH = 220, GAP = 16;
     tooltip.className = 'arrow-none';
 
     if (!rect) {
@@ -416,8 +644,11 @@
     }
 
     /* mobile: forçar centralizado se viewport estreito */
-    if (vw < 480) {
-      tooltip.style.cssText = `left:${Math.max(16, (vw - TW) / 2)}px;top:${Math.min(rect.bottom + GAP, vh - TH - 16)}px;`;
+    if (vw < 540) {
+      const top = (rect.bottom + GAP + TH + 16 < vh)
+        ? rect.bottom + GAP
+        : Math.max(16, rect.top - TH - GAP);
+      tooltip.style.cssText = `left:${Math.max(16, (vw - TW) / 2)}px;top:${Math.min(top, vh - TH - 16)}px;`;
       return;
     }
 
@@ -461,8 +692,7 @@
     if (overlay) destroy(); // limpa run anterior
     activeConfig = config;
     if (force || shouldShow(config.key)) {
-      markDone(config.key);
-      buildDOM(config);
+      buildDOM(config); // markDone é chamado dentro
     }
   }
 
@@ -484,13 +714,7 @@
     },
 
     reset() {
-      Object.values(TOUR_CONFIG).forEach(cfg => {
-        try {
-          const u = JSON.parse(localStorage.getItem('usuario'));
-          const uid = u && u.id ? u.id : 'default';
-          localStorage.removeItem(`pbm_tour_${cfg.key}_${VERSION}_${uid}`);
-        } catch {}
-      });
+      resetAll();
     },
   };
 })();
