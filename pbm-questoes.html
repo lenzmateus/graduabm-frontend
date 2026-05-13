@@ -83,6 +83,104 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px; color: var(--cinza-texto);
   }
+  .badge-ciclo {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 4px;
+    background: rgba(192,39,15,0.18);
+    color: #E0866E;
+    border: 1px solid rgba(192,39,15,0.4);
+    margin-right: 6px;
+  }
+  .badge-ciclo svg { width: 10px; height: 10px; }
+
+  /* RELATÓRIO DE BLOCO (tela de resultados) */
+  .bloco-relatorio {
+    background: linear-gradient(135deg, rgba(192,39,15,0.08) 0%, #161616 60%);
+    border: 1px solid rgba(192,39,15,0.35);
+    border-left: 3px solid var(--vermelho);
+    border-radius: 10px; padding: 1.1rem 1.25rem;
+    margin: 1rem auto; max-width: 720px;
+    text-align: left;
+  }
+  .bloco-relatorio-titulo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--vermelho);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .bloco-relatorio-nome {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.04em;
+    color: var(--branco); margin-bottom: 12px;
+    line-height: 1.15;
+  }
+  .bloco-relatorio-stats {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px; margin-bottom: 14px;
+  }
+  .bloco-rel-stat {
+    background: rgba(0,0,0,0.3); border-radius: 6px;
+    padding: 8px 10px; text-align: center;
+  }
+  .bloco-rel-stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; color: var(--branco); line-height: 1;
+  }
+  .bloco-rel-stat-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--cinza-texto);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .bloco-rel-bar-row {
+    display: flex; justify-content: space-between;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.08em; margin-bottom: 5px;
+  }
+  .bloco-rel-bar {
+    height: 6px; background: #2A2A2A; border-radius: 3px;
+    overflow: hidden; margin-bottom: 14px;
+  }
+  .bloco-rel-bar > div {
+    height: 100%; background: var(--vermelho);
+    transition: width 0.4s;
+  }
+  .bloco-rel-acoes {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .bloco-rel-btn {
+    flex: 1; min-width: 140px;
+    background: var(--vermelho); border: none;
+    color: #fff; padding: 10px 14px; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 12px;
+    font-weight: 600; letter-spacing: 0.04em;
+    cursor: pointer; transition: background 0.15s;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .bloco-rel-btn:hover { background: #8B1A08; }
+  .bloco-rel-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .bloco-rel-btn.secundaria {
+    background: transparent; border: 1px solid var(--cinza-texto);
+    color: var(--branco);
+  }
+  .bloco-rel-btn.secundaria:hover { border-color: var(--branco); background: rgba(255,255,255,0.04); }
+  .bloco-rel-status {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 4px;
+    background: rgba(125,217,154,0.12);
+    color: #7DD99A;
+    border: 1px solid rgba(125,217,154,0.3);
+    margin-left: 8px;
+  }
+  @media (max-width: 640px) {
+    .bloco-relatorio-stats { grid-template-columns: 1fr; }
+    .bloco-rel-acoes { flex-direction: column; }
+  }
   .header-center {
     flex: 1; display: flex; flex-direction: column;
     align-items: center; gap: 4px;
@@ -766,6 +864,38 @@
     </div>
   </div>
 
+  <!-- RELATÓRIO DE BLOCO (preenchido por JS quando vem do ciclo) -->
+  <div class="bloco-relatorio" id="bloco-relatorio" style="display:none;">
+    <div class="bloco-relatorio-titulo">📊 Relatório do bloco</div>
+    <div class="bloco-relatorio-nome">
+      <span id="br-area" class="badge-ciclo" style="vertical-align:middle;margin-right:8px;">AT?</span>
+      <span id="br-nome">—</span>
+      <span class="bloco-rel-status" id="br-status">—</span>
+    </div>
+    <div class="bloco-relatorio-stats">
+      <div class="bloco-rel-stat">
+        <div class="bloco-rel-stat-val" id="br-sessao-min">0</div>
+        <div class="bloco-rel-stat-lbl">Min desta sessão</div>
+      </div>
+      <div class="bloco-rel-stat">
+        <div class="bloco-rel-stat-val" id="br-total-min">0</div>
+        <div class="bloco-rel-stat-lbl">Min no bloco</div>
+      </div>
+      <div class="bloco-rel-stat">
+        <div class="bloco-rel-stat-val" id="br-acerto-sessao">0%</div>
+        <div class="bloco-rel-stat-lbl">Acerto da sessão</div>
+      </div>
+    </div>
+    <div class="bloco-rel-bar-row">
+      <span>PROGRESSO DA META</span>
+      <span id="br-meta-pct">0% (0 / 0 min)</span>
+    </div>
+    <div class="bloco-rel-bar">
+      <div id="br-meta-bar" style="width:0%;"></div>
+    </div>
+    <div class="bloco-rel-acoes" id="br-acoes"></div>
+  </div>
+
   <div class="resultado-lista">
     <div class="resultado-secao">Gabarito</div>
     <div id="res-lista"></div>
@@ -857,6 +987,18 @@ const legislacoes = legsRaw ? JSON.parse(legsRaw) : [];
 const qtdPorLegRaw = sessionStorage.getItem('pbm_qtd_por_leg');
 const qtdPorLeg  = qtdPorLegRaw ? JSON.parse(qtdPorLegRaw) : null;
 const qtd        = parseInt(sessionStorage.getItem('pbm_qtd') || '20') || 20;
+
+// ── CICLO DE ESTUDOS (origem) ──
+let cicloBloco = null;
+let cicloSessaoIniciada = null;
+try {
+  const raw = sessionStorage.getItem('pbm_ciclo_bloco');
+  if (raw) cicloBloco = JSON.parse(raw);
+} catch (e) { cicloBloco = null; }
+if (cicloBloco) {
+  cicloSessaoIniciada = Date.now();
+  modoAtualTipo = 'ciclo';
+}
 
 // ── HELPERS DE ESTRUTURA ──
 function getEnunciado(q) {
@@ -1001,7 +1143,18 @@ async function init() {
     setCor(area);
     iniciarTimer();
     document.getElementById('hdr-total').textContent = questoes.length;
-    document.getElementById('hdr-contexto').textContent = curso.toUpperCase() + ' — ' + area;
+    if (cicloBloco) {
+      const nomeCurto = (cicloBloco.legislacao_nome || '').length > 38
+        ? cicloBloco.legislacao_nome.slice(0, 38) + '…'
+        : cicloBloco.legislacao_nome;
+      document.getElementById('hdr-contexto').innerHTML =
+        `<span class="badge-ciclo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          CICLO
+        </span>${cicloBloco.area} · ${nomeCurto.replace(/</g, '&lt;')}`;
+    } else {
+      document.getElementById('hdr-contexto').textContent = curso.toUpperCase() + ' — ' + area;
+    }
     mostrarQuestao();
     document.getElementById('tela-loading').style.display = 'none';
     document.getElementById('tela-questao').style.display = 'flex';
@@ -1253,6 +1406,18 @@ async function encerrarSessao() {
   } else {
     console.warn('[Protocolo Bravo Mike] Sessão não registrada — progresso não foi salvo.');
   }
+  // Se veio do Ciclo, registra tempo no bloco (em minutos, mínimo 1)
+  if (cicloBloco && cicloSessaoIniciada && !PBM.isAdmin()) {
+    const dur = Math.max(1, Math.round((Date.now() - cicloSessaoIniciada) / 60000));
+    try {
+      await PBM.Ciclo.registrarTempo(cicloBloco.id, {
+        duracao_minutos: dur,
+        origem: 'questoes',
+      });
+    } catch (err) {
+      console.warn('[Ciclo] Falha ao registrar tempo do bloco:', err);
+    }
+  }
   pararTimer();
   if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
   mostrarResultados();
@@ -1306,7 +1471,122 @@ function mostrarResultados() {
     document.getElementById('btn-resultado-secundario').textContent = '← Voltar ao Dashboard';
   }
 
+  if (cicloBloco) {
+    const dur = cicloSessaoIniciada
+      ? Math.max(1, Math.round((Date.now() - cicloSessaoIniciada) / 60000))
+      : 0;
+    document.getElementById('res-sub').textContent =
+      'Ciclo · ' + cicloBloco.area + ' · ' + cicloBloco.legislacao_nome + ' · +' + dur + ' min no bloco';
+    const btnPri = document.getElementById('btn-resultado-primario');
+    btnPri.href = '/ciclo-estudos';
+    btnPri.innerHTML = '← Voltar ao Ciclo';
+    btnPri.addEventListener('click', () => {
+      sessionStorage.removeItem('pbm_ciclo_bloco');
+    }, { once: true });
+    const btnSec = document.getElementById('btn-resultado-secundario');
+    btnSec.href = '/questoes';
+    btnSec.textContent = 'Mais questões deste bloco →';
+
+    // Relatório de Bloco — busca estado fresco do backend
+    renderRelatorioBloco(dur, pct).catch(err => console.warn('[ciclo] falha relatório bloco', err));
+  }
+
   document.getElementById('tela-resultados').style.display = 'flex';
+}
+
+// Renderiza o card "Relatório de Bloco" na tela de resultados (ciclo)
+const CICLO_STATUS_LABEL = {
+  nao_iniciada: { txt: 'Não iniciada', cor: '#888', bg: 'rgba(136,136,136,0.12)', border: 'rgba(136,136,136,0.3)' },
+  em_andamento: { txt: 'Em andamento', cor: '#EBC57D', bg: 'rgba(211,139,45,0.12)', border: 'rgba(211,139,45,0.3)' },
+  estudada:     { txt: 'Estudada',     cor: '#7DD99A', bg: 'rgba(125,217,154,0.12)', border: 'rgba(125,217,154,0.3)' },
+  revisada:     { txt: 'Revisada',     cor: '#85B7EB', bg: 'rgba(24,95,165,0.18)',   border: 'rgba(24,95,165,0.3)' },
+};
+
+async function renderRelatorioBloco(durSessao, pctAcerto) {
+  const card = document.getElementById('bloco-relatorio');
+  if (!card || !cicloBloco) return;
+
+  // Tenta buscar estado atual do ciclo. Se falhar, usa dados do sessionStorage.
+  let blocoAtual = null;
+  let tempoTotal = 0;
+  try {
+    const data = await PBM.Ciclo.get();
+    if (data && data.blocos) {
+      blocoAtual = data.blocos.find(b => b.id === cicloBloco.id) || null;
+      tempoTotal = (data.tempo_logado_por_bloco || {})[cicloBloco.id] || 0;
+    }
+  } catch (e) { /* fallback: usa cicloBloco do sessionStorage + estimativa */ }
+
+  if (!blocoAtual) blocoAtual = { ...cicloBloco };
+  if (tempoTotal === 0) tempoTotal = durSessao;
+
+  const meta = blocoAtual.meta_minutos || cicloBloco.meta_minutos || 30;
+  const metaPct = Math.min(100, Math.round((tempoTotal / meta) * 100));
+
+  document.getElementById('br-area').textContent = blocoAtual.area || cicloBloco.area;
+  document.getElementById('br-nome').textContent = blocoAtual.legislacao_nome || cicloBloco.legislacao_nome;
+  document.getElementById('br-sessao-min').textContent = durSessao;
+  document.getElementById('br-total-min').textContent = tempoTotal;
+  document.getElementById('br-acerto-sessao').textContent = pctAcerto + '%';
+  document.getElementById('br-meta-pct').textContent = `${metaPct}% (${tempoTotal} / ${meta} min)`;
+  document.getElementById('br-meta-bar').style.width = metaPct + '%';
+
+  const st = CICLO_STATUS_LABEL[blocoAtual.status] || CICLO_STATUS_LABEL.nao_iniciada;
+  const elStatus = document.getElementById('br-status');
+  elStatus.textContent = st.txt;
+  elStatus.style.color = st.cor;
+  elStatus.style.background = st.bg;
+  elStatus.style.borderColor = st.border;
+
+  renderAcoesRelatorioBloco(blocoAtual);
+  card.style.display = 'block';
+}
+
+function renderAcoesRelatorioBloco(bloco) {
+  const wrap = document.getElementById('br-acoes');
+  if (!wrap) return;
+  const acoes = [];
+  if (bloco.status === 'em_andamento' || bloco.status === 'nao_iniciada') {
+    acoes.push({ label: '✓ Marcar como Estudada', status: 'estudada', primario: true });
+  }
+  if (bloco.status === 'estudada') {
+    acoes.push({ label: '🎯 Marcar como Revisada', status: 'revisada', primario: true });
+  }
+  acoes.push({ label: 'Mais questões deste bloco →', href: '/questoes', primario: false });
+
+  wrap.innerHTML = acoes.map((a, i) => {
+    if (a.href) {
+      return `<a href="${a.href}" class="bloco-rel-btn ${a.primario ? '' : 'secundaria'}">${a.label}</a>`;
+    }
+    return `<button class="bloco-rel-btn ${a.primario ? '' : 'secundaria'}" data-status="${a.status}" data-idx="${i}">${a.label}</button>`;
+  }).join('');
+
+  wrap.querySelectorAll('button[data-status]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const novoStatus = btn.dataset.status;
+      btn.disabled = true;
+      try {
+        await PBM.Ciclo.atualizarStatus(bloco.id, novoStatus);
+        // Atualiza visual local + remove pbm_ciclo_bloco (sessão consumida)
+        const stEl = document.getElementById('br-status');
+        const st = CICLO_STATUS_LABEL[novoStatus];
+        stEl.textContent = st.txt;
+        stEl.style.color = st.cor;
+        stEl.style.background = st.bg;
+        stEl.style.borderColor = st.border;
+        // Re-render ações com novo status
+        renderAcoesRelatorioBloco({ ...bloco, status: novoStatus });
+        sessionStorage.removeItem('pbm_ciclo_bloco');
+        // Pequeno feedback visual via res-sub
+        const sub = document.getElementById('res-sub');
+        if (sub) sub.textContent = sub.textContent + ' · status atualizado';
+      } catch (err) {
+        console.warn('[ciclo] falha ao atualizar status', err);
+        btn.disabled = false;
+        btn.textContent = '⚠ Tentar novamente';
+      }
+    });
+  });
 }
 
 // ── TIMER ──
