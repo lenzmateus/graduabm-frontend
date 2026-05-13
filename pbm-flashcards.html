@@ -25,7 +25,7 @@
     --branco: #F8F6F2;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1.6; min-height: 100vh; overflow-x: hidden; }
   .layout { display: flex; min-height: 100vh; }
 
   .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
@@ -68,20 +68,22 @@
   .area-dot[data-area="AT5"].ativo { background: #7F77DD; }
 
   .card-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; min-height: 360px; }
-  .card-scene { width: 100%; max-width: 620px; height: 300px; perspective: 1200px; cursor: pointer; }
+  .card-scene { width: 100%; max-width: 640px; height: 360px; perspective: 1200px; cursor: pointer; }
   .card-inner { width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; position: relative; }
   .card-inner.flipped { transform: rotateY(180deg); }
-  .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; padding: 2rem; display: flex; flex-direction: column; }
+  .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; padding: 1.75rem 2rem; display: flex; flex-direction: column; overflow: hidden; }
   .card-front { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); }
   .card-back { background: var(--cinza-escuro); transform: rotateY(180deg); }
 
-  .card-face-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: #555; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 8px; }
-  .card-area-badge { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 600; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; }
-  .card-texto { flex: 1; display: flex; align-items: center; font-size: 16px; font-weight: 500; color: var(--branco); line-height: 1.65; }
-  .card-hint { margin-top: auto; font-size: 11px; color: #444; text-align: center; font-family: 'IBM Plex Mono', monospace; }
-  .card-ref { margin-top: auto; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; padding-top: 0.75rem; border-top: 1px solid var(--cinza-borda); line-height: 1.5; }
+  .card-face-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #777; margin-bottom: 0.85rem; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .card-area-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.06em; }
+  .card-texto { flex: 1; min-height: 0; display: flex; align-items: safe center; font-size: 18px; font-weight: 500; color: var(--branco); line-height: 1.6; overflow-y: auto; padding-right: 6px; }
+  .card-texto::-webkit-scrollbar { width: 6px; }
+  .card-texto::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .card-hint { margin-top: 0.85rem; font-size: 11px; color: #555; text-align: center; font-family: 'IBM Plex Mono', monospace; flex-shrink: 0; }
+  .card-ref { margin-top: 0.85rem; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #777; padding-top: 0.75rem; border-top: 1px solid var(--cinza-borda); line-height: 1.5; flex-shrink: 0; }
   .card-back .card-face-label { color: var(--vermelho); }
-  .card-back .card-texto { font-size: 14px; font-weight: 400; align-items: flex-start; }
+  .card-back .card-texto { font-size: 16px; font-weight: 400; align-items: flex-start; }
 
   .area-AT1.card-back { border: 1px solid rgba(192,39,15,0.5); }
   .area-AT1 .card-area-badge { background: rgba(192,39,15,0.12); color: #E0866E; border: 1px solid rgba(192,39,15,0.3); }
@@ -216,10 +218,10 @@
     .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
     .topbar { padding: 0 1rem; }
     .conteudo { padding: 1rem; }
-    .card-scene { height: 260px; }
-    .card-face { padding: 1.25rem; }
-    .card-texto { font-size: 14px; }
-    .card-back .card-texto { font-size: 13px; }
+    .card-scene { height: 340px; }
+    .card-face { padding: 1.25rem 1.4rem; }
+    .card-texto { font-size: 16px; }
+    .card-back .card-texto { font-size: 15px; }
   }
 
   /* ── BOTTOMBAR MOBILE ── */
@@ -300,6 +302,10 @@
       <a class="nav-item" href="/area-estudos">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
         Papirar
+      </a>
+      <a class="nav-item" href="/ciclo-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        Ciclo de Estudos
       </a>
       <a class="nav-item" href="#" id="nav-revisao" onclick="sessionStorage.setItem('pbm_abre_revisao','1');window.location.href='/dashboard';return false;">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>

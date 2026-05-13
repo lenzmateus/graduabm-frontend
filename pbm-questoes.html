@@ -35,8 +35,9 @@
   body {
     background: var(--carvao); color: var(--branco);
     font-family: 'Inter', sans-serif;
-    font-size: 15px; line-height: 1.6;
+    font-size: 16px; line-height: 1.6;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   /* ── LOADING ── */
@@ -261,25 +262,26 @@
 
   /* ── ENUNCIADO ── */
   .questao-enunciado {
-    font-size: 14px; line-height: 1.6;
+    font-size: 17px; line-height: 1.65;
     color: var(--branco);
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
+    margin-bottom: 1.1rem;
+    padding-bottom: 1.1rem;
     border-bottom: 1px solid var(--cinza-borda);
   }
 
   /* ── ALTERNATIVAS ── */
   .alternativas {
-    display: flex; flex-direction: column; gap: 6px;
+    display: flex; flex-direction: column; gap: 8px;
     margin-bottom: 1rem;
   }
   .alt {
-    display: flex; align-items: flex-start; gap: 10px;
+    display: flex; align-items: flex-start; gap: 12px;
     background: var(--cinza-escuro);
     border: 1px solid var(--cinza-borda);
-    border-radius: 8px; padding: 9px 14px;
+    border-radius: 8px;
+    padding: 12px 48px 12px 16px; /* padding-right reservado para a tesoura */
     cursor: pointer; transition: all 0.15s;
-    font-size: 13px; color: #bbb;
+    font-size: 15px; line-height: 1.55; color: #bbb;
     user-select: none;
   }
   .alt:hover:not(.bloqueada) { border-color: #555; background: var(--cinza-medio); color: var(--branco); }
@@ -300,10 +302,11 @@
   }
   .alt.bloqueada { cursor: default; }
   .alt-letra {
-    width: 22px; height: 22px; flex-shrink: 0;
+    width: 26px; height: 26px; flex-shrink: 0;
     border-radius: 50%; border: 1px solid currentColor;
     display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600;
+    font-size: 13px; font-weight: 600;
+    font-family: 'IBM Plex Mono', monospace;
     transition: all 0.15s; margin-top: 1px;
   }
   .alt.correta .alt-letra { background: var(--verde); border-color: var(--verde); color: #fff; }
@@ -312,8 +315,8 @@
 
   /* ── FEEDBACK ── */
   .feedback {
-    border-radius: 8px; padding: 10px 14px;
-    margin-bottom: 1rem; font-size: 13px; line-height: 1.55;
+    border-radius: 8px; padding: 12px 16px;
+    margin-bottom: 1rem; font-size: 14px; line-height: 1.6;
     animation: fadeUp 0.2s ease both;
   }
   .feedback-acerto {
@@ -325,7 +328,7 @@
     border: 1px solid var(--erro-borda);
   }
   .feedback-titulo {
-    font-weight: 600; margin-bottom: 6px; font-size: 13px;
+    font-weight: 600; margin-bottom: 6px; font-size: 14px;
   }
   .feedback-acerto .feedback-titulo { color: #7DD99A; }
   .feedback-erro .feedback-titulo { color: #F09595; }
@@ -534,8 +537,8 @@
   }
   @media (max-width: 480px) {
     .resultado-score { grid-template-columns: 1fr; }
-    .questao-enunciado { font-size: 14px; }
-    .alt { font-size: 13px; padding: 10px 12px; }
+    .questao-enunciado { font-size: 16px; }
+    .alt { font-size: 15px; padding: 12px 44px 12px 14px; }
     .timer-display { display: none; }
     #tela-resultados { padding: 1.5rem 1rem 3rem; }
     .prog-track { width: 100px; }

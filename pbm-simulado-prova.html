@@ -79,7 +79,9 @@
 
   .alts-lista { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; }
   .alt {
-    display: flex; align-items: center; gap: 16px; padding: 1rem; background: var(--cinza-escuro);
+    display: flex; align-items: center; gap: 16px;
+    padding: 1rem 56px 1rem 1rem; /* reserva espaço da tesoura à direita */
+    background: var(--cinza-escuro);
     border: 1px solid var(--cinza-borda); border-radius: 8px; cursor: pointer; transition: 0.15s;
   }
   .alt:hover { border-color: #555; background: var(--cinza-medio); }
@@ -90,7 +92,7 @@
     display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-weight: 600;
   }
   .alt.selecionada .alt-letra { background: var(--vermelho); border-color: var(--vermelho); color: #fff; }
-  .alt-texto { font-size: 15px; color: var(--branco); line-height: 1.5; }
+  .alt-texto { font-size: 16px; color: var(--branco); line-height: 1.55; }
 
   .q-actions { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 2rem; }
   .btn-nav { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 10px 20px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: 0.2s; }
@@ -328,9 +330,9 @@
     /* Questão ocupa tudo */
     .questao-container { padding: 1.25rem 1rem; }
     .q-num { font-size: 22px; }
-    .enunciado { font-size: 15px; margin-bottom: 1.25rem; }
-    .alt { gap: 12px; padding: 10px 12px; }
-    .alt-texto { font-size: 14px; }
+    .enunciado { font-size: 16px; margin-bottom: 1.25rem; }
+    .alt { gap: 12px; padding: 10px 44px 10px 12px; }
+    .alt-texto { font-size: 15px; }
     .q-actions { padding-top: 1.25rem; gap: 8px; }
     .btn-nav { padding: 10px 14px; font-size: 13px; }
 
