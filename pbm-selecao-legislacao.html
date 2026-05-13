@@ -900,301 +900,71 @@ const EDITAL = {
   at5: { ctsp: 12, cba: 11 },
 };
 
-const AREAS = {
+// ── CONFIG VISUAL POR AT (cores/títulos) — dados de legislações vêm do manifesto via API ──
+const AREAS_VISUAL = {
   at1: {
-    ctsp: {
-      titulo: 'Segurança contra incêndios',
-      cor: '#C0270F',
-      corRgb: '192,39,15',
-      badgeStyle: 'background:rgba(192,39,15,0.15);color:#E0866E;',
-      grupos: [
-        {
-          titulo: 'Leis e Decretos',
-          items: [
-            { id:'lei13425-17', nome:'Lei Federal nº 13.425/2017', detalhe:'Prevenção e combate a incêndio e a desastres em estabelecimentos, edificações e áreas de reunião de público', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:2 },
-            { id:'lei14376-13', nome:'Lei Complementar nº 14.376/2013 (atualizada até LC nº 16.280/2025)', detalhe:'Normas sobre segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS', tag:'comum', tagTxt:'CTSP e CBA', q:31 },
-            { id:'dec51803-14', nome:'Decreto Estadual nº 51.803/2014 (atualizado até Decreto nº 57.393/2023)', detalhe:'Regulamenta a LC 14.376/2013 — APPCI, multas, interdições', tag:'comum', tagTxt:'CTSP e CBA', q:55 },
-          ]
-        },
-        {
-          titulo: 'Resoluções Técnicas — Procedimentos Administrativos',
-          items: [
-            { id:'rt01-2022',      nome:'RT CBMRS nº 01/2022',              detalhe:'Diretrizes básicas de segurança contra incêndio no RS', tag:'comum', tagTxt:'CTSP e CBA', q:2 },
-            { id:'sol-cbmrs-2022', nome:'SOL-CBMRS — 4ª Edição 2022',       detalhe:'Sistema Online de Licenciamento do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:56 },
-            { id:'rt05-p11', nome:'RT CBMRS nº 05 — Parte 1.1/2016',  detalhe:'Plano de Prevenção e Proteção Contra Incêndio (PPCI) — forma completa', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'rt05-p02',  nome:'RT CBMRS nº 05 — Parte 02/2023',   detalhe:'Atividades dispensadas do licenciamento e atividades econômicas de baixo risco', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'rt05-p31', nome:'RT CBMRS nº 05 — Parte 3.1/2016',  detalhe:'Plano Simplificado de Prevenção e Proteção Contra Incêndio (PSPCI)', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:0 },
-            { id:'rt05-p06',  nome:'RT CBMRS nº 05 — Parte 06/2025 (Fiscalização)',   detalhe:'Fiscalização das edificações e aplicação de penalidades', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'rt05-p72', nome:'RT CBMRS nº 05 — Parte 7.2/2021',  detalhe:'Edificações existentes e edificações licenciadas pela LC 14.376/2013', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'rt05-p08',  nome:'RT CBMRS nº 05 — Parte 08/2016',   detalhe:'Símbolos gráficos para projeto de proteção contra incêndio', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:0 },
-          ]
-        },
-        {
-          titulo: 'Resoluções Técnicas — Medidas de Segurança',
-          items: [
-            { id:'rt11-p01', nome:'RT CBMRS nº 11 — Parte 01/2016', detalhe:'Saídas de emergência nas edificações', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:3 },
-            { id:'rt12-2021', nome:'RT CBMRS nº 12/2021',             detalhe:'Sinalização de emergência nas edificações', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:0 },
-            { id:'rt14-2016', nome:'RT CBMRS nº 14/2016',             detalhe:'Extintores de incêndio nas edificações', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:52 },
-            { id:'rt15-p01-2023', nome:'RT CBMRS nº 15 — Parte 01/2023',  detalhe:'Brigada de incêndio (versão revisada)', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:16 },
-          ]
-        }
-      ]
-    },
-    cba: {
-      titulo: 'Segurança contra incêndios',
-      cor: '#185FA5',
-      corRgb: '24,95,165',
-      badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;',
-      grupos: [
-        {
-          titulo: 'Leis e Decretos',
-          items: [
-            { id:'lei14376-13', nome:'Lei Complementar nº 14.376/2013 (atualizada até LC nº 16.280/2025)', detalhe:'Normas sobre segurança, prevenção e proteção contra incêndios nas edificações e áreas de risco no RS', tag:'comum', tagTxt:'CTSP e CBA', q:31 },
-            { id:'dec51803-14', nome:'Decreto Estadual nº 51.803/2014 (atualizado até Decreto nº 57.393/2023)', detalhe:'Regulamenta a LC 14.376/2013 — APPCI, multas, interdições', tag:'comum', tagTxt:'CTSP e CBA', q:55 },
-          ]
-        },
-        {
-          titulo: 'Resoluções Técnicas — Procedimentos Administrativos',
-          items: [
-            { id:'rt01-2022',       nome:'RT CBMRS nº 01/2022',               detalhe:'Diretrizes básicas de segurança contra incêndio no RS', tag:'comum', tagTxt:'CTSP e CBA', q:2 },
-            { id:'sol-cbmrs-2022',  nome:'SOL-CBMRS — 4ª Edição 2022',        detalhe:'Sistema Online de Licenciamento do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:56 },
-            { id:'rt05-p11',  nome:'RT CBMRS nº 05 — Parte 1.1/2016',   detalhe:'Plano de Prevenção e Proteção Contra Incêndio (PPCI) — forma completa', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'rt05-p02',   nome:'RT CBMRS nº 05 — Parte 02/2023',    detalhe:'Atividades dispensadas do licenciamento e atividades econômicas de baixo risco', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'rt05-p04a',  nome:'RT CBMRS nº 05 — Parte 04A/2017',   detalhe:'Eventos temporários — PPCI forma completa', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:0 },
-            { id:'rt05-p04b',  nome:'RT CBMRS nº 05 — Parte 04B/2017',   detalhe:'Construções provisórias — PPCI forma completa', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:0 },
-            { id:'rt05-p04c',  nome:'RT CBMRS nº 05 — Parte 04C/2017',   detalhe:'Espetáculos pirotécnicos — PPCI forma completa', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:0 },
-            { id:'rt05-p06',   nome:'RT CBMRS nº 05 — Parte 06/2025 (Fiscalização)',    detalhe:'Fiscalização das edificações e aplicação de penalidades', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'rt05-p72',  nome:'RT CBMRS nº 05 — Parte 7.2/2021',   detalhe:'Edificações existentes e edificações licenciadas pela LC 14.376/2013', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-          ]
-        },
-        {
-          titulo: 'Resoluções Técnicas — Medidas de Segurança',
-          items: [
-            { id:'rt15-p01-2022', nome:'RT CBMRS nº 15 — Parte 01/2022', detalhe:'Brigada de incêndio', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:16 },
-          ]
-        }
-      ]
-    }
+    ctsp: { titulo: 'Segurança contra incêndios',                       cor: '#C0270F', corRgb: '192,39,15',   badgeStyle: 'background:rgba(192,39,15,0.15);color:#E0866E;' },
+    cba:  { titulo: 'Segurança contra incêndios',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;' },
   },
   at2: {
-    ctsp: {
-      titulo: 'Combate a incêndios',
-      cor: '#BA7517',
-      corRgb: '186,117,23',
-      badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;',
-      grupos: [
-        {
-          titulo: 'Manual CBMMG — Combate a Incêndio Urbano (1ª Ed. 2020)',
-          items: [
-            { id:'manual-combate-cbmmg', nome:'Manual de Combate a Incêndio Urbano CBMMG (Caps. 1, 2, 3, 5 e 7)', detalhe:'Fundamentos, agentes extintores, EPI, viaturas, táticas de ataque, ventilação, incêndios especiais', tag:'comum', tagTxt:'CTSP e CBA', q:98 },
-          ]
-        }
-      ]
-    },
-    cba: {
-      titulo: 'Combate a incêndios',
-      cor: '#BA7517',
-      corRgb: '186,117,23',
-      badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;',
-      grupos: [
-        {
-          titulo: 'Manual CBMMG — Combate a Incêndio Urbano (1ª Ed. 2020)',
-          items: [
-            { id:'manual-combate-cbmmg', nome:'Manual de Combate a Incêndio Urbano CBMMG (Caps. 1, 2, 3, 5 e 7)', detalhe:'Fundamentos, agentes extintores, EPI, viaturas, táticas de ataque, ventilação, incêndios especiais', tag:'comum', tagTxt:'CTSP e CBA', q:98 },
-          ]
-        }
-      ]
-    }
+    ctsp: { titulo: 'Combate a incêndios',                              cor: '#BA7517', corRgb: '186,117,23',  badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;' },
+    cba:  { titulo: 'Combate a incêndios',                              cor: '#BA7517', corRgb: '186,117,23',  badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;' },
   },
   at3: {
-    ctsp: {
-      titulo: 'Buscas e salvamentos / APH',
-      cor: '#185FA5',
-      corRgb: '24,95,165',
-      badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;',
-      grupos: [
-        {
-          titulo: 'Atendimento Pré-Hospitalar — ITO 23 (CBMMG 3ª Ed. 2021)',
-          items: [
-            { id:'ito23-aph', nome:'ITO 23 — APH completo (Intro + Módulos 100, 200 e 500)', detalhe:'Avaliação da cena, XABCDE, RCP, DEA, trauma, hemorragias, situações especiais (parto, afogamento, intoxicações)', tag:'comum', tagTxt:'CTSP e CBA', q:165 },
-          ]
-        },
-        {
-          titulo: 'Busca, Salvamento e Resgate',
-          items: [
-            { id:'it010-busca-salvamento', nome:'IT nº 010/AODC-GCG — Busca, salvamento e resgate', detalhe:'Protocolos, equipamentos, técnicas de busca e salvamento em diferentes ambientes', tag:'comum', tagTxt:'CTSP e CBA', q:55 },
-          ]
-        },
-        {
-          titulo: 'Salvamento Veicular — ITO 34 (CBMMG 1ª Ed. 2023)',
-          items: [
-            { id:'ito34-salvamento-veicular', nome:'ITO 34 — Salvamento Veicular (p. 24–154)', detalhe:'Avaliação da cena, estabilização de veículos, ferramentas, técnicas de desencarceramento', tag:'comum', tagTxt:'CTSP e CBA', q:75 },
-            { id:'pop-salvamento-veicular', nome:'POP — Salvamento Veicular RS', detalhe:'Procedimento Operacional Padrão do CBMRS para salvamento veicular', tag:'comum', tagTxt:'CTSP e CBA', q:15 },
-          ]
-        }
-      ]
-    },
-    cba: {
-      titulo: 'Buscas e salvamentos / APH',
-      cor: '#185FA5',
-      corRgb: '24,95,165',
-      badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;',
-      grupos: []
-    }
+    ctsp: { titulo: 'Buscas e salvamentos / APH',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;' },
+    cba:  { titulo: 'Buscas e salvamentos / APH',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;' },
   },
   at4: {
-    ctsp: {
-      titulo: 'Direito institucional, constitucional e militar',
-      cor: '#27A05A',
-      corRgb: '39,160,90',
-      badgeStyle: 'background:rgba(39,160,90,0.15);color:#7DD99A;',
-      grupos: [
-        {
-          titulo: 'Legislação Institucional',
-          items: [
-            { id:'lc10990-97', nome:'LC nº 10.990/1997 — Estatuto dos Militares Estaduais (atualizado até LC nº 15.454/2020)', detalhe:'Situação, obrigações, deveres, direitos e prerrogativas dos servidores militares', tag:'comum', tagTxt:'CTSP e CBA', q:122 },
-            { id:'lc10992-97', nome:'LC nº 10.992/1997 — Carreira dos Militares Estaduais', detalhe:'Plano de carreira e cargos dos militares estaduais da BM e do CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:0 },
-            { id:'lc14920-16', nome:'LC nº 14.920/2016 — Lei de Organização Básica do CBMRS', detalhe:'Estrutura, atribuições e organização do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:5 },
-            { id:'dec53897-18', nome:'Decreto nº 53.897/2018 — Regulamenta a LC 14.920/2016', detalhe:'Organização interna, departamentos e comandos regionais', tag:'comum', tagTxt:'CTSP e CBA', q:11 },
-            { id:'lc15008-17', nome:'LC nº 15.008/2017 — Lei de Transição', detalhe:'Disposições transitórias para o CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'lc15009-17', nome:'LC nº 15.009/2017 — Fixação de Efetivo do CBMRS', detalhe:'Efetivo dos quadros de pessoal do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'dec43245-04-rdbm', nome:'Decreto nº 43.245/2004 — RDBM', detalhe:'Regulamento Disciplinar da Brigada Militar — transgressões, punições e comportamento', tag:'comum', tagTxt:'CTSP e CBA', q:105 },
-          ]
-        },
-        {
-          titulo: 'Constituição Federal e Estadual',
-          items: [
-            { id:'cf88-arts',  nome:'CF/88 — Administração Pública e Forças de Segurança (arts. 37–42, 125–126, 142–144)', detalhe:'Princípios da Adm. Pública, Forças Armadas, Segurança Pública, Justiça Militar', tag:'comum', tagTxt:'CTSP e CBA', q:35 },
-            { id:'ce-rs-arts-militares', nome:'CE/RS — Servidores Militares e Segurança Pública (arts. 46–48, 124–131)', detalhe:'Direitos dos militares estaduais, Brigada Militar, CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:17 },
-          ]
-        },
-        {
-          titulo: 'Direito Penal e Processual Militar',
-          items: [
-            { id:'cpm-dec1001-69',      nome:'CPM — Código Penal Militar (arts. 1º–9º, 121–122, 149–334)', detalhe:'Aplicação da lei penal, ação penal, crimes contra a hierarquia, serviço e patrimônio militares', tag:'comum', tagTxt:'CTSP e CBA', q:14 },
-            { id:'cppm-dec73866-74',     nome:'CPPM — Código de Proc. Penal Militar (arts. 7º–28, 170–253)', detalhe:'Polícia Judiciária Militar, IPM, busca e apreensão, prisão provisória e flagrante', tag:'comum', tagTxt:'CTSP e CBA', q:17 },
-          ]
-        },
-        {
-          titulo: 'Normas Correicionais — exclusivo CTSP',
-          items: [
-            { id:'ir003-1-padm', nome:'IR nº 003.1/Corregedoria — PADM',              detalhe:'Processo Administrativo Disciplinar Militar no âmbito do CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:9 },
-            { id:'ir006-sindicancia',  nome:'IR nº 006/Corregedoria — Sindicância Militar',  detalhe:'Procedimentos de sindicância no CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:24 },
-            { id:'ir008-ipm',  nome:'IR nº 008/Corregedoria — IPM',                  detalhe:'Inquérito Policial Militar no âmbito do CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:0 },
-          ]
-        }
-      ]
-    },
-    cba: {
-      titulo: 'Direito institucional, constitucional e militar',
-      cor: '#27A05A',
-      corRgb: '39,160,90',
-      badgeStyle: 'background:rgba(39,160,90,0.15);color:#7DD99A;',
-      grupos: [
-        {
-          titulo: 'Legislação Institucional',
-          items: [
-            { id:'lc10990-97', nome:'LC nº 10.990/1997 — Estatuto dos Militares Estaduais (atualizado até LC nº 15.454/2020)', detalhe:'Situação, obrigações, deveres, direitos e prerrogativas dos servidores militares', tag:'comum', tagTxt:'CTSP e CBA', q:122 },
-            { id:'lc14920-16', nome:'LC nº 14.920/2016 — Lei de Organização Básica do CBMRS', detalhe:'Estrutura, atribuições e organização do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:5 },
-            { id:'dec53897-18', nome:'Decreto nº 53.897/2018 — Regulamenta a LC 14.920/2016', detalhe:'Organização interna, departamentos e comandos regionais', tag:'comum', tagTxt:'CTSP e CBA', q:11 },
-            { id:'lc15008-17', nome:'LC nº 15.008/2017 — Lei de Transição', detalhe:'Disposições transitórias para o CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'lc15009-17', nome:'LC nº 15.009/2017 — Fixação de Efetivo do CBMRS', detalhe:'Efetivo dos quadros de pessoal do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'dec43245-04-rdbm', nome:'Decreto nº 43.245/2004 — RDBM', detalhe:'Regulamento Disciplinar da Brigada Militar', tag:'comum', tagTxt:'CTSP e CBA', q:105 },
-          ]
-        },
-        {
-          titulo: 'Constituição Federal e Estadual',
-          items: [
-            { id:'cf88-arts',  nome:'CF/88 — Administração Pública e Forças de Segurança (arts. 37–42, 125–126, 142–144)', detalhe:'Princípios da Adm. Pública, Forças Armadas, Segurança Pública, Justiça Militar', tag:'comum', tagTxt:'CTSP e CBA', q:35 },
-            { id:'ce-rs-arts-militares', nome:'CE/RS — Servidores Militares e Segurança Pública (arts. 46–48, 124–131)', detalhe:'Direitos dos militares estaduais, Brigada Militar, CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:17 },
-          ]
-        },
-        {
-          titulo: 'Direito Penal e Processual Militar',
-          items: [
-            { id:'cpm-dec1001-69',      nome:'CPM — Código Penal Militar (arts. 1º–9º, 121–122, 149–334)', detalhe:'Aplicação da lei penal, ação penal, crimes contra a hierarquia, serviço e patrimônio militares', tag:'comum', tagTxt:'CTSP e CBA', q:14 },
-            { id:'cppm-dec73866-74',     nome:'CPPM — Código de Proc. Penal Militar (arts. 7º–28, 170–253)', detalhe:'Polícia Judiciária Militar, IPM, busca e apreensão, prisão provisória e flagrante', tag:'comum', tagTxt:'CTSP e CBA', q:17 },
-          ]
-        }
-      ]
-    }
+    ctsp: { titulo: 'Direito institucional, constitucional e militar',  cor: '#27A05A', corRgb: '39,160,90',   badgeStyle: 'background:rgba(39,160,90,0.15);color:#7DD99A;' },
+    cba:  { titulo: 'Direito institucional, constitucional e militar',  cor: '#27A05A', corRgb: '39,160,90',   badgeStyle: 'background:rgba(39,160,90,0.15);color:#7DD99A;' },
   },
   at5: {
-    ctsp: {
-      titulo: 'Normas administrativas e documentação técnica',
-      cor: '#7F77DD',
-      corRgb: '127,119,221',
-      badgeStyle: 'background:rgba(127,119,221,0.15);color:#AFA9EC;',
-      grupos: [
-        {
-          titulo: 'Decretos Administrativos — exclusivo CTSP',
-          items: [
-            { id:'dec57390-23', nome:'Decreto nº 57.390/2023 — Movimentação de Militares', detalhe:'Regulamento de Movimentação dos militares estaduais da BM e do CBMRS', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:25 },
-            { id:'lei6196-71', nome:'Lei nº 6.196/1971 — Código de Vencimentos', detalhe:'Vencimentos, proventos, indenizações e direitos do pessoal da BM', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:20 },
-            { id:'dec24846-76', nome:'Decreto nº 24.846/1976 — Ajuda de custo, diárias e transportes', detalhe:'Concessão de ajuda de custo, diárias e meios de transporte aos servidores', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:18 },
-            { id:'dec35693-94', nome:'Decreto nº 35.693/1994 — Prestação de contas de diárias', detalhe:'Procedimentos de prestação de contas e homologação de diárias', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:12 },
-            { id:'dec35818-95', nome:'Decreto nº 35.818/1995 — Substituições temporárias', detalhe:'Procedimentos para realização de substituições temporárias na BM', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:10 },
-            { id:'dec49113-12', nome:'Decreto nº 49.113/2012 — Estágio Probatório', detalhe:'Regulamento do Estágio Probatório dos Militares Estaduais da BM', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:15 },
-            { id:'dec40986-01', nome:'Decreto nº 40.986/2001 — Serviço extraordinário', detalhe:'Convocação e pagamento de serviço extraordinário dos militares estaduais', tag:'exclusivo', tagTxt:'Exclusivo CTSP', q:10 },
-          ]
-        },
-        {
-          titulo: 'Instruções Técnicas Operacionais',
-          items: [
-            { id:'it03-e193', nome:'IT nº 03/AODC-GCG — Sistema E-193', detalhe:'Regulamenta o Sistema de Emergência 193 do CBMRS (atualizada até Portaria nº 026/CBMRS/2026)', tag:'comum', tagTxt:'CTSP e CBA', q:1 },
-            { id:'it04-3-fr2', nome:'IT nº 04.2/2024 — Força de Resposta Rápida (FR2)', detalhe:'Estruturação e emprego da FR2 do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'it09-sci', nome:'IT nº 09/AODC-GCG — Sistema de Comando de Incidentes', detalhe:'Utilização do SCI no âmbito do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-          ]
-        },
-        {
-          titulo: 'Documentação Técnica',
-          items: [
-            { id:'caderno-abm-2023', nome:'Caderno Temático de Documentação Técnica — ABM 2023', detalhe:'Documentos técnicos, redação oficial, pronomes de tratamento e gestão documental', tag:'comum', tagTxt:'CTSP e CBA', q:19 },
-            { id:'portaria-021-20', nome:'Portaria nº 021/2020 — Glossário Operacional', detalhe:'Glossário de designações, terminologias e atos normativos do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-          ]
-        }
-      ]
-    },
-    cba: {
-      titulo: 'Normas institucionais e documentação técnica',
-      cor: '#7F77DD',
-      corRgb: '127,119,221',
-      badgeStyle: 'background:rgba(127,119,221,0.15);color:#AFA9EC;',
-      grupos: [
-        {
-          titulo: 'Instruções Reguladoras — exclusivo CBA',
-          items: [
-            { id:'ir003-adm-exc20', nome:'IR nº 003/ADM/EXC-20 — Escalas e efetividade', detalhe:'Procedimentos para escalas, efetividade e sistema RHE', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:0 },
-            { id:'ir002-adm-rh20', nome:'IR nº 002/Adm/RH-20 — Estágio Probatório', detalhe:'Regulamenta o estágio probatório no âmbito do CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:0 },
-            { id:'ir001-1-cons-disciplina', nome:'IR nº 001.1/Corregedoria — Conselho de Disciplina', detalhe:'Procedimentos para Conselho de Disciplina no CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:0 },
-            { id:'ir003-1-padm-cba', nome:'IR nº 003.1/Corregedoria — PADM', detalhe:'Processo Administrativo Disciplinar Militar no CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:1 },
-            { id:'ir006-sindicancia-cba', nome:'IR nº 006/Corregedoria — Sindicância Militar', detalhe:'Procedimentos de sindicância no CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:12 },
-            { id:'ir008-ipm-cba', nome:'IR nº 008/Corregedoria — IPM', detalhe:'Inquérito Policial Militar no âmbito do CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:0 },
-          ]
-        },
-        {
-          titulo: 'Instruções Técnicas Operacionais',
-          items: [
-            { id:'it03-e193', nome:'IT nº 03/AODC-GCG — Sistema E-193', detalhe:'Regulamenta o Sistema de Emergência 193 do CBMRS (atualizada até Portaria nº 026/CBMRS/2026)', tag:'comum', tagTxt:'CTSP e CBA', q:1 },
-            { id:'it04-3-fr2', nome:'IT nº 04.2/2024 — Força de Resposta Rápida (FR2)', detalhe:'Estruturação e emprego da FR2 do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'it09-sci', nome:'IT nº 09/AODC-GCG — Sistema de Comando de Incidentes', detalhe:'Utilização do SCI no âmbito do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-            { id:'portaria-018-24', nome:'Portaria nº 018/2024 — Circunscrição Administrativa e Operacional', detalhe:'Define circunscrições administrativas e operacionais do CBMRS', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA', q:0 },
-          ]
-        },
-        {
-          titulo: 'Documentação Técnica',
-          items: [
-            { id:'caderno-abm-2023', nome:'Caderno Temático de Documentação Técnica — ABM 2023', detalhe:'Documentos técnicos, redação oficial e gestão documental', tag:'comum', tagTxt:'CTSP e CBA', q:19 },
-            { id:'portaria-021-20', nome:'Portaria nº 021/2020 — Glossário Operacional', detalhe:'Glossário de designações, terminologias e atos normativos do CBMRS', tag:'comum', tagTxt:'CTSP e CBA', q:0 },
-          ]
-        }
-      ]
-    }
-  }
+    ctsp: { titulo: 'Normas administrativas e documentação técnica',    cor: '#7F77DD', corRgb: '127,119,221', badgeStyle: 'background:rgba(127,119,221,0.15);color:#AFA9EC;' },
+    cba:  { titulo: 'Normas institucionais e documentação técnica',     cor: '#7F77DD', corRgb: '127,119,221', badgeStyle: 'background:rgba(127,119,221,0.15);color:#AFA9EC;' },
+  },
 };
 
-// AT3 CBA = mesmo conteúdo do CTSP
-AREAS.at3.cba.grupos = AREAS.at3.ctsp.grupos;
+let AREAS = {};
+
+async function carregarAreas() {
+  try {
+    const resp = await fetch('/api/legislacoes/manifesto');
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    const { legislacoes } = await resp.json();
+
+    for (const [at, cursos] of Object.entries(AREAS_VISUAL)) {
+      AREAS[at] = {};
+      for (const [curso, visual] of Object.entries(cursos)) {
+        const filtradas = legislacoes.filter(l => {
+          if ((l.area_tematica || '').toLowerCase() !== at) return false;
+          return l.curso === 'ambos' || l.curso === curso;
+        });
+
+        const gruposMap = new Map();
+        for (const leg of filtradas) {
+          const g = leg.grupo || 'Geral';
+          if (!gruposMap.has(g)) gruposMap.set(g, []);
+          gruposMap.get(g).push({
+            id: leg.id,
+            nome: leg.nome,
+            detalhe: leg.descricao || '',
+            tag:    leg.curso === 'ambos' ? 'comum' : leg.curso === 'ctsp' ? 'exclusivo' : 'exclusivo-cba',
+            tagTxt: leg.curso === 'ambos' ? 'CTSP e CBA' : leg.curso === 'ctsp' ? 'Exclusivo CTSP' : 'Exclusivo CBA',
+            q: 0,
+          });
+        }
+
+        AREAS[at][curso] = {
+          ...visual,
+          grupos: [...gruposMap.entries()].map(([titulo, items]) => ({ titulo, items })),
+        };
+      }
+    }
+  } catch (e) {
+    console.error('Falha ao carregar áreas do manifesto:', e);
+  }
+}
+
 
 // ── ESTADO GLOBAL — lido do sessionStorage ──
 const _atParam    = sessionStorage.getItem('pbm_at');
@@ -1795,7 +1565,7 @@ if (sessionStorage.getItem('pbm_preview_aluno') === '1') {
   }
 })();
 
-Promise.all([carregarProgressoLeg(), carregarContagensReais()]).then(() => render());
+Promise.all([carregarAreas(), carregarProgressoLeg(), carregarContagensReais()]).then(() => render());
 
 
 // ── POMODORO: RESTAURAR ESTADO (vindo da página de questões) ──

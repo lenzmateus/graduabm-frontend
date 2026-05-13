@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bem-vindo ao Protocolo Bravo Mike</title>
+<!--[if mso]>
+<noscript>
+<xml>
+  <o:OfficeDocumentSettings>
+    <o:PixelsPerInch>96</o:PixelsPerInch>
+  </o:OfficeDocumentSettings>
+</xml>
+</noscript>
+<![endif]-->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;700&family=IBM+Plex+Mono:wght@500;700&display=swap');
+  
+  /* Reset básico para clientes de e-mail */
+  body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+  table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+  img { -ms-interpolation-mode: bicubic; }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: #0F0F0F;
+    width: 100% !important;
+  }
+  
+  /* Fallbacks de fontes garantidas para e-mail */
+  .font-bebas { font-family: 'Bebas Neue', Impact, Arial Black, sans-serif !important; }
+  .font-inter { font-family: 'Inter', Arial, sans-serif !important; }
+  .font-mono { font-family: 'IBM Plex Mono', 'Courier New', Courier, monospace !important; }
+</style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0F0F0F;">
+
+  <div style="background-color: #0F0F0F; padding: 40px 20px; width: 100%; box-sizing: border-box;">
+    
+    <!-- Container Principal -->
+    <div style="max-width: 600px; margin: 0 auto; background-color: #0F0F0F;">
+      
+      <!-- Cabeçalho (Logo) -->
+      <div style="margin-bottom: 32px; text-align: left;">
+        <div class="font-bebas" style="font-size: 24px; font-weight: 400; letter-spacing: 2px; color: #F8F6F2; font-family: Impact, Arial Black, sans-serif;">
+          PROTOCOLO<span style="color: #C0270F;">BM</span>
+        </div>
+      </div>
+      
+      <!-- Card Principal (Inspirado na interface da plataforma) -->
+      <div style="background-color: #1A1A1A; border: 1px solid #333333; border-left: 3px solid #C0270F; border-radius: 12px; padding: 32px; text-align: left;">
+        
+        <!-- Marca d'água (Implementação zero-height para não quebrar layout em e-mails) -->
+        <div style="max-height: 0px; overflow: visible;">
+          <div class="font-bebas" style="font-size: 96px; color: rgba(255,255,255,0.03); line-height: 0.8; text-align: right; margin-right: -8px; margin-top: 0px; font-family: Impact, Arial Black, sans-serif; pointer-events: none; user-select: none;">
+            PBM
+          </div>
+        </div>
+        
+        <!-- Conteúdo do Card -->
+        <div style="position: relative; z-index: 1;">
+          
+          <!-- Badge de Status -->
+          <div style="margin-bottom: 24px;">
+            <span class="font-mono" style="display: inline-block; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; padding: 4px 8px; background-color: rgba(39, 160, 90, 0.15); color: #27A060; border: 1px solid rgba(39, 160, 90, 0.3); border-radius: 4px; font-family: 'Courier New', Courier, monospace;">
+              STATUS: ATIVO
+            </span>
+          </div>
+          
+          <!-- Título principal -->
+          <h1 class="font-bebas" style="font-size: 40px; font-weight: 400; letter-spacing: 0.03em; margin: 0 0 16px 0; color: #F8F6F2; font-family: Impact, Arial Black, sans-serif;">
+            BEM-VINDO AO PROTOCOLO
+          </h1>
+          
+          <!-- Texto de Boas Vindas -->
+          <p class="font-inter" style="font-size: 16px; line-height: 1.6; color: #EFEFEA; margin: 0 0 16px 0; font-family: Arial, sans-serif;">
+            Olá, <strong>{{nome}}</strong>.
+          </p>
+          
+          <p class="font-inter" style="font-size: 16px; line-height: 1.6; color: #EFEFEA; margin: 0 0 24px 0; font-family: Arial, sans-serif;">
+            Seu acesso à plataforma foi confirmado. Você agora faz parte do grupo que se prepara com o mais alto padrão de exigência para as provas do Corpo de Bombeiros. Cada funcionalidade aqui foi desenhada para uma única missão: sua aprovação.
+          </p>
+          
+          <!-- Caixa de Informação (Objetivo) -->
+          <div style="background-color: #2A2A2A; border: 1px solid #333333; border-radius: 8px; padding: 16px; margin-bottom: 32px;">
+            <div class="font-inter" style="font-size: 13px; color: #888888; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; font-family: Arial, sans-serif;">
+              Seu Objetivo
+            </div>
+            <div class="font-bebas" style="font-size: 28px; color: #F8F6F2; letter-spacing: 0.02em; font-family: Impact, Arial Black, sans-serif;">
+              {{curso}}
+            </div>
+          </div>
+          
+          <!-- Botão de Ação -->
+          <div style="margin-bottom: 16px;">
+            <a href="{{link_acesso}}" class="font-inter" style="display: inline-block; background-color: #C0270F; color: #F8F6F2; padding: 14px 28px; border-radius: 8px; font-size: 15px; font-weight: 500; text-decoration: none; font-family: Arial, sans-serif;">
+              INICIAR TREINAMENTO
+            </a>
+          </div>
+          
+          <!-- Assinatura/Mensagem Final -->
+          <p class="font-inter" style="font-size: 14px; color: #888888; margin: 0; font-family: Arial, sans-serif;">
+            Mantenha a disciplina. Nos vemos do lado de dentro.
+          </p>
+          
+        </div>
+      </div>
+      
+      <!-- Rodapé do E-mail -->
+      <div style="margin-top: 32px; text-align: center;">
+        <div class="font-inter" style="font-size: 12px; color: #555555; line-height: 1.5; font-family: Arial, sans-serif;">
+          Este é um e-mail automático do sistema.<br>
+          <a href="https://protocolobravomike.com.br" style="color: #555555; text-decoration: none;">PROTOCOLO BM · .com.br</a>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+</body>
+</html>

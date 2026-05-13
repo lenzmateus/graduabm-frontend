@@ -293,6 +293,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         Questões
       </a>
+      <a class="nav-item" href="/admin-legislacoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        Legislações
+      </a>
       <a class="nav-item" href="/admin-flashcards">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
         Flashcards
@@ -435,7 +439,7 @@
       <button onclick="fecharModalQuestaoManual()" style="background:none;border:none;color:#888;cursor:pointer;font-size:22px;line-height:1;padding:0 4px;">✕</button>
     </div>
     <input type="hidden" id="qm-bloco-id">
-    <div style="display:grid;gap:1rem;">
+    <div style="display:grid;gap:1rem;min-width:0;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <div class="form-group">
           <div class="form-label">Área Temática</div>
@@ -462,17 +466,17 @@
           <option value="">Carregando…</option>
         </select>
       </div>
-      <div class="form-group">
+      <div class="form-group" style="min-width:0;">
         <div class="form-label">Enunciado</div>
-        <textarea id="qm-enunciado" rows="4" class="form-input" style="resize:vertical;line-height:1.6;"></textarea>
+        <textarea id="qm-enunciado" rows="4" class="form-input" style="width:100%;max-width:100%;resize:vertical;line-height:1.6;"></textarea>
       </div>
-      <div>
+      <div style="min-width:0;">
         <div class="form-label" style="margin-bottom:8px;">Alternativas</div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">A.</span><input id="qm-alt-A" type="text" class="form-input" style="flex:1;"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">B.</span><input id="qm-alt-B" type="text" class="form-input" style="flex:1;"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">C.</span><input id="qm-alt-C" type="text" class="form-input" style="flex:1;"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">D.</span><input id="qm-alt-D" type="text" class="form-input" style="flex:1;"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">E.</span><input id="qm-alt-E" type="text" class="form-input" style="flex:1;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">A.</span><input id="qm-alt-A" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">B.</span><input id="qm-alt-B" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">C.</span><input id="qm-alt-C" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">D.</span><input id="qm-alt-D" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">E.</span><input id="qm-alt-E" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
       </div>
       <div class="form-group">
         <div class="form-label">Gabarito</div>
@@ -484,9 +488,9 @@
           <option value="4">E</option>
         </select>
       </div>
-      <div class="form-group">
+      <div class="form-group" style="min-width:0;">
         <div class="form-label">Comentário / Justificativa</div>
-        <textarea id="qm-comentario" rows="3" class="form-input" style="resize:vertical;line-height:1.6;"></textarea>
+        <textarea id="qm-comentario" rows="3" class="form-input" style="width:100%;max-width:100%;resize:vertical;line-height:1.6;"></textarea>
       </div>
     </div>
     <div style="display:flex;gap:8px;margin-top:1.5rem;">

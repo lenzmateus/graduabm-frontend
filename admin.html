@@ -190,6 +190,10 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
         Questões
       </a>
+      <a class="nav-item" href="/admin-legislacoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+        Legislações
+      </a>
       <a class="nav-item" href="/admin-flashcards">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
         Flashcards
@@ -821,21 +825,35 @@
     }
 
     lista.innerHTML = itens.map(d => {
-      const questaoInfo = d.questoes;
-      const enunciado = questaoInfo?.enunciado || '';
-      const trecho = enunciado.length > 90 ? enunciado.slice(0, 90) + '…' : enunciado;
-      const area = questaoInfo?.area_tematica || '';
-      const leg = questaoInfo?.legislacao_nome || '';
+      const tipo = d.tipo || 'questao';
       const aluno = d.users?.nome || d.users?.email || 'Aluno desconhecido';
       const data = d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
       const resolvida = d.resolvida;
 
+      let cabecalho = '';
+      let acaoAdmin = '';
+
+      if (tipo === 'legislacao') {
+        const legNome = d.legislacao_nome || d.legislacao_id || '';
+        cabecalho = `<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:rgba(186,117,23,0.12);border:1px solid rgba(186,117,23,0.45);color:#E0A858;letter-spacing:0.04em;text-transform:uppercase;margin-right:6px;">Legislação</span>${escHtml(legNome)}`;
+        const legId = d.legislacao_id ? `?id=${encodeURIComponent(d.legislacao_id)}` : '';
+        acaoAdmin = `<a href="/admin-legislacoes${legId}" class="btn-editar-questao">📜 Gerenciar legislação</a>`;
+      } else {
+        const questaoInfo = d.questoes;
+        const enunciado = questaoInfo?.enunciado || '';
+        const trecho = enunciado.length > 90 ? enunciado.slice(0, 90) + '…' : enunciado;
+        const area = questaoInfo?.area_tematica || '';
+        const leg = questaoInfo?.legislacao_nome || '';
+        cabecalho = `${area ? `<span style="margin-right:6px;">${area}</span>` : ''}${leg ? `${escHtml(leg)} · ` : ''}${escHtml(trecho || d.questao_id || '')}`;
+        acaoAdmin = d.questao_id
+          ? `<a href="/admin-questoes?editar=${d.questao_id}" class="btn-editar-questao">✏ Editar Questão</a>`
+          : '';
+      }
+
       return `<div class="denuncia-item" id="denuncia-${d.id}">
         <div class="denuncia-status ${resolvida ? 'resolvida' : 'pendente'}"></div>
         <div class="denuncia-body">
-          <div class="denuncia-questao">
-            ${area ? `<span style="margin-right:6px;">${area}</span>` : ''}${leg ? `${leg} · ` : ''}${trecho || d.questao_id}
-          </div>
+          <div class="denuncia-questao">${cabecalho}</div>
           <div class="denuncia-comentario">${escHtml(d.comentario)}</div>
           <div class="denuncia-meta">
             <span class="denuncia-aluno">${escHtml(aluno)}</span>
@@ -843,7 +861,7 @@
           </div>
         </div>
         <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
-          <a href="/admin-questoes?editar=${d.questao_id}" class="btn-editar-questao">✏ Editar Questão</a>
+          ${acaoAdmin}
           ${!resolvida
             ? `<button class="btn-resolver" onclick="resolverDenuncia('${d.id}', this)">✓ Resolver</button>`
             : `<span style="font-size:11px;color:#444;font-family:'IBM Plex Mono',monospace;">resolvida</span>
@@ -862,7 +880,7 @@
     if (!ADMIN_JWT) return;
     try {
       const r = await supaQuery(
-        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,questoes(area_tematica,legislacao_nome,enunciado),users(nome,email)&order=created_at.desc&limit=100'
+        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,tipo,legislacao_id,legislacao_nome,questoes(area_tematica,legislacao_nome,enunciado),users(nome,email)&order=created_at.desc&limit=100'
       );
       if (!r.ok) return;
       denunciasCache = Array.isArray(r.data) ? r.data : [];

@@ -74,6 +74,12 @@
   .leg-row:last-child { border-bottom: none; }
   .leg-row.atualizada { background: rgba(186,117,23,0.04); }
   .leg-row.tem-override { background: rgba(127,119,221,0.04); }
+  .leg-row.destaque-relato { background: rgba(192,39,15,0.10); box-shadow: inset 3px 0 0 var(--vermelho); animation: pulseRelato 1.4s ease-out 2; }
+  @keyframes pulseRelato { 0%, 100% { background: rgba(192,39,15,0.10); } 50% { background: rgba(192,39,15,0.22); } }
+  .banner-relato { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); border-left: 3px solid var(--vermelho); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 13px; color: #F09595; }
+  .banner-relato .banner-leg-id { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--branco); }
+  .banner-relato button { background: transparent; border: 1px solid var(--vermelho-borda); color: #F09595; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .banner-relato button:hover { background: rgba(192,39,15,0.2); }
   .leg-at { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.04em; }
   .leg-at[data-at="AT1"] { color: #F09595; }
   .leg-at[data-at="AT2"] { color: #E0A858; }
@@ -199,6 +205,14 @@
         </p>
       </div>
 
+      <div id="banner-relato" class="banner-relato" style="display:none;">
+        <div>
+          <strong>Legislação reportada:</strong>
+          <span class="banner-leg-id" id="banner-leg-nome">—</span>
+        </div>
+        <button id="banner-relato-fechar" type="button">Limpar destaque</button>
+      </div>
+
       <div class="filtros">
         <button class="filtro-btn ativo" data-curso="todos">Todos os cursos</button>
         <button class="filtro-btn" data-curso="ctsp">CTSP</button>
@@ -289,6 +303,7 @@
   let cache = [];
   let filtroCurso = 'todos';
   let filtroArea = 'todas';
+  let destaqueId = (new URLSearchParams(window.location.search).get('id') || '').trim();
 
   document.querySelectorAll('.filtro-btn[data-curso]').forEach(b => {
     b.addEventListener('click', () => {
@@ -335,9 +350,11 @@
     cont.innerHTML = filtradas.map(l => {
       const temOverride = !!l.nome_custom;
       const atualizada = !!l.atualizada_em;
-      const cssRow = atualizada ? 'leg-row atualizada' : (temOverride ? 'leg-row tem-override' : 'leg-row');
+      const isDestaque = destaqueId && l.id === destaqueId;
+      let cssRow = atualizada ? 'leg-row atualizada' : (temOverride ? 'leg-row tem-override' : 'leg-row');
+      if (isDestaque) cssRow += ' destaque-relato';
       return `
-        <div class="${cssRow}">
+        <div class="${cssRow}" id="leg-row-${esc(l.id)}">
           <div class="leg-at" data-at="${l.area_tematica}">${l.area_tematica}</div>
           <div class="leg-nome">
             <strong>${esc(l.nome_exibicao)}</strong>
@@ -366,11 +383,42 @@
       const r = await PBM.Admin.legislacoes.listar();
       cache = r.legislacoes || [];
       renderLista();
+      if (destaqueId) focarDestaque();
     } catch (e) {
       document.getElementById('lista').innerHTML =
         '<div class="empty" style="color:#F09595;">Erro ao carregar legislações.</div>';
     }
   }
+
+  function focarDestaque() {
+    const alvo = cache.find(l => l.id === destaqueId);
+    const banner = document.getElementById('banner-relato');
+    if (!alvo) {
+      if (banner) {
+        banner.style.display = 'flex';
+        banner.style.borderColor = 'var(--amarelo-borda)';
+        banner.style.background = 'var(--amarelo-bg)';
+        banner.style.color = '#E0A858';
+        document.getElementById('banner-leg-nome').textContent = destaqueId + ' (não encontrada no manifesto)';
+      }
+      return;
+    }
+    banner.style.display = 'flex';
+    document.getElementById('banner-leg-nome').textContent = alvo.nome_exibicao + ' · ' + alvo.id;
+    setTimeout(() => {
+      const row = document.getElementById('leg-row-' + alvo.id);
+      if (row) row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 60);
+  }
+
+  document.getElementById('banner-relato-fechar').addEventListener('click', () => {
+    destaqueId = '';
+    document.getElementById('banner-relato').style.display = 'none';
+    const url = new URL(window.location.href);
+    url.searchParams.delete('id');
+    window.history.replaceState({}, '', url.toString());
+    renderLista();
+  });
 
   window.alternarAtualizada = async function(id, atualEstava) {
     try {

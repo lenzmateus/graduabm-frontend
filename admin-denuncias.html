@@ -373,7 +373,8 @@
 
       if (tipo === 'legislacao') {
         cabecalho = `<span class="badge-tipo-legislacao">Legislação</span>${escHtml(d.legislacao_nome || d.legislacao_id || '')}`;
-        acaoAdmin = `<a href="/admin-legislacoes" class="btn-editar-questao">📜 Gerenciar legislação</a>`;
+        const legId = d.legislacao_id ? `?id=${encodeURIComponent(d.legislacao_id)}` : '';
+        acaoAdmin = `<a href="/admin-legislacoes${legId}" class="btn-editar-questao">📜 Gerenciar legislação</a>`;
       } else {
         const questaoInfo = d.questoes || {};
         const enunciado = questaoInfo.enunciado || '';

@@ -12,7 +12,7 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 
 **Legislação Institucional:**
 
-- Lei Complementar nº 10.990/1997 e suas alterações **(atualizada até LC 15.454/2020)** (Estatuto dos Militares Estaduais)
+- Lei Complementar nº 10.990/1997 e suas alterações **(atualizada até LC 16.181/2024)** (Estatuto dos Militares Estaduais)
 - Lei Complementar nº 10.992/1997 e suas alterações (Carreira dos Militares Estaduais)
 - Lei Complementar nº 14.920, de 1º de agosto de 2016 e suas alterações (LOB do CBMRS)
 - Decreto nº 53.897, de 25 de janeiro de 2018 e suas alterações (Decreto Regulamentador da LOB)
@@ -55,7 +55,7 @@ Seu escopo de atuação é **estritamente limitado** ao conteúdo programático 
 
 **Legislação Institucional:**
 
-- Lei Complementar nº 10.990/1997 **(atualizada até LC 15.454/2020)** (Estatuto dos Militares Estaduais)
+- Lei Complementar nº 10.990/1997 **(atualizada até LC 16.181/2024)** (Estatuto dos Militares Estaduais)
 - Lei Complementar nº 14.920/2016 (LOB CBMRS)
 - Decreto nº 53.897/2018 (Decreto Regulamentador da LOB)
 - Lei Complementar nº 15.008/2017 (Lei de Transição)
