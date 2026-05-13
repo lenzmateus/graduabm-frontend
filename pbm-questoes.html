@@ -772,11 +772,11 @@
   </div>
 
   <div class="resultado-acoes">
-    <a href="/selecao-legislacao" class="btn-resultado primario">
+    <a id="btn-resultado-primario" href="/selecao-legislacao" class="btn-resultado primario">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
       Papirar de novo
     </a>
-    <a href="/area-estudos" class="btn-resultado secundario">← Voltar às áreas</a>
+    <a id="btn-resultado-secundario" href="/area-estudos" class="btn-resultado secundario">← Voltar às áreas</a>
   </div>
 </div>
 
@@ -836,6 +836,7 @@
 <script>if(sessionStorage.getItem('pbm_admin')==='1'){document.getElementById('btn-admin-float').style.display='block';}</script>
 <script>
 // ── ESTADO ──
+let modoAtualTipo = 'estudo';
 let questoes   = [];
 let idxAtual   = 0;
 let sessaoId   = null;
@@ -910,6 +911,29 @@ async function init() {
   try {
     if (!PBM.isAdmin()) {
       await PBM.protegerRota();
+    }
+
+    const modoRevisao = sessionStorage.getItem('pbm_modo_revisao');
+    if (modoRevisao) {
+      sessionStorage.removeItem('pbm_modo_revisao');
+      modoAtualTipo = 'revisao';
+      const qtd = parseInt(modoRevisao) || 20;
+      questoes = await PBM.Revisao.sessao(qtd);
+      if (!questoes.length) {
+        mostrarErro('Nenhuma questão na fila de revisão. Continue estudando para adicionar questões à fila!');
+        return;
+      }
+      setCor(questoes[0].area_tematica || 'AT1');
+      iniciarTimer();
+      document.getElementById('hdr-total').textContent = questoes.length;
+      document.getElementById('hdr-contexto').textContent = 'REVISÃO ESPAÇADA';
+      mostrarQuestao();
+      document.getElementById('tela-loading').style.display = 'none';
+      document.getElementById('tela-questao').style.display = 'flex';
+      document.getElementById('seta-esq').style.display = 'flex';
+      document.getElementById('seta-dir').style.display = 'flex';
+      if (window.PBMTour) PBMTour.init();
+      return;
     }
 
     const filtro = sessionStorage.getItem('pbm_filtro');
@@ -1021,7 +1045,9 @@ function mostrarQuestao() {
 
   document.getElementById('hdr-atual').textContent  = idxAtual + 1;
   document.getElementById('prog-fill').style.width  = (idxAtual / questoes.length * 100) + '%';
-  document.getElementById('badge-area').textContent = area;
+  const displayArea = modoAtualTipo === 'revisao' ? (q.area_tematica || area) : area;
+  if (modoAtualTipo === 'revisao') setCor(q.area_tematica || area);
+  document.getElementById('badge-area').textContent = displayArea;
   document.getElementById('badge-leg').textContent  = leg || '—';
   document.getElementById('enunciado').textContent  = getEnunciado(q);
   const imgEl = document.getElementById('q-imagem');
@@ -1158,7 +1184,7 @@ async function confirmarResposta() {
   // registrar resposta na API (cria sessão de forma lazy na primeira resposta)
   if (!sessaoId) {
     try {
-      const sessao = await PBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length });
+      const sessao = await PBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length, tipo: modoAtualTipo });
       sessaoId = sessao.id;
     } catch (err) {
       console.error('[Protocolo Bravo Mike] Falha ao criar sessão:', err);
@@ -1245,8 +1271,9 @@ function mostrarResultados() {
 
   document.getElementById('res-titulo').textContent =
     pct >= 70 ? 'Muito bem!' : pct >= 50 ? 'Bom desempenho' : 'Continue praticando';
-  document.getElementById('res-sub').textContent =
-    curso.toUpperCase() + ' — ' + area + ' · ' + tempo + ' de estudo';
+  document.getElementById('res-sub').textContent = modoAtualTipo === 'revisao'
+    ? 'Revisão Espaçada · ' + tempo + ' de estudo'
+    : curso.toUpperCase() + ' — ' + area + ' · ' + tempo + ' de estudo';
   document.getElementById('res-acertos').textContent = acertos;
   document.getElementById('res-erros').textContent   = erros;
   document.getElementById('res-pct').textContent     = pct + '%';
@@ -1271,6 +1298,13 @@ function mostrarResultados() {
     `;
     lista.appendChild(div);
   });
+
+  if (modoAtualTipo === 'revisao') {
+    document.getElementById('btn-resultado-primario').href = '/dashboard';
+    document.getElementById('btn-resultado-primario').innerHTML = '← Voltar ao Dashboard';
+    document.getElementById('btn-resultado-secundario').href = '/dashboard';
+    document.getElementById('btn-resultado-secundario').textContent = '← Voltar ao Dashboard';
+  }
 
   document.getElementById('tela-resultados').style.display = 'flex';
 }
@@ -1375,7 +1409,7 @@ async function sairSessao() {
   }
   pararTimer();
   if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
-  window.location.href = '/selecao-legislacao';
+  window.location.href = modoAtualTipo === 'revisao' ? '/dashboard' : '/selecao-legislacao';
 }
 
 // ── SAÍDA POR ABA/NAVEGAÇÃO ──

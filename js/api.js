@@ -205,6 +205,15 @@ const PBM = {
     },
   },
 
+  Revisao: {
+    pendentes() {
+      return request('/api/revisao/pendentes');
+    },
+    sessao(quantidade) {
+      return request('/api/revisao/sessao?quantidade=' + (quantidade || 20));
+    },
+  },
+
   Admin: {
     _authHeader() {
       const jwt = sessionStorage.getItem('pbm_admin_jwt') || '';
