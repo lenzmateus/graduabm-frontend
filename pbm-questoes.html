@@ -1337,7 +1337,11 @@ async function confirmarResposta() {
   // registrar resposta na API (cria sessão de forma lazy na primeira resposta)
   if (!sessaoId) {
     try {
-      const sessao = await PBM.api.sessoes.criar({ curso, area, legislacoes, quantidade: questoes.length, tipo: modoAtualTipo });
+      const payloadSessao = { curso, area, legislacoes, quantidade: questoes.length, tipo: modoAtualTipo };
+      if (modoAtualTipo === 'ciclo' && cicloBloco && cicloBloco.id) {
+        payloadSessao.ciclo_bloco_id = cicloBloco.id;
+      }
+      const sessao = await PBM.api.sessoes.criar(payloadSessao);
       sessaoId = sessao.id;
     } catch (err) {
       console.error('[Protocolo Bravo Mike] Falha ao criar sessão:', err);

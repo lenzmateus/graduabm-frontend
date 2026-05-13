@@ -1177,6 +1177,18 @@
   </div>
 </div>
 
+<!-- DRAWER RELATÓRIO DETALHADO DO BLOCO -->
+<div class="manual-overlay" id="relatorio-overlay" role="dialog" aria-modal="true">
+  <div class="manual-painel" style="max-width:600px;max-height:90vh;overflow-y:auto;">
+    <button class="pomo-close" onclick="fecharRelatorioBloco()" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="relatorio-conteudo">
+      <div style="text-align:center;padding:2rem 0;color:var(--cinza-texto);font-size:13px;">Carregando relatório…</div>
+    </div>
+  </div>
+</div>
+
 <script src="/js/api.js"></script>
 <script>
 // ============================================================
@@ -1640,6 +1652,10 @@ function renderBlocosLista() {
         </div>
         <span class="bloco-status-pill" data-status="${b.status}">${STATUS_LABEL[b.status] || b.status}</span>
         <div class="bloco-acoes">
+          <button class="bloco-acao-secundaria" title="Ver relatório detalhado deste bloco" onclick="abrirRelatorioBloco('${escapeHtml(b.id)}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Relatório
+          </button>
           <button class="bloco-acao-secundaria" title="Resolver questões deste bloco" onclick="irParaQuestoesDoBloco('${escapeHtml(b.id)}')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
             Questões
@@ -2076,6 +2092,127 @@ async function excluirCiclo() {
 }
 
 // ============================================================
+// RELATÓRIO DETALHADO DO BLOCO (drawer)
+// ============================================================
+const ORIGEM_LABEL = {
+  pomodoro: { txt: 'Pomodoro', cor: '#E0866E' },
+  manual:   { txt: 'Manual',   cor: '#EBC57D' },
+  questoes: { txt: 'Questões', cor: '#85B7EB' },
+};
+
+async function abrirRelatorioBloco(blocoId) {
+  const overlay = document.getElementById('relatorio-overlay');
+  const conteudo = document.getElementById('relatorio-conteudo');
+  conteudo.innerHTML = `<div style="text-align:center;padding:2rem 0;color:var(--cinza-texto);font-size:13px;">Carregando relatório…</div>`;
+  overlay.classList.add('show');
+
+  try {
+    const data = await PBM.Ciclo.blocoRelatorio(blocoId);
+    renderRelatorioBlocoConteudo(data);
+  } catch (e) {
+    console.warn('[ciclo] falha ao carregar relatório', e);
+    conteudo.innerHTML = `<div style="text-align:center;padding:2rem 0;color:#F09595;font-size:13px;">Erro ao carregar relatório: ${escapeHtml(e?.message || 'tente novamente')}</div>`;
+  }
+}
+
+function fecharRelatorioBloco() {
+  document.getElementById('relatorio-overlay').classList.remove('show');
+}
+
+function renderRelatorioBlocoConteudo(data) {
+  const b = data.bloco;
+  const t = data.tempo;
+  const q = data.questoes;
+  const sessoes = data.sessoes_tempo || [];
+
+  const taxaTxt = q.taxa_acerto != null ? `${q.taxa_acerto}%` : '—';
+  const taxaCor = q.taxa_acerto == null ? '#888' :
+                  q.taxa_acerto >= 70 ? '#7DD99A' :
+                  q.taxa_acerto >= 50 ? '#EBC57D' : '#F09595';
+
+  // Origem rows (apenas as com tempo > 0)
+  const origensComTempo = Object.entries(t.por_origem).filter(([_, v]) => v > 0);
+  const maxOrigem = Math.max(...Object.values(t.por_origem), 1);
+
+  const origensHtml = origensComTempo.length === 0
+    ? `<div style="font-size:12px;color:var(--cinza-texto);padding:8px 0;">Nenhum tempo registrado ainda.</div>`
+    : origensComTempo.map(([origem, min]) => {
+        const cfg = ORIGEM_LABEL[origem] || { txt: origem, cor: '#888' };
+        const pct = Math.round((min / maxOrigem) * 100);
+        return `
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${cfg.cor};letter-spacing:0.08em;text-transform:uppercase;min-width:72px;">${cfg.txt}</div>
+            <div style="flex:1;height:5px;background:#2A2A2A;border-radius:3px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:${cfg.cor};"></div>
+            </div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--branco);min-width:50px;text-align:right;">${min} min</div>
+          </div>
+        `;
+      }).join('');
+
+  // Últimas sessões
+  const sessoesHtml = sessoes.length === 0
+    ? `<div style="font-size:12px;color:var(--cinza-texto);padding:8px 0;">Nenhuma sessão registrada.</div>`
+    : sessoes.slice(0, 10).map(s => {
+        const cfg = ORIGEM_LABEL[s.origem] || { txt: s.origem, cor: '#888' };
+        const data = formatarDataCurta(s.registrado_em);
+        return `
+          <div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-bottom:1px solid var(--cinza-borda);font-size:12px;">
+            <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:${cfg.cor};letter-spacing:0.08em;text-transform:uppercase;padding:2px 6px;border-radius:3px;background:${cfg.cor}1A;border:1px solid ${cfg.cor}40;min-width:74px;text-align:center;">${cfg.txt}</span>
+            <span style="flex:1;color:var(--cinza-texto);">${data}</span>
+            <span style="color:var(--branco);font-weight:500;">${s.duracao_minutos} min</span>
+          </div>
+        `;
+      }).join('');
+
+  document.getElementById('relatorio-conteudo').innerHTML = `
+    <div style="margin-bottom:1rem;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--vermelho);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;">Relatório do bloco</div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px;">
+        <span class="at-tag" data-at="${b.area}" style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;padding:2px 7px;border-radius:4px;">${b.area}</span>
+        <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.04em;color:var(--branco);line-height:1.1;">${escapeHtml(b.legislacao_nome)}</span>
+      </div>
+      <div style="font-size:11px;color:var(--cinza-texto);">${escapeHtml(b.ciclo_nome)} · bloco #${b.ordem} · ${(b.pct_da_prova*100).toFixed(0)}% da prova ${b.prioridade ? ' · prioridade '+(b.prioridade === 'reforco' ? '★★★' : b.prioridade === 'atencao' ? '★★' : '★') : ''}</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:1.25rem;">
+      <div style="background:#0F0F0F;border:1px solid var(--cinza-borda);border-radius:6px;padding:10px;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--branco);line-height:1;">${t.total_min}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--cinza-texto);letter-spacing:0.08em;margin-top:3px;">MIN TOTAIS</div>
+      </div>
+      <div style="background:#0F0F0F;border:1px solid var(--cinza-borda);border-radius:6px;padding:10px;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${t.meta_batida ? '#7DD99A' : 'var(--branco)'};line-height:1;">${t.meta_pct}%</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--cinza-texto);letter-spacing:0.08em;margin-top:3px;">DA META</div>
+      </div>
+      <div style="background:#0F0F0F;border:1px solid var(--cinza-borda);border-radius:6px;padding:10px;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--branco);line-height:1;">${q.respondidas}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--cinza-texto);letter-spacing:0.08em;margin-top:3px;">Q. RESPONDIDAS</div>
+      </div>
+      <div style="background:#0F0F0F;border:1px solid var(--cinza-borda);border-radius:6px;padding:10px;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:${taxaCor};line-height:1;">${taxaTxt}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--cinza-texto);letter-spacing:0.08em;margin-top:3px;">ACERTO</div>
+      </div>
+    </div>
+
+    <div style="margin-bottom:1.25rem;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--cinza-texto);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Tempo por origem</div>
+      ${origensHtml}
+    </div>
+
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--cinza-texto);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px;">Últimas sessões (${sessoes.length})</div>
+      <div style="border:1px solid var(--cinza-borda);border-radius:6px;overflow:hidden;">
+        ${sessoesHtml}
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;display:flex;justify-content:flex-end;">
+      <button class="manual-btn-salvar" type="button" onclick="fecharRelatorioBloco()">Fechar</button>
+    </div>
+  `;
+}
+
+// ============================================================
 // Wizard show helper
 // ============================================================
 async function showWizard() {
@@ -2144,6 +2281,9 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   document.getElementById('config-overlay').addEventListener('click', e => {
     if (e.target.id === 'config-overlay') fecharModalConfig();
+  });
+  document.getElementById('relatorio-overlay').addEventListener('click', e => {
+    if (e.target.id === 'relatorio-overlay') fecharRelatorioBloco();
   });
 });
 </script>

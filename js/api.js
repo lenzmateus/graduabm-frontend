@@ -257,6 +257,9 @@ const PBM = {
     excluir() {
       return request('/api/ciclo', { method: 'DELETE' });
     },
+    blocoRelatorio(blocoId) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/relatorio');
+    },
   },
 
   Admin: {
