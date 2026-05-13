@@ -15,6 +15,7 @@
     { "source": "/simulado-prova", "destination": "/pbm-simulado-prova" },
     { "source": "/ranking", "destination": "/pbm-ranking" },
     { "source": "/flashcards", "destination": "/pbm-flashcards" },
+    { "source": "/ciclo-estudos", "destination": "/pbm-ciclo-estudos" },
     { "source": "/editais", "destination": "/pbm-editais" },
     { "source": "/simulado-mensal", "destination": "/pbm-simulado-mensal" },
     { "source": "/simulado-mensal-ranking", "destination": "/pbm-simulado-mensal-ranking" },
@@ -33,7 +34,7 @@
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; connect-src 'self' https://graduabm-backend-production.up.railway.app https://cdn.jsdelivr.net https://nssqtjvtrrrppfimpouu.supabase.co; img-src 'self' data: https://nssqtjvtrrrppfimpouu.supabase.co" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src fonts.gstatic.com; connect-src 'self' https://graduabm-backend-production.up.railway.app https://cdn.jsdelivr.net https://nssqtjvtrrrppfimpouu.supabase.co; img-src 'self' data: https://nssqtjvtrrrppfimpouu.supabase.co https://i.ytimg.com; frame-src https://www.youtube-nocookie.com" },
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
