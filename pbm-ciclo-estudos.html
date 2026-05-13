@@ -1,0 +1,1971 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PBM">
+<link rel="apple-touch-icon" href="/images/pwa-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Ciclo de Estudos</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: #F8F6F2;
+    --ctsp: #C0270F;
+    --cba: #185FA5;
+    --at1: #C0270F;
+    --at2: #D38B2D;
+    --at3: #185FA5;
+    --at4: #3F8E5F;
+    --at5: #8359B8;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--carvao); color: var(--branco);
+    font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* SIDEBAR (copia do padrão PBM) */
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda);
+    display: flex; flex-direction: column;
+  }
+  .sidebar-logo {
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 0.05em;
+    color: var(--branco); text-decoration: none;
+  }
+  .sidebar-usuario {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
+  .usuario-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 500; color: #7DD99A; letter-spacing: 0.04em;
+  }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+  .sidebar-nav { flex: 1; padding: 1rem 0; }
+  .nav-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: #555;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px;
+  }
+  .nav-label:first-child { margin-top: 0; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 1.25rem; font-size: 13px;
+    color: var(--cinza-texto); cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+    border-left: 2px solid transparent;
+    text-decoration: none;
+  }
+  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+  .nav-item.ativo {
+    color: var(--branco);
+    border-left-color: var(--vermelho);
+    background: rgba(192,39,15,0.08);
+  }
+  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
+  .btn-sair {
+    width: 100%; background: transparent;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 7px 0; font-size: 12px; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.15s;
+  }
+  .btn-sair:hover { border-color: #555; color: var(--branco); }
+
+  /* MAIN */
+  .main { flex: 1; display: flex; flex-direction: column; }
+  .topbar {
+    height: 56px; flex-shrink: 0;
+    border-bottom: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+  }
+  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
+  .btn-logout-top {
+    display: flex; align-items: center; gap: 6px;
+    background: transparent; border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 6px;
+    padding: 5px 12px; font-size: 12px; cursor: pointer;
+    font-family: 'Inter', sans-serif; transition: all 0.15s;
+  }
+  .btn-logout-top:hover { border-color: #E24B4A; color: #E24B4A; }
+  .btn-logout-top svg { width: 13px; height: 13px; }
+
+  .conteudo { padding: 2rem; max-width: 1100px; }
+
+  /* HEADER */
+  .page-header {
+    margin-bottom: 1.5rem;
+  }
+  .page-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; letter-spacing: 0.04em;
+    color: var(--branco); margin-bottom: 4px;
+  }
+  .page-sub {
+    font-size: 13px; color: var(--cinza-texto);
+    max-width: 700px; line-height: 1.5;
+  }
+
+  /* STEPPER */
+  .stepper {
+    display: flex; gap: 0; margin-bottom: 2rem;
+    border: 1px solid var(--cinza-borda); border-radius: 10px;
+    overflow: hidden;
+  }
+  .step {
+    flex: 1; padding: 14px 18px;
+    background: var(--cinza-escuro);
+    border-right: 1px solid var(--cinza-borda);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; color: var(--cinza-texto);
+  }
+  .step:last-child { border-right: none; }
+  .step.ativo { background: rgba(192,39,15,0.08); color: var(--branco); }
+  .step.feito { color: #7DD99A; }
+  .step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: var(--cinza-medio); color: var(--branco);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  }
+  .step.ativo .step-num { background: var(--vermelho); }
+  .step.feito .step-num { background: #2F6F44; color: #fff; }
+
+  /* CARDS / SECTIONS */
+  .card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-titulo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+
+  /* CONFIG */
+  .config-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1rem; margin-bottom: 0.5rem;
+  }
+  .config-field label {
+    display: block; font-size: 12px;
+    color: var(--cinza-texto); margin-bottom: 6px;
+  }
+  .config-field input, .config-field select {
+    width: 100%; padding: 9px 12px;
+    background: var(--carvao); color: var(--branco);
+    border: 1px solid var(--cinza-borda); border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 14px;
+  }
+  .config-field input:focus, .config-field select:focus {
+    outline: none; border-color: var(--vermelho);
+  }
+  .hint {
+    font-size: 11px; color: #666;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-top: 4px;
+  }
+
+  /* AREA TEMÁTICA — grupo de legislações */
+  .at-grupo {
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px; overflow: hidden;
+    margin-bottom: 1rem;
+    background: var(--cinza-escuro);
+  }
+  .at-grupo-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--cinza-borda);
+  }
+  .at-grupo-header .at-pill {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 0.04em;
+    padding: 4px 12px; border-radius: 6px;
+    color: #fff;
+  }
+  .at-grupo[data-at="AT1"] .at-pill { background: var(--at1); }
+  .at-grupo[data-at="AT2"] .at-pill { background: var(--at2); }
+  .at-grupo[data-at="AT3"] .at-pill { background: var(--at3); }
+  .at-grupo[data-at="AT4"] .at-pill { background: var(--at4); }
+  .at-grupo[data-at="AT5"] .at-pill { background: var(--at5); }
+  .at-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
+  .at-meta {
+    margin-left: auto;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+  }
+  .leg-lista { padding: 6px 0; }
+  .leg-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 18px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.12s;
+    cursor: pointer;
+  }
+  .leg-item:first-child { border-top: none; }
+  .leg-item:hover { background: rgba(255,255,255,0.03); }
+  .leg-item.selecionada { background: rgba(192,39,15,0.06); }
+  .leg-check {
+    width: 18px; height: 18px; flex-shrink: 0;
+    border-radius: 4px; border: 1px solid var(--cinza-borda);
+    background: var(--carvao);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .leg-item.selecionada .leg-check {
+    background: var(--vermelho); border-color: var(--vermelho);
+  }
+  .leg-check svg { width: 11px; height: 11px; opacity: 0; }
+  .leg-item.selecionada .leg-check svg { opacity: 1; }
+  .leg-info { flex: 1; min-width: 0; }
+  .leg-nome { font-size: 13px; color: var(--branco); margin-bottom: 2px; }
+  .leg-descricao { font-size: 11px; color: var(--cinza-texto); line-height: 1.4; }
+  .leg-meta-min {
+    flex-shrink: 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+    padding: 4px 10px;
+    background: var(--carvao);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 16px;
+    min-width: 84px; text-align: center;
+  }
+  .leg-item.selecionada .leg-meta-min {
+    color: #F8F6F2; border-color: var(--vermelho);
+    background: rgba(192,39,15,0.1);
+  }
+
+  /* PASSO 2 — tabela de prioridade */
+  .prio-tabela {
+    width: 100%; border-collapse: collapse;
+    background: var(--cinza-escuro);
+  }
+  .prio-tabela th {
+    text-align: left; padding: 10px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.08em;
+    color: var(--cinza-texto); text-transform: uppercase;
+    border-bottom: 1px solid var(--cinza-borda);
+    font-weight: 500;
+  }
+  .prio-tabela td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 13px; vertical-align: middle;
+  }
+  .prio-tabela tr:last-child td { border-bottom: none; }
+  .prio-tabela .at-tag {
+    display: inline-block; padding: 2px 8px;
+    border-radius: 12px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.06em;
+  }
+  .at-tag[data-at="AT1"] { background: rgba(192,39,15,0.15); color: #E0866E; border: 1px solid rgba(192,39,15,0.3); }
+  .at-tag[data-at="AT2"] { background: rgba(211,139,45,0.15); color: #EBC57D; border: 1px solid rgba(211,139,45,0.3); }
+  .at-tag[data-at="AT3"] { background: rgba(24,95,165,0.15); color: #85B7EB; border: 1px solid rgba(24,95,165,0.3); }
+  .at-tag[data-at="AT4"] { background: rgba(63,142,95,0.15); color: #88C99F; border: 1px solid rgba(63,142,95,0.3); }
+  .at-tag[data-at="AT5"] { background: rgba(131,89,184,0.15); color: #B398DA; border: 1px solid rgba(131,89,184,0.3); }
+  .prio-grupo {
+    display: inline-flex; border: 1px solid var(--cinza-borda);
+    border-radius: 6px; overflow: hidden;
+  }
+  .prio-opt {
+    background: transparent; color: var(--cinza-texto);
+    border: none; padding: 6px 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    cursor: pointer; border-right: 1px solid var(--cinza-borda);
+    transition: all 0.12s;
+  }
+  .prio-opt:last-child { border-right: none; }
+  .prio-opt:hover { background: var(--cinza-medio); color: var(--branco); }
+  .prio-opt.ativo[data-prio="reforco"] { background: rgba(192,39,15,0.18); color: #E0866E; }
+  .prio-opt.ativo[data-prio="atencao"] { background: rgba(255,255,255,0.06); color: var(--branco); }
+  .prio-opt.ativo[data-prio="dominio"] { background: rgba(63,142,95,0.18); color: #88C99F; }
+  .prio-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--branco);
+  }
+  .prio-meta.changed { color: #EBC57D; }
+
+  /* SUMMARY footer */
+  .summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.25rem;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+  .summary-stat { font-size: 12px; color: var(--cinza-texto); }
+  .summary-stat strong {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--branco); font-size: 18px;
+    letter-spacing: 0.04em; margin-right: 4px;
+  }
+
+  /* ACTIONS */
+  .actions {
+    display: flex; justify-content: space-between; gap: 12px;
+    margin-top: 1.5rem;
+  }
+  .btn {
+    padding: 10px 22px; font-size: 13px; cursor: pointer;
+    font-family: 'Inter', sans-serif; font-weight: 500;
+    border-radius: 6px; transition: all 0.15s;
+    border: 1px solid var(--cinza-borda);
+    background: transparent; color: var(--cinza-texto);
+  }
+  .btn:hover { border-color: #555; color: var(--branco); }
+  .btn-primary {
+    background: var(--vermelho); color: #fff;
+    border-color: var(--vermelho);
+  }
+  .btn-primary:hover { background: var(--vermelho-escuro); border-color: var(--vermelho-escuro); color: #fff; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary:disabled:hover { background: var(--vermelho); border-color: var(--vermelho); }
+
+  /* LOADING / EMPTY */
+  .loading { text-align: center; padding: 3rem; color: var(--cinza-texto); font-size: 13px; }
+  .empty {
+    text-align: center; padding: 2rem;
+    color: var(--cinza-texto); font-size: 13px;
+  }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    padding: 12px 20px; border-radius: 8px;
+    font-size: 13px; z-index: 100;
+    border: 1px solid var(--cinza-borda);
+    background: var(--cinza-escuro); color: var(--branco);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    display: none;
+  }
+  .toast.show { display: block; }
+  .toast.err { border-color: #E24B4A; color: #FFB4B0; }
+  .toast.ok { border-color: #7DD99A; color: #BFEBC9; }
+
+  /* ============================================================
+     CICLO ATIVO — listagem de blocos + barra de ações
+     ============================================================ */
+  .ciclo-hero {
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 10px; padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .ciclo-hero-info { flex: 1; min-width: 0; }
+  .ciclo-hero-nome {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 0.04em;
+    color: var(--branco); margin-bottom: 4px;
+  }
+  .ciclo-hero-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+    letter-spacing: 0.06em;
+  }
+  .ciclo-hero-actions { display: flex; gap: 10px; }
+
+  /* Rodada concluída — celebratório */
+  .rodada-card {
+    background: linear-gradient(180deg, rgba(63,142,95,0.10) 0%, var(--cinza-escuro) 80%);
+    border: 1px solid rgba(63,142,95,0.45);
+    border-radius: 12px;
+    padding: 1.5rem 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+  .rodada-card-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; letter-spacing: 0.04em;
+    color: #BFEBC9; margin-bottom: 4px;
+  }
+  .rodada-card-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+    letter-spacing: 0.06em; margin-bottom: 1.25rem;
+  }
+  .rodada-stats-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+  @media (max-width: 700px) { .rodada-stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  .rodada-stat {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px; padding: 12px 14px;
+  }
+  .rodada-stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; color: var(--branco);
+    line-height: 1; margin-bottom: 4px;
+  }
+  .rodada-stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .rodada-breakdown {
+    background: rgba(0,0,0,0.18);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px; padding: 12px 14px;
+    margin-bottom: 1.25rem;
+  }
+  .rodada-breakdown-titulo {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .rodada-at-row {
+    display: grid; grid-template-columns: 36px 1fr auto;
+    gap: 10px; align-items: center;
+    padding: 4px 0;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  }
+  .rodada-at-row .at-tag {
+    text-align: center; font-family: 'Bebas Neue', sans-serif;
+    font-size: 12px; letter-spacing: 0.04em;
+    padding: 2px 0; border-radius: 4px; color: #fff;
+  }
+  .rodada-at-row .at-tag[data-at="AT1"] { background: var(--at1); }
+  .rodada-at-row .at-tag[data-at="AT2"] { background: var(--at2); }
+  .rodada-at-row .at-tag[data-at="AT3"] { background: var(--at3); }
+  .rodada-at-row .at-tag[data-at="AT4"] { background: var(--at4); }
+  .rodada-at-row .at-tag[data-at="AT5"] { background: var(--at5); }
+  .rodada-at-bar {
+    height: 6px; background: rgba(255,255,255,0.06);
+    border-radius: 3px; overflow: hidden;
+  }
+  .rodada-at-bar > div { height: 100%; background: var(--vermelho); }
+  .rodada-at-min { color: var(--cinza-texto); min-width: 60px; text-align: right; }
+  .rodada-card-actions {
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .btn-iniciar-rodada {
+    background: #3F8E5F; color: #fff; border: none;
+    padding: 11px 20px; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    transition: background 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .btn-iniciar-rodada:hover { background: #4DA670; }
+  .btn-iniciar-rodada:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-foco {
+    background: var(--vermelho); color: #fff; border: none;
+    padding: 10px 18px; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    transition: background 0.15s;
+  }
+  .btn-foco:hover { background: var(--vermelho-escuro); }
+  .btn-foco svg { width: 14px; height: 14px; }
+  .btn-ghost {
+    background: transparent; color: var(--cinza-texto);
+    border: 1px solid var(--cinza-borda);
+    padding: 10px 16px; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 13px;
+    cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-ghost:hover { border-color: #555; color: var(--branco); }
+  .btn-ghost svg { width: 13px; height: 13px; }
+
+  .blocos-lista { display: grid; gap: 10px; }
+  .bloco-card {
+    display: grid; grid-template-columns: auto 56px 1fr auto auto;
+    gap: 14px; align-items: center;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-left: 3px solid transparent;
+    border-radius: 10px;
+    padding: 14px 18px;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .bloco-card.proximo { border-left-color: var(--vermelho); background: rgba(192,39,15,0.04); }
+  .bloco-card.revisada { opacity: 0.55; }
+  .bloco-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+    min-width: 24px;
+  }
+  .bloco-at-pill {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 14px; letter-spacing: 0.04em;
+    padding: 3px 0; border-radius: 5px; text-align: center;
+    color: #fff;
+  }
+  .bloco-at-pill[data-at="AT1"] { background: var(--at1); }
+  .bloco-at-pill[data-at="AT2"] { background: var(--at2); }
+  .bloco-at-pill[data-at="AT3"] { background: var(--at3); }
+  .bloco-at-pill[data-at="AT4"] { background: var(--at4); }
+  .bloco-at-pill[data-at="AT5"] { background: var(--at5); }
+  .bloco-info-nome { font-size: 14px; color: var(--branco); font-weight: 500; margin-bottom: 2px; }
+  .bloco-info-progresso {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+  }
+  .bloco-progress-wrap {
+    margin-top: 6px; height: 4px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 3px; overflow: hidden;
+  }
+  .bloco-progress-bar {
+    height: 100%; background: var(--vermelho);
+    transition: width 0.4s;
+  }
+  .bloco-card.revisada .bloco-progress-bar { background: #2F6F44; }
+  .bloco-status-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.06em;
+    padding: 4px 10px; border-radius: 12px;
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto);
+    text-transform: uppercase;
+  }
+  .bloco-status-pill[data-status="em_andamento"] { color: #EBC57D; border-color: rgba(211,139,45,0.4); }
+  .bloco-status-pill[data-status="estudada"]    { color: #85B7EB; border-color: rgba(24,95,165,0.4); }
+  .bloco-status-pill[data-status="revisada"]    { color: #88C99F; border-color: rgba(63,142,95,0.4); }
+  .bloco-cta {
+    background: transparent; color: var(--cinza-texto);
+    border: 1px solid var(--cinza-borda);
+    padding: 7px 14px; border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.06em; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .bloco-cta:hover { border-color: var(--vermelho); color: var(--vermelho); }
+  .bloco-card.proximo .bloco-cta {
+    background: var(--vermelho); color: #fff;
+    border-color: var(--vermelho); font-weight: 600;
+  }
+  .bloco-card.proximo .bloco-cta:hover { background: var(--vermelho-escuro); }
+  .bloco-acoes {
+    display: flex; flex-direction: column; gap: 6px; align-items: stretch;
+  }
+  .bloco-acao-secundaria {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    background: transparent; color: var(--cinza-texto);
+    border: 1px solid var(--cinza-borda);
+    padding: 5px 10px; border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.05em; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .bloco-acao-secundaria:hover { border-color: #185FA5; color: #85B7EB; }
+  .bloco-acao-secundaria svg { flex-shrink: 0; }
+
+  /* ============================================================
+     POMODORO OVERLAY
+     ============================================================ */
+  .pomo-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(8,8,8,0.92);
+    backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center;
+  }
+  .pomo-overlay.show { display: flex; }
+  .pomo-painel {
+    width: 92%; max-width: 540px;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 14px; padding: 2rem;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .pomo-close {
+    position: absolute; top: 14px; right: 14px;
+    background: transparent; border: none;
+    color: var(--cinza-texto); cursor: pointer;
+    width: 28px; height: 28px; border-radius: 4px;
+    transition: all 0.15s;
+  }
+  .pomo-close:hover { background: var(--cinza-medio); color: var(--branco); }
+  .pomo-close svg { width: 16px; height: 16px; }
+  .pomo-header { text-align: center; margin-bottom: 1rem; }
+  .pomo-foco-em {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .pomo-legislacao {
+    font-size: 14px; color: var(--branco);
+    margin-bottom: 4px; font-weight: 500;
+  }
+  .pomo-at-tag {
+    display: inline-block; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; padding: 2px 8px; border-radius: 4px;
+    color: #fff;
+  }
+  .pomo-timer {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 92px; letter-spacing: 0.04em;
+    color: var(--branco); text-align: center;
+    line-height: 1; margin: 1rem 0 0.25rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .pomo-timer.alerta { color: var(--vermelho); }
+  .pomo-state {
+    text-align: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 1.25rem;
+  }
+  .pomo-duracoes {
+    display: flex; justify-content: center; gap: 8px;
+    margin-bottom: 1rem; flex-wrap: wrap;
+  }
+  .pomo-dur-opt {
+    background: transparent; border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); padding: 6px 12px;
+    border-radius: 6px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; cursor: pointer; transition: all 0.15s;
+  }
+  .pomo-dur-opt:hover { border-color: #555; color: var(--branco); }
+  .pomo-dur-opt.ativo {
+    background: rgba(192,39,15,0.18);
+    border-color: var(--vermelho); color: #E0866E;
+  }
+  .pomo-actions {
+    display: flex; justify-content: center; gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .pomo-btn-play {
+    background: var(--vermelho); color: #fff; border: none;
+    padding: 12px 28px; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+    display: inline-flex; align-items: center; gap: 8px;
+    letter-spacing: 0.04em;
+  }
+  .pomo-btn-play:hover { background: var(--vermelho-escuro); }
+  .pomo-btn-play svg { width: 13px; height: 13px; }
+  .pomo-extra {
+    border-top: 1px solid var(--cinza-borda);
+    padding-top: 1rem; display: flex;
+    justify-content: space-between; align-items: center;
+    gap: 10px; flex-wrap: wrap;
+  }
+  .pomo-lofi-toggle {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--cinza-texto);
+    cursor: pointer; user-select: none;
+  }
+  .pomo-lofi-toggle input { accent-color: var(--vermelho); }
+  .pomo-tempo-hoje {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--cinza-texto);
+  }
+  .pomo-tempo-hoje strong { color: var(--branco); font-size: 13px; }
+  .pomo-questoes-link { display: flex; justify-content: center; margin-top: 12px; }
+  .pomo-lofi-frame {
+    margin-top: 1rem; width: 100%; height: 0; overflow: hidden;
+    border-radius: 8px; border: 1px solid var(--cinza-borda);
+    transition: height 0.3s;
+  }
+  .pomo-lofi-frame.show { height: 220px; }
+  .pomo-lofi-frame iframe { width: 100%; height: 100%; border: 0; }
+
+  /* ============================================================
+     MODAL DE SESSÃO MANUAL
+     ============================================================ */
+  .manual-overlay {
+    position: fixed; inset: 0; z-index: 210;
+    background: rgba(8,8,8,0.92);
+    backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center;
+  }
+  .manual-overlay.show { display: flex; }
+  .manual-painel {
+    width: 92%; max-width: 480px;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 14px; padding: 1.75rem;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .manual-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.04em;
+    color: var(--branco); margin-bottom: 4px;
+  }
+  .manual-sub {
+    font-size: 12px; color: var(--cinza-texto);
+    margin-bottom: 1.25rem;
+  }
+  .manual-field { margin-bottom: 0.9rem; }
+  .manual-field label {
+    display: block; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .manual-field select,
+  .manual-field input {
+    width: 100%; background: var(--carvao);
+    border: 1px solid var(--cinza-borda); border-radius: 6px;
+    color: var(--branco); padding: 9px 11px;
+    font-family: 'Inter', sans-serif; font-size: 13px;
+    transition: border-color 0.15s;
+  }
+  .manual-field select:focus,
+  .manual-field input:focus {
+    outline: none; border-color: var(--vermelho);
+  }
+  .manual-field .hint {
+    font-size: 11px; color: var(--cinza-texto);
+    margin-top: 4px;
+  }
+  .manual-acoes {
+    display: flex; justify-content: flex-end; gap: 8px;
+    margin-top: 1.25rem;
+  }
+  .manual-btn-cancelar {
+    background: transparent; border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); padding: 9px 16px; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 12px; cursor: pointer;
+    transition: all 0.15s;
+  }
+  .manual-btn-cancelar:hover { color: var(--branco); border-color: #555; }
+  .manual-btn-salvar {
+    background: var(--vermelho); border: none;
+    color: #fff; padding: 9px 18px; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: background 0.15s;
+    letter-spacing: 0.03em;
+  }
+  .manual-btn-salvar:hover { background: var(--vermelho-escuro); }
+  .manual-btn-salvar:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  .btn-manual-abrir {
+    background: transparent; border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); padding: 7px 12px; border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-manual-abrir:hover { color: var(--branco); border-color: #555; }
+  .btn-manual-abrir svg { width: 12px; height: 12px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 720px) {
+    .layout { flex-direction: column; }
+    .sidebar { width: 100%; flex-direction: row; align-items: center; padding: 0 1rem; }
+    .sidebar-usuario, .sidebar-nav { display: none; }
+    .sidebar-logo { border-bottom: none; padding: 0.75rem 0; }
+    .sidebar-footer { border-top: none; padding: 0 0 0 auto; margin-left: auto; }
+    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
+    .topbar { padding: 0 1rem; }
+    .conteudo { padding: 1rem; }
+    .stepper { flex-direction: column; }
+    .step { border-right: none; border-bottom: 1px solid var(--cinza-borda); }
+    .step:last-child { border-bottom: none; }
+    .config-row { grid-template-columns: 1fr; }
+    .leg-item { flex-wrap: wrap; }
+    .leg-meta-min { margin-left: auto; }
+    .prio-tabela { font-size: 12px; }
+    .prio-tabela th, .prio-tabela td { padding: 8px; }
+    .bloco-card { grid-template-columns: auto 48px 1fr; }
+    .bloco-status-pill, .bloco-cta, .bloco-acoes { grid-column: 2 / -1; justify-self: start; }
+    .bloco-acoes { flex-direction: row; flex-wrap: wrap; }
+    .pomo-timer { font-size: 68px; }
+    .pomo-painel { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
+    </div>
+    <div class="sidebar-usuario">
+      <div class="usuario-nome" id="sidebar-nome">—</div>
+      <div class="usuario-status">
+        <span class="status-dot"></span>
+        <span id="sidebar-status-txt">Carregando…</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-label">Menu</div>
+      <a class="nav-item" href="/dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a class="nav-item" href="/area-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        Papirar
+      </a>
+      <a class="nav-item ativo" href="/ciclo-estudos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        Ciclo de Estudos
+      </a>
+      <a class="nav-item" href="/simulados">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Simulados Oficiais
+      </a>
+      <a class="nav-item" href="/ranking">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
+        Ranking
+      </a>
+      <a class="nav-item" href="/flashcards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+        Flashcards
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-sair" onclick="PBM.Auth.logout()">Encerrar sessão</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Ciclo de Estudos</span>
+      <div class="topbar-right">
+        <span class="topbar-mono" id="curso-label">—</span>
+        <button class="btn-logout-top" onclick="PBM.Auth.logout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sair
+        </button>
+      </div>
+    </div>
+
+    <div class="conteudo">
+      <!-- LOADING inicial enquanto decide qual view mostrar -->
+      <div id="boot-loading" class="loading">Carregando ciclo…</div>
+
+      <!-- CICLO ATIVO (visível quando o aluno já tem um ciclo) -->
+      <section id="ciclo-ativo-view" style="display:none">
+        <div class="page-header">
+          <h1 class="page-titulo" id="ca-nome">Meu Ciclo</h1>
+          <p class="page-sub" id="ca-meta">—</p>
+        </div>
+
+        <div class="ciclo-hero" id="ca-hero">
+          <div class="ciclo-hero-info">
+            <div class="ciclo-hero-nome">Próximo bloco</div>
+            <div class="ciclo-hero-meta" id="ca-proximo-resumo">—</div>
+          </div>
+          <div class="ciclo-hero-actions">
+            <button class="btn-foco" id="btn-iniciar-pomodoro">
+              <svg id="btn-foco-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span id="btn-foco-label">Iniciar Pomodoro</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Painel de Rodada Concluída (visível só quando todos os blocos estão revisados) -->
+        <div class="rodada-card" id="ca-rodada-concluida" style="display:none">
+          <div class="rodada-card-titulo">🎯 Rodada concluída</div>
+          <div class="rodada-card-sub" id="rc-sub">—</div>
+          <div class="rodada-stats-grid">
+            <div class="rodada-stat">
+              <div class="rodada-stat-num" id="rc-tempo-total">0</div>
+              <div class="rodada-stat-label">min estudados</div>
+            </div>
+            <div class="rodada-stat">
+              <div class="rodada-stat-num" id="rc-sessoes">0</div>
+              <div class="rodada-stat-label">sessões registradas</div>
+            </div>
+            <div class="rodada-stat">
+              <div class="rodada-stat-num" id="rc-metas-batidas">0</div>
+              <div class="rodada-stat-label">metas batidas</div>
+            </div>
+            <div class="rodada-stat">
+              <div class="rodada-stat-num" id="rc-blocos-total">0</div>
+              <div class="rodada-stat-label">blocos revisados</div>
+            </div>
+          </div>
+          <div class="rodada-breakdown">
+            <div class="rodada-breakdown-titulo">Tempo por área temática</div>
+            <div id="rc-at-rows"></div>
+          </div>
+          <div class="rodada-card-actions">
+            <button class="btn-iniciar-rodada" id="btn-iniciar-rodada">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+              <span id="btn-iniciar-rodada-label">Iniciar nova rodada</span>
+            </button>
+            <span class="rodada-card-sub" style="margin:0">O histórico de tempo é preservado.</span>
+          </div>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:14px 18px;border-bottom:1px solid var(--cinza-borda);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div class="card-titulo" style="margin:0">Blocos da rodada</div>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <div class="ciclo-hero-meta" id="ca-blocos-resumo">—</div>
+              <button class="btn-manual-abrir" onclick="abrirModalManual()" title="Registrar tempo estudado fora do Pomodoro">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Registrar sessão manual
+              </button>
+            </div>
+          </div>
+          <div class="blocos-lista" id="ca-blocos-lista" style="padding:10px;"></div>
+        </div>
+      </section>
+
+      <!-- WIZARD (visível quando o aluno ainda não tem ciclo) -->
+      <section id="wizard-view" style="display:none">
+      <div class="page-header">
+        <h1 class="page-titulo">Monte Seu Ciclo</h1>
+        <p class="page-sub">
+          Selecione as legislações que você quer estudar e o sistema distribui o tempo
+          proporcionalmente ao peso de cada uma na prova. Você ajusta a prioridade
+          de cada bloco no passo 2.
+        </p>
+      </div>
+
+      <div class="stepper">
+        <div class="step ativo" id="step-1">
+          <span class="step-num">1</span>
+          <span>Legislações + horas/dia</span>
+        </div>
+        <div class="step" id="step-2">
+          <span class="step-num">2</span>
+          <span>Prioridade por bloco</span>
+        </div>
+        <div class="step" id="step-3">
+          <span class="step-num">3</span>
+          <span>Iniciar</span>
+        </div>
+      </div>
+
+      <!-- PASSO 1 -->
+      <section id="passo-1">
+        <div class="card">
+          <div class="card-titulo">Configuração</div>
+          <div class="config-row">
+            <div class="config-field">
+              <label for="horas-dia">Horas de estudo por dia</label>
+              <input type="number" id="horas-dia" min="0.5" max="24" step="0.5" value="2">
+              <div class="hint">Editável depois — recalcula as metas automaticamente</div>
+            </div>
+            <div class="config-field">
+              <label for="nome-ciclo">Nome do ciclo (opcional)</label>
+              <input type="text" id="nome-ciclo" maxlength="60" placeholder="Meu Ciclo">
+            </div>
+          </div>
+        </div>
+
+        <div id="legislacoes-wrap">
+          <div class="loading" id="loading-legs">Carregando legislações…</div>
+        </div>
+
+        <div class="summary" id="summary-1" style="display:none">
+          <div class="summary-stat"><strong id="qtd-selecionadas">0</strong> blocos selecionados</div>
+          <div class="summary-stat"><strong id="tempo-total">0</strong> min/dia distribuídos</div>
+        </div>
+
+        <div class="actions">
+          <div></div>
+          <button class="btn btn-primary" id="btn-prox-1" disabled onclick="irParaPasso2()">Próximo</button>
+        </div>
+      </section>
+
+      <!-- PASSO 2 -->
+      <section id="passo-2" style="display:none">
+        <div class="card">
+          <div class="card-titulo">Prioridade por bloco</div>
+          <p style="font-size:13px;color:var(--cinza-texto);margin-bottom:0.5rem">
+            <strong style="color:#E0866E">Reforço (★★★)</strong> aumenta o tempo dedicado;
+            <strong style="color:#88C99F">Domínio (★)</strong> reduz.
+            Sem prioridade, o sistema distribui igualmente.
+          </p>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="prio-tabela">
+            <thead>
+              <tr>
+                <th>Legislação</th>
+                <th>AT</th>
+                <th>% prova</th>
+                <th>Meta</th>
+                <th>Prioridade</th>
+              </tr>
+            </thead>
+            <tbody id="prio-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="actions">
+          <button class="btn" onclick="voltarParaPasso1()">← Voltar</button>
+          <button class="btn btn-primary" onclick="iniciarCiclo()" id="btn-iniciar">Iniciar Ciclo</button>
+        </div>
+      </section>
+      </section>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- POMODORO OVERLAY -->
+<div class="pomo-overlay" id="pomo-overlay" role="dialog" aria-modal="true">
+  <div class="pomo-painel">
+    <button class="pomo-close" onclick="fecharPomodoro()" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="pomo-header">
+      <div class="pomo-foco-em">Foco em</div>
+      <div class="pomo-legislacao" id="pomo-legislacao">—</div>
+      <span class="pomo-at-tag" id="pomo-at-tag" style="background:var(--at1);">—</span>
+    </div>
+    <div class="pomo-timer" id="pomo-timer">25:00</div>
+    <div class="pomo-state" id="pomo-state">Pronto</div>
+    <div class="pomo-duracoes" id="pomo-duracoes">
+      <button class="pomo-dur-opt" data-dur="15">15 min</button>
+      <button class="pomo-dur-opt ativo" data-dur="25">25 min</button>
+      <button class="pomo-dur-opt" data-dur="45">45 min</button>
+      <button class="pomo-dur-opt" data-dur="60">60 min</button>
+    </div>
+    <div class="pomo-actions">
+      <button class="pomo-btn-play" id="pomo-btn-play" onclick="togglePomodoro()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        <span id="pomo-btn-label">INICIAR</span>
+      </button>
+    </div>
+    <div class="pomo-questoes-link">
+      <button type="button" class="bloco-acao-secundaria" id="pomo-btn-questoes">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+        Resolver questões deste bloco
+      </button>
+    </div>
+    <div class="pomo-extra">
+      <label class="pomo-lofi-toggle">
+        <input type="checkbox" id="pomo-lofi-check" onchange="toggleLofi()">
+        <span>Música lo-fi</span>
+      </label>
+      <div class="pomo-tempo-hoje">Hoje: <strong id="pomo-tempo-hoje">0</strong>/<span id="pomo-tempo-meta">0</span> min</div>
+    </div>
+    <div class="pomo-lofi-frame" id="pomo-lofi-frame">
+      <!-- iframe injetado on-demand pra não consumir banda quando desligado -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SESSÃO MANUAL -->
+<div class="manual-overlay" id="manual-overlay" role="dialog" aria-modal="true">
+  <div class="manual-painel">
+    <button class="pomo-close" onclick="fecharModalManual()" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="manual-titulo">Registrar sessão manual</div>
+    <div class="manual-sub">Registra tempo estudado fora do Pomodoro (livro, anotações, aula). Soma ao histórico do bloco.</div>
+
+    <div class="manual-field">
+      <label for="manual-bloco">Bloco</label>
+      <select id="manual-bloco"></select>
+    </div>
+
+    <div class="manual-field">
+      <label for="manual-duracao">Duração (minutos)</label>
+      <input type="number" id="manual-duracao" min="1" max="600" step="1" placeholder="Ex: 30">
+      <div class="hint">Entre 1 e 600 minutos.</div>
+    </div>
+
+    <div class="manual-field">
+      <label for="manual-data">Data do estudo</label>
+      <input type="date" id="manual-data">
+      <div class="hint">Por padrão, hoje. Pode retroagir até 1 ano.</div>
+    </div>
+
+    <div class="manual-acoes">
+      <button class="manual-btn-cancelar" type="button" onclick="fecharModalManual()">Cancelar</button>
+      <button class="manual-btn-salvar" type="button" id="manual-btn-salvar" onclick="salvarSessaoManual()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js"></script>
+<script>
+// ============================================================
+// Constantes (espelhadas do backend src/routes/ciclo.js)
+// ============================================================
+const DISTRIBUICAO_EDITAL = {
+  ctsp: { AT1: 14, AT2: 8,  AT3: 14, AT4: 12, AT5: 12, total: 60 },
+  cba:  { AT1: 7,  AT2: 5,  AT3: 9,  AT4: 8,  AT5: 11, total: 40 },
+};
+
+const AT_NOMES = {
+  AT1: 'Segurança contra incêndios',
+  AT2: 'Combate a incêndios',
+  AT3: 'Buscas, salvamentos e APH',
+  AT4: 'Direito institucional e militar',
+  AT5: 'Normas administrativas',
+};
+
+// ============================================================
+// Estado
+// ============================================================
+const estado = {
+  curso: 'ctsp',
+  manifesto: [],       // array de { id, nome, area_tematica, curso, descricao }
+  selecionadas: new Set(), // ids selecionados (Passo 1)
+  prioridades: {},     // { legId: 'reforco' | 'atencao' | 'dominio' | null }
+  horasDia: 2,
+};
+
+// ============================================================
+// Algoritmo determinístico de meta_minutos
+// (espelha src/routes/ciclo.js — calcularMetaMinutos)
+// ============================================================
+function multiplicadorPorPrioridade(p) {
+  if (p === 'reforco') return 1.5;
+  if (p === 'dominio') return 0.8;
+  return 1.0;
+}
+
+function pctDaProvaPorAT(curso, area) {
+  const d = DISTRIBUICAO_EDITAL[curso];
+  if (!d) return 0;
+  return (d[area] || 0) / d.total;
+}
+
+// Calcula metas para TODAS as legislações selecionadas, agrupadas por AT.
+// Retorna { [legId]: { meta_minutos, pct_da_prova, area } }
+function calcularMetas() {
+  const result = {};
+  const porAT = {};
+  for (const id of estado.selecionadas) {
+    const leg = estado.manifesto.find(l => l.id === id);
+    if (!leg) continue;
+    if (!porAT[leg.area_tematica]) porAT[leg.area_tematica] = [];
+    porAT[leg.area_tematica].push(leg);
+  }
+  for (const [area, legs] of Object.entries(porAT)) {
+    const pct = pctDaProvaPorAT(estado.curso, area);
+    const tempoBaseAT = Number(estado.horasDia) * 60 * pct;
+    const qtdLegs = legs.length;
+    const pesos = legs.map(l => (1 / qtdLegs) * multiplicadorPorPrioridade(estado.prioridades[l.id]));
+    const soma = pesos.reduce((s, p) => s + p, 0) || 1;
+    legs.forEach((l, i) => {
+      const pesoNorm = pesos[i] / soma;
+      const meta = Math.max(10, Math.min(120, Math.round(tempoBaseAT * pesoNorm)));
+      result[l.id] = { meta_minutos: meta, pct_da_prova: pct, area };
+    });
+  }
+  return result;
+}
+
+// ============================================================
+// Render Passo 1: lista agrupada por AT com checkboxes
+// ============================================================
+function renderPasso1() {
+  const wrap = document.getElementById('legislacoes-wrap');
+  // Filtra manifesto pelo curso do aluno
+  const visiveis = estado.manifesto.filter(l => l.curso === estado.curso || l.curso === 'ambos');
+  if (!visiveis.length) {
+    wrap.innerHTML = '<div class="empty">Nenhuma legislação disponível para este curso.</div>';
+    return;
+  }
+  // Agrupa por AT
+  const porAT = {};
+  visiveis.forEach(l => {
+    if (!porAT[l.area_tematica]) porAT[l.area_tematica] = [];
+    porAT[l.area_tematica].push(l);
+  });
+  const metas = calcularMetas();
+
+  const ordemAT = ['AT1','AT2','AT3','AT4','AT5'];
+  const html = ordemAT.filter(at => porAT[at]).map(at => {
+    const dist = DISTRIBUICAO_EDITAL[estado.curso];
+    const qtdQ = dist[at] || 0;
+    const pct = qtdQ / dist.total;
+    const legs = porAT[at];
+    const legsHTML = legs.map(l => {
+      const sel = estado.selecionadas.has(l.id);
+      const meta = metas[l.id]?.meta_minutos;
+      return `
+        <div class="leg-item ${sel ? 'selecionada' : ''}" data-id="${escapeHtml(l.id)}" onclick="toggleLeg('${escapeHtml(l.id)}')">
+          <span class="leg-check">
+            <svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <div class="leg-info">
+            <div class="leg-nome">${escapeHtml(l.nome)}</div>
+            <div class="leg-descricao">${escapeHtml(l.descricao || '')}</div>
+          </div>
+          <div class="leg-meta-min">${sel ? `${meta} min/dia` : '—'}</div>
+        </div>
+      `;
+    }).join('');
+    return `
+      <div class="at-grupo" data-at="${at}">
+        <div class="at-grupo-header">
+          <span class="at-pill">${at}</span>
+          <span class="at-titulo">${AT_NOMES[at]}</span>
+          <span class="at-meta">${qtdQ} questões · ${(pct*100).toFixed(0)}% da prova</span>
+        </div>
+        <div class="leg-lista">${legsHTML}</div>
+      </div>
+    `;
+  }).join('');
+  wrap.innerHTML = html;
+  atualizarSummary();
+}
+
+function atualizarSummary() {
+  const qtd = estado.selecionadas.size;
+  document.getElementById('qtd-selecionadas').textContent = qtd;
+  const metas = calcularMetas();
+  const total = Object.values(metas).reduce((s, m) => s + m.meta_minutos, 0);
+  document.getElementById('tempo-total').textContent = total;
+  document.getElementById('summary-1').style.display = qtd > 0 ? 'flex' : 'none';
+  document.getElementById('btn-prox-1').disabled = qtd < 2;
+}
+
+function toggleLeg(id) {
+  if (estado.selecionadas.has(id)) estado.selecionadas.delete(id);
+  else estado.selecionadas.add(id);
+  renderPasso1();
+}
+
+// Listener de horas/dia
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('horas-dia').addEventListener('input', e => {
+    const v = Number(e.target.value);
+    if (Number.isFinite(v) && v > 0 && v <= 24) {
+      estado.horasDia = v;
+      renderPasso1();
+    }
+  });
+});
+
+// ============================================================
+// Render Passo 2: tabela de prioridade
+// ============================================================
+function irParaPasso2() {
+  if (estado.selecionadas.size < 2) {
+    toast('Selecione pelo menos 2 legislações', 'err');
+    return;
+  }
+  document.getElementById('passo-1').style.display = 'none';
+  document.getElementById('passo-2').style.display = 'block';
+  document.getElementById('step-1').classList.remove('ativo');
+  document.getElementById('step-1').classList.add('feito');
+  document.getElementById('step-2').classList.add('ativo');
+  renderPasso2();
+}
+
+function voltarParaPasso1() {
+  document.getElementById('passo-2').style.display = 'none';
+  document.getElementById('passo-1').style.display = 'block';
+  document.getElementById('step-2').classList.remove('ativo');
+  document.getElementById('step-1').classList.remove('feito');
+  document.getElementById('step-1').classList.add('ativo');
+}
+
+function renderPasso2() {
+  const tbody = document.getElementById('prio-tbody');
+  const metas = calcularMetas();
+  // Ordena por AT depois por nome
+  const ordemAT = { AT1: 1, AT2: 2, AT3: 3, AT4: 4, AT5: 5 };
+  const legs = [...estado.selecionadas]
+    .map(id => estado.manifesto.find(l => l.id === id))
+    .filter(Boolean)
+    .sort((a, b) => (ordemAT[a.area_tematica] - ordemAT[b.area_tematica]) || a.nome.localeCompare(b.nome));
+
+  tbody.innerHTML = legs.map(l => {
+    const m = metas[l.id];
+    const prio = estado.prioridades[l.id] || null;
+    const opts = ['reforco', 'atencao', 'dominio'].map(p => {
+      const label = p === 'reforco' ? '★★★' : (p === 'atencao' ? '★★' : '★');
+      const ativo = prio === p ? 'ativo' : '';
+      return `<button class="prio-opt ${ativo}" data-prio="${p}" onclick="setPrioridade('${escapeHtml(l.id)}','${p}')">${label}</button>`;
+    }).join('');
+    return `
+      <tr data-leg="${escapeHtml(l.id)}">
+        <td>${escapeHtml(l.nome)}</td>
+        <td><span class="at-tag" data-at="${l.area_tematica}">${l.area_tematica}</span></td>
+        <td><span class="prio-meta">${(m.pct_da_prova*100).toFixed(0)}%</span></td>
+        <td><span class="prio-meta" data-meta="${l.id}">${m.meta_minutos} min</span></td>
+        <td><div class="prio-grupo">${opts}</div></td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function setPrioridade(legId, p) {
+  estado.prioridades[legId] = estado.prioridades[legId] === p ? null : p;
+  renderPasso2();
+}
+
+// ============================================================
+// Iniciar Ciclo (POST /api/ciclo)
+// ============================================================
+async function iniciarCiclo() {
+  const btn = document.getElementById('btn-iniciar');
+  btn.disabled = true;
+  btn.textContent = 'Salvando…';
+
+  const metas = calcularMetas();
+  const ordemAT = { AT1: 1, AT2: 2, AT3: 3, AT4: 4, AT5: 5 };
+  const legs = [...estado.selecionadas]
+    .map(id => estado.manifesto.find(l => l.id === id))
+    .filter(Boolean)
+    .sort((a, b) => (ordemAT[a.area_tematica] - ordemAT[b.area_tematica]) || a.nome.localeCompare(b.nome));
+
+  // ordem: intercala ATs para começar variando (AT1, AT3, AT2, AT4, AT5)
+  const ordemIntercalada = ['AT1','AT3','AT2','AT4','AT5'];
+  const porAT = {};
+  legs.forEach(l => {
+    if (!porAT[l.area_tematica]) porAT[l.area_tematica] = [];
+    porAT[l.area_tematica].push(l);
+  });
+  const sequencia = [];
+  let i = 0;
+  while (sequencia.length < legs.length) {
+    const at = ordemIntercalada[i % ordemIntercalada.length];
+    if (porAT[at] && porAT[at].length) sequencia.push(porAT[at].shift());
+    i++;
+    if (i > 1000) break; // safety
+  }
+
+  const blocos = sequencia.map((l, idx) => ({
+    ordem: idx + 1,
+    area: l.area_tematica,
+    legislacao_id: l.id,
+    legislacao_nome: l.nome,
+    pct_da_prova: metas[l.id].pct_da_prova,
+    meta_minutos: metas[l.id].meta_minutos,
+    prioridade: estado.prioridades[l.id] || null,
+  }));
+
+  try {
+    await PBM.Ciclo.criar({
+      nome: (document.getElementById('nome-ciclo').value || '').trim() || 'Meu Ciclo',
+      horas_dia: estado.horasDia,
+      pomodoro_minutos: 25,
+      blocos,
+    });
+    toast('Ciclo criado!', 'ok');
+    setTimeout(() => { window.location.href = '/dashboard'; }, 900);
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Iniciar Ciclo';
+    toast(err?.erro || 'Erro ao criar ciclo', 'err');
+  }
+}
+
+// ============================================================
+// Util
+// ============================================================
+function escapeHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function toast(msg, kind) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + (kind === 'err' ? 'err' : (kind === 'ok' ? 'ok' : ''));
+  setTimeout(() => { t.className = 'toast'; }, 2500);
+}
+
+// ============================================================
+// CICLO ATIVO — render + pomodoro
+// ============================================================
+const cicloAtivo = {
+  ciclo: null,
+  blocos: [],
+  tempoPorBloco: {},
+  proximoBloco: null,
+  blocoFoco: null,           // bloco escolhido pro pomodoro atual
+  duracaoMin: 25,            // duração escolhida (default puxado do ciclo.pomodoro_minutos)
+  restanteSeg: 25 * 60,
+  rodando: false,
+  intervalId: null,
+};
+
+const AT_COR_HEX = {
+  AT1: '#C0270F', AT2: '#D38B2D', AT3: '#185FA5', AT4: '#3F8E5F', AT5: '#8359B8',
+};
+
+const STATUS_LABEL = {
+  nao_iniciada: 'Não iniciada',
+  em_andamento: 'Em andamento',
+  estudada:     'Estudada',
+  revisada:     'Revisada',
+};
+
+function showCicloAtivo(data) {
+  document.getElementById('boot-loading').style.display = 'none';
+  document.getElementById('wizard-view').style.display = 'none';
+  document.getElementById('ciclo-ativo-view').style.display = 'block';
+
+  cicloAtivo.ciclo = data.ciclo;
+  cicloAtivo.blocos = data.blocos || [];
+  cicloAtivo.tempoPorBloco = data.tempo_logado_por_bloco || {};
+  cicloAtivo.proximoBloco = data.proximo_bloco || null;
+  cicloAtivo.duracaoMin = data.ciclo.pomodoro_minutos || 25;
+
+  document.getElementById('ca-nome').textContent = data.ciclo.nome || 'Meu Ciclo';
+
+  const total = cicloAtivo.blocos.length;
+  const revisadas = cicloAtivo.blocos.filter(b => b.status === 'revisada').length;
+  const cursoLabel = (data.ciclo.curso || estado.curso || 'ctsp').toUpperCase();
+  document.getElementById('ca-meta').textContent =
+    `${cursoLabel} · ${data.ciclo.horas_dia}h/dia · ${total} blocos · ${revisadas}/${total} revisados`;
+  document.getElementById('ca-blocos-resumo').textContent =
+    `${total - revisadas} pendente${(total - revisadas) === 1 ? '' : 's'} · pomodoro padrão ${data.ciclo.pomodoro_minutos} min`;
+
+  const btnFoco = document.getElementById('btn-iniciar-pomodoro');
+  const btnLabel = document.getElementById('btn-foco-label');
+  const hero = document.getElementById('ca-hero');
+  const rodadaCard = document.getElementById('ca-rodada-concluida');
+
+  if (cicloAtivo.proximoBloco) {
+    const b = cicloAtivo.proximoBloco;
+    const t = cicloAtivo.tempoPorBloco[b.id] || 0;
+    document.getElementById('ca-proximo-resumo').textContent =
+      `${b.area} · ${b.legislacao_nome} · ${t}/${b.meta_minutos} min hoje · ${STATUS_LABEL[b.status]}`;
+    btnFoco.disabled = false;
+    btnLabel.textContent = (b.status === 'estudada') ? 'Marcar como revisada ✓' : 'Iniciar Pomodoro';
+    hero.style.display = '';
+    rodadaCard.style.display = 'none';
+  } else {
+    // Rodada concluída: esconde hero, mostra relatório
+    hero.style.display = 'none';
+    rodadaCard.style.display = 'block';
+    carregarRelatorioRodada();
+  }
+
+  renderBlocosLista();
+}
+
+async function carregarRelatorioRodada() {
+  const card = document.getElementById('ca-rodada-concluida');
+  try {
+    const data = await PBM.Ciclo.relatorioRodada();
+    if (!data || !data.relatorio) return;
+    renderRelatorioRodada(data);
+  } catch (e) {
+    console.warn('[ciclo] falha ao carregar relatório', e);
+    card.querySelector('#rc-sub').textContent = 'Erro ao carregar relatório da rodada.';
+  }
+}
+
+function renderRelatorioRodada(data) {
+  const r = data.relatorio;
+  const c = data.ciclo;
+  const rodadaNum = c?.rodada_atual || 1;
+  const proximaRodada = rodadaNum + 1;
+
+  document.getElementById('rc-sub').textContent =
+    `Rodada #${rodadaNum} fechada · ${r.blocos_revisados}/${r.blocos_total} blocos · iniciada em ${formatarDataCurta(c.rodada_iniciada_em)}`;
+
+  document.getElementById('rc-tempo-total').textContent = r.tempo_total_min;
+  document.getElementById('rc-sessoes').textContent = r.sessoes_total;
+  const metasBatidas = r.blocos.filter(b => b.meta_batida).length;
+  document.getElementById('rc-metas-batidas').textContent = `${metasBatidas}/${r.blocos_total}`;
+  document.getElementById('rc-blocos-total').textContent = r.blocos_total;
+
+  // Breakdown por AT (mostra só ATs que tiveram tempo)
+  const max = Math.max(...Object.values(r.tempo_por_at), 1);
+  const rows = ['AT1','AT2','AT3','AT4','AT5']
+    .map(at => ({ at, min: r.tempo_por_at[at] || 0 }))
+    .filter(x => x.min > 0)
+    .sort((a, b) => b.min - a.min);
+  const rowsHtml = rows.length === 0
+    ? '<div class="rodada-at-row" style="opacity:0.5">Nenhuma sessão registrada nesta rodada.</div>'
+    : rows.map(x => `
+      <div class="rodada-at-row">
+        <div class="at-tag" data-at="${x.at}">${x.at}</div>
+        <div class="rodada-at-bar"><div style="width:${Math.round((x.min/max)*100)}%"></div></div>
+        <div class="rodada-at-min">${x.min} min</div>
+      </div>
+    `).join('');
+  document.getElementById('rc-at-rows').innerHTML = rowsHtml;
+
+  document.getElementById('btn-iniciar-rodada-label').textContent =
+    `Iniciar Rodada #${proximaRodada}`;
+}
+
+function formatarDataCurta(iso) {
+  if (!iso) return '—';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  } catch (e) { return '—'; }
+}
+
+async function iniciarNovaRodada() {
+  const btn = document.getElementById('btn-iniciar-rodada');
+  btn.disabled = true;
+  try {
+    await PBM.Ciclo.reiniciarRodada();
+    toast('Nova rodada iniciada!', 'ok');
+    await recarregarCiclo();
+  } catch (e) {
+    console.warn('[ciclo] falha ao reiniciar rodada', e);
+    toast(e?.message || 'Erro ao reiniciar rodada', 'err');
+    btn.disabled = false;
+  }
+}
+
+function renderBlocosLista() {
+  const wrap = document.getElementById('ca-blocos-lista');
+  const proxId = cicloAtivo.proximoBloco?.id;
+  wrap.innerHTML = cicloAtivo.blocos.map(b => {
+    const ehProximo = b.id === proxId;
+    const tempo = cicloAtivo.tempoPorBloco[b.id] || 0;
+    const pct = Math.min(100, Math.round((tempo / Math.max(1, b.meta_minutos)) * 100));
+    let ctaLabel, ctaAction;
+    if (b.status === 'estudada') {
+      ctaLabel = '✓ MARCAR REVISADA';
+      ctaAction = `marcarRevisada('${escapeHtml(b.id)}')`;
+    } else if (b.status === 'revisada') {
+      ctaLabel = 'REVER';
+      ctaAction = `abrirPomodoroDoBloco('${escapeHtml(b.id)}')`;
+    } else if (b.status === 'em_andamento') {
+      ctaLabel = 'CONTINUAR →';
+      ctaAction = `abrirPomodoroDoBloco('${escapeHtml(b.id)}')`;
+    } else {
+      ctaLabel = ehProximo ? 'INICIAR →' : 'INICIAR';
+      ctaAction = `abrirPomodoroDoBloco('${escapeHtml(b.id)}')`;
+    }
+    return `
+      <div class="bloco-card ${ehProximo ? 'proximo' : ''} ${b.status}" data-bloco="${escapeHtml(b.id)}">
+        <div class="bloco-num">#${b.ordem}</div>
+        <div class="bloco-at-pill" data-at="${b.area}">${b.area}</div>
+        <div>
+          <div class="bloco-info-nome">${escapeHtml(b.legislacao_nome)}</div>
+          <div class="bloco-info-progresso">
+            ${tempo} / ${b.meta_minutos} min · ${(Number(b.pct_da_prova)*100).toFixed(0)}% da prova
+          </div>
+          <div class="bloco-progress-wrap">
+            <div class="bloco-progress-bar" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <span class="bloco-status-pill" data-status="${b.status}">${STATUS_LABEL[b.status] || b.status}</span>
+        <div class="bloco-acoes">
+          <button class="bloco-acao-secundaria" title="Resolver questões deste bloco" onclick="irParaQuestoesDoBloco('${escapeHtml(b.id)}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+            Questões
+          </button>
+          <button class="bloco-cta" onclick="${ctaAction}">${ctaLabel}</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function irParaQuestoesDoBloco(blocoId) {
+  const bloco = cicloAtivo.blocos.find(b => b.id === blocoId);
+  if (!bloco) return;
+  const curso = (cicloAtivo.ciclo?.curso || estado.curso || 'ctsp').toLowerCase();
+  sessionStorage.setItem('pbm_curso', curso);
+  sessionStorage.setItem('pbm_at', bloco.area);
+  sessionStorage.setItem('pbm_legislacoes', JSON.stringify([String(bloco.legislacao_id)]));
+  sessionStorage.setItem('pbm_qtd', '10');
+  sessionStorage.removeItem('pbm_qtd_por_leg');
+  sessionStorage.removeItem('pbm_filtro');
+  sessionStorage.setItem('pbm_ciclo_bloco', JSON.stringify({
+    id: bloco.id,
+    area: bloco.area,
+    legislacao_id: bloco.legislacao_id,
+    legislacao_nome: bloco.legislacao_nome,
+    meta_minutos: bloco.meta_minutos,
+    status: bloco.status,
+    ciclo_nome: cicloAtivo.ciclo?.nome || 'Meu Ciclo',
+  }));
+  window.location.href = '/questoes';
+}
+
+// Atualiza referência local de um bloco em todas as estruturas
+function atualizarBlocoLocal(blocoId, patch) {
+  const idx = cicloAtivo.blocos.findIndex(x => x.id === blocoId);
+  if (idx >= 0) cicloAtivo.blocos[idx] = { ...cicloAtivo.blocos[idx], ...patch };
+  if (cicloAtivo.proximoBloco?.id === blocoId) {
+    cicloAtivo.proximoBloco = { ...cicloAtivo.proximoBloco, ...patch };
+  }
+  if (cicloAtivo.blocoFoco?.id === blocoId) {
+    cicloAtivo.blocoFoco = { ...cicloAtivo.blocoFoco, ...patch };
+  }
+}
+
+async function patchStatusBloco(blocoId, novoStatus) {
+  try {
+    const r = await PBM.Ciclo.atualizarStatus(blocoId, novoStatus);
+    if (r && r.bloco) atualizarBlocoLocal(blocoId, { status: r.bloco.status });
+    return r;
+  } catch (e) {
+    console.warn('[ciclo] falha ao atualizar status', e);
+    throw e;
+  }
+}
+
+async function marcarRevisada(blocoId) {
+  const bloco = cicloAtivo.blocos.find(b => b.id === blocoId);
+  if (!bloco) return;
+  if (bloco.status !== 'estudada') return;
+  try {
+    await patchStatusBloco(blocoId, 'revisada');
+    toast('Bloco revisado ✓', 'ok');
+    // Recalcula próximo bloco — pode ter mudado
+    await recarregarCiclo();
+  } catch (e) {
+    toast('Erro ao marcar como revisada', 'err');
+  }
+}
+
+async function recarregarCiclo() {
+  try {
+    const data = await PBM.Ciclo.get();
+    if (data && data.ciclo) showCicloAtivo(data);
+  } catch (e) { /* silencioso */ }
+}
+
+// ============================================================
+// POMODORO
+// ============================================================
+function abrirPomodoroDoBloco(blocoId) {
+  const bloco = cicloAtivo.blocos.find(b => b.id === blocoId);
+  if (!bloco) return;
+  cicloAtivo.blocoFoco = bloco;
+  cicloAtivo.duracaoMin = cicloAtivo.ciclo?.pomodoro_minutos || 25;
+  cicloAtivo.restanteSeg = cicloAtivo.duracaoMin * 60;
+  cicloAtivo.rodando = false;
+
+  document.getElementById('pomo-legislacao').textContent = bloco.legislacao_nome;
+  const tag = document.getElementById('pomo-at-tag');
+  tag.textContent = bloco.area;
+  tag.style.background = AT_COR_HEX[bloco.area] || AT_COR_HEX.AT1;
+
+  document.querySelectorAll('.pomo-dur-opt').forEach(b => {
+    b.classList.toggle('ativo', Number(b.dataset.dur) === cicloAtivo.duracaoMin);
+  });
+
+  const tempoHoje = cicloAtivo.tempoPorBloco[bloco.id] || 0;
+  document.getElementById('pomo-tempo-hoje').textContent = tempoHoje;
+  document.getElementById('pomo-tempo-meta').textContent = bloco.meta_minutos;
+
+  atualizarDisplay();
+  document.getElementById('pomo-state').textContent = 'Pronto';
+  document.getElementById('pomo-btn-label').textContent = 'INICIAR';
+  document.getElementById('pomo-overlay').classList.add('show');
+}
+
+function atualizarDisplay() {
+  const m = Math.floor(cicloAtivo.restanteSeg / 60);
+  const s = cicloAtivo.restanteSeg % 60;
+  const el = document.getElementById('pomo-timer');
+  el.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+  el.classList.toggle('alerta', cicloAtivo.restanteSeg <= 60 && cicloAtivo.rodando);
+}
+
+function togglePomodoro() {
+  if (!cicloAtivo.blocoFoco) return;
+  if (cicloAtivo.rodando) {
+    pausarPomodoro();
+  } else {
+    iniciarPomodoro();
+  }
+}
+
+function iniciarPomodoro() {
+  cicloAtivo.rodando = true;
+  document.getElementById('pomo-state').textContent = 'Em foco';
+  document.getElementById('pomo-btn-label').textContent = 'PAUSAR';
+  document.querySelectorAll('.pomo-dur-opt').forEach(b => b.disabled = true);
+
+  // Auto-promove status: nao_iniciada → em_andamento (silencioso)
+  const foco = cicloAtivo.blocoFoco;
+  if (foco && foco.status === 'nao_iniciada') {
+    patchStatusBloco(foco.id, 'em_andamento')
+      .then(() => renderBlocosLista())
+      .catch(() => { /* não bloqueia o pomodoro se falhar */ });
+  }
+
+  cicloAtivo.intervalId = setInterval(() => {
+    cicloAtivo.restanteSeg = Math.max(0, cicloAtivo.restanteSeg - 1);
+    atualizarDisplay();
+    if (cicloAtivo.restanteSeg === 0) concluirPomodoro();
+  }, 1000);
+}
+
+function pausarPomodoro() {
+  cicloAtivo.rodando = false;
+  if (cicloAtivo.intervalId) clearInterval(cicloAtivo.intervalId);
+  cicloAtivo.intervalId = null;
+  document.getElementById('pomo-state').textContent = 'Pausado';
+  document.getElementById('pomo-btn-label').textContent = 'CONTINUAR';
+  document.querySelectorAll('.pomo-dur-opt').forEach(b => b.disabled = false);
+}
+
+async function concluirPomodoro() {
+  if (cicloAtivo.intervalId) clearInterval(cicloAtivo.intervalId);
+  cicloAtivo.intervalId = null;
+  cicloAtivo.rodando = false;
+  document.getElementById('pomo-state').textContent = 'Sessão completa! Registrando…';
+  document.getElementById('pomo-btn-label').textContent = 'INICIAR';
+
+  const bloco = cicloAtivo.blocoFoco;
+  if (!bloco) return;
+  try {
+    await PBM.Ciclo.registrarTempo(bloco.id, {
+      duracao_minutos: cicloAtivo.duracaoMin,
+      origem: 'pomodoro',
+    });
+    // atualiza estado local sem recarregar tudo
+    cicloAtivo.tempoPorBloco[bloco.id] = (cicloAtivo.tempoPorBloco[bloco.id] || 0) + cicloAtivo.duracaoMin;
+    const tempoHoje = cicloAtivo.tempoPorBloco[bloco.id];
+    document.getElementById('pomo-tempo-hoje').textContent = tempoHoje;
+
+    // Auto-promove para 'estudada' se atingiu meta_minutos e ainda está em_andamento
+    let promovidoEstudada = false;
+    if (bloco.status === 'em_andamento' && tempoHoje >= bloco.meta_minutos) {
+      try {
+        await patchStatusBloco(bloco.id, 'estudada');
+        promovidoEstudada = true;
+      } catch (e) { /* mantém em_andamento se falhar */ }
+    }
+
+    renderBlocosLista();
+    if (promovidoEstudada) {
+      document.getElementById('pomo-state').textContent = '🎯 Meta atingida! Bloco estudado.';
+      toast(`Bloco estudado — marque como revisado depois de revisar`, 'ok');
+    } else {
+      document.getElementById('pomo-state').textContent = `+${cicloAtivo.duracaoMin} min registrados`;
+      toast(`Sessão de ${cicloAtivo.duracaoMin} min registrada`, 'ok');
+    }
+  } catch (e) {
+    document.getElementById('pomo-state').textContent = 'Erro ao registrar — tente novamente';
+    toast('Erro ao registrar tempo', 'err');
+  }
+  cicloAtivo.restanteSeg = cicloAtivo.duracaoMin * 60;
+  atualizarDisplay();
+}
+
+function fecharPomodoro() {
+  if (cicloAtivo.rodando) {
+    if (!confirm('Pomodoro em andamento. Fechar mesmo assim? O tempo decorrido será descartado.')) return;
+    pausarPomodoro();
+  }
+  document.getElementById('pomo-overlay').classList.remove('show');
+  // Desliga lo-fi ao fechar pra não tocar em background sem aviso
+  const check = document.getElementById('pomo-lofi-check');
+  if (check.checked) { check.checked = false; toggleLofi(); }
+}
+
+function selecionarDuracao(e) {
+  if (cicloAtivo.rodando) return;
+  const min = Number(e.target.dataset.dur);
+  if (!Number.isFinite(min) || min <= 0) return;
+  cicloAtivo.duracaoMin = min;
+  cicloAtivo.restanteSeg = min * 60;
+  document.querySelectorAll('.pomo-dur-opt').forEach(b => {
+    b.classList.toggle('ativo', Number(b.dataset.dur) === min);
+  });
+  atualizarDisplay();
+}
+
+function toggleLofi() {
+  const check = document.getElementById('pomo-lofi-check');
+  const frame = document.getElementById('pomo-lofi-frame');
+  if (check.checked) {
+    frame.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/jfKfPfyJRdk?autoplay=1&modestbranding=1&rel=0" title="Lo-fi" allow="autoplay; encrypted-media" allowfullscreen></iframe>';
+    frame.classList.add('show');
+  } else {
+    frame.innerHTML = '';
+    frame.classList.remove('show');
+  }
+}
+
+// ============================================================
+// SESSÃO MANUAL
+// ============================================================
+function abrirModalManual() {
+  if (!cicloAtivo.blocos || cicloAtivo.blocos.length === 0) return;
+
+  const sel = document.getElementById('manual-bloco');
+  // Pré-seleciona próximo bloco se existir, senão o primeiro
+  const prefId = cicloAtivo.proximoBloco?.id || cicloAtivo.blocos[0].id;
+  sel.innerHTML = cicloAtivo.blocos.map(b => {
+    const sel = b.id === prefId ? 'selected' : '';
+    return `<option value="${escapeHtml(b.id)}" ${sel}>${b.area} · ${escapeHtml(b.legislacao_nome)}</option>`;
+  }).join('');
+
+  document.getElementById('manual-duracao').value = '';
+  const hoje = new Date().toISOString().slice(0, 10);
+  const data = document.getElementById('manual-data');
+  data.value = hoje;
+  data.max = hoje;
+
+  document.getElementById('manual-btn-salvar').disabled = false;
+  document.getElementById('manual-overlay').classList.add('show');
+  setTimeout(() => document.getElementById('manual-duracao').focus(), 50);
+}
+
+function fecharModalManual() {
+  document.getElementById('manual-overlay').classList.remove('show');
+}
+
+async function salvarSessaoManual() {
+  const btn = document.getElementById('manual-btn-salvar');
+  const blocoId = document.getElementById('manual-bloco').value;
+  const dur = Number(document.getElementById('manual-duracao').value);
+  const dataEstudo = document.getElementById('manual-data').value;
+
+  if (!blocoId) { toast('Escolha um bloco', 'err'); return; }
+  if (!Number.isFinite(dur) || dur < 1 || dur > 600) {
+    toast('Duração inválida (1 a 600 min)', 'err'); return;
+  }
+  if (!dataEstudo) { toast('Informe a data', 'err'); return; }
+  const hoje = new Date().toISOString().slice(0, 10);
+  if (dataEstudo > hoje) { toast('Data não pode ser no futuro', 'err'); return; }
+
+  btn.disabled = true;
+  try {
+    await PBM.Ciclo.registrarTempo(blocoId, {
+      duracao_minutos: Math.round(dur),
+      origem: 'manual',
+      data_estudo: dataEstudo,
+    });
+    // Atualiza estado local sem refazer GET completo
+    cicloAtivo.tempoPorBloco[blocoId] = (cicloAtivo.tempoPorBloco[blocoId] || 0) + Math.round(dur);
+
+    // Auto-promove em_andamento se nao_iniciada e atinge meta
+    const bloco = cicloAtivo.blocos.find(b => b.id === blocoId);
+    if (bloco) {
+      if (bloco.status === 'nao_iniciada') {
+        try { await patchStatusBloco(blocoId, 'em_andamento'); } catch (e) {}
+      }
+      const tempo = cicloAtivo.tempoPorBloco[blocoId];
+      const blocoAtual = cicloAtivo.blocos.find(b => b.id === blocoId);
+      if (blocoAtual && blocoAtual.status === 'em_andamento' && tempo >= blocoAtual.meta_minutos) {
+        try { await patchStatusBloco(blocoId, 'estudada'); } catch (e) {}
+      }
+    }
+
+    renderBlocosLista();
+    toast(`${Math.round(dur)} min registrados`, 'ok');
+    fecharModalManual();
+
+    // Re-renderiza hero se o bloco do hero mudou
+    if (cicloAtivo.proximoBloco?.id === blocoId) {
+      await recarregarCiclo();
+    }
+  } catch (e) {
+    console.warn('[ciclo] falha ao registrar sessão manual', e);
+    toast(e?.message || 'Erro ao registrar sessão', 'err');
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// Wizard show helper
+// ============================================================
+async function showWizard() {
+  document.getElementById('boot-loading').style.display = 'none';
+  document.getElementById('ciclo-ativo-view').style.display = 'none';
+  document.getElementById('wizard-view').style.display = 'block';
+  try {
+    const res = await fetch('/api/legislacoes/manifesto');
+    const j = await res.json();
+    estado.manifesto = j.legislacoes || [];
+  } catch (e) {
+    document.getElementById('loading-legs').textContent = 'Erro ao carregar legislações.';
+    return;
+  }
+  renderPasso1();
+}
+
+// ============================================================
+// Boot
+// ============================================================
+(async function init() {
+  await PBM.protegerRota();
+  const u = PBM.getUsuario();
+  if (u) {
+    document.getElementById('sidebar-nome').textContent = u.nome || u.email || '—';
+    document.getElementById('sidebar-status-txt').textContent = u.ativo ? 'ATIVO' : 'INATIVO';
+    estado.curso = (u.curso || 'ctsp').toLowerCase();
+    document.getElementById('curso-label').textContent = `${estado.curso.toUpperCase()} selecionado`;
+  }
+
+  try {
+    const r = await PBM.Ciclo.get();
+    if (r && r.ciclo) {
+      showCicloAtivo(r);
+      return;
+    }
+  } catch (e) { /* admin-preview ou rede; cai pro wizard */ }
+
+  showWizard();
+})();
+
+// Listeners do pomodoro (delegação)
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.pomo-dur-opt').forEach(b => b.addEventListener('click', selecionarDuracao));
+  document.getElementById('btn-iniciar-pomodoro').addEventListener('click', () => {
+    const prox = cicloAtivo.proximoBloco;
+    if (!prox) return;
+    if (prox.status === 'estudada') {
+      marcarRevisada(prox.id);
+    } else {
+      abrirPomodoroDoBloco(prox.id);
+    }
+  });
+  document.getElementById('pomo-overlay').addEventListener('click', e => {
+    if (e.target.id === 'pomo-overlay') fecharPomodoro();
+  });
+  document.getElementById('pomo-btn-questoes').addEventListener('click', () => {
+    if (cicloAtivo.blocoFoco) {
+      if (cicloAtivo.rodando) pausarPomodoro();
+      irParaQuestoesDoBloco(cicloAtivo.blocoFoco.id);
+    }
+  });
+  document.getElementById('btn-iniciar-rodada').addEventListener('click', iniciarNovaRodada);
+  document.getElementById('manual-overlay').addEventListener('click', e => {
+    if (e.target.id === 'manual-overlay') fecharModalManual();
+  });
+});
+</script>
+
+</body>
+</html>
