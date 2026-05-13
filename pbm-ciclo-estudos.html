@@ -879,9 +879,15 @@
 
       <!-- CICLO ATIVO (visível quando o aluno já tem um ciclo) -->
       <section id="ciclo-ativo-view" style="display:none">
-        <div class="page-header">
-          <h1 class="page-titulo" id="ca-nome">Meu Ciclo</h1>
-          <p class="page-sub" id="ca-meta">—</p>
+        <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;">
+          <div style="min-width:0;flex:1;">
+            <h1 class="page-titulo" id="ca-nome">Meu Ciclo</h1>
+            <p class="page-sub" id="ca-meta">—</p>
+          </div>
+          <button class="btn-manual-abrir" id="btn-config-abrir" onclick="abrirModalConfig()" title="Editar nome, horas, pomodoro e prioridades">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Configurar
+          </button>
         </div>
 
         <div class="ciclo-hero" id="ca-hero">
@@ -1116,6 +1122,57 @@
     <div class="manual-acoes">
       <button class="manual-btn-cancelar" type="button" onclick="fecharModalManual()">Cancelar</button>
       <button class="manual-btn-salvar" type="button" id="manual-btn-salvar" onclick="salvarSessaoManual()">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIGURAÇÃO DO CICLO -->
+<div class="manual-overlay" id="config-overlay" role="dialog" aria-modal="true">
+  <div class="manual-painel" style="max-width:640px;max-height:90vh;overflow-y:auto;">
+    <button class="pomo-close" onclick="fecharModalConfig()" aria-label="Fechar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="manual-titulo">Configurar Ciclo</div>
+    <div class="manual-sub">Alterar horas/dia recalcula automaticamente as metas de todos os blocos.</div>
+
+    <div class="manual-field">
+      <label for="config-nome">Nome do ciclo</label>
+      <input type="text" id="config-nome" maxlength="60" placeholder="Meu Ciclo">
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="manual-field">
+        <label for="config-horas">Horas / dia</label>
+        <input type="number" id="config-horas" min="0.5" max="24" step="0.5">
+        <div class="hint">0.5–24 (recalcula metas)</div>
+      </div>
+      <div class="manual-field">
+        <label for="config-pomo">Pomodoro padrão</label>
+        <input type="number" id="config-pomo" min="5" max="120" step="5">
+        <div class="hint">5–120 min</div>
+      </div>
+    </div>
+
+    <div class="manual-field">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+        <input type="checkbox" id="config-pausado" style="width:auto;accent-color:var(--vermelho);">
+        <span style="text-transform:none;letter-spacing:0;font-family:'Inter',sans-serif;font-size:13px;color:var(--branco);">Pausar ciclo</span>
+      </label>
+      <div class="hint">Quando pausado, lembretes diários do ciclo ficam suspensos.</div>
+    </div>
+
+    <div class="manual-field">
+      <label>Prioridades dos blocos</label>
+      <div class="hint" style="margin-bottom:8px;">★★★ aumenta o tempo (+50%); ★ reduz (-20%). Salva imediatamente e recalcula metas.</div>
+      <div id="config-prio-tbody" style="border:1px solid var(--cinza-borda);border-radius:6px;overflow:hidden;max-height:280px;overflow-y:auto;"></div>
+    </div>
+
+    <div class="manual-acoes" style="justify-content:space-between;">
+      <button class="manual-btn-cancelar" type="button" id="btn-excluir-ciclo" onclick="excluirCiclo()" style="border-color:rgba(192,39,15,0.4);color:#E0866E;">Excluir ciclo</button>
+      <div style="display:flex;gap:8px;">
+        <button class="manual-btn-cancelar" type="button" onclick="fecharModalConfig()">Cancelar</button>
+        <button class="manual-btn-salvar" type="button" id="config-btn-salvar" onclick="salvarConfigCiclo()">Salvar</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1898,6 +1955,127 @@ async function salvarSessaoManual() {
 }
 
 // ============================================================
+// CONFIGURAÇÃO DO CICLO (modal)
+// ============================================================
+const PRIO_LABELS = { reforco: '★★★', atencao: '★★', dominio: '★' };
+
+function abrirModalConfig() {
+  if (!cicloAtivo.ciclo) return;
+  const c = cicloAtivo.ciclo;
+  document.getElementById('config-nome').value = c.nome || 'Meu Ciclo';
+  document.getElementById('config-horas').value = c.horas_dia || 2;
+  document.getElementById('config-pomo').value = c.pomodoro_minutos || 25;
+  document.getElementById('config-pausado').checked = !!c.pausado;
+  renderConfigPrioridades();
+  document.getElementById('config-btn-salvar').disabled = false;
+  document.getElementById('config-overlay').classList.add('show');
+}
+
+function fecharModalConfig() {
+  document.getElementById('config-overlay').classList.remove('show');
+}
+
+function renderConfigPrioridades() {
+  const wrap = document.getElementById('config-prio-tbody');
+  if (!wrap) return;
+  const blocos = [...cicloAtivo.blocos].sort((a, b) => {
+    const at = a.area.localeCompare(b.area);
+    return at !== 0 ? at : a.ordem - b.ordem;
+  });
+  wrap.innerHTML = blocos.map(b => {
+    const opts = ['reforco', 'atencao', 'dominio'].map(p => {
+      const ativo = b.prioridade === p ? 'background:rgba(192,39,15,0.18);border-color:var(--vermelho);color:#E0866E' : '';
+      return `<button type="button" data-bloco="${escapeHtml(b.id)}" data-prio="${p}" onclick="setPrioridadeBloco('${escapeHtml(b.id)}','${p}')" style="background:transparent;border:1px solid var(--cinza-borda);color:var(--cinza-texto);padding:4px 8px;border-radius:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;${ativo}">${PRIO_LABELS[p]}</button>`;
+    }).join('');
+    const sem = !b.prioridade ? 'background:rgba(192,39,15,0.18);border-color:var(--vermelho);color:#E0866E' : '';
+    return `
+      <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;border-bottom:1px solid var(--cinza-borda);">
+        <span class="at-tag" data-at="${b.area}" style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:0.08em;padding:2px 6px;border-radius:4px;flex-shrink:0;">${b.area}</span>
+        <div style="flex:1;min-width:0;font-size:12px;color:var(--branco);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(b.legislacao_nome)}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--cinza-texto);white-space:nowrap;">${b.meta_minutos} min</div>
+        <div style="display:flex;gap:4px;">
+          <button type="button" onclick="setPrioridadeBloco('${escapeHtml(b.id)}',null)" style="background:transparent;border:1px solid var(--cinza-borda);color:var(--cinza-texto);padding:4px 8px;border-radius:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;${sem}" title="Sem prioridade (peso neutro)">—</button>
+          ${opts}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+async function setPrioridadeBloco(blocoId, prioridade) {
+  try {
+    const r = await PBM.Ciclo.atualizarPrioridade(blocoId, prioridade);
+    // Atualiza estado local: prioridade do bloco + meta_minutos de todos (refetch parcial)
+    if (r && r.bloco) atualizarBlocoLocal(blocoId, { prioridade: r.bloco.prioridade, meta_minutos: r.bloco.meta_minutos });
+    // Como o backend recalcula metas de todos os blocos da AT, refazemos GET pra refletir
+    const data = await PBM.Ciclo.get();
+    if (data && data.ciclo) {
+      cicloAtivo.blocos = data.blocos || [];
+      cicloAtivo.tempoPorBloco = data.tempo_logado_por_bloco || {};
+      cicloAtivo.proximoBloco = data.proximo_bloco;
+      renderConfigPrioridades();
+      renderBlocosLista();
+    }
+    toast('Prioridade atualizada', 'ok');
+  } catch (e) {
+    console.warn('[ciclo] falha ao atualizar prioridade', e);
+    toast(e?.message || 'Erro ao atualizar prioridade', 'err');
+  }
+}
+
+async function salvarConfigCiclo() {
+  const btn = document.getElementById('config-btn-salvar');
+  const nome = document.getElementById('config-nome').value.trim();
+  const horas = Number(document.getElementById('config-horas').value);
+  const pomo = Number(document.getElementById('config-pomo').value);
+  const pausado = document.getElementById('config-pausado').checked;
+
+  if (!nome || nome.length > 60) { toast('Nome inválido (1–60 chars)', 'err'); return; }
+  if (!Number.isFinite(horas) || horas <= 0 || horas > 24) { toast('Horas/dia inválido', 'err'); return; }
+  if (!Number.isInteger(pomo) || pomo < 5 || pomo > 120) { toast('Pomodoro inválido (5–120 min)', 'err'); return; }
+
+  btn.disabled = true;
+  try {
+    // Só envia o que mudou (evita PATCH desnecessário)
+    const atual = cicloAtivo.ciclo || {};
+    const patch = {};
+    if (nome !== atual.nome) patch.nome = nome;
+    if (Number(atual.horas_dia) !== horas) patch.horas_dia = horas;
+    if (Number(atual.pomodoro_minutos) !== pomo) patch.pomodoro_minutos = pomo;
+    if (!!atual.pausado !== pausado) patch.pausado = pausado;
+
+    if (Object.keys(patch).length === 0) {
+      toast('Nada para salvar', 'ok');
+      fecharModalConfig();
+      return;
+    }
+
+    await PBM.Ciclo.atualizar(patch);
+    toast('Configuração salva', 'ok');
+    fecharModalConfig();
+    await recarregarCiclo();
+  } catch (e) {
+    console.warn('[ciclo] falha ao salvar config', e);
+    toast(e?.message || 'Erro ao salvar configuração', 'err');
+    btn.disabled = false;
+  }
+}
+
+async function excluirCiclo() {
+  if (!confirm('Excluir o ciclo? Todo o progresso e histórico de tempo serão perdidos. Esta ação é irreversível.')) return;
+  if (!confirm('Confirma a exclusão? Você precisará montar o ciclo do zero.')) return;
+  try {
+    await PBM.Ciclo.excluir();
+    toast('Ciclo excluído', 'ok');
+    // Recarrega a página — boot() vai redirecionar pro wizard
+    window.location.reload();
+  } catch (e) {
+    console.warn('[ciclo] falha ao excluir', e);
+    toast(e?.message || 'Erro ao excluir ciclo', 'err');
+  }
+}
+
+// ============================================================
 // Wizard show helper
 // ============================================================
 async function showWizard() {
@@ -1963,6 +2141,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('btn-iniciar-rodada').addEventListener('click', iniciarNovaRodada);
   document.getElementById('manual-overlay').addEventListener('click', e => {
     if (e.target.id === 'manual-overlay') fecharModalManual();
+  });
+  document.getElementById('config-overlay').addEventListener('click', e => {
+    if (e.target.id === 'config-overlay') fecharModalConfig();
   });
 });
 </script>

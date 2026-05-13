@@ -214,6 +214,51 @@ const PBM = {
     },
   },
 
+  Ciclo: {
+    get() {
+      return request('/api/ciclo');
+    },
+    criar(body) {
+      return request('/api/ciclo', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    registrarTempo(blocoId, body) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/sessoes-tempo', {
+        method: 'POST',
+        body: JSON.stringify(body),
+      });
+    },
+    atualizarStatus(blocoId, status) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/status', {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+    },
+    relatorioRodada() {
+      return request('/api/ciclo/rodada/relatorio');
+    },
+    reiniciarRodada() {
+      return request('/api/ciclo/rodada/reiniciar', { method: 'POST' });
+    },
+    atualizar(body) {
+      return request('/api/ciclo', {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+    },
+    atualizarPrioridade(blocoId, prioridade) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/prioridade', {
+        method: 'PATCH',
+        body: JSON.stringify({ prioridade }),
+      });
+    },
+    excluir() {
+      return request('/api/ciclo', { method: 'DELETE' });
+    },
+  },
+
   Admin: {
     _authHeader() {
       const jwt = sessionStorage.getItem('pbm_admin_jwt') || '';
