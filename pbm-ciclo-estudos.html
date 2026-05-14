@@ -258,11 +258,12 @@
     background: rgba(0,0,0,0.92);
     z-index: 1000;
     display: flex; align-items: center; justify-content: center;
-    padding: 20px;
+    padding: 20px; overflow-y: auto;
   }
   .pomo-box {
     text-align: center;
-    max-width: 480px; width: 100%;
+    max-width: 540px; width: 100%;
+    max-height: 100vh; overflow-y: auto;
   }
   .pomo-fase {
     font-family: 'IBM Plex Mono', monospace; font-size: 11px;
@@ -273,10 +274,21 @@
     font-family: 'Bebas Neue', sans-serif; font-size: 28px;
     color: var(--branco); margin-bottom: 0.5rem;
   }
+  .pomo-area-tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    padding: 3px 8px; border-radius: 4px; margin-bottom: 0.5rem;
+    letter-spacing: 0.08em;
+  }
+  .pomo-area-tag.AT1 { color: #E0866E; background: rgba(192,39,15,0.10); }
+  .pomo-area-tag.AT2 { color: #D4A24A; background: rgba(186,117,23,0.10); }
+  .pomo-area-tag.AT3 { color: #5C9BD9; background: rgba(24,95,165,0.12); }
+  .pomo-area-tag.AT4 { color: #7DD99A; background: rgba(47,111,68,0.15); }
+  .pomo-area-tag.AT5 { color: #B58AE0; background: rgba(127,119,221,0.12); }
   .pomo-clock {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 100px; line-height: 1; color: var(--vermelho);
-    margin: 2rem 0;
+    margin: 1.5rem 0;
   }
   .pomo-sug {
     font-size: 12px; color: #666; margin-bottom: 1.5rem;
@@ -285,6 +297,90 @@
   .pomo-actions {
     display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
   }
+
+  /* Setup fase */
+  .pomo-setup-input {
+    margin: 1.5rem 0;
+  }
+  .pomo-setup-input input[type="number"] {
+    background: var(--carvao);
+    color: var(--branco);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    text-align: center;
+    width: 100px;
+    -moz-appearance: textfield;
+  }
+  .pomo-setup-input input[type="number"]::-webkit-inner-spin-button,
+  .pomo-setup-input input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none; margin: 0;
+  }
+  .pomo-setup-presets {
+    display: flex; gap: 6px; justify-content: center;
+    margin-top: 0.75rem; flex-wrap: wrap;
+  }
+  .pomo-preset {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto);
+    padding: 6px 14px; border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+  .pomo-preset:hover { color: var(--branco); border-color: var(--cinza-texto); }
+  .pomo-preset.ativo { background: var(--vermelho); color: #fff; border-color: var(--vermelho); }
+
+  .pomo-orientacao {
+    background: rgba(192,39,15,0.04);
+    border-left: 2px solid var(--vermelho);
+    text-align: left;
+    padding: 10px 14px;
+    border-radius: 0 4px 4px 0;
+    margin: 1rem auto 1.5rem;
+    max-width: 440px;
+    font-size: 12px; color: var(--cinza-texto);
+    line-height: 1.6;
+    font-family: 'Inter', sans-serif;
+  }
+  .pomo-orientacao strong { color: var(--branco); }
+
+  /* Audio toggle */
+  .pomo-audio-bar {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--cinza-borda);
+  }
+  .pomo-audio-bar-titulo {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .pomo-audio-opcoes {
+    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+  }
+  .pomo-audio-btn {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto);
+    padding: 6px 12px; border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.06em;
+    cursor: pointer;
+  }
+  .pomo-audio-btn:hover { color: var(--branco); }
+  .pomo-audio-btn.ativo { background: rgba(192,39,15,0.15); color: var(--branco); border-color: var(--vermelho); }
+  .pomo-audio-frame {
+    height: 0; overflow: hidden;
+    transition: height 0.3s ease;
+    margin-top: 12px;
+    border-radius: 8px;
+  }
+  .pomo-audio-frame.show { height: 180px; }
+  .pomo-audio-frame iframe { width: 100%; height: 100%; border: 0; border-radius: 8px; }
 
   .empty-state {
     text-align: center;
@@ -359,14 +455,23 @@
         </div>
 
         <div class="card">
-          <div class="card-titulo">Duração total do ciclo</div>
+          <div class="card-titulo">Tamanho do ciclo</div>
           <div class="slider-row">
             <label>Horas totais</label>
-            <input type="range" id="horas-totais" min="15" max="30" step="1" value="24">
-            <div class="slider-val"><span id="horas-totais-val">24</span>h</div>
+            <input type="range" id="horas-totais" min="1" max="50" step="1" value="14">
+            <div class="slider-val"><span id="horas-totais-val">14</span>h</div>
+          </div>
+          <div class="slider-row" style="margin-top:1rem;">
+            <label>Horas/dia</label>
+            <input type="range" id="horas-dia" min="0.5" max="8" step="0.5" value="2">
+            <div class="slider-val"><span id="horas-dia-val">2</span>h</div>
+          </div>
+          <div class="hint" style="background:rgba(192,39,15,0.04);border-left:2px solid var(--vermelho);padding:8px 12px;border-radius:0 4px 4px 0;font-size:12px;color:var(--cinza-texto);font-family:'Inter',sans-serif;line-height:1.5;margin-top:0.8rem;">
+            <strong style="color:var(--branco);">Com este ritmo, o ciclo completa em ≈ <span id="dias-estimados">7</span> dias.</strong>
+            <span id="ritmo-aviso" style="display:block;color:#666;margin-top:4px;"></span>
           </div>
           <div class="hint" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-top:0.5rem;">
-            Quando você completar todas as horas, o ciclo reinicia. Estude no seu ritmo.
+            "Horas totais" = soma de TODAS as legislações no ciclo. "Horas/dia" só serve pra estimar quantos dias leva — você estuda quando quiser.
           </div>
         </div>
 
@@ -429,15 +534,63 @@
 <!-- Pomodoro -->
 <div id="pomo-overlay" class="pomo-overlay" style="display:none;">
   <div class="pomo-box">
-    <div class="pomo-fase" id="pomo-fase">Tempo de leitura</div>
-    <div class="pomo-leg" id="pomo-leg">—</div>
-    <div class="pomo-clock" id="pomo-clock">40:00</div>
-    <div class="pomo-sug">
-      Sugestão: 40 min leitura + 20 min questões. Você decide quando encerrar.
+
+    <!-- FASE 1: SETUP — aluno escolhe duração antes de começar -->
+    <div id="pomo-setup">
+      <div class="pomo-fase">Bloco do Ciclo · prepare-se para estudar</div>
+      <div class="pomo-area-tag" id="pomo-area-tag">AT1</div>
+      <div class="pomo-leg" id="pomo-leg-setup">—</div>
+
+      <div class="pomo-orientacao">
+        <strong>Quanto tempo você vai estudar agora?</strong><br>
+        Como referência, a literatura de aprendizado sugere blocos entre <strong>30 e 90 minutos</strong>.
+        Abaixo de 30 min, você não chega a fixar; acima de 90 min, a retenção cai. Por isso o padrão
+        é 60 min: <em>~40 min de leitura + ~20 min de questões</em>. Mas ajuste para o que cabe no seu dia.
+      </div>
+
+      <div class="pomo-setup-input">
+        <input type="number" id="pomo-duracao" min="5" max="180" step="5" value="60">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cinza-texto);margin-left:4px;">minutos</span>
+        <div class="pomo-setup-presets">
+          <button class="pomo-preset" data-min="25">25 min</button>
+          <button class="pomo-preset" data-min="40">40 min</button>
+          <button class="pomo-preset ativo" data-min="60">60 min</button>
+          <button class="pomo-preset" data-min="90">90 min</button>
+        </div>
+      </div>
+
+      <div class="pomo-actions">
+        <button class="btn-primario" id="pomo-iniciar">Começar timer</button>
+        <button class="btn-secundario" id="pomo-pular-direto">Ir direto para questões</button>
+        <button class="btn-secundario" id="pomo-cancelar-setup">Cancelar</button>
+      </div>
     </div>
-    <div class="pomo-actions">
-      <button class="btn-primario" id="pomo-questoes">Ir para Questões agora</button>
-      <button class="btn-secundario" id="pomo-encerrar">Cancelar (não conclui)</button>
+
+    <!-- FASE 2: TIMER RODANDO -->
+    <div id="pomo-rodando" style="display:none;">
+      <div class="pomo-fase" id="pomo-fase">Estudando</div>
+      <div class="pomo-area-tag" id="pomo-area-tag-2">AT1</div>
+      <div class="pomo-leg" id="pomo-leg">—</div>
+      <div class="pomo-clock" id="pomo-clock">60:00</div>
+      <div class="pomo-sug" id="pomo-sug">
+        Lembre: quando se sentir pronto, vá pras questões — fixação ativa &gt; releitura passiva.
+      </div>
+      <div class="pomo-actions">
+        <button class="btn-primario" id="pomo-questoes">Ir para Questões agora</button>
+        <button class="btn-secundario" id="pomo-encerrar">Cancelar (não conclui)</button>
+      </div>
+
+      <!-- Áudio ambiente -->
+      <div class="pomo-audio-bar">
+        <div class="pomo-audio-bar-titulo">🎧 Som de fundo (opcional)</div>
+        <div class="pomo-audio-opcoes">
+          <button class="pomo-audio-btn ativo" data-audio="off">Silêncio</button>
+          <button class="pomo-audio-btn" data-audio="lofi">Lo-fi Girl</button>
+          <button class="pomo-audio-btn" data-audio="ruido">Ruído Branco</button>
+          <button class="pomo-audio-btn" data-audio="jazz">Jazz Café</button>
+        </div>
+        <div class="pomo-audio-frame" id="pomo-audio-frame"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -474,6 +627,7 @@
   let pomoTimer = null;
   let pomoSecRestantes = 0;
   let pomoBlocoAtual = null;
+  let pomoDuracaoConfigMin = 60;
 
   function pesosAtuais() {
     return estado.curso === 'cba' ? PESO_CBA : PESO_CTSP;
@@ -521,9 +675,10 @@
     document.getElementById('view-configurar').style.display = '';
     document.getElementById('empty-state').style.display = primeiraVez ? '' : 'none';
 
-    const horas = estado.ciclo?.horas_totais_ciclo || 24;
+    const horas = estado.ciclo?.horas_totais_ciclo || 14;
     document.getElementById('horas-totais').value = horas;
     document.getElementById('horas-totais-val').textContent = horas;
+    atualizarEstimativaDias();
 
     const grid = document.getElementById('at-grid');
     grid.innerHTML = '';
@@ -561,6 +716,11 @@
 
     document.getElementById('horas-totais').addEventListener('input', e => {
       document.getElementById('horas-totais-val').textContent = e.target.value;
+      atualizarEstimativaDias();
+    });
+    document.getElementById('horas-dia').addEventListener('input', e => {
+      document.getElementById('horas-dia-val').textContent = e.target.value;
+      atualizarEstimativaDias();
     });
 
     renderNudges('nudges-container');
@@ -699,28 +859,66 @@
     }
   }
 
-  async function iniciarBloco() {
-    if (!estado.proximoBloco) return;
-    pomoBlocoAtual = estado.proximoBloco;
-    const minutosSug = 40;
-    pomoSecRestantes = minutosSug * 60;
+  function atualizarEstimativaDias() {
+    const total = Number(document.getElementById('horas-totais').value);
+    const porDia = Number(document.getElementById('horas-dia').value);
+    if (!total || !porDia) return;
+    const dias = Math.ceil(total / porDia);
+    document.getElementById('dias-estimados').textContent = dias;
+    const aviso = document.getElementById('ritmo-aviso');
+    if (porDia <= 1) aviso.textContent = 'Ritmo leve — bom para começar sem se sobrecarregar.';
+    else if (porDia >= 5) aviso.textContent = 'Ritmo intenso — cuidado com fadiga. Considere reduzir se sentir queda de rendimento.';
+    else aviso.textContent = 'Ritmo equilibrado para preparação consistente.';
+  }
+
+  // === POMODORO ===
+  function abrirPomoSetup(bloco) {
+    pomoBlocoAtual = bloco;
+    pomoDuracaoConfigMin = 60;
+
+    // Reset visual: mostra fase de setup
+    document.getElementById('pomo-setup').style.display = '';
+    document.getElementById('pomo-rodando').style.display = 'none';
+    document.getElementById('pomo-overlay').style.display = '';
+
+    const tagSetup = document.getElementById('pomo-area-tag');
+    tagSetup.textContent = bloco.area;
+    tagSetup.className = 'pomo-area-tag ' + bloco.area;
+    document.getElementById('pomo-leg-setup').textContent = bloco.legislacao_nome;
+
+    // reset duração / presets
+    const input = document.getElementById('pomo-duracao');
+    input.value = 60;
+    document.querySelectorAll('.pomo-preset').forEach(p => {
+      p.classList.toggle('ativo', Number(p.dataset.min) === 60);
+    });
+  }
+
+  async function iniciarTimer() {
+    const dur = Math.max(5, Math.min(180, Number(document.getElementById('pomo-duracao').value) || 60));
+    pomoDuracaoConfigMin = dur;
+    pomoSecRestantes = dur * 60;
 
     try {
-      await fetch(`/api/ciclo/blocos/${pomoBlocoAtual.id}/iniciar`, {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + (sessionStorage.getItem('token') || '') },
-      });
+      await PBM.Ciclo.iniciarBloco(pomoBlocoAtual.id);
     } catch (_) { /* não crítico */ }
 
-    document.getElementById('pomo-overlay').style.display = '';
+    document.getElementById('pomo-setup').style.display = 'none';
+    document.getElementById('pomo-rodando').style.display = '';
+
+    const tag = document.getElementById('pomo-area-tag-2');
+    tag.textContent = pomoBlocoAtual.area;
+    tag.className = 'pomo-area-tag ' + pomoBlocoAtual.area;
     document.getElementById('pomo-leg').textContent = pomoBlocoAtual.legislacao_nome;
+    document.getElementById('pomo-fase').textContent = 'Estudando · ' + dur + ' min';
     atualizarPomoClock();
 
     pomoTimer = setInterval(() => {
       pomoSecRestantes -= 1;
       atualizarPomoClock();
       if (pomoSecRestantes <= 0) {
-        document.getElementById('pomo-fase').textContent = 'Tempo sugerido encerrado';
+        document.getElementById('pomo-fase').textContent = 'Tempo encerrado — pronto pras questões!';
+        document.getElementById('pomo-clock').style.color = '#7DD99A';
         clearInterval(pomoTimer);
         pomoTimer = null;
       }
@@ -737,46 +935,81 @@
   async function pomoIrParaQuestoes() {
     if (!pomoBlocoAtual) return;
 
-    const minutosEstudados = Math.max(0, Math.round((40 * 60 - Math.max(0, pomoSecRestantes)) / 60));
+    // Calcula tempo estudado: duração configurada menos o que sobrou
+    const segDecorridos = Math.max(0, pomoDuracaoConfigMin * 60 - Math.max(0, pomoSecRestantes));
+    const minutosEstudados = Math.round(segDecorridos / 60);
+
     if (minutosEstudados > 0) {
       try {
-        await fetch(`/api/ciclo/blocos/${pomoBlocoAtual.id}/sessoes-tempo`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + (sessionStorage.getItem('token') || ''),
-          },
-          body: JSON.stringify({ duracao_minutos: minutosEstudados, origem: 'pomodoro' }),
+        await PBM.Ciclo.registrarTempo(pomoBlocoAtual.id, {
+          duracao_minutos: minutosEstudados,
+          origem: 'pomodoro',
         });
       } catch (_) {}
     }
 
-    try {
-      const sessao = await PBM.api.sessoes.criar({
-        curso: estado.curso,
-        area: pomoBlocoAtual.area,
-        legislacoes: [pomoBlocoAtual.legislacao_id],
-        quantidade: 10,
-        tipo: 'ciclo',
-        ciclo_bloco_id: pomoBlocoAtual.id,
-      });
-      sessionStorage.setItem('pbm_sessao_atual', JSON.stringify({
-        sessao_id: sessao.id,
-        ciclo_bloco_id: pomoBlocoAtual.id,
-        legislacao_id: pomoBlocoAtual.legislacao_id,
-      }));
-      window.location.href = '/questoes?sessao=' + sessao.id;
-    } catch (e) {
-      console.error('[ciclo] criar sessão', e);
-      alert('Erro ao iniciar questões. Tente novamente.');
-    }
+    // Preparar sessionStorage para /questoes (chaves que pbm-questoes.html lê)
+    sessionStorage.setItem('pbm_curso', estado.curso);
+    sessionStorage.setItem('pbm_at', pomoBlocoAtual.area);
+    sessionStorage.setItem('pbm_legislacoes', JSON.stringify([pomoBlocoAtual.legislacao_id]));
+    sessionStorage.setItem('pbm_qtd', '10');
+    sessionStorage.setItem('pbm_ciclo_bloco', JSON.stringify({
+      id: pomoBlocoAtual.id,
+      area: pomoBlocoAtual.area,
+      legislacao_id: pomoBlocoAtual.legislacao_id,
+      legislacao_nome: pomoBlocoAtual.legislacao_nome,
+      meta_minutos: pomoBlocoAtual.meta_minutos,
+    }));
+    // Limpa filtros que poderiam interferir
+    sessionStorage.removeItem('pbm_qtd_por_leg');
+    sessionStorage.removeItem('pbm_filtro');
+
+    // Desliga áudio antes de sair
+    desligarAudio();
+
+    window.location.href = '/questoes';
   }
 
   function pomoCancelar() {
     if (pomoTimer) clearInterval(pomoTimer);
     pomoTimer = null;
     pomoBlocoAtual = null;
+    desligarAudio();
     document.getElementById('pomo-overlay').style.display = 'none';
+    document.getElementById('pomo-clock').style.color = ''; // reset cor
+  }
+
+  // === ÁUDIO AMBIENTE ===
+  const AUDIO_FONTES = {
+    lofi:  'https://www.youtube-nocookie.com/embed/jfKfPfyJRdk?autoplay=1&modestbranding=1&rel=0',
+    ruido: 'https://www.youtube-nocookie.com/embed/nMfPqeZjc2c?autoplay=1&modestbranding=1&rel=0',
+    jazz:  'https://www.youtube-nocookie.com/embed/Dx5qFachd3A?autoplay=1&modestbranding=1&rel=0',
+  };
+  function ligarAudio(tipo) {
+    const frame = document.getElementById('pomo-audio-frame');
+    if (tipo === 'off') {
+      desligarAudio();
+      return;
+    }
+    const url = AUDIO_FONTES[tipo];
+    if (!url) return;
+    frame.innerHTML = `<iframe src="${url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    frame.classList.add('show');
+  }
+  function desligarAudio() {
+    const frame = document.getElementById('pomo-audio-frame');
+    if (frame) {
+      frame.innerHTML = '';
+      frame.classList.remove('show');
+    }
+    document.querySelectorAll('.pomo-audio-btn').forEach(b => {
+      b.classList.toggle('ativo', b.dataset.audio === 'off');
+    });
+  }
+
+  function iniciarBloco() {
+    if (!estado.proximoBloco) return;
+    abrirPomoSetup(estado.proximoBloco);
   }
 
   async function excluirCiclo() {
@@ -799,8 +1032,35 @@
   });
   document.getElementById('btn-excluir').addEventListener('click', excluirCiclo);
   document.getElementById('btn-excluir-ativo').addEventListener('click', excluirCiclo);
+
+  // Pomodoro — setup
+  document.getElementById('pomo-iniciar').addEventListener('click', iniciarTimer);
+  document.getElementById('pomo-pular-direto').addEventListener('click', pomoIrParaQuestoes);
+  document.getElementById('pomo-cancelar-setup').addEventListener('click', pomoCancelar);
+  document.querySelectorAll('.pomo-preset').forEach(p => {
+    p.addEventListener('click', e => {
+      const min = Number(e.target.dataset.min);
+      document.getElementById('pomo-duracao').value = min;
+      document.querySelectorAll('.pomo-preset').forEach(x => x.classList.toggle('ativo', x === e.target));
+    });
+  });
+  document.getElementById('pomo-duracao').addEventListener('input', e => {
+    const v = Number(e.target.value);
+    document.querySelectorAll('.pomo-preset').forEach(p => p.classList.toggle('ativo', Number(p.dataset.min) === v));
+  });
+
+  // Pomodoro — rodando
   document.getElementById('pomo-questoes').addEventListener('click', pomoIrParaQuestoes);
   document.getElementById('pomo-encerrar').addEventListener('click', pomoCancelar);
+
+  // Áudio ambiente
+  document.querySelectorAll('.pomo-audio-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const tipo = e.target.dataset.audio;
+      document.querySelectorAll('.pomo-audio-btn').forEach(b => b.classList.toggle('ativo', b === e.target));
+      ligarAudio(tipo);
+    });
+  });
 
   window.aceitarNudge = aceitarNudge;
 
