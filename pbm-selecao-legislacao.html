@@ -362,105 +362,6 @@
     color: #fff;
   }
 
-  /* ── POMODORO FLUTUANTE ── */
-  #pom-float {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    z-index: 9999;
-    background: #1a1a1a;
-    border: 1px solid var(--cinza-borda);
-    border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.55);
-    min-width: 240px;
-    user-select: none;
-    transition: box-shadow 0.15s;
-  }
-  #pom-float.dragging { box-shadow: 0 16px 48px rgba(0,0,0,0.7); }
-  #pom-float-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 10px 8px 14px;
-    cursor: grab;
-    border-bottom: 1px solid var(--cinza-borda);
-    border-radius: 12px 12px 0 0;
-  }
-  #pom-float-bar:active { cursor: grabbing; }
-  #pom-float.minimizado {
-    min-width: 0;
-    width: auto;
-    border-radius: 20px;
-  }
-  #pom-float.minimizado #pom-float-bar {
-    border-bottom: none;
-    border-radius: 20px;
-    padding: 5px 10px 5px 9px;
-    cursor: pointer;
-    gap: 0;
-  }
-  #pom-float-title {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px; letter-spacing: 0.08em;
-    color: var(--cinza-texto); text-transform: uppercase;
-    display: flex; align-items: center; gap: 7px;
-    white-space: nowrap;
-  }
-  #pom-time-mini {
-    display: none;
-    font-size: 13px; letter-spacing: 0.06em;
-    color: var(--branco); font-weight: 600;
-  }
-  #pom-float.minimizado #pom-time-mini { display: inline; font-size: 12px; }
-  #pom-float.minimizado #pom-title-text { display: none; }
-  #pom-float.minimizado #pom-float-actions { display: none; }
-  #pom-float.minimizado .pom-dot { width: 6px; height: 6px; margin-right: 6px; }
-  .pom-dot {
-    width: 7px; height: 7px; border-radius: 50%;
-    background: var(--cinza-borda); flex-shrink: 0; transition: background 0.25s;
-  }
-  .pom-dot.rodando { background: var(--cor-area, var(--vermelho)); }
-  #pom-float-actions { display: flex; gap: 2px; }
-  .pom-win-btn {
-    background: none; border: none; cursor: pointer;
-    color: var(--cinza-texto); padding: 3px 6px;
-    border-radius: 5px; font-size: 14px; line-height: 1;
-    transition: color 0.1s, background 0.1s;
-  }
-  .pom-win-btn:hover { color: var(--branco); background: rgba(255,255,255,0.07); }
-  #pom-float-body { padding: 14px 16px 16px; }
-  #pom-float.minimizado #pom-float-body { display: none; }
-
-  .pomodoro-wrap { display: flex; align-items: center; gap: 12px; }
-  .pomodoro-display {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 40px; letter-spacing: 0.06em;
-    color: var(--branco); line-height: 1;
-    min-width: 95px; text-align: center;
-  }
-  .pomodoro-display.rodando { color: var(--cor-area, var(--vermelho)); }
-  .pomodoro-display.pausado { color: var(--cinza-texto); }
-  .pomodoro-controls { display: flex; gap: 6px; }
-  .pom-btn {
-    background: var(--cinza-medio);
-    border: 1px solid var(--cinza-borda);
-    color: var(--cinza-texto); border-radius: 6px;
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer; transition: all 0.12s;
-    flex-shrink: 0;
-  }
-  .pom-btn:hover { border-color: #555; color: var(--branco); }
-  .pom-btn svg { width: 12px; height: 12px; }
-  .pom-presets { display: flex; gap: 4px; flex-wrap: wrap; }
-  .pom-preset {
-    background: transparent;
-    border: 1px solid var(--cinza-borda);
-    color: var(--cinza-texto);
-    border-radius: 5px; padding: 3px 8px;
-    font-size: 11px; cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace;
-    transition: all 0.12s;
-  }
-  .pom-preset:hover { border-color: #555; color: var(--branco); }
-  .pom-preset.ativo { border-color: var(--cor-area, var(--vermelho)); color: var(--branco); }
   input[type=number]:focus {
     border-color: var(--cor-area, var(--vermelho)) !important;
   }
@@ -468,26 +369,21 @@
   input[type=number]::-webkit-outer-spin-button {
     opacity: 0.4;
   }
-  #pom-reabrir {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    z-index: 9999;
-    display: none;
-    align-items: center; gap: 6px;
-    background: var(--cinza-escuro);
-    border: 1px solid var(--cinza-borda);
-    border-radius: 20px;
-    padding: 5px 12px 5px 10px;
-    cursor: pointer;
-    color: var(--cinza-texto);
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px; letter-spacing: 0.06em;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-    transition: color 0.12s, border-color 0.12s;
-    user-select: none;
+
+  /* ── BOTÃO INICIAR NO TOPO (sincronizado com rodapé) ── */
+  .btn-iniciar-topo {
+    margin-top: 12px;
+    width: 100%;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--cor-area, var(--vermelho));
+    color: #fff; border: none; border-radius: 8px;
+    padding: 9px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+    cursor: pointer; transition: opacity 0.15s, transform 0.15s;
   }
-  #pom-reabrir:hover { color: var(--branco); border-color: #555; }
-  #pom-reabrir .pom-dot { flex-shrink: 0; }
+  .btn-iniciar-topo:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-iniciar-topo:disabled { background: #2A2A2A; color: #555; cursor: default; transform: none; }
 
   /* ── STEPPER POR LEGISLAÇÃO ── */
   .qtd-leg-ctrl {
@@ -550,8 +446,6 @@
   }
   @media (max-width: 480px) {
     .qtd-opts { flex-wrap: wrap; }
-    .pom-presets { flex-wrap: wrap; }
-    #pom-float { right: 8px; left: 8px; min-width: auto; bottom: 76px; }
   }
 
 /* ── SPRINT 4 — AJUSTES FINOS MOBILE ── */
@@ -606,6 +500,10 @@
           <div class="resumo-label">Questões selecionadas</div>
           <div class="resumo-num" id="resumo-num" style="color: var(--cor-area);">0</div>
           <div class="resumo-sub" id="resumo-sub">Selecione ao menos uma</div>
+          <button class="btn-iniciar-topo" id="btn-iniciar-topo" onclick="iniciarQuestoes()" disabled>
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Iniciar questões
+          </button>
           <div class="cobertura-wrap" id="cobertura-wrap" style="display:none;">
             <div class="cobertura-label">Cobertura do edital</div>
             <div class="cobertura-bar-bg">
@@ -666,61 +564,6 @@
         </div>
       </div>
 
-    </div>
-  </div>
-</div>
-
-<!-- ── POMODORO FLUTUANTE ── -->
-<div id="pom-float">
-  <div id="pom-float-bar">
-    <div id="pom-float-title">
-      <span class="pom-dot" id="pom-dot"></span>
-      <span id="pom-title-text">Temporizador</span>
-      <span id="pom-time-mini">25:00</span>
-    </div>
-    <div id="pom-float-actions">
-      <button class="pom-win-btn" onclick="toggleMinimizarPom()" title="Minimizar / Expandir" id="pom-min-btn">&#8722;</button>
-      <button class="pom-win-btn" onclick="fecharPomodoro()" title="Fechar">&#215;</button>
-    </div>
-  </div>
-  <div id="pom-float-body">
-    <div class="pomodoro-wrap">
-      <div>
-        <div class="pom-presets" style="margin-bottom:8px;">
-          <button class="pom-preset ativo" onclick="setPomodoro(25, this)">25min</button>
-          <button class="pom-preset" onclick="setPomodoro(45, this)">45min</button>
-          <button class="pom-preset" onclick="setPomodoro(60, this)">60min</button>
-          <button class="pom-preset" onclick="setPomodoro(0, this)">Livre</button>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
-          <span style="font-size:11px;color:var(--cinza-texto);">Personalizado:</span>
-          <input
-            type="number" id="pom-custom-min" min="1" max="300"
-            placeholder="min"
-            oninput="setPomodoroCostum(this)"
-            style="
-              width:60px; background:var(--cinza-medio);
-              border:1px solid var(--cinza-borda); border-radius:6px;
-              padding:3px 8px; font-size:12px; color:var(--branco);
-              font-family:'IBM Plex Mono',monospace;
-              outline:none; transition:border-color 0.15s;
-            "
-          >
-          <span style="font-size:11px;color:var(--cinza-texto);">min</span>
-        </div>
-        <div class="pom-sessoes" id="pom-sessoes">Sessões hoje: 0</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:8px;">
-        <div class="pomodoro-display pausado" id="pom-display">25:00</div>
-        <div class="pomodoro-controls">
-          <button class="pom-btn" id="pom-play" onclick="togglePomodoro()" title="Iniciar / Pausar">
-            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </button>
-          <button class="pom-btn" onclick="resetPomodoro()" title="Reiniciar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -820,14 +663,6 @@ let progressoPorLeg = {};
 let contagensReais = {};
 let contagensCarregadas = false;
 
-// ── POMODORO ──
-let pomMinutos   = 25;
-let pomSegundos  = 0;
-let pomRodando   = false;
-let pomInterval  = null;
-let pomSessoes   = 0;
-let pomLivre     = false;
-
 function tagClass(tag) {
   if (tag === 'exclusivo')     return 'tag-exclusivo';
   if (tag === 'exclusivo-cba') return 'tag-exclusivo-cba';
@@ -856,7 +691,7 @@ function render() {
   document.getElementById('resumo-num').style.color = area.cor;
   document.getElementById('cobertura-bar').style.background = area.cor;
 
-  document.querySelectorAll('#filtro-opts .qtd-btn.ativo, .pom-preset.ativo').forEach(b => {
+  document.querySelectorAll('#filtro-opts .qtd-btn.ativo').forEach(b => {
     b.style.background = area.cor;
     b.style.borderColor = area.cor;
   });
@@ -1011,17 +846,20 @@ function atualizarResumo() {
   document.getElementById('resumo-num').textContent = totalQuestoes || 0;
 
   const btn  = document.getElementById('btn-iniciar');
+  const btnTopo = document.getElementById('btn-iniciar-topo');
   const info = document.getElementById('info-iniciar');
   const tempoEl = document.getElementById('tempo-val');
 
   if (n === 0) {
     btn.disabled = true;
+    if (btnTopo) btnTopo.disabled = true;
     document.getElementById('resumo-sub').textContent = 'Selecione ao menos uma';
     info.textContent = 'Selecione ao menos uma legislação para começar';
     tempoEl.textContent = '—';
     document.getElementById('cobertura-wrap').style.display = 'none';
   } else {
     btn.disabled = false;
+    if (btnTopo) btnTopo.disabled = false;
     document.getElementById('resumo-sub').textContent =
       n === 1 ? '1 legislação' : n + ' legislações';
     info.textContent = totalQuestoes + ' questões serão sorteadas aleatoriamente';
@@ -1109,210 +947,6 @@ async function carregarProgressoLeg() {
   } catch(e) {}
 }
 
-// ── POMODORO ──
-function padZ(n) { return n < 10 ? '0' + n : '' + n; }
-
-function atualizarDisplayPom() {
-  const tempo = padZ(pomMinutos) + ':' + padZ(pomSegundos);
-  const el = document.getElementById('pom-display');
-  el.textContent = tempo;
-  el.className = 'pomodoro-display ' + (pomRodando ? 'rodando' : 'pausado');
-  const dot = document.getElementById('pom-dot');
-  if (dot) dot.className = 'pom-dot' + (pomRodando ? ' rodando' : '');
-  const mini = document.getElementById('pom-time-mini');
-  if (mini) {
-    mini.textContent = tempo;
-    mini.style.color = pomRodando ? 'var(--cor-area, var(--vermelho))' : 'var(--cinza-texto)';
-  }
-}
-
-function setPomodoro(min, btn) {
-  pausarPomodoro();
-  pomLivre    = (min === 0);
-  pomMinutos  = pomLivre ? 99 : min;
-  pomSegundos = 0;
-  document.querySelectorAll('.pom-preset').forEach(b => b.classList.remove('ativo'));
-  btn.classList.add('ativo');
-  atualizarDisplayPom();
-}
-
-function togglePomodoro() {
-  if (pomRodando) { pausarPomodoro(); } else { iniciarPomodoro(); }
-}
-
-function iniciarPomodoro() {
-  if (pomLivre) {
-    pomRodando = true;
-    atualizarDisplayPom();
-    updatePlayBtn();
-    pomInterval = setInterval(() => {
-      pomSegundos++;
-      if (pomSegundos === 60) { pomSegundos = 0; pomMinutos++; }
-      atualizarDisplayPom();
-    }, 1000);
-    return;
-  }
-  if (pomMinutos === 0 && pomSegundos === 0) resetPomodoro();
-  pomRodando = true;
-  atualizarDisplayPom();
-  updatePlayBtn();
-  pomInterval = setInterval(() => {
-    if (pomSegundos === 0) {
-      if (pomMinutos === 0) {
-        clearInterval(pomInterval);
-        pomRodando = false;
-        pomSessoes++;
-        document.getElementById('pom-sessoes').textContent = 'Sessões hoje: ' + pomSessoes;
-        document.getElementById('pom-display').className = 'pomodoro-display pausado';
-        updatePlayBtn();
-        try {
-          const ctx = new AudioContext();
-          [[0, 880, 0.18], [0.25, 880, 0.18], [0.5, 1100, 0.35]].forEach(([t, freq, dur]) => {
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.connect(gain); gain.connect(ctx.destination);
-            osc.frequency.value = freq;
-            gain.gain.setValueAtTime(0.35, ctx.currentTime + t);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + dur);
-            osc.start(ctx.currentTime + t);
-            osc.stop(ctx.currentTime + t + dur);
-          });
-        } catch(e) {}
-        return;
-      }
-      pomMinutos--;
-      pomSegundos = 59;
-    } else {
-      pomSegundos--;
-    }
-    atualizarDisplayPom();
-  }, 1000);
-}
-
-function pausarPomodoro() {
-  clearInterval(pomInterval);
-  pomRodando = false;
-  atualizarDisplayPom();
-  updatePlayBtn();
-}
-
-function resetPomodoro() {
-  clearInterval(pomInterval);
-  pomRodando = false;
-  const ativo = document.querySelector('.pom-preset.ativo');
-  if (ativo) {
-    const txt = ativo.textContent;
-    pomMinutos  = pomLivre ? 0 : parseInt(txt);
-    pomSegundos = 0;
-  }
-  atualizarDisplayPom();
-  updatePlayBtn();
-}
-
-function updatePlayBtn() {
-  const btn = document.getElementById('pom-play');
-  btn.innerHTML = pomRodando
-    ? '<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>'
-    : '<svg viewBox="0 0 24 24" fill="currentColor" width="12" height="12"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-}
-
-function setPomodoroCostum(input) {
-  const val = parseInt(input.value);
-  if (!val || val < 1) return;
-  pausarPomodoro();
-  pomLivre    = false;
-  pomMinutos  = val;
-  pomSegundos = 0;
-  document.querySelectorAll('.pom-preset').forEach(b => b.classList.remove('ativo'));
-  atualizarDisplayPom();
-}
-
-function toggleMinimizarPom() {
-  const win = document.getElementById('pom-float');
-  const btn = document.getElementById('pom-min-btn');
-  win.classList.toggle('minimizado');
-  btn.innerHTML = '&#8722;';
-}
-
-let pomStartX = 0, pomStartY = 0;
-document.getElementById('pom-float-bar').addEventListener('mousedown', function(e) {
-  pomStartX = e.clientX; pomStartY = e.clientY;
-});
-document.getElementById('pom-float-bar').addEventListener('touchstart', function(e) {
-  pomStartX = e.touches[0].clientX; pomStartY = e.touches[0].clientY;
-}, { passive: true });
-
-document.getElementById('pom-float-bar').addEventListener('click', function(e) {
-  const win = document.getElementById('pom-float');
-  const dist = Math.hypot(e.clientX - pomStartX, e.clientY - pomStartY);
-  if (dist > 6) return; // Se moveu mais de 6px, ignora o click (foi drag)
-
-  if (win.classList.contains('minimizado') && !e.target.closest('#pom-float-actions')) {
-    toggleMinimizarPom();
-  }
-});
-
-// ── POMODORO FLUTUANTE: DRAG ──
-(function() {
-  const win = document.getElementById('pom-float');
-  const bar = document.getElementById('pom-float-bar');
-  let dx = 0, dy = 0, startX = 0, startY = 0, dragging = false;
-
-  bar.addEventListener('mousedown', function(e) {
-    if (e.target.closest('.pom-win-btn')) return;
-    dragging = true;
-    const rect = win.getBoundingClientRect();
-    startX = e.clientX - rect.left;
-    startY = e.clientY - rect.top;
-    win.classList.add('dragging');
-    win.style.right = 'auto';
-    win.style.bottom = 'auto';
-    win.style.left = rect.left + 'px';
-    win.style.top  = rect.top  + 'px';
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!dragging) return;
-    let nx = e.clientX - startX;
-    let ny = e.clientY - startY;
-    nx = Math.max(0, Math.min(window.innerWidth  - win.offsetWidth,  nx));
-    ny = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, ny));
-    win.style.left = nx + 'px';
-    win.style.top  = ny + 'px';
-  });
-
-  document.addEventListener('mouseup', function() {
-    if (dragging) { dragging = false; win.classList.remove('dragging'); }
-  });
-
-  bar.addEventListener('touchstart', function(e) {
-    if (e.target.closest('.pom-win-btn')) return;
-    const t = e.touches[0];
-    const rect = win.getBoundingClientRect();
-    startX = t.clientX - rect.left;
-    startY = t.clientY - rect.top;
-    dragging = true;
-    win.style.right = 'auto';
-    win.style.bottom = 'auto';
-    win.style.left = rect.left + 'px';
-    win.style.top  = rect.top  + 'px';
-  }, { passive: true });
-
-  document.addEventListener('touchmove', function(e) {
-    if (!dragging) return;
-    const t = e.touches[0];
-    let nx = t.clientX - startX;
-    let ny = t.clientY - startY;
-    nx = Math.max(0, Math.min(window.innerWidth  - win.offsetWidth,  nx));
-    ny = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, ny));
-    win.style.left = nx + 'px';
-    win.style.top  = ny + 'px';
-  }, { passive: true });
-
-  document.addEventListener('touchend', function() { dragging = false; });
-})();
-
 let filtroConfig = 'todas';
 
 function setFiltro(val, btn) {
@@ -1328,25 +962,6 @@ function iniciarQuestoes() {
   sessionStorage.setItem('pbm_qtd_por_leg', JSON.stringify(qtdPorLeg));
   sessionStorage.removeItem('pbm_qtd');
   sessionStorage.setItem('pbm_filtro', filtroConfig);
-
-  // Persistir estado do Pomodoro para a página de questões
-  sessionStorage.setItem('pom_minutos', pomMinutos);
-  sessionStorage.setItem('pom_segundos', pomSegundos);
-  sessionStorage.setItem('pom_rodando', pomRodando ? '1' : '0');
-  sessionStorage.setItem('pom_livre', pomLivre ? '1' : '0');
-  sessionStorage.setItem('pom_sessoes', pomSessoes);
-  if (pomRodando) sessionStorage.setItem('pom_ts', Date.now());
-  else sessionStorage.removeItem('pom_ts');
-  const presetAtivo = document.querySelector('.pom-preset.ativo');
-  sessionStorage.setItem('pom_preset', presetAtivo ? presetAtivo.textContent.trim() : '25min');
-  sessionStorage.setItem('pom_custom', document.getElementById('pom-custom-min').value || '');
-  const pomWin = document.getElementById('pom-float');
-  sessionStorage.setItem('pom_minimizado', pomWin.classList.contains('minimizado') ? '1' : '0');
-  sessionStorage.setItem('pom_fechado', pomWin.style.display === 'none' ? '1' : '0');
-  sessionStorage.setItem('pom_pos_left', pomWin.style.left || '');
-  sessionStorage.setItem('pom_pos_top',  pomWin.style.top  || '');
-  sessionStorage.setItem('pom_pos_right',  pomWin.style.right  || '');
-  sessionStorage.setItem('pom_pos_bottom', pomWin.style.bottom || '');
 
   window.location.href = '/questoes';
 }
@@ -1376,7 +991,6 @@ document.getElementById('btn-logout-top').addEventListener('click', handleSair);
 })();
 
 // ── INIT ──
-atualizarDisplayPom();
 if (window.PBMTour) PBMTour.init();
 
 document.querySelectorAll('.view-tab').forEach(function(t) {
@@ -1404,94 +1018,6 @@ if (sessionStorage.getItem('pbm_preview_aluno') === '1') {
 })();
 
 Promise.all([carregarAreas(), carregarProgressoLeg(), carregarContagensReais()]).then(() => render());
-
-// ── POMODORO: RESTAURAR ESTADO (vindo da página de questões) ──
-(function restaurarPomodoro() {
-  const tsStr = sessionStorage.getItem('pom_ts');
-  if (tsStr === null && sessionStorage.getItem('pom_minutos') === null) return; // nada salvo
-
-  let minutos  = parseInt(sessionStorage.getItem('pom_minutos'))  || 25;
-  let segundos = parseInt(sessionStorage.getItem('pom_segundos')) || 0;
-  const rodando    = sessionStorage.getItem('pom_rodando')    === '1';
-  const livre      = sessionStorage.getItem('pom_livre')      === '1';
-  const sessoes    = parseInt(sessionStorage.getItem('pom_sessoes')) || 0;
-  const preset     = sessionStorage.getItem('pom_preset')     || '25min';
-  const custom     = sessionStorage.getItem('pom_custom')     || '';
-  const minimizado = sessionStorage.getItem('pom_minimizado') === '1';
-  const fechado    = sessionStorage.getItem('pom_fechado')    === '1';
-  const posLeft    = sessionStorage.getItem('pom_pos_left')   || '';
-  const posTop     = sessionStorage.getItem('pom_pos_top')    || '';
-  const posRight   = sessionStorage.getItem('pom_pos_right')  || '';
-  const posBottom  = sessionStorage.getItem('pom_pos_bottom') || '';
-
-  if (rodando && tsStr) {
-    const elapsed = Math.floor((Date.now() - parseInt(tsStr)) / 1000);
-    if (!livre) {
-      let totalSeg = minutos * 60 + segundos - elapsed;
-      if (totalSeg <= 0) { minutos = 0; segundos = 0; }
-      else { minutos = Math.floor(totalSeg / 60); segundos = totalSeg % 60; }
-    } else {
-      let totalSeg = minutos * 60 + segundos + elapsed;
-      minutos = Math.floor(totalSeg / 60); segundos = totalSeg % 60;
-    }
-  }
-
-  pomMinutos  = minutos;
-  pomSegundos = segundos;
-  pomLivre    = livre;
-  pomSessoes  = sessoes;
-
-  document.querySelectorAll('.pom-preset').forEach(b => b.classList.remove('ativo'));
-  let encontrado = false;
-  document.querySelectorAll('.pom-preset').forEach(b => {
-    if (b.textContent.trim() === preset) { b.classList.add('ativo'); encontrado = true; }
-  });
-  if (!encontrado) {
-    const first = document.querySelector('.pom-preset');
-    if (first) first.classList.add('ativo');
-  }
-
-  if (custom) document.getElementById('pom-custom-min').value = custom;
-
-  document.getElementById('pom-sessoes').textContent = 'Sessões hoje: ' + pomSessoes;
-
-  const pomWin = document.getElementById('pom-float');
-  if (fechado) {
-    pomWin.style.display = 'none';
-    document.getElementById('pom-reabrir').style.display = 'flex';
-  }
-  if (minimizado) pomWin.classList.add('minimizado');
-  if (posLeft)   { pomWin.style.left   = posLeft;   pomWin.style.right  = 'auto'; }
-  if (posTop)    { pomWin.style.top    = posTop;    pomWin.style.bottom = 'auto'; }
-  if (!posLeft && posRight)  pomWin.style.right  = posRight;
-  if (!posTop  && posBottom) pomWin.style.bottom = posBottom;
-
-  atualizarDisplayPom();
-  updatePlayBtn();
-
-  if (rodando && !(minutos === 0 && segundos === 0 && !livre)) {
-    iniciarPomodoro();
-  }
-})();
-</script>
-
-<button id="pom-reabrir" onclick="reabrirPomodoro()" title="Abrir Temporizador">
-  <span class="pom-dot" id="pom-dot-reabrir"></span>
-  Temporizador
-</button>
-
-<script>
-function fecharPomodoro() {
-  pausarPomodoro();
-  document.getElementById('pom-float').style.display = 'none';
-  const btn = document.getElementById('pom-reabrir');
-  btn.style.display = 'flex';
-}
-
-function reabrirPomodoro() {
-  document.getElementById('pom-float').style.display = '';
-  document.getElementById('pom-reabrir').style.display = 'none';
-}
 </script>
 
 <div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">

@@ -1587,13 +1587,11 @@ init();
 </script>
 
 <!-- Pomodoro flutuante unificado (mesma instância usada em /ciclo) -->
-<!-- Só monta se já estiver rodando (vindo de /ciclo ou /selecao-legislacao). -->
-<!-- Em modo estudo regular, o aluno inicia o timer em /selecao-legislacao. -->
 <script src="/js/pomodoro-widget.js?v=4"></script>
 <script>
-  // Em /questoes o foco é resolver, não configurar o Pomodoro — abre minimizado.
-  // Se o aluno expandir, permanece expandido até navegar (não persiste).
-  if (window.PBMPomo && window.PBMPomo.estaRodando()) {
+  // Sempre monta minimizado para o aluno poder iniciar o timer durante a resolução.
+  // Se já estiver rodando (vindo de /ciclo), o widget retoma o estado automaticamente.
+  if (window.PBMPomo) {
     window.PBMPomo.mountFloating({ minimizado: true });
   }
 </script>
