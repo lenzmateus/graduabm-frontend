@@ -307,9 +307,16 @@ const PBM = {
       const jwt = sessionStorage.getItem('pbm_admin_jwt') || '';
       return { 'Authorization': `Bearer ${jwt}` };
     },
-    protegerRota() {
+    async protegerRota() {
       if (sessionStorage.getItem('pbm_admin') !== '1' || !sessionStorage.getItem('pbm_admin_jwt')) {
         window.location.href = '/admin-login';
+        return;
+      }
+      try {
+        await PBM.Admin.req('/api/admin/auth/me');
+      } catch (err) {
+        if (err?.status === 401) return;
+        console.warn('[Admin] Falha ao validar sessão:', err?.erro || err?.message || err);
       }
     },
     logout() {
@@ -348,6 +355,9 @@ const PBM = {
       },
       cadastrar({ email, nome, senha, token_convite }) {
         return request('/api/admin/auth/cadastrar', { method: 'POST', body: JSON.stringify({ email, nome, senha, token_convite }) });
+      },
+      me() {
+        return PBM.Admin.req('/api/admin/auth/me');
       },
     },
     stats() {
