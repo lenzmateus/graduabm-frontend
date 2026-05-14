@@ -14,43 +14,14 @@
 <title>Protocolo Bravo Mike — Questões</title>
 <script src="/js/font-size.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/pbm-layout.css">
 <style>
-  :root {
-    --vermelho: #C0270F;
-    --carvao: #0F0F0F;
-    --cinza-escuro: #1A1A1A;
-    --cinza-medio: #2A2A2A;
-    --cinza-borda: #333;
-    --cinza-texto: #888;
-    --branco: #F8F6F2;
-    --verde: #27A05A;
-    --verde-bg: rgba(39,160,90,0.1);
-    --verde-borda: rgba(39,160,90,0.35);
-    --erro-bg: rgba(226,75,74,0.1);
-    --erro-borda: rgba(226,75,74,0.35);
-    --cor-area: #C0270F;
-  }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--carvao); color: var(--branco);
-    font-family: 'Inter', sans-serif;
-    font-size: 16px; line-height: 1.6;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── LOADING ── */
+/* ── LOADING ── */
   #tela-loading {
     min-height: 100vh;
     display: flex; align-items: center; justify-content: center;
     flex-direction: column; gap: 1.5rem;
-  }
-  .logo-text {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 24px; letter-spacing: 0.05em; color: var(--branco);
-    text-decoration: none;
   }
   .spinner-grande {
     width: 32px; height: 32px;
@@ -222,7 +193,6 @@
   }
   .btn-sair-quiz:hover { border-color: #555; color: var(--branco); }
 
-  /* ── QUIZ MAIN ── */
   .quiz-main {
     flex: 1;
     display: flex; align-items: flex-start; justify-content: center;
@@ -585,12 +555,6 @@
   .nav-aberto #nav-chevron { transform: rotate(180deg); }
 
   /* PROTEÇÃO ANTI-CÓPIA */
-  body {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-  }
 
   /* ── SETAS DE NAVEGAÇÃO LATERAL ── */
   .seta-nav {
@@ -736,34 +700,8 @@
   #pom-reabrir:hover { color: var(--branco); border-color: #555; }
   #pom-reabrir .pom-dot { flex-shrink: 0; }
 
-  /* ── BOTTOMBAR MOBILE ── */
-  .bottombar {
-    display: none; position: fixed;
-    bottom: 0; left: 0; right: 0; height: 60px;
-    background: var(--cinza-escuro);
-    border-top: 1px solid var(--cinza-borda);
-    z-index: 200;
-    grid-template-columns: repeat(7, 1fr);
-  }
-  .bottombar a {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; color: #555; text-decoration: none;
-    font-size: 9px; font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.04em; text-transform: uppercase;
-    transition: color 0.12s;
-  }
-  .bottombar a svg { width: 20px; height: 20px; }
-  .bottombar a.ativo { color: var(--vermelho); }
-  .bottombar a:hover { color: var(--branco); }
-  @media (max-width: 768px) {
-    .bottombar { display: grid; }
-    .sidebar { display: none !important; }
-    .conteudo { padding-bottom: 76px; }
-  }
-
-  /* ── SPRINT 4 — AJUSTES FINOS MOBILE ── */
+/* ── SPRINT 4 — AJUSTES FINOS MOBILE ── */
   @media (max-width: 480px) {
-    .conteudo { padding: 0.75rem 0.75rem 76px; }
     .btn-iniciar, .btn-acao, .btn-confirmar, .btn-resultado, .btn-estudar,
     .alt, .leg-item, .view-tab, .qtd-btn { min-height: 44px; }
     .area-num-label, .tag, .prog-txt, .stat-label, .stat-sub, .dash-label,
@@ -957,6 +895,8 @@
 
 <script src="/js/api.js"></script>
 <script src="/js/tour.js"></script>
+<script src="/js/pbm-components.js"></script>
+<script>PBM.Layout.mount({active:'estudar'});</script>
 <button class="seta-nav seta-esq" id="seta-esq" onclick="voltarQuestao()" title="Questão anterior" disabled>
   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
 </button>
@@ -1414,16 +1354,17 @@ async function encerrarSessao() {
   } else {
     console.warn('[Protocolo Bravo Mike] Sessão não registrada — progresso não foi salvo.');
   }
-  // Se veio do Ciclo, registra tempo no bloco (em minutos, mínimo 1)
+  // Se veio do Ciclo, conclui o bloco (registra tempo + acerto + avanca rodada se for ultimo)
   if (cicloBloco && cicloSessaoIniciada && !PBM.isAdmin()) {
     const dur = Math.max(1, Math.round((Date.now() - cicloSessaoIniciada) / 60000));
     try {
-      await PBM.Ciclo.registrarTempo(cicloBloco.id, {
+      await PBM.Ciclo.concluirBloco(cicloBloco.id, {
         duracao_minutos: dur,
-        origem: 'questoes',
+        respondidas: acertos + erros,
+        acertos,
       });
     } catch (err) {
-      console.warn('[Ciclo] Falha ao registrar tempo do bloco:', err);
+      console.warn('[Ciclo] Falha ao concluir bloco:', err);
     }
   }
   pararTimer();
@@ -1504,10 +1445,9 @@ function mostrarResultados() {
 
 // Renderiza o card "Relatório de Bloco" na tela de resultados (ciclo)
 const CICLO_STATUS_LABEL = {
-  nao_iniciada: { txt: 'Não iniciada', cor: '#888', bg: 'rgba(136,136,136,0.12)', border: 'rgba(136,136,136,0.3)' },
+  pendente:     { txt: 'Pendente',     cor: '#888',   bg: 'rgba(136,136,136,0.12)', border: 'rgba(136,136,136,0.3)' },
   em_andamento: { txt: 'Em andamento', cor: '#EBC57D', bg: 'rgba(211,139,45,0.12)', border: 'rgba(211,139,45,0.3)' },
-  estudada:     { txt: 'Estudada',     cor: '#7DD99A', bg: 'rgba(125,217,154,0.12)', border: 'rgba(125,217,154,0.3)' },
-  revisada:     { txt: 'Revisada',     cor: '#85B7EB', bg: 'rgba(24,95,165,0.18)',   border: 'rgba(24,95,165,0.3)' },
+  concluido:    { txt: 'Concluído',    cor: '#7DD99A', bg: 'rgba(125,217,154,0.12)', border: 'rgba(125,217,154,0.3)' },
 };
 
 async function renderRelatorioBloco(durSessao, pctAcerto) {
@@ -1539,7 +1479,7 @@ async function renderRelatorioBloco(durSessao, pctAcerto) {
   document.getElementById('br-meta-pct').textContent = `${metaPct}% (${tempoTotal} / ${meta} min)`;
   document.getElementById('br-meta-bar').style.width = metaPct + '%';
 
-  const st = CICLO_STATUS_LABEL[blocoAtual.status] || CICLO_STATUS_LABEL.nao_iniciada;
+  const st = CICLO_STATUS_LABEL[blocoAtual.status] || CICLO_STATUS_LABEL.pendente;
   const elStatus = document.getElementById('br-status');
   elStatus.textContent = st.txt;
   elStatus.style.color = st.cor;
@@ -1553,45 +1493,31 @@ async function renderRelatorioBloco(durSessao, pctAcerto) {
 function renderAcoesRelatorioBloco(bloco) {
   const wrap = document.getElementById('br-acoes');
   if (!wrap) return;
-  const acoes = [];
-  if (bloco.status === 'em_andamento' || bloco.status === 'nao_iniciada') {
-    acoes.push({ label: '✓ Marcar como Estudada', status: 'estudada', primario: true });
-  }
-  if (bloco.status === 'estudada') {
-    acoes.push({ label: '🎯 Marcar como Revisada', status: 'revisada', primario: true });
-  }
-  acoes.push({ label: 'Mais questões deste bloco →', href: '/questoes', primario: false });
 
-  wrap.innerHTML = acoes.map((a, i) => {
-    if (a.href) {
-      return `<a href="${a.href}" class="bloco-rel-btn ${a.primario ? '' : 'secundaria'}">${a.label}</a>`;
-    }
-    return `<button class="bloco-rel-btn ${a.primario ? '' : 'secundaria'}" data-status="${a.status}" data-idx="${i}">${a.label}</button>`;
-  }).join('');
+  // No novo modelo, o bloco já fechou ao chegar aqui.
+  // Aluno marca dificuldade ("Travado / Domino") — aplica em user_legislacao_dificuldade.
+  // Próximo ciclo gerado reflete (alta vai pra ordem cedo; baixa pro fim).
+  wrap.innerHTML = `
+    <button class="bloco-rel-btn" data-dif="alta">↑ Travado nessa legislação</button>
+    <button class="bloco-rel-btn secundaria" data-dif="baixa">↓ Já domino</button>
+    <a href="/ciclo-estudos" class="bloco-rel-btn secundaria">Voltar ao Ciclo →</a>
+  `;
 
-  wrap.querySelectorAll('button[data-status]').forEach(btn => {
+  wrap.querySelectorAll('button[data-dif]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      const novoStatus = btn.dataset.status;
+      const nivel = btn.dataset.dif;
       btn.disabled = true;
+      const labelOrig = btn.textContent;
+      btn.textContent = 'Salvando…';
       try {
-        await PBM.Ciclo.atualizarStatus(bloco.id, novoStatus);
-        // Atualiza visual local + remove pbm_ciclo_bloco (sessão consumida)
-        const stEl = document.getElementById('br-status');
-        const st = CICLO_STATUS_LABEL[novoStatus];
-        stEl.textContent = st.txt;
-        stEl.style.color = st.cor;
-        stEl.style.background = st.bg;
-        stEl.style.borderColor = st.border;
-        // Re-render ações com novo status
-        renderAcoesRelatorioBloco({ ...bloco, status: novoStatus });
-        sessionStorage.removeItem('pbm_ciclo_bloco');
-        // Pequeno feedback visual via res-sub
-        const sub = document.getElementById('res-sub');
-        if (sub) sub.textContent = sub.textContent + ' · status atualizado';
+        await PBM.Ciclo.salvarDificuldade(bloco.legislacao_id || cicloBloco.legislacao_id, nivel);
+        btn.textContent = '✓ Marcado como ' + (nivel === 'alta' ? 'alta dificuldade' : 'domínio');
+        // Desabilita o outro botão pra evitar conflito
+        wrap.querySelectorAll('button[data-dif]').forEach(b => { if (b !== btn) b.disabled = true; });
       } catch (err) {
-        console.warn('[ciclo] falha ao atualizar status', err);
+        console.warn('[ciclo] falha ao salvar dificuldade', err);
         btn.disabled = false;
-        btn.textContent = '⚠ Tentar novamente';
+        btn.textContent = labelOrig;
       }
     });
   });
@@ -2123,27 +2049,8 @@ window.addEventListener('beforeunload', function() {
 });
 </script>
 <style>
-.pbm-watermark {
-  pointer-events: none; user-select: none;
-  position: fixed; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 520px; height: 520px;
-  background: url('/images/emblem-pbm.png') center/contain no-repeat;
-  opacity: 0.05; z-index: 0;
-}
 </style>
-<nav class="bottombar" id="bottombar">
-  <a href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Início</a>
-  <a href="/editais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Editais</a>
-  <a href="/area-estudos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Estudar</a>
-  <a href="/simulados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Simulados</a>
-  <a href="/simulado-mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>QAP</a>
-  <a href="/flashcards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Cards</a>
-  <a href="/ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>Ranking</a>
-</nav>
-<script>
-(function(){var p=window.location.pathname,m={'/dashboard':'/dashboard','/area-estudos':'/area-estudos','/selecao-legislacao':'/area-estudos','/questoes':'/area-estudos','/simulados':'/simulados','/simulado-prova':'/simulados','/simulado-mensal':'/simulado-mensal','/simulado-mensal-ranking':'/simulado-mensal','/flashcards':'/flashcards','/ranking':'/ranking'},a=m[p]||p;document.querySelectorAll('#bottombar a').forEach(function(l){if(l.getAttribute('href')===a)l.classList.add('ativo');});})();
-</script>
+
 <div class="pbm-watermark" aria-hidden="true"></div>
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
 <!-- FERRAMENTAS DE PROVA -->

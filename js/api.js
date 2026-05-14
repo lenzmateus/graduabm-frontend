@@ -218,10 +218,38 @@ const PBM = {
     get() {
       return request('/api/ciclo');
     },
-    criar(body) {
-      return request('/api/ciclo', {
+    // Gera (ou regenera) blocos automaticamente. Body: { horas_totais_ciclo?, pomodoro_minutos? }
+    gerar(body) {
+      return request('/api/ciclo/generate', {
         method: 'POST',
+        body: JSON.stringify(body || {}),
+      });
+    },
+    atualizar(body) {
+      return request('/api/ciclo', {
+        method: 'PATCH',
         body: JSON.stringify(body),
+      });
+    },
+    excluir() {
+      return request('/api/ciclo', { method: 'DELETE' });
+    },
+    // Bloco lifecycle (substitui atualizarStatus do modelo antigo)
+    iniciarBloco(blocoId) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/iniciar', {
+        method: 'POST',
+      });
+    },
+    concluirBloco(blocoId, body) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/concluir', {
+        method: 'POST',
+        body: JSON.stringify(body || {}),
+      });
+    },
+    pularBloco(blocoId, body) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/pular', {
+        method: 'POST',
+        body: JSON.stringify(body || { duracao_minutos: 0 }),
       });
     },
     registrarTempo(blocoId, body) {
@@ -230,35 +258,44 @@ const PBM = {
         body: JSON.stringify(body),
       });
     },
+    // Proficiência por AT
+    proficiencia() {
+      return request('/api/ciclo/at-proficiencia');
+    },
+    salvarProficiencia(area, nivel) {
+      return request('/api/ciclo/at-proficiencia', {
+        method: 'PATCH',
+        body: JSON.stringify({ area, nivel_proficiencia: nivel }),
+      });
+    },
+    // Dificuldade por legislação
+    dificuldades() {
+      return request('/api/ciclo/legislacao-dificuldade');
+    },
+    salvarDificuldade(legislacaoId, nivel) {
+      return request('/api/ciclo/legislacao-dificuldade', {
+        method: 'PATCH',
+        body: JSON.stringify({ legislacao_id: legislacaoId, nivel }),
+      });
+    },
+    // Aliases de compat (preservam chamadas antigas — mapeiam para o novo)
+    criar() { return this.gerar(); },
     atualizarStatus(blocoId, status) {
-      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/status', {
-        method: 'PATCH',
-        body: JSON.stringify({ status }),
-      });
+      if (status === 'em_andamento') return this.iniciarBloco(blocoId);
+      if (status === 'concluido') return this.concluirBloco(blocoId, {});
+      return Promise.resolve(null);
     },
-    relatorioRodada() {
-      return request('/api/ciclo/rodada/relatorio');
+  },
+
+  Historico: {
+    resumo(dias = 30) {
+      return request('/api/historico/resumo?dias=' + encodeURIComponent(dias));
     },
-    reiniciarRodada() {
-      return request('/api/ciclo/rodada/reiniciar', { method: 'POST' });
+    porLegislacao(id) {
+      return request('/api/historico/legislacao/' + encodeURIComponent(id));
     },
-    atualizar(body) {
-      return request('/api/ciclo', {
-        method: 'PATCH',
-        body: JSON.stringify(body),
-      });
-    },
-    atualizarPrioridade(blocoId, prioridade) {
-      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/prioridade', {
-        method: 'PATCH',
-        body: JSON.stringify({ prioridade }),
-      });
-    },
-    excluir() {
-      return request('/api/ciclo', { method: 'DELETE' });
-    },
-    blocoRelatorio(blocoId) {
-      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/relatorio');
+    revisoesPendentes() {
+      return request('/api/historico/revisoes');
     },
   },
 

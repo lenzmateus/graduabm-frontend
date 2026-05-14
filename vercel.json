@@ -16,6 +16,7 @@
     { "source": "/ranking", "destination": "/pbm-ranking" },
     { "source": "/flashcards", "destination": "/pbm-flashcards" },
     { "source": "/ciclo-estudos", "destination": "/pbm-ciclo-estudos" },
+    { "source": "/minhas-dificuldades", "destination": "/pbm-minhas-dificuldades" },
     { "source": "/editais", "destination": "/pbm-editais" },
     { "source": "/simulado-mensal", "destination": "/pbm-simulado-mensal" },
     { "source": "/simulado-mensal-ranking", "destination": "/pbm-simulado-mensal-ranking" },
