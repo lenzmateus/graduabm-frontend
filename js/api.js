@@ -191,6 +191,9 @@ const PBM = {
       reportar(questao_id, comentario) {
         return request('/api/denuncias', { method: 'POST', body: JSON.stringify({ questao_id, comentario }) });
       },
+      minhas() {
+        return request('/api/denuncias/minhas');
+      },
     },
     flashcards: {
       listar(qs = '') {
