@@ -149,6 +149,7 @@
     bindOnce(document.querySelector('[data-pbm-erros]'), 'click', function (e) {
       e.preventDefault();
       sessionStorage.setItem('pbm_revisao_erros', '1');
+      sessionStorage.removeItem('pbm_ciclo_bloco');
       window.location.href = '/questoes';
     });
   }

@@ -512,7 +512,7 @@ async function avaliar(qualidade) {
   avaliacaoEmAndamento = true;
 
   const card = cardsFiltrados[indiceAtual];
-  if (!card) return;
+  if (!card) { avaliacaoEmAndamento = false; return; }
 
   try {
     await PBM.api.flashcards.revisar(card.id, qualidade);

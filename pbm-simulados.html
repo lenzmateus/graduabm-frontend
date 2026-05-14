@@ -391,9 +391,9 @@ function selecionarCurso(c) {
 }
 
 function iniciarSimulado() {
-  sessionStorage.setItem('pbm_modo', 'simulado');
   sessionStorage.setItem('pbm_simulado_curso', cursoSelecionado);
-  sessionStorage.removeItem('pbm_timer_' + cursoSelecionado);
+  // Garante que /simulado-prova vai iniciar uma prova nova (não retomar estado anterior)
+  sessionStorage.removeItem('pbm_simulado_estado_' + cursoSelecionado);
   window.location.href = '/simulado-prova';
 }
 

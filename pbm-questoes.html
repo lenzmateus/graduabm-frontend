@@ -816,11 +816,21 @@ const qtdPorLeg  = qtdPorLegRaw ? JSON.parse(qtdPorLegRaw) : null;
 const qtd        = parseInt(sessionStorage.getItem('pbm_qtd') || '20') || 20;
 
 // ── CICLO DE ESTUDOS (origem) ──
+// Só considera modo "ciclo" se o aluno realmente veio do fluxo de ciclo.
+// Se a navegação foi pelo fluxo ordinário (seleção de legislação) ou pelo Caderno
+// de Erros, descarta um `pbm_ciclo_bloco` remanescente de uma sessão abandonada.
 let cicloBloco = null;
 let cicloSessaoIniciada = null;
+const fluxoOrdinarioOuErros =
+  !!sessionStorage.getItem('pbm_qtd_por_leg')
+  || sessionStorage.getItem('pbm_revisao_erros') === '1';
 try {
   const raw = sessionStorage.getItem('pbm_ciclo_bloco');
-  if (raw) cicloBloco = JSON.parse(raw);
+  if (raw && fluxoOrdinarioOuErros) {
+    sessionStorage.removeItem('pbm_ciclo_bloco');
+  } else if (raw) {
+    cicloBloco = JSON.parse(raw);
+  }
 } catch (e) { cicloBloco = null; }
 if (cicloBloco) {
   cicloSessaoIniciada = Date.now();
@@ -1587,7 +1597,7 @@ init();
 </script>
 
 <!-- Pomodoro flutuante unificado (mesma instância usada em /ciclo) -->
-<script src="/js/pomodoro-widget.js?v=4"></script>
+<script src="/js/pomodoro-widget.js?v=8"></script>
 <script>
   // Sempre monta minimizado para o aluno poder iniciar o timer durante a resolução.
   // Se já estiver rodando (vindo de /ciclo), o widget retoma o estado automaticamente.

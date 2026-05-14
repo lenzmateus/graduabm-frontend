@@ -584,14 +584,37 @@ let questoes = [];
 let sessaoId = null;
 let currentIndex = 0;
 
-// Estado local da prova. 
+// Estado local da prova.
 // rascunho: o que clicou no caderno
 // oficial: o que clicou no cartão resposta
-let respostas = []; 
+let respostas = [];
 
 // Cronômetro: 4 horas = 14400 segundos
-let tempoRestante = 14400; 
+let tempoRestante = 14400;
 let timerInterval = null;
+let iniciadoEm = null;
+
+const DURACAO_PROVA_SEG = 14400;
+
+function estadoKey() {
+  const curso = sessionStorage.getItem('pbm_simulado_curso');
+  return curso ? 'pbm_simulado_estado_' + curso : null;
+}
+
+function persistirEstado() {
+  const key = estadoKey();
+  if (!key || !iniciadoEm) return;
+  try {
+    sessionStorage.setItem(key, JSON.stringify({ questoes, respostas, iniciadoEm }));
+  } catch (e) { /* storage cheio — ignora */ }
+}
+
+function limparEstado() {
+  const key = estadoKey();
+  if (key) sessionStorage.removeItem(key);
+  const curso = sessionStorage.getItem('pbm_simulado_curso');
+  if (curso) sessionStorage.removeItem('pbm_timer_' + curso);
+}
 
 async function init() {
   await PBM.protegerRota();
@@ -599,50 +622,77 @@ async function init() {
   const curso = sessionStorage.getItem('pbm_simulado_curso');
   if (!curso) { window.location.href = '/simulados'; return; }
 
-  try {
-    const res = await PBM.api.questoes.simulado(curso);
-    questoes = res.questoes || [];
+  // Tenta retomar prova em andamento (proteção contra F5 acidental)
+  const salvoRaw = sessionStorage.getItem('pbm_simulado_estado_' + curso);
+  let retomou = false;
+  if (salvoRaw) {
+    try {
+      const salvo = JSON.parse(salvoRaw);
+      if (salvo && Array.isArray(salvo.questoes) && salvo.questoes.length && salvo.iniciadoEm) {
+        const decorridoSeg = Math.floor((Date.now() - salvo.iniciadoEm) / 1000);
+        if (decorridoSeg < DURACAO_PROVA_SEG) {
+          questoes = salvo.questoes;
+          respostas = salvo.respostas || questoes.map(q => ({
+            questao_id: q.id, rascunho: null, oficial: null,
+            gabaritoReal: typeof q.gabarito === 'number' ? String.fromCharCode(65 + q.gabarito) : (q.resposta_correta || q.gabarito || '').toString().toUpperCase().trim().charAt(0)
+          }));
+          iniciadoEm = salvo.iniciadoEm;
+          tempoRestante = Math.max(0, DURACAO_PROVA_SEG - decorridoSeg);
+          retomou = true;
+        } else {
+          // Tempo já esgotou enquanto a aba estava fechada — descarta
+          limparEstado();
+        }
+      }
+    } catch (e) { /* JSON inválido — descarta */ }
+  }
 
-    if (questoes.length === 0) {
+  if (!retomou) {
+    try {
+      const res = await PBM.api.questoes.simulado(curso);
+      questoes = res.questoes || [];
+
+      if (questoes.length === 0) {
+        window.location.href = '/simulados';
+        return;
+      }
+
+      // Inicializa o estado das respostas
+      respostas = questoes.map(q => ({
+        questao_id: q.id,
+        rascunho: null,
+        oficial: null,
+        gabaritoReal: typeof q.gabarito === 'number' ? String.fromCharCode(65 + q.gabarito) : (q.resposta_correta || q.gabarito || '').toString().toUpperCase().trim().charAt(0)
+      }));
+      iniciadoEm = Date.now();
+      tempoRestante = DURACAO_PROVA_SEG;
+      persistirEstado();
+    } catch (err) {
+      console.error(err);
       window.location.href = '/simulados';
       return;
     }
-
-    // Inicializa o estado das respostas
-    respostas = questoes.map(q => ({
-      questao_id: q.id,
-      rascunho: null,
-      oficial: null,
-      gabaritoReal: typeof q.gabarito === 'number' ? String.fromCharCode(65 + q.gabarito) : (q.resposta_correta || q.gabarito || '').toString().toUpperCase().trim().charAt(0)
-    }));
-
-    document.getElementById('tela-loading').style.display = 'none';
-
-    // C4: Garante 4h desde o início — limpa timer de prova anterior do mesmo curso
-    sessionStorage.removeItem('pbm_timer_' + curso);
-    iniciarCronometro();
-    renderizarATJumps();
-    renderizarNav();
-    carregarQuestao(0);
-
-    if (window.PBMTour) PBMTour.init();
-
-  } catch (err) {
-    console.error(err);
-    window.location.href = '/simulados';
   }
+
+  document.getElementById('tela-loading').style.display = 'none';
+  iniciarCronometro();
+  renderizarATJumps();
+  renderizarNav();
+  carregarQuestao(0);
+
+  if (window.PBMTour) PBMTour.init();
 }
 
 function iniciarCronometro() {
-  const curso = sessionStorage.getItem('pbm_simulado_curso');
-  const timerKey = 'pbm_timer_' + curso;
-  const salvo = sessionStorage.getItem(timerKey);
-  tempoRestante = salvo ? Math.max(0, parseInt(salvo)) : 14400;
-
   const el = document.getElementById('timer');
   timerInterval = setInterval(() => {
-    tempoRestante--;
-    sessionStorage.setItem(timerKey, String(tempoRestante));
+    // Recalcula a cada tick a partir de iniciadoEm (fonte da verdade — sobrevive a F5)
+    if (iniciadoEm) {
+      const decorridoSeg = Math.floor((Date.now() - iniciadoEm) / 1000);
+      tempoRestante = Math.max(0, DURACAO_PROVA_SEG - decorridoSeg);
+    } else {
+      tempoRestante--;
+    }
 
     const h = String(Math.floor(tempoRestante / 3600)).padStart(2, '0');
     const m = String(Math.floor((tempoRestante % 3600) / 60)).padStart(2, '0');
@@ -767,6 +817,7 @@ function carregarQuestao(index) {
 
 function marcarRascunho(index, letra) {
   respostas[index].rascunho = letra;
+  persistirEstado();
   carregarQuestao(index); // re-render
 }
 
@@ -857,7 +908,8 @@ function pintarBolinha(index, letra) {
   // Se já tá preenchido igual, desmarca
   if (respostas[index].oficial === letra) respostas[index].oficial = null;
   else respostas[index].oficial = letra;
-  
+
+  persistirEstado();
   renderizarGabarito(); // Re-render só o gabarito
 }
 
@@ -877,7 +929,7 @@ async function entregarProva(porTempoEsgotado) {
   }
 
   clearInterval(timerInterval);
-  sessionStorage.removeItem('pbm_timer_' + sessionStorage.getItem('pbm_simulado_curso'));
+  limparEstado();
 
   // Mostrar loading over the whole page
   document.getElementById('loading-msg').textContent = 'CORRIGINDO PROVA E SALVANDO GABARITO...';

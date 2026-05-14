@@ -962,6 +962,8 @@ function iniciarQuestoes() {
   sessionStorage.setItem('pbm_qtd_por_leg', JSON.stringify(qtdPorLeg));
   sessionStorage.removeItem('pbm_qtd');
   sessionStorage.setItem('pbm_filtro', filtroConfig);
+  sessionStorage.removeItem('pbm_ciclo_bloco');
+  sessionStorage.removeItem('pbm_revisao_erros');
 
   window.location.href = '/questoes';
 }

@@ -416,6 +416,7 @@ let currentIndex = 0;
 let respostas = [];
 let tempoRestante = 14400;
 let timerInterval = null;
+let tempoInicio = Date.now();
 
 // ── LOBBY ────────────────────────────────────────────────────────────────────
 
@@ -603,7 +604,8 @@ async function init() {
 
     // Calcula tempo restante com base no iniciado_em do servidor (fonte da verdade)
     if (iniciadoEm) {
-      const msDecorrido = Date.now() - new Date(iniciadoEm).getTime();
+      tempoInicio = new Date(iniciadoEm).getTime();
+      const msDecorrido = Date.now() - tempoInicio;
       tempoRestante = Math.max(0, 4 * 3600 - Math.floor(msDecorrido / 1000));
     }
 
@@ -782,13 +784,16 @@ async function entregarProva(porTempo) {
   const btnEntregar = document.getElementById('btn-entregar-prova');
   if (btnEntregar) { if (btnEntregar.disabled) return; btnEntregar.disabled = true; }
   clearInterval(timerInterval);
-  sessionStorage.removeItem('pbm_sm_tempo_inicio');
   if (!porTempo) {
     const nOficial = respostas.filter(r => r.oficial).length;
     const nTotal = questoes.length;
     if (nOficial < nTotal) {
       const ok = confirm(`Você preencheu ${nOficial} de ${nTotal} bolinhas no Cartão Resposta. Questões sem bolinha marcada serão contadas como erradas.\n\nDeseja entregar mesmo assim?`);
-      if (!ok) { iniciarCronometro(); return; }
+      if (!ok) {
+        if (btnEntregar) btnEntregar.disabled = false;
+        iniciarCronometro();
+        return;
+      }
     }
   }
 
