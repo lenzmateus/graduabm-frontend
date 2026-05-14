@@ -377,9 +377,7 @@ const PBM = {
     simuladosMensais: {
       listar() { return PBM.Admin.req('/api/simulados-mensais/admin/listar'); },
       atualizar(id, body) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
-      gerar(body) { return PBM.Admin.req('/api/simulados-mensais/admin/gerar', { method: 'POST', body: JSON.stringify(body) }); },
       criar(body) { return PBM.Admin.req('/api/simulados-mensais/admin/criar', { method: 'POST', body: JSON.stringify(body) }); },
-      statusGeracao() { return PBM.Admin.req('/api/simulados-mensais/admin/status-geracao'); },
       questoesDisponiveis(params = {}) {
         const qs = new URLSearchParams(params).toString();
         return PBM.Admin.req('/api/simulados-mensais/admin/questoes-disponiveis' + (qs ? '?' + qs : ''));

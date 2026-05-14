@@ -522,10 +522,9 @@ async function renderLobbyAdmin() {
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         PAINEL ADMIN
       </div>
-      <button id="lobby-btn-gerar" onclick="lobbyAbrirModalGerar()"
-        style="width:100%;background:transparent;border:1px solid rgba(124,58,237,.35);color:#7C3AED;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-bottom:1rem;">
-        + Gerar Simulado do Mês (IA · Opus)
-      </button>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#666;line-height:1.6;margin-bottom:1rem;padding:10px;background:rgba(124,58,237,.05);border-radius:6px;">
+        Para gerar um novo Protocolo QAP, use o painel <a href="/admin-simulados-mensais" style="color:#7C3AED;text-decoration:underline;">Protocolos QAP → Blocos</a>.
+      </div>
       <div id="lobby-pendentes"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#333;">Carregando pendentes...</div></div>
     </div>`;
 
@@ -555,71 +554,6 @@ async function lobbyHabilitar(id) {
     await PBM.Admin.simuladosMensais.atualizar(id, { ativo: true });
     window.location.reload();
   } catch { alert('Erro ao habilitar simulado.'); }
-}
-
-function lobbyAbrirModalGerar() {
-  const agora = new Date();
-  const df = (5 - agora.getDay() + 7) % 7 || 7;
-  const sexta = new Date(agora); sexta.setDate(agora.getDate() + df); sexta.setHours(12,0,0,0);
-  const domingo = new Date(sexta); domingo.setDate(sexta.getDate() + 2); domingo.setHours(23,59,0,0);
-  const toLocal = d => new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,16);
-
-  const ov = document.createElement('div');
-  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:1rem;';
-  ov.innerHTML = `
-    <div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.75rem;max-width:420px;width:100%;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;margin-bottom:1rem;">Gerar Simulado do M\xeas</div>
-      <div style="font-size:12px;color:#555;margin-bottom:1.25rem;line-height:1.7;">Ficam inativos at\xe9 voc\xea clicar em <strong style="color:#888">Habilitar</strong>.</div>
-      <div style="margin-bottom:1.25rem;">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Curso</div>
-        <div style="display:flex;gap:8px;">
-          <label style="flex:1;display:flex;align-items:center;gap:6px;background:#2A2A2A;border:1px solid #333;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:12px;color:#AAA;">
-            <input type="radio" name="lg-curso" value="ctsp" checked style="accent-color:#7C3AED;"> Só CTSP
-          </label>
-          <label style="flex:1;display:flex;align-items:center;gap:6px;background:#2A2A2A;border:1px solid #333;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:12px;color:#AAA;">
-            <input type="radio" name="lg-curso" value="cba" style="accent-color:#7C3AED;"> Só CBA
-          </label>
-          <label style="flex:1;display:flex;align-items:center;gap:6px;background:#2A2A2A;border:1px solid #333;border-radius:6px;padding:8px 12px;cursor:pointer;font-size:12px;color:#AAA;">
-            <input type="radio" name="lg-curso" value="ambos" style="accent-color:#7C3AED;"> CTSP + CBA
-          </label>
-        </div>
-        <p style="font-size:11px;color:#444;margin-top:6px;font-family:'IBM Plex Mono',monospace;">"CTSP + CBA" gera dois simulados separados.</p>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem;">
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Abertura</div>
-          <input id="lg-abertura" type="datetime-local" value="${toLocal(sexta)}" style="background:#2A2A2A;border:1px solid #333;color:#F8F6F2;padding:8px 10px;border-radius:6px;font-size:12px;width:100%;font-family:'Inter',sans-serif;">
-        </div>
-        <div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Encerramento</div>
-          <input id="lg-encerramento" type="datetime-local" value="${toLocal(domingo)}" style="background:#2A2A2A;border:1px solid #333;color:#F8F6F2;padding:8px 10px;border-radius:6px;font-size:12px;width:100%;font-family:'Inter',sans-serif;">
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button id="lg-cancelar" style="background:transparent;border:1px solid #333;color:#666;padding:8px 16px;border-radius:6px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Cancelar</button>
-        <button id="lg-confirmar" style="background:#7C3AED;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Gerar com Opus</button>
-      </div>
-    </div>`;
-  document.body.appendChild(ov);
-  document.getElementById('lg-cancelar').onclick = () => ov.remove();
-  ov.addEventListener('click', e => { if (e.target === ov) ov.remove(); });
-  document.getElementById('lg-confirmar').onclick = async () => {
-    const al = document.getElementById('lg-abertura').value;
-    const el2 = document.getElementById('lg-encerramento').value;
-    const curso = document.querySelector('input[name="lg-curso"]:checked')?.value || 'ambos';
-    if (!al || !el2 || new Date(el2) <= new Date(al)) { alert('Datas inv\xe1lidas.'); return; }
-    ov.remove();
-    const btn = document.getElementById('lobby-btn-gerar');
-    if (btn) { btn.disabled = true; btn.textContent = 'Gerando… (~20–30 min)'; }
-    try {
-      const data = await PBM.Admin.simuladosMensais.gerar({ abertura: new Date(al).toISOString(), encerramento: new Date(el2).toISOString(), curso });
-      alert('Simulados gerados! Aparecem abaixo para habilitar.');
-      window.location.reload();
-    } catch (err) {
-      alert('Erro: ' + (err.erro || err.message || 'Falha ao gerar simulado.'));
-      if (btn) { btn.disabled = false; btn.textContent = '+ Gerar Simulado do M\xeas (IA \xb7 Opus)'; }
-    }
-  };
 }
 
 // ── EXAM ─────────────────────────────────────────────────────────────────────
