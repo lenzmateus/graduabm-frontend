@@ -278,6 +278,18 @@ const PBM = {
         body: JSON.stringify({ legislacao_id: legislacaoId, nivel }),
       });
     },
+    // Nota por legislação (onde parou)
+    buscarNota(legislacaoId) {
+      return request('/api/ciclo/legislacao-nota?legislacao_id=' + encodeURIComponent(legislacaoId));
+    },
+    salvarNota(legislacaoId, nota, concluido) {
+      const body = { legislacao_id: legislacaoId, nota: nota || '' };
+      if (concluido !== undefined) body.concluido = !!concluido;
+      return request('/api/ciclo/legislacao-nota', {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+    },
     // Aliases de compat (preservam chamadas antigas — mapeiam para o novo)
     criar() { return this.gerar(); },
     atualizarStatus(blocoId, status) {

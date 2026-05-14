@@ -1512,12 +1512,39 @@ function renderAcoesRelatorioBloco(bloco) {
 
   // No novo modelo, o bloco já fechou ao chegar aqui.
   // Aluno marca dificuldade ("Travado / Domino") — aplica em user_legislacao_dificuldade.
-  // Próximo ciclo gerado reflete (alta vai pra ordem cedo; baixa pro fim).
+  // Aluno pode anotar onde parou na legislação — sobrevive entre ciclos.
   wrap.innerHTML = `
     <button type="button" class="bloco-rel-btn" data-dif="alta">↑ Travado nessa legislação</button>
     <button type="button" class="bloco-rel-btn secundaria" data-dif="baixa">↓ Já domino</button>
+    <button type="button" class="bloco-rel-btn secundaria" id="btn-anotar-onde-parei">📍 Anotar onde parei</button>
     <a href="/ciclo-estudos" class="bloco-rel-btn secundaria">Voltar ao Ciclo →</a>
   `;
+
+  // Wiring do botão "Anotar onde parei"
+  const btnAnotar = wrap.querySelector('#btn-anotar-onde-parei');
+  if (btnAnotar) {
+    btnAnotar.addEventListener('click', async () => {
+      try {
+        const atual = await PBM.Ciclo.buscarNota(legId).catch(() => ({ nota: null }));
+        const notaExistente = atual?.nota?.nota || '';
+        const concluido = atual?.nota?.status === 'concluido';
+        const prefixo = concluido
+          ? '(Estava marcada como concluída.)\n'
+          : '';
+        const valor = window.prompt(
+          prefixo + 'Onde você parou nesta legislação? (Ex: "pág. 47 do manual", "art. 23 da Lei Kiss")\n\nDeixe em branco para apagar.',
+          notaExistente
+        );
+        if (valor === null) return; // cancelou
+        await PBM.Ciclo.salvarNota(legId, valor, false);
+        btnAnotar.textContent = '✓ Anotação salva';
+        btnAnotar.disabled = true;
+      } catch (err) {
+        console.error('[ciclo] anotar onde parei', err);
+        alert('Erro ao salvar anotação: ' + (err?.erro || 'tente novamente'));
+      }
+    });
+  }
 
   wrap.querySelectorAll('button[data-dif]').forEach(btn => {
     btn.addEventListener('click', async (ev) => {

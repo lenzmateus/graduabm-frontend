@@ -181,7 +181,23 @@
   }
   .hero-bloco-meta {
     font-size: 12px; color: var(--cinza-texto);
-    margin-bottom: 18px;
+    margin-bottom: 12px;
+  }
+  .hero-nota-badge {
+    background: rgba(24,95,165,0.10);
+    border: 1px solid rgba(24,95,165,0.30);
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: #85B7EB;
+    line-height: 1.4;
+  }
+  .hero-nota-badge strong { color: var(--branco); }
+  .hero-nota-badge.concluido {
+    background: rgba(47,111,68,0.10);
+    border-color: rgba(47,111,68,0.30);
+    color: #7DD99A;
   }
   .hero-actions {
     display: flex; gap: 10px; flex-wrap: wrap;
@@ -297,6 +313,57 @@
   .pomo-actions {
     display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
   }
+
+  /* Bloco de nota / onde parou */
+  .pomo-nota-bloco {
+    background: var(--carvao);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 1rem auto;
+    max-width: 460px;
+    text-align: left;
+  }
+  .pomo-nota-titulo {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .pomo-nota-anterior {
+    font-size: 12px; color: #85B7EB;
+    background: rgba(24,95,165,0.06);
+    border-left: 2px solid #5C9BD9;
+    padding: 6px 10px; border-radius: 0 4px 4px 0;
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .pomo-nota-anterior.concluido {
+    color: #7DD99A;
+    background: rgba(47,111,68,0.06);
+    border-left-color: #6BA77B;
+  }
+  .pomo-nota-input {
+    width: 100%; box-sizing: border-box;
+    background: var(--cinza-escuro); color: var(--branco);
+    border: 1px solid var(--cinza-borda); border-radius: 6px;
+    padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 13px;
+    resize: vertical; min-height: 50px;
+  }
+  .pomo-nota-input:focus { outline: none; border-color: var(--vermelho); }
+  .pomo-nota-actions {
+    display: flex; gap: 8px; align-items: center; margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .pomo-nota-actions label {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--cinza-texto); cursor: pointer;
+  }
+  .pomo-nota-actions input[type="checkbox"] { accent-color: #7DD99A; }
+  .pomo-nota-salvo {
+    color: #7DD99A; font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace; opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .pomo-nota-salvo.show { opacity: 1; }
 
   /* Setup fase */
   .pomo-setup-input {
@@ -500,6 +567,7 @@
             <div class="hero-bloco-area" id="hero-area">AT1</div>
             <div class="hero-bloco-nome" id="hero-nome">—</div>
             <div class="hero-bloco-meta" id="hero-meta">— min sugeridos</div>
+            <div id="hero-nota-wrap"></div>
             <div class="hero-actions">
               <button class="btn-primario" id="btn-iniciar">Iniciar Bloco</button>
               <button class="btn-secundario" id="btn-pular">Pular para o próximo</button>
@@ -556,6 +624,23 @@
           <li>Feche as <strong>abas e aplicativos</strong> que não são necessários ao estudo.</li>
           <li>Deixe o <strong>celular em outro cômodo</strong> e no modo silencioso — a simples presença do aparelho próximo já compromete a concentração.</li>
         </ul>
+      </div>
+
+      <!-- Onde parou -->
+      <div class="pomo-nota-bloco" id="pomo-nota-setup-bloco">
+        <div class="pomo-nota-titulo">📍 Onde você parou</div>
+        <div id="pomo-nota-anterior-wrap"></div>
+        <textarea class="pomo-nota-input" id="pomo-nota-input"
+          placeholder="Ex: 'parei na página 47 do manual' ou 'parei no art. 23 da Lei Kiss'..."
+          maxlength="500"></textarea>
+        <div class="pomo-nota-actions">
+          <label>
+            <input type="checkbox" id="pomo-nota-concluido">
+            Já concluí esta legislação inteira
+          </label>
+          <button type="button" class="btn-secundario" id="pomo-nota-salvar" style="font-size:11px;padding:6px 12px;">Salvar nota</button>
+          <span class="pomo-nota-salvo" id="pomo-nota-salvo">✓ Salvo</span>
+        </div>
       </div>
 
       <div class="pomo-setup-input">
@@ -631,6 +716,7 @@
     progresso: null,
     nudges: [],
     proficiencia: {},
+    notas: {},
     curso: 'ctsp',
   };
 
@@ -663,6 +749,7 @@
       estado.proximoBloco = ciclo.proximo_bloco;
       estado.progresso = ciclo.progresso;
       estado.nudges = ciclo.nudges || [];
+      estado.notas = ciclo.notas_por_legislacao || {};
 
       const profMap = {};
       (prof.proficiencia || []).forEach(p => { profMap[p.area] = p; });
@@ -747,6 +834,7 @@
       document.getElementById('hero-area').className = 'hero-bloco-area ' + bloco.area;
       document.getElementById('hero-nome').textContent = bloco.legislacao_nome;
       document.getElementById('hero-meta').textContent = `${bloco.meta_minutos} min sugeridos · ${AREA_NOMES[bloco.area]}`;
+      renderNotaHero(bloco);
       document.getElementById('btn-iniciar').disabled = false;
       document.getElementById('btn-pular').disabled = false;
     } else {
@@ -881,6 +969,25 @@
     else aviso.textContent = 'Ritmo equilibrado para preparação consistente.';
   }
 
+  function renderNotaHero(bloco) {
+    const wrap = document.getElementById('hero-nota-wrap');
+    if (!wrap) return;
+    const n = estado.notas[bloco.legislacao_id];
+    if (!n) { wrap.innerHTML = ''; return; }
+    if (n.status === 'concluido') {
+      wrap.innerHTML = `<div class="hero-nota-badge concluido">✓ <strong>Você concluiu esta legislação</strong> — vai recomeçar do zero?</div>`;
+    } else if (n.nota && n.nota.trim()) {
+      const txt = n.nota.length > 120 ? n.nota.slice(0, 120) + '…' : n.nota;
+      wrap.innerHTML = `<div class="hero-nota-badge">📍 Da última vez: <strong>${escapeHtml(txt)}</strong></div>`;
+    } else {
+      wrap.innerHTML = '';
+    }
+  }
+
+  function escapeHtml(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
   // === POMODORO ===
   function abrirPomoSetup(bloco) {
     pomoBlocoAtual = bloco;
@@ -902,12 +1009,65 @@
     document.querySelectorAll('.pomo-preset').forEach(p => {
       p.classList.toggle('ativo', Number(p.dataset.min) === 60);
     });
+
+    // Carrega nota anterior + prepara input
+    const nota = estado.notas[bloco.legislacao_id];
+    const anteriorWrap = document.getElementById('pomo-nota-anterior-wrap');
+    const notaInput = document.getElementById('pomo-nota-input');
+    const concluidoCheck = document.getElementById('pomo-nota-concluido');
+    document.getElementById('pomo-nota-salvo').classList.remove('show');
+
+    if (nota && nota.status === 'concluido') {
+      anteriorWrap.innerHTML = `
+        <div class="pomo-nota-anterior concluido">
+          ✓ Você marcou esta legislação como <strong>concluída</strong>.
+          Marcar a caixa abaixo desmarca o "concluído" e reinicia a anotação.
+        </div>
+      `;
+      notaInput.value = '';
+      concluidoCheck.checked = true;
+    } else if (nota && nota.nota) {
+      anteriorWrap.innerHTML = `
+        <div class="pomo-nota-anterior">
+          Última anotação: <strong>${escapeHtml(nota.nota)}</strong>
+        </div>
+      `;
+      notaInput.value = nota.nota;
+      concluidoCheck.checked = false;
+    } else {
+      anteriorWrap.innerHTML = '';
+      notaInput.value = '';
+      concluidoCheck.checked = false;
+    }
+  }
+
+  async function salvarNotaAtual() {
+    if (!pomoBlocoAtual) return;
+    const nota = document.getElementById('pomo-nota-input').value || '';
+    const concluido = document.getElementById('pomo-nota-concluido').checked;
+    try {
+      const resp = await PBM.Ciclo.salvarNota(pomoBlocoAtual.legislacao_id, nota, concluido);
+      estado.notas[pomoBlocoAtual.legislacao_id] = {
+        nota: resp.nota?.nota || '',
+        status: resp.nota?.status || 'em_andamento',
+        concluido_em: resp.nota?.concluido_em || null,
+      };
+      const aviso = document.getElementById('pomo-nota-salvo');
+      aviso.classList.add('show');
+      setTimeout(() => aviso.classList.remove('show'), 1800);
+    } catch (e) {
+      console.error('[ciclo] salvar nota', e);
+      alert('Erro ao salvar nota: ' + (e?.erro || 'tente novamente'));
+    }
   }
 
   async function iniciarTimer() {
     const dur = Math.max(5, Math.min(180, Number(document.getElementById('pomo-duracao').value) || 60));
     pomoDuracaoConfigMin = dur;
     pomoSecRestantes = dur * 60;
+
+    // Salva nota antes de começar (best-effort)
+    try { await salvarNotaAtual(); } catch (_) {}
 
     try {
       await PBM.Ciclo.iniciarBloco(pomoBlocoAtual.id);
@@ -1045,8 +1205,12 @@
 
   // Pomodoro — setup
   document.getElementById('pomo-iniciar').addEventListener('click', iniciarTimer);
-  document.getElementById('pomo-pular-direto').addEventListener('click', pomoIrParaQuestoes);
+  document.getElementById('pomo-pular-direto').addEventListener('click', async () => {
+    try { await salvarNotaAtual(); } catch (_) {}
+    pomoIrParaQuestoes();
+  });
   document.getElementById('pomo-cancelar-setup').addEventListener('click', pomoCancelar);
+  document.getElementById('pomo-nota-salvar').addEventListener('click', salvarNotaAtual);
   document.querySelectorAll('.pomo-preset').forEach(p => {
     p.addEventListener('click', e => {
       const min = Number(e.target.dataset.min);
