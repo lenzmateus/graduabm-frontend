@@ -1494,30 +1494,56 @@ function renderAcoesRelatorioBloco(bloco) {
   const wrap = document.getElementById('br-acoes');
   if (!wrap) return;
 
+  // Resolve legislacao_id: bloco -> cicloBloco -> sessionStorage parsing (defensive)
+  let legId = bloco?.legislacao_id || cicloBloco?.legislacao_id || null;
+  if (!legId) {
+    try {
+      const raw = sessionStorage.getItem('pbm_ciclo_bloco');
+      if (raw) legId = JSON.parse(raw)?.legislacao_id || null;
+    } catch (_) {}
+  }
+
+  if (!legId) {
+    wrap.innerHTML = `
+      <a href="/ciclo-estudos" class="bloco-rel-btn secundaria">Voltar ao Ciclo →</a>
+    `;
+    return;
+  }
+
   // No novo modelo, o bloco já fechou ao chegar aqui.
   // Aluno marca dificuldade ("Travado / Domino") — aplica em user_legislacao_dificuldade.
   // Próximo ciclo gerado reflete (alta vai pra ordem cedo; baixa pro fim).
   wrap.innerHTML = `
-    <button class="bloco-rel-btn" data-dif="alta">↑ Travado nessa legislação</button>
-    <button class="bloco-rel-btn secundaria" data-dif="baixa">↓ Já domino</button>
+    <button type="button" class="bloco-rel-btn" data-dif="alta">↑ Travado nessa legislação</button>
+    <button type="button" class="bloco-rel-btn secundaria" data-dif="baixa">↓ Já domino</button>
     <a href="/ciclo-estudos" class="bloco-rel-btn secundaria">Voltar ao Ciclo →</a>
   `;
 
   wrap.querySelectorAll('button[data-dif]').forEach(btn => {
-    btn.addEventListener('click', async () => {
+    btn.addEventListener('click', async (ev) => {
+      ev.preventDefault();
       const nivel = btn.dataset.dif;
-      btn.disabled = true;
       const labelOrig = btn.textContent;
+      btn.disabled = true;
       btn.textContent = 'Salvando…';
       try {
-        await PBM.Ciclo.salvarDificuldade(bloco.legislacao_id || cicloBloco.legislacao_id, nivel);
-        btn.textContent = '✓ Marcado como ' + (nivel === 'alta' ? 'alta dificuldade' : 'domínio');
+        const resp = await PBM.Ciclo.salvarDificuldade(legId, nivel);
+        console.log('[ciclo] dificuldade salva', { legId, nivel, resp });
+        btn.textContent = '✓ ' + (nivel === 'alta' ? 'Marcado como alta dificuldade' : 'Marcado como domínio');
+        btn.style.background = nivel === 'alta' ? '#8B1A08' : '#1F3D2A';
+        btn.style.borderColor = 'transparent';
         // Desabilita o outro botão pra evitar conflito
         wrap.querySelectorAll('button[data-dif]').forEach(b => { if (b !== btn) b.disabled = true; });
       } catch (err) {
-        console.warn('[ciclo] falha ao salvar dificuldade', err);
+        console.error('[ciclo] falha ao salvar dificuldade', err);
         btn.disabled = false;
         btn.textContent = labelOrig;
+        // Feedback visual visível
+        const aviso = document.createElement('div');
+        aviso.textContent = '⚠ Erro ao salvar: ' + (err?.erro || err?.message || 'tente novamente');
+        aviso.style.cssText = 'position:fixed;bottom:1rem;right:1rem;background:#C0270F;color:#fff;padding:.5rem 1rem;border-radius:6px;font-size:12px;z-index:9999;max-width:300px;';
+        document.body.appendChild(aviso);
+        setTimeout(() => aviso.remove(), 5000);
       }
     });
   });
