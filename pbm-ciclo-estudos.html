@@ -271,11 +271,23 @@
   /* ── Pomodoro overlay ── */
   .pomo-overlay {
     position: fixed; inset: 0;
-    background: rgba(0,0,0,0.92);
+    background: #000;
     z-index: 1000;
     display: flex; align-items: center; justify-content: center;
     padding: 20px; overflow-y: auto;
   }
+  /* Modo "Tela preta" — esconde tudo exceto cronômetro e barra de áudio */
+  .pomo-overlay.tela-preta .pomo-area-tag,
+  .pomo-overlay.tela-preta #pomo-leg,
+  .pomo-overlay.tela-preta .pomo-fase,
+  .pomo-overlay.tela-preta .pomo-sug,
+  .pomo-overlay.tela-preta .pomo-actions { display: none !important; }
+  .pomo-overlay.tela-preta .pomo-clock {
+    color: #2A2A2A; font-size: 64px;
+    margin: 1rem 0;
+  }
+  .pomo-overlay.tela-preta .pomo-audio-bar { border-top: none; padding-top: 0; }
+  .pomo-overlay.tela-preta .pomo-audio-bar-titulo { display: none; }
   .pomo-box {
     text-align: center;
     max-width: 540px; width: 100%;
@@ -480,7 +492,24 @@
     border-radius: 8px;
   }
   .pomo-audio-frame.show { height: 180px; }
+  .pomo-audio-frame.so-audio {
+    height: 1px; opacity: 0; pointer-events: none;
+  }
   .pomo-audio-frame iframe { width: 100%; height: 100%; border: 0; border-radius: 8px; }
+
+  .pomo-audio-toggles {
+    display: flex; gap: 12px; justify-content: center;
+    margin-top: 10px; flex-wrap: wrap;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--cinza-texto);
+    letter-spacing: 0.06em;
+  }
+  .pomo-audio-toggles label {
+    display: flex; align-items: center; gap: 6px;
+    cursor: pointer;
+  }
+  .pomo-audio-toggles label:hover { color: var(--branco); }
+  .pomo-audio-toggles input[type="checkbox"] { accent-color: var(--vermelho); }
 
   .empty-state {
     text-align: center;
@@ -720,6 +749,10 @@
           <button class="pomo-audio-btn" data-audio="lofi">Lo-fi Girl</button>
           <button class="pomo-audio-btn" data-audio="ruido">Ruído Branco</button>
           <button class="pomo-audio-btn" data-audio="jazz">Jazz Café</button>
+        </div>
+        <div class="pomo-audio-toggles">
+          <label><input type="checkbox" id="pomo-so-audio"> Só áudio (esconder vídeo)</label>
+          <label><input type="checkbox" id="pomo-tela-preta"> 🌑 Tela preta total</label>
         </div>
         <div class="pomo-audio-frame" id="pomo-audio-frame"></div>
       </div>
@@ -1201,16 +1234,27 @@
     if (!url) return;
     frame.innerHTML = `<iframe src="${url}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
     frame.classList.add('show');
+    // Respeita "Só áudio" se ja estiver marcado
+    const soAudio = document.getElementById('pomo-so-audio');
+    if (soAudio?.checked) frame.classList.add('so-audio');
+    else frame.classList.remove('so-audio');
   }
   function desligarAudio() {
     const frame = document.getElementById('pomo-audio-frame');
     if (frame) {
       frame.innerHTML = '';
-      frame.classList.remove('show');
+      frame.classList.remove('show', 'so-audio');
     }
     document.querySelectorAll('.pomo-audio-btn').forEach(b => {
       b.classList.toggle('ativo', b.dataset.audio === 'off');
     });
+    // Limpa "tela preta" também ao desligar tudo
+    const overlay = document.getElementById('pomo-overlay');
+    if (overlay) overlay.classList.remove('tela-preta');
+    const tpCheck = document.getElementById('pomo-tela-preta');
+    const saCheck = document.getElementById('pomo-so-audio');
+    if (tpCheck) tpCheck.checked = false;
+    if (saCheck) saCheck.checked = false;
   }
 
   function iniciarBloco() {
@@ -1270,6 +1314,28 @@
       document.querySelectorAll('.pomo-audio-btn').forEach(b => b.classList.toggle('ativo', b === e.target));
       ligarAudio(tipo);
     });
+  });
+  // Toggles "Só áudio" e "Tela preta"
+  document.getElementById('pomo-so-audio').addEventListener('change', e => {
+    const frame = document.getElementById('pomo-audio-frame');
+    frame.classList.toggle('so-audio', e.target.checked);
+  });
+  document.getElementById('pomo-tela-preta').addEventListener('change', e => {
+    document.getElementById('pomo-overlay').classList.toggle('tela-preta', e.target.checked);
+    // Tela preta total também esconde o vídeo (força só áudio)
+    if (e.target.checked) {
+      document.getElementById('pomo-so-audio').checked = true;
+      document.getElementById('pomo-audio-frame').classList.add('so-audio');
+    }
+  });
+  // Clique na "tela preta" sai do modo
+  document.getElementById('pomo-overlay').addEventListener('click', e => {
+    if (!document.getElementById('pomo-overlay').classList.contains('tela-preta')) return;
+    // Só sai se clicou no fundo (não em controles)
+    if (e.target === document.getElementById('pomo-overlay')) {
+      document.getElementById('pomo-tela-preta').checked = false;
+      document.getElementById('pomo-overlay').classList.remove('tela-preta');
+    }
   });
 
   window.aceitarNudge = aceitarNudge;
