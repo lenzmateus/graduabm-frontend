@@ -1,9 +1,25 @@
 const API_URL = 'https://graduabm-backend-production.up.railway.app';
 
+// Decide admin-vs-aluno a partir do JWT efetivamente enviado, não de string-match com sessionStorage.
+// Decisão e racional em docs/adr/0002-handler-401-redireciona-com-opt-out.md.
+function _decodeJwtPayload(authHeader) {
+  if (!authHeader || typeof authHeader !== 'string') return null;
+  const jwt = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+  const parts = jwt.split('.');
+  if (parts.length !== 3) return null;
+  try {
+    const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const pad = b64.length % 4 ? '='.repeat(4 - (b64.length % 4)) : '';
+    return JSON.parse(decodeURIComponent(escape(atob(b64 + pad))));
+  } catch {
+    return null;
+  }
+}
+
 async function request(path, options = {}) {
   const token = sessionStorage.getItem('token');
   const headers = { 'Content-Type': 'application/json', ...options.headers };
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token && !headers['Authorization']) headers['Authorization'] = `Bearer ${token}`;
 
   let res;
   try {
@@ -24,22 +40,24 @@ async function request(path, options = {}) {
     throw { status: res.status, erro: `Resposta inválida do servidor (HTTP ${res.status})` };
   }
 
-  if (res.status === 401) {
-    if (data.erro && data.erro.includes('Sessão encerrada')) {
-      sessionStorage.setItem('pbm_session_msg', data.erro);
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('usuario');
-      const loginRedir = PBM?.isAdmin?.() ? '/admin-login' : '/login';
-      window.location.href = loginRedir;
-      throw new Error('Sessão encerrada');
+  if (res.status === 401 && !options.silenciar401) {
+    const payload = _decodeJwtPayload(headers['Authorization']);
+    const isAdminReq = payload?.tipo === 'admin';
+    const ehSessaoEncerrada = data?.erro && String(data.erro).includes('Sessão encerrada');
+    const toastMsg = ehSessaoEncerrada
+      ? 'Sua sessão foi encerrada porque você fez login em outro dispositivo.'
+      : 'Sessão expirada. Faça login novamente.';
+    sessionStorage.setItem('pbm_session_msg', toastMsg);
+
+    if (isAdminReq) {
+      ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email']
+        .forEach(k => sessionStorage.removeItem(k));
     }
-    if (PBM?.isAdmin?.()) {
-      const adminJwt = sessionStorage.getItem('pbm_admin_jwt');
-      if (adminJwt && options.headers?.['Authorization'] === `Bearer ${adminJwt}`) {
-        PBM.Admin.logout();
-      }
-      throw { status: 401, ...data };
-    }
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('usuario');
+
+    window.location.href = isAdminReq ? '/admin-login' : '/login';
+    throw { status: 401, ...data };
   }
 
   if (!res.ok) throw { status: res.status, ...data };
@@ -88,9 +106,11 @@ const PBM = {
       return u?.ativo === true;
     },
     async login({ email, senha }) {
+      // silenciar401: 401 aqui é credencial inválida, não sessão expirada.
       const data = await request('/api/auth/login', {
         method: 'POST',
         body: JSON.stringify({ email, senha }),
+        silenciar401: true,
       });
       if (data.token) sessionStorage.setItem('token', data.token);
       if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
@@ -100,6 +120,7 @@ const PBM = {
       const data = await request('/api/auth/cadastro', {
         method: 'POST',
         body: JSON.stringify({ nome, email, senha, curso, nickname: nickname || undefined, trial_token: trial_token || undefined, ref: ref || undefined }),
+        silenciar401: true,
       });
       if (data.token) sessionStorage.setItem('token', data.token);
       if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
@@ -313,6 +334,22 @@ const PBM = {
       const jwt = sessionStorage.getItem('pbm_admin_jwt') || '';
       return { 'Authorization': `Bearer ${jwt}` };
     },
+    /* Envelope universal `{ itens, total }` (+ pagina/totalPaginas em endpoints paginados).
+       Decisão e racional em docs/adr/0001-pbm-admin-envelope-normalizacao-frontend.md. */
+    _normalizarLista(data, params, chave) {
+      const itens = Array.isArray(data)
+        ? data
+        : (chave && Array.isArray(data?.[chave])) ? data[chave]
+        : [];
+      const total = typeof data?.total === 'number' ? data.total : itens.length;
+      const out = { itens, total };
+      if (params?.porPagina != null) {
+        const pp = Number(params.porPagina);
+        out.pagina = Number(params.pagina ?? 1);
+        out.totalPaginas = pp > 0 ? Math.ceil(total / pp) : 1;
+      }
+      return out;
+    },
     async protegerRota() {
       if (sessionStorage.getItem('pbm_admin') !== '1' || !sessionStorage.getItem('pbm_admin_jwt')) {
         window.location.href = '/admin-login';
@@ -341,8 +378,9 @@ const PBM = {
     },
     Auth: {
       async login({ email, senha }) {
+        // silenciar401: 401 aqui é credencial inválida, não sessão expirada.
         const data = await request('/api/admin/auth/login', {
-          method: 'POST', body: JSON.stringify({ email, senha }),
+          method: 'POST', body: JSON.stringify({ email, senha }), silenciar401: true,
         });
         if (data.token) {
           sessionStorage.setItem('pbm_admin', '1');
@@ -389,12 +427,18 @@ const PBM = {
       },
     },
     admins: {
-      listar() { return PBM.Admin.req('/api/admin/admins'); },
+      async listar() {
+        const data = await PBM.Admin.req('/api/admin/admins');
+        return PBM.Admin._normalizarLista(data, null, null);
+      },
       excluir(id) { return PBM.Admin.req(`/api/admin/admins/${id}`, { method: 'DELETE' }); },
       convidar(body) { return PBM.Admin.req('/api/admin/admins/convidar', { method: 'POST', body: JSON.stringify(body) }); },
     },
     simuladosMensais: {
-      listar() { return PBM.Admin.req('/api/simulados-mensais/admin/listar'); },
+      async listar() {
+        const data = await PBM.Admin.req('/api/simulados-mensais/admin/listar');
+        return PBM.Admin._normalizarLista(data, null, null);
+      },
       atualizar(id, body) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
       criar(body) { return PBM.Admin.req('/api/simulados-mensais/admin/criar', { method: 'POST', body: JSON.stringify(body) }); },
       questoesDisponiveis(params = {}) {
@@ -411,9 +455,17 @@ const PBM = {
       stats() {
         return request('/api/admin/assinaturas/stats', { headers: PBM.Admin._authHeader() });
       },
-      listar(params = {}) {
-        const qs = new URLSearchParams(params).toString();
-        return request('/api/admin/assinaturas' + (qs ? '?' + qs : ''), { headers: PBM.Admin._authHeader() });
+      async listar(params = {}) {
+        // Interface em português; tradução pra page/per_page acontece aqui.
+        const wire = {};
+        if (params.pagina != null) wire.page = String(params.pagina);
+        if (params.porPagina != null) wire.per_page = String(params.porPagina);
+        if (params.busca) wire.busca = params.busca;
+        if (params.status) wire.status = params.status;
+        if (params.curso) wire.curso = params.curso;
+        const qs = new URLSearchParams(wire).toString();
+        const data = await request('/api/admin/assinaturas' + (qs ? '?' + qs : ''), { headers: PBM.Admin._authHeader() });
+        return PBM.Admin._normalizarLista(data, params, 'alunos');
       },
       gerenciar(userId, body) {
         return request(`/api/admin/assinaturas/${userId}`, { method: 'PATCH', body: JSON.stringify(body), headers: PBM.Admin._authHeader() });
@@ -426,8 +478,9 @@ const PBM = {
       },
     },
     cupons: {
-      listar() {
-        return request('/api/admin/cupons', { headers: PBM.Admin._authHeader() });
+      async listar() {
+        const data = await request('/api/admin/cupons', { headers: PBM.Admin._authHeader() });
+        return PBM.Admin._normalizarLista(data, null, 'cupons');
       },
       criar(body) {
         return request('/api/admin/cupons', { method: 'POST', body: JSON.stringify(body), headers: PBM.Admin._authHeader() });
@@ -443,8 +496,9 @@ const PBM = {
       },
     },
     convites: {
-      listar() {
-        return request('/api/admin/convites', { headers: PBM.Admin._authHeader() });
+      async listar() {
+        const data = await request('/api/admin/convites', { headers: PBM.Admin._authHeader() });
+        return PBM.Admin._normalizarLista(data, null, 'convites');
       },
       criar(body) {
         return request('/api/admin/convites', { method: 'POST', body: JSON.stringify(body), headers: PBM.Admin._authHeader() });
@@ -457,7 +511,10 @@ const PBM = {
       },
     },
     indicacoes: {
-      listar() { return PBM.Admin.req('/api/admin/indicacoes'); },
+      async listar() {
+        const data = await PBM.Admin.req('/api/admin/indicacoes');
+        return PBM.Admin._normalizarLista(data, null, 'indicacoes');
+      },
     },
     denuncias: {
       resumo() { return PBM.Admin.req('/api/admin/denuncias/resumo'); },
@@ -477,7 +534,10 @@ const PBM = {
       },
     },
     legislacoes: {
-      listar()           { return PBM.Admin.req('/api/admin/legislacoes'); },
+      async listar() {
+        const data = await PBM.Admin.req('/api/admin/legislacoes');
+        return PBM.Admin._normalizarLista(data, null, 'legislacoes');
+      },
       salvar(id, body)   { return PBM.Admin.req('/api/admin/legislacoes/' + encodeURIComponent(id), { method: 'PATCH', body: JSON.stringify(body) }); },
       removerOverride(id){ return PBM.Admin.req('/api/admin/legislacoes/' + encodeURIComponent(id) + '/override', { method: 'DELETE' }); },
     },
@@ -489,26 +549,38 @@ const PBM = {
     aprovacoes: {
       resumo() { return PBM.Admin.req('/api/admin/aprovacoes/resumo'); },
       questoesIa: {
-        listar()         { return PBM.Admin.req('/api/admin/aprovacoes/questoes-ia'); },
+        async listar() {
+          const data = await PBM.Admin.req('/api/admin/aprovacoes/questoes-ia');
+          return PBM.Admin._normalizarLista(data, null, null);
+        },
         aprovar(id, obs) { return PBM.Admin.req(`/api/admin/aprovacoes/questoes-ia/${id}/aprovar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         rejeitar(id, obs){ return PBM.Admin.req(`/api/admin/aprovacoes/questoes-ia/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         editar(id, body) { return PBM.Admin.req(`/api/admin/aprovacoes/questoes-ia/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
       },
       flashcards: {
-        listar()         { return PBM.Admin.req('/api/admin/aprovacoes/flashcards'); },
+        async listar() {
+          const data = await PBM.Admin.req('/api/admin/aprovacoes/flashcards');
+          return PBM.Admin._normalizarLista(data, null, null);
+        },
         aprovar(id)      { return PBM.Admin.req(`/api/admin/aprovacoes/flashcards/${id}/aprovar`, { method: 'POST' }); },
         rejeitar(id, obs){ return PBM.Admin.req(`/api/admin/aprovacoes/flashcards/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         editar(id, body) { return PBM.Admin.req(`/api/admin/aprovacoes/flashcards/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
       },
       instagram: {
-        listar()           { return PBM.Admin.req('/api/admin/aprovacoes/instagram'); },
+        async listar() {
+          const data = await PBM.Admin.req('/api/admin/aprovacoes/instagram');
+          return PBM.Admin._normalizarLista(data, null, null);
+        },
         gerar(area)        { return PBM.Admin.req('/api/admin/aprovacoes/instagram/gerar', { method: 'POST', body: JSON.stringify({ area: area || null }) }); },
         publicar(id, opts) { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/publicar`, { method: 'POST', ...(opts || {}) }); },
         rejeitar(id, obs)  { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         editar(id, caption){ return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}`, { method: 'PATCH', body: JSON.stringify({ caption }) }); },
       },
       simulados: {
-        listar()         { return PBM.Admin.req('/api/admin/aprovacoes/simulados-mensais'); },
+        async listar() {
+          const data = await PBM.Admin.req('/api/admin/aprovacoes/simulados-mensais');
+          return PBM.Admin._normalizarLista(data, null, null);
+        },
         aprovar(id)      { return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}/aprovar`, { method: 'POST' }); },
         rejeitar(id, obs){ return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         editar(id, body) { return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },

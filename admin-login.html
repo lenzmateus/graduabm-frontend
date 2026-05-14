@@ -341,6 +341,17 @@ if (sessionStorage.getItem('pbm_admin') === '1' && sessionStorage.getItem('pbm_a
   window.location.href = '/admin';
 }
 
+// Toast de sessão expirada / encerrada (handler 401 do api.js)
+(function() {
+  const msg = sessionStorage.getItem('pbm_session_msg');
+  if (!msg) return;
+  sessionStorage.removeItem('pbm_session_msg');
+  document.addEventListener('DOMContentLoaded', () => {
+    const el = document.getElementById('msg-login');
+    if (el) { el.textContent = msg; el.className = 'msg erro'; }
+  });
+})();
+
 // Detecta se a URL tem token de redefinição
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.get('acao') === 'redefinir' && urlParams.get('token')) {

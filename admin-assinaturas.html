@@ -458,8 +458,8 @@
 
     const params = {
       status: document.getElementById('filtro-status').value,
-      page: paginaAtual,
-      per_page: POR_PAGINA,
+      pagina: paginaAtual,
+      porPagina: POR_PAGINA,
     };
     const curso = document.getElementById('filtro-curso').value;
     if (curso !== 'todos') params.curso = curso;
@@ -470,7 +470,7 @@
       const data = await PBM.Admin.assinaturas.listar(params);
       if (minha !== buscaSeq) return; // request mais recente sobrepôs este
       totalAlunos = data.total || 0;
-      renderizarAlunos(data.alunos || []);
+      renderizarAlunos(data.itens);
       atualizarPaginacao();
     } catch (err) {
       if (minha !== buscaSeq) return;
@@ -625,7 +625,7 @@
     tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Carregando…</td></tr>';
     try {
       const data = await PBM.Admin.cupons.listar();
-      renderizarCupons(data.cupons || []);
+      renderizarCupons(data.itens);
     } catch {
       tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Erro ao carregar cupons.</td></tr>';
     }
@@ -791,11 +791,11 @@
     const tbody = document.getElementById('tbody-relatorio');
     try {
       const [sCTSP, sCBA, sAmbos, sAtivos, sInativos] = await Promise.allSettled([
-        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'ctsp', per_page: 1 }),
-        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'cba', per_page: 1 }),
-        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'ambos', per_page: 1 }),
-        PBM.Admin.assinaturas.listar({ status: 'ativo', per_page: 1 }),
-        PBM.Admin.assinaturas.listar({ status: 'inativo', per_page: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'ctsp', porPagina: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'cba', porPagina: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'ativo', curso: 'ambos', porPagina: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'ativo', porPagina: 1 }),
+        PBM.Admin.assinaturas.listar({ status: 'inativo', porPagina: 1 }),
       ]);
 
       const val = (s) => s.status === 'fulfilled' ? (s.value.total ?? 0) : null;
@@ -832,7 +832,7 @@
     const tbody = document.getElementById('tbody-indicacoes');
     try {
       const data = await PBM.Admin.indicacoes.listar();
-      const lista = data.indicacoes || [];
+      const lista = data.itens;
       if (!lista.length) {
         tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Nenhuma indicação registrada.</td></tr>';
         return;

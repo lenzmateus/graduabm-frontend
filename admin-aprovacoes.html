@@ -376,10 +376,10 @@
       const container = document.getElementById('tab-content-' + key);
       container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
       try {
-        const lista = await a.api.listar();
+        const { itens } = await a.api.listar();
         const toolbar = a.toolbarHTML || '';
 
-        if (!lista || lista.length === 0) {
+        if (!itens.length) {
           container.innerHTML = toolbar + `<div class="empty">${a.emptyState.icon}<p>${a.emptyState.msg}</p></div>`;
           if (a.onToolbar) a.onToolbar(container);
           tabCarregadas[key] = true;
@@ -389,7 +389,7 @@
         container.innerHTML = toolbar + `<div class="cards-list" id="list-${key}"></div>`;
         if (a.onToolbar) a.onToolbar(container);
         const list = document.getElementById('list-' + key);
-        lista.forEach(item => list.appendChild(this._renderCard(a, item)));
+        itens.forEach(item => list.appendChild(this._renderCard(a, item)));
         tabCarregadas[key] = true;
       } catch (e) {
         mostrarErroTab(key, e);

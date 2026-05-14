@@ -785,11 +785,11 @@
     const lista = document.getElementById('admins-lista');
     try {
       const data = await PBM.Admin.admins.listar();
-      if (!Array.isArray(data) || data.length === 0) {
+      if (!data.itens.length) {
         lista.innerHTML = '<div style="color:#555;font-size:13px;">Nenhum administrador cadastrado.</div>';
         return;
       }
-      lista.innerHTML = data.map(a => {
+      lista.innerHTML = data.itens.map(a => {
         const ehSuperAdmin = a.role === 'super_admin';
         const podeDeletar = ADMIN_ROLE === 'super_admin' && !ehSuperAdmin;
         return `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--cinza-borda);" id="admin-row-${a.id}">

@@ -847,6 +847,17 @@
     }
   })();
 
+  // ── Toast de sessão expirada / encerrada (handler 401 do api.js) ──
+  (function() {
+    const msg = sessionStorage.getItem('pbm_session_msg');
+    if (!msg) return;
+    sessionStorage.removeItem('pbm_session_msg');
+    document.addEventListener('DOMContentLoaded', () => {
+      const el = document.getElementById('msg-login');
+      if (el) { el.textContent = msg; el.className = 'msg erro'; }
+    });
+  })();
+
   // ── UI helpers ────────────────────────────────────────────
   function trocarTab(tab) {
     const isLogin = tab === 'login';

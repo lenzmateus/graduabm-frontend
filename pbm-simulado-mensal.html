@@ -531,7 +531,7 @@ async function renderLobbyAdmin() {
 
   try {
     const data = await PBM.Admin.simuladosMensais.listar();
-    const pendentes = (data || []).filter(s => !s.ativo);
+    const pendentes = data.itens.filter(s => !s.ativo);
     const el = document.getElementById('lobby-pendentes');
     if (!pendentes.length) {
       el.innerHTML = '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#333;">Nenhum simulado aguardando habilitação.</div>';

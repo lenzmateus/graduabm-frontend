@@ -286,7 +286,7 @@
   async function carregar() {
     try {
       const r = await PBM.Admin.legislacoes.listar();
-      cache = r.legislacoes || [];
+      cache = r.itens;
       renderLista();
       if (destaqueId) focarDestaque();
     } catch (e) {
