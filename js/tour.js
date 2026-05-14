@@ -281,6 +281,82 @@
       ],
     },
 
+    '/ciclo-estudos': {
+      key: 'ciclo-estudos',
+      welcomeTitle: 'Ciclo de Estudos',
+      welcomeBody: 'Aqui o sistema monta seu plano de estudo automaticamente a partir do nível que você declarar em cada área. Vamos ver como funciona.',
+      steps: [
+        {
+          target: '#horas-totais',
+          title: 'Horas totais do ciclo',
+          body: 'Defina quantas horas o ciclo inteiro deve durar (entre 1h e 50h). O sistema distribui essas horas entre as áreas seguindo o peso do edital e o seu nível declarado.',
+          position: 'bottom',
+        },
+        {
+          target: '#at-grid',
+          title: 'Auto-declaração por área',
+          body: 'Marque seu nível de 1 (zero) a 5 (domino) em cada AT. Áreas com nível baixo ganham mais tempo e legislações novas primeiro. Você pode revisar isso a qualquer momento.',
+          position: 'top',
+        },
+        {
+          target: '#btn-gerar',
+          title: 'Gerar ciclo',
+          body: 'Clique para o sistema escolher as legislações e a ordem dos blocos. Cada bloco é um pomodoro sugestivo de 60 min focado numa AT + legislação.',
+          position: 'top',
+        },
+        {
+          target: '.hero-ciclo',
+          title: 'Próximo bloco',
+          body: 'Quando o ciclo está ativo, este é o bloco que vem agora. Inicie o pomodoro para estudar a legislação e em seguida responder questões focadas.',
+          position: 'bottom',
+        },
+        {
+          target: '.anel-progresso',
+          title: 'Progresso do ciclo',
+          body: 'O anel mostra quantos blocos você já concluiu. Ao zerar todos, o ciclo reinicia automaticamente e contabiliza uma rodada completa.',
+          position: 'left',
+        },
+        {
+          target: '#proximos-lista',
+          title: 'Lista de blocos',
+          body: 'Veja todos os blocos do ciclo na ordem em que serão executados. Pular um bloco o move para o fim da fila sem registrá-lo como concluído.',
+          position: 'top',
+        },
+        {
+          target: 'a[href="/minhas-dificuldades"]',
+          title: 'Minhas Dificuldades',
+          body: 'Marque legislações específicas como alta ou baixa dificuldade para influenciar a ordem dentro de cada AT no próximo ciclo gerado.',
+          position: 'right',
+        },
+      ],
+    },
+
+    '/minhas-dificuldades': {
+      key: 'minhas-dificuldades',
+      welcomeTitle: 'Minhas Dificuldades',
+      welcomeBody: 'Aqui você ajusta o peso de cada legislação no seu próximo ciclo de estudos. Tudo que você marca aqui só entra em vigor quando gerar um novo ciclo.',
+      steps: [
+        {
+          target: '.stats-bar',
+          title: 'Visão geral das marcações',
+          body: 'Acompanhe quantas legislações você marcou como alta, baixa, ou deixou neutras. As neutras seguem a ordem padrão (menos-tocada primeiro).',
+          position: 'bottom',
+        },
+        {
+          target: '.toolbar',
+          title: 'Buscar e filtrar',
+          body: 'Procure por nome ou filtre só as alta/baixa/sem marcação. Útil para revisar rapidamente o que você já classificou.',
+          position: 'bottom',
+        },
+        {
+          target: '.leg-item',
+          title: 'Marcar alta, neutra ou baixa',
+          body: '↑ Alta puxa a legislação para o início da AT no próximo ciclo. ↓ Baixa empurra para o fim. Neutro deixa o sistema decidir pela menos-tocada.',
+          position: 'top',
+        },
+      ],
+    },
+
     '/flashcards': {
       key: 'flashcards',
       welcomeTitle: 'Flashcards de Memorização',

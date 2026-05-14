@@ -144,6 +144,8 @@
 
   /* ORIGEM */
   .origem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .grid-ia-kpi { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+  @media (max-width: 600px) { .grid-ia-kpi { grid-template-columns: 1fr; } }
   .origem-item { background: var(--cinza-medio); border-radius: 8px; padding: 12px; text-align: center; }
   .origem-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--branco); }
   .origem-label { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; }
@@ -177,6 +179,10 @@
     .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; }
     .topbar { padding: 0 1rem; }
     .conteudo { padding: 1rem; }
+    .origem-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .grid-kpi { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -364,7 +370,7 @@
         </div>
 
         <!-- KPIs de custo -->
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">
+        <div class="grid-ia-kpi">
           <div class="kpi-card">
             <div class="kpi-label">Custo Total (USD)</div>
             <div class="kpi-val" id="ia-kpi-custo" style="font-size:28px;"><span class="skeleton" style="height:28px;width:80px;"></span></div>

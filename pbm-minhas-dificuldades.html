@@ -147,6 +147,30 @@
   }
   .stat-pill.alta .num { color: #E0866E; }
   .stat-pill.baixa .num { color: #7DD99A; }
+
+  /* ── Mobile estreito (≤420px) ── */
+  @media (max-width: 420px) {
+    .page-titulo { font-size: 26px; }
+    .page-sub { font-size: 12px; }
+
+    .stats-bar { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stat-pill .num { font-size: 20px; }
+    .stat-pill .lbl { font-size: 8px; }
+
+    .toolbar { gap: 6px; }
+    .toolbar input[type="search"] { font-size: 12px; padding: 7px 10px; }
+    .filtros { flex-wrap: wrap; }
+    .filtro-btn { padding: 5px 9px; font-size: 9px; }
+
+    .leg-item {
+      grid-template-columns: 1fr;
+      gap: 8px; padding: 10px 12px;
+    }
+    .toggle-grupo { width: 100%; }
+    .toggle-btn { flex: 1; padding: 7px 6px; font-size: 9px; }
+    .leg-nome { font-size: 12.5px; }
+    .leg-info { font-size: 9px; }
+  }
 </style>
 </head>
 <body>
@@ -225,6 +249,7 @@
     curso: 'ctsp',
     legislacoes: [],
     marcacoes: {}, // { legislacao_id: 'alta'|'media'|'baixa' }
+    historico: {}, // { legislacao_id: { total_minutos, sessoes_total } }
     filtro: 'todas',
     busca: '',
   };
@@ -234,14 +259,18 @@
     estado.curso = (user && user.curso) ? user.curso.toLowerCase() : 'ctsp';
 
     try {
-      const [manif, dif] = await Promise.all([
+      const [manif, dif, hist] = await Promise.all([
         fetch('/api/legislacoes/manifesto?curso=' + estado.curso).then(r => r.json()),
         PBM.CicloApi.dificuldades(),
+        PBM.Historico.legislacoes().catch(() => ({ itens: [] })),
       ]);
       estado.legislacoes = manif.legislacoes || [];
       const marc = {};
       (dif.marcacoes || []).forEach(m => { marc[m.legislacao_id] = m.nivel; });
       estado.marcacoes = marc;
+      const histMap = {};
+      (hist.itens || []).forEach(it => { histMap[it.legislacao_id] = it; });
+      estado.historico = histMap;
 
       document.getElementById('loading').style.display = 'none';
       renderTudo();
@@ -249,6 +278,14 @@
       console.error('[dificuldades] erro carregar', e);
       document.getElementById('loading').textContent = 'Erro ao carregar. Recarregue a página.';
     }
+  }
+
+  function fmtTempo(min) {
+    if (!min) return '0 min';
+    if (min < 60) return `${min} min`;
+    const h = Math.floor(min / 60);
+    const m = min % 60;
+    return m ? `${h}h ${m}min` : `${h}h`;
   }
 
   function renderTudo() {
@@ -310,12 +347,17 @@
       const ul = sec.querySelector('.leg-lista');
       items.forEach(l => {
         const m = estado.marcacoes[l.id] || null;
+        const h = estado.historico[l.id];
+        const histLinha = h
+          ? `<span style="color:#7DD99A;">⏱ ${fmtTempo(h.total_minutos)}</span> · ${h.sessoes_total} sessã${h.sessoes_total === 1 ? 'o' : 'es'}`
+          : `<span style="color:#666;">Nunca estudada</span>`;
         const item = document.createElement('div');
         item.className = 'leg-item' + (m === 'alta' ? ' alta' : '') + (m === 'baixa' ? ' baixa' : '');
         item.innerHTML = `
           <div>
             <div class="leg-nome">${l.nome}</div>
             <div class="leg-info">${l.grupo || ''}${l.descricao ? ' · ' + l.descricao : ''}</div>
+            <div class="leg-info" style="margin-top:4px;">${histLinha}</div>
           </div>
           <div class="toggle-grupo" data-id="${l.id}">
             <button class="toggle-btn ${m === 'alta' ? 'ativo alta' : ''}" data-nivel="alta">↑ Alta</button>

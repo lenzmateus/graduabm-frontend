@@ -297,6 +297,9 @@ const PBM = {
     porLegislacao(id) {
       return request('/api/historico/legislacao/' + encodeURIComponent(id));
     },
+    legislacoes() {
+      return request('/api/historico/legislacoes');
+    },
     revisoesPendentes() {
       return request('/api/historico/revisoes');
     },
@@ -315,7 +318,10 @@ const PBM = {
       try {
         await PBM.Admin.req('/api/admin/auth/me');
       } catch (err) {
-        if (err?.status === 401) return;
+        if (err?.status === 401) {
+          PBM.Admin.logout();
+          return;
+        }
         console.warn('[Admin] Falha ao validar sessão:', err?.erro || err?.message || err);
       }
     },
