@@ -908,6 +908,7 @@ async function init() {
         const j = Math.floor(Math.random() * (i + 1));
         [questoes[i], questoes[j]] = [questoes[j], questoes[i]];
       }
+      await hidratarDenuncias();
       setCor(questoes[0].area_tematica || area || 'AT1');
       iniciarTimer();
       document.getElementById('hdr-total').textContent = questoes.length;
@@ -955,6 +956,7 @@ async function init() {
       return;
     }
 
+    await hidratarDenuncias();
     setCor(area);
     iniciarTimer();
     document.getElementById('hdr-total').textContent = questoes.length;
@@ -1461,6 +1463,19 @@ function formatarTempo(s) {
 }
 
 // ── DENÚNCIA ──
+async function hidratarDenuncias() {
+  if (PBM.isAdmin()) return;
+  try {
+    const { questao_ids } = await PBM.api.denuncias.minhas();
+    const set = new Set(questao_ids || []);
+    questoes.forEach((q, i) => {
+      if (set.has(q.id)) {
+        if (!estadoQuestoes[i]) estadoQuestoes[i] = {};
+        estadoQuestoes[i].reportado = true;
+      }
+    });
+  } catch { /* não bloqueia o estudo se a hidratação falhar */ }
+}
 function abrirModalDenuncia() {
   const ta = document.getElementById('denuncia-comentario');
   ta.value = '';
@@ -1495,7 +1510,15 @@ async function enviarDenuncia() {
       btnReport.onclick = null;
       btnReport.disabled = true;
     }
-  } catch {
+  } catch (e) {
+    // 409 = já reportada (UI fora de sincronia). Marca como reportada também.
+    if (e && (e.status === 409 || e.ja_reportada)) {
+      if (!estadoQuestoes[idxAtual]) estadoQuestoes[idxAtual] = {};
+      estadoQuestoes[idxAtual].reportado = true;
+      fecharModalDenuncia();
+      mostrarQuestao();
+      return;
+    }
     btn.disabled = false;
     btn.textContent = 'Tentar novamente';
   }

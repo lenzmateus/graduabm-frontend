@@ -13,62 +13,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Relatórios de Problemas</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/admin-chrome.css">
 <style>
   :root {
-    --carvao: #0F0F0F;
-    --cinza-escuro: #1A1A1A;
-    --cinza-medio: #2A2A2A;
-    --cinza-borda: #333;
-    --cinza-texto: #888;
-    --branco: #F8F6F2;
-    --vermelho: #C0270F;
     --vermelho-bg: rgba(192,39,15,0.08);
     --vermelho-borda: rgba(192,39,15,0.3);
-    --roxo: #7F77DD;
-    --roxo-bg: rgba(127,119,221,0.08);
-    --roxo-borda: rgba(127,119,221,0.3);
-    --verde: #27A05A;
-    --verde-bg: rgba(39,160,90,0.08);
-    --verde-borda: rgba(39,160,90,0.3);
     --amarelo: #BA7517;
     --amarelo-bg: rgba(186,117,23,0.1);
     --amarelo-borda: rgba(186,117,23,0.3);
-    --erro: #E24B4A;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
-  .layout { display: flex; min-height: 100vh; }
-
-  /* SIDEBAR */
-  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
-  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
-  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
-  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
-  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
-  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
-  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #AFA9EC; letter-spacing: 0.04em; }
-  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--roxo); }
-  .sidebar-nav { flex: 1; padding: 1rem 0; }
-  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
-  .nav-label:first-child { margin-top: 0; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
-  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
-  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: var(--vermelho-bg); }
-  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
-  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
-  .btn-sair:hover { border-color: #555; color: var(--branco); }
-
-  /* MAIN */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
-  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
-  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
-  .topbar-dir { display: flex; align-items: center; gap: 12px; }
-  .btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
-  .btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
-  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; animation: fadeUp 0.3s ease both; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
   /* STATS */
   .grid-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem; }
@@ -122,23 +75,43 @@
   .estado-vazio { text-align: center; padding: 3rem 2rem; color: #555; font-size: 13px; }
   .estado-vazio svg { opacity: 0.2; margin-bottom: 1rem; }
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
-  .toast.visivel { transform: translateX(-50%) translateY(0); }
-  .toast.verde { border-color: var(--verde-borda); color: #7DD99A; }
-  .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
+  /* MODAL EDIÇÃO DE QUESTÃO */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+  .overlay.aberto { display: flex; }
+  .modal-edit { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 680px; max-height: 92vh; display: flex; flex-direction: column; }
+  .modal-edit-header { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 1rem; }
+  .modal-edit-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.03em; }
+  .modal-edit-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); }
+  .modal-edit-fechar { background: transparent; border: none; color: var(--cinza-texto); font-size: 22px; cursor: pointer; padding: 0 4px; transition: color 0.15s; }
+  .modal-edit-fechar:hover { color: var(--branco); }
+  .modal-edit-body { padding: 1.25rem 1.4rem; overflow-y: auto; flex: 1; }
+  .modal-edit-footer { padding: 0.9rem 1.4rem; border-top: 1px solid var(--cinza-borda); display: flex; gap: 10px; justify-content: space-between; flex-shrink: 0; align-items: center; }
+  .campo-edit { margin-bottom: 1rem; }
+  .campo-edit label { display: block; font-size: 10px; font-weight: 500; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; font-family: 'IBM Plex Mono', monospace; }
+  .campo-edit input, .campo-edit select, .campo-edit textarea { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 6px; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.2s; }
+  .campo-edit input:focus, .campo-edit select:focus, .campo-edit textarea:focus { border-color: var(--roxo); }
+  .campo-edit textarea { resize: vertical; min-height: 70px; }
+  .alts-edit { display: grid; grid-template-columns: 1fr; gap: 6px; }
+  .alt-edit-row { display: flex; align-items: center; gap: 8px; }
+  .alt-edit-letra { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: var(--roxo); width: 16px; flex-shrink: 0; }
+  .alt-edit-radio { accent-color: var(--verde); cursor: pointer; flex-shrink: 0; }
+  .alt-edit-row.gabarito-marcado .alt-edit-letra { color: var(--verde); }
+  .alt-edit-row.gabarito-marcado input[type="text"] { border-color: var(--verde-borda); background: rgba(39,160,90,0.05); }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .banner-edit { padding: 9px 12px; border-radius: 6px; font-size: 12px; margin-bottom: 14px; }
+  .banner-edit.auditada { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
+  .banner-edit.pendente { background: rgba(186,117,23,0.08); border: 1px solid rgba(186,117,23,0.3); color: #E0A858; }
+  .btn-edit-primario { background: var(--roxo); color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter',sans-serif; transition: background 0.2s; }
+  .btn-edit-primario:hover { background: #6960C8; }
+  .btn-edit-primario:disabled { background: #444; cursor: default; }
+  .btn-edit-secundario { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 8px 16px; font-size: 12px; cursor: pointer; font-family: 'Inter',sans-serif; }
+  .btn-edit-secundario:hover { border-color: #555; color: var(--branco); }
+  .link-completo { font-size: 11px; color: #AFA9EC; text-decoration: none; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em; }
+  .link-completo:hover { color: #fff; }
 
   @media (max-width: 768px) {
-    .layout { flex-direction: column; }
-    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
-    .sidebar-logo { padding: 0; border-bottom: none; }
-    .sidebar-usuario, .sidebar-nav { display: none; }
-    .sidebar-footer { border-top: none; padding: 0; }
-    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
-    .topbar { padding: 0 1rem; }
-    .conteudo { padding: 1rem; }
     .grid-cards { grid-template-columns: repeat(2, 1fr); }
-    .topbar-mono { display: none; }
+    .chrome-topbar-mono { display: none; }
     .filtros-row { flex-direction: column; align-items: stretch; }
     .filtro-busca { max-width: 100%; }
   }
@@ -150,85 +123,10 @@
 <body>
 
 <div class="layout">
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
-      <span class="admin-chip">ADMIN</span>
-    </div>
-    <div class="sidebar-usuario">
-      <div class="usuario-nome">Administrador</div>
-      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-label">Painel</div>
-      <a class="nav-item" href="/admin">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Dashboard
-      </a>
-      <a class="nav-item" href="/admin-analytics">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Analytics
-      </a>
-      <div class="nav-label">Conteúdo</div>
-      <a class="nav-item" href="/admin-questoes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Questões
-      </a>
-      <a class="nav-item" href="/admin-legislacoes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
-        Legislações
-      </a>
-      <a class="nav-item" href="/admin-flashcards">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-        Flashcards
-      </a>
-      <a class="nav-item" href="/admin-simulados-mensais">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>
-        Protocolos QAP
-      </a>
-      <div class="nav-label">Alunos</div>
-      <a class="nav-item" href="/admin-assinaturas">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-        Assinaturas
-      </a>
-      <a class="nav-item" href="/admin-relatorios">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Relatórios
-      </a>
-      <a class="nav-item ativo" href="/admin-denuncias" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          Relatórios de Problemas
-        </span>
-        <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
-      </a>
-      <div class="nav-label">Sistema</div>
-      <a class="nav-item" href="/admin-aprovacoes" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          Aprovações IA
-        </span>
-        <span id="nav-aprovacoes-badge" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
-      </a>
-      <a class="nav-item" href="/" target="_blank">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Ver site
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-sair" id="btn-sair">Encerrar sessão admin</button>
-    </div>
-  </aside>
+  <aside id="admin-chrome"></aside>
 
   <div class="main">
-    <div class="topbar">
-      <span class="topbar-titulo">Relatórios de Problemas</span>
-      <div class="topbar-dir">
-        <span class="topbar-mono" id="topbar-data"></span>
-        <button class="btn-topbar-sair" onclick="document.getElementById('btn-sair').click()">Encerrar sessão</button>
-      </div>
-    </div>
-
+    <header id="admin-topbar"></header>
     <div class="conteudo">
       <!-- STATS -->
       <div class="grid-cards">
@@ -273,23 +171,108 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- MODAL EDITAR QUESTÃO -->
+<div class="overlay" id="overlay-editar">
+  <div class="modal-edit">
+    <div class="modal-edit-header">
+      <div>
+        <div class="modal-edit-titulo">Editar Questão</div>
+        <div class="modal-edit-meta" id="edit-meta">—</div>
+      </div>
+      <button class="modal-edit-fechar" onclick="fecharEditar()">×</button>
+    </div>
+    <div class="modal-edit-body">
+      <div id="edit-banner" class="banner-edit" style="display:none"></div>
+      <input type="hidden" id="edit-id">
+
+      <div class="campo-edit">
+        <label>Enunciado</label>
+        <textarea id="edit-enunciado" rows="4" placeholder="Enunciado da questão"></textarea>
+      </div>
+
+      <div class="campo-edit">
+        <label>Alternativas (marque o gabarito à esquerda)</label>
+        <div class="alts-edit" id="edit-alts"></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="campo-edit">
+          <label>Status</label>
+          <select id="edit-ativa">
+            <option value="true">Ativa</option>
+            <option value="false">Inativa</option>
+          </select>
+        </div>
+        <div class="campo-edit">
+          <label>Curso</label>
+          <input id="edit-curso" type="text" readonly style="opacity:0.6;cursor:not-allowed">
+        </div>
+      </div>
+
+      <div class="campo-edit">
+        <label>Comentário / Justificativa</label>
+        <textarea id="edit-comentario" rows="3" placeholder="Explicação da resposta correta"></textarea>
+      </div>
+
+      <div id="edit-erro" style="font-size:12px;color:#F09595;margin-top:4px;display:none"></div>
+    </div>
+    <div class="modal-edit-footer">
+      <a id="edit-link-completo" class="link-completo" href="#" target="_blank">Editor completo ↗</a>
+      <div style="display:flex;gap:10px">
+        <button class="btn-edit-secundario" onclick="fecharEditar()">Cancelar</button>
+        <button class="btn-edit-primario" id="btn-edit-salvar" onclick="salvarEdicaoQuestao()">Salvar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESOLVER -->
+<div id="overlay-resolver" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;display:none;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:var(--cinza-escuro);border:1px solid var(--cinza-borda);border-radius:12px;width:100%;max-width:480px;">
+    <div style="padding:1.1rem 1.4rem;border-bottom:1px solid var(--cinza-borda);">
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:0.03em;">Resolver relato</span>
+    </div>
+    <div style="padding:1.25rem 1.4rem;">
+      <div id="resolver-aviso-auditada" style="display:none;background:rgba(186,117,23,0.1);border:1px solid var(--amarelo-borda);border-radius:8px;padding:9px 12px;font-size:12px;color:#E0A858;margin-bottom:14px;"></div>
+
+      <div id="resolver-checkbox-wrap" style="display:flex;align-items:flex-start;gap:9px;margin-bottom:14px;cursor:pointer;" onclick="document.getElementById('resolver-marcar').click()">
+        <input type="checkbox" id="resolver-marcar" checked style="margin-top:3px;cursor:pointer;accent-color:var(--verde);">
+        <div>
+          <div style="font-size:13px;color:var(--branco);font-weight:500;">Marcar questão como auditada</div>
+          <div style="font-size:11px;color:var(--cinza-texto);margin-top:2px;">Registra na trilha de auditoria que esta questão foi revisada.</div>
+        </div>
+      </div>
+
+      <div id="resolver-info-legislacao" style="display:none;font-size:12px;color:var(--cinza-texto);background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:6px;padding:8px 12px;margin-bottom:14px;">
+        Relato de legislação — auditoria de questão não se aplica.
+      </div>
+
+      <label style="display:block;font-size:11px;color:var(--cinza-texto);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;font-family:'IBM Plex Mono',monospace;">Comentário (opcional)</label>
+      <textarea id="resolver-comentario" rows="3" maxlength="1000" placeholder="Ex.: corrigi gabarito, atualizei legislação…" style="width:100%;background:var(--cinza-medio);border:1px solid var(--cinza-borda);border-radius:6px;padding:8px 12px;color:var(--branco);font-family:'Inter',sans-serif;font-size:13px;outline:none;resize:vertical;"></textarea>
+    </div>
+    <div style="padding:0.9rem 1.4rem;border-top:1px solid var(--cinza-borda);display:flex;gap:10px;justify-content:flex-end;">
+      <button class="filtro-btn" onclick="fecharResolver()">Cancelar</button>
+      <button id="btn-confirmar-resolver" class="filtro-btn" style="border-color:var(--verde-borda);color:#7DD99A;" onclick="confirmarResolver()">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 <script src="/js/api.js"></script>
+<script src="/js/admin-chrome.js"></script>
 <script>
-  PBM.Admin.protegerRota();
+  AdminChrome.init({
+    pagina: 'denuncias',
+    titulo: 'Relatórios de Problemas',
+    acoes: [{ html: '<span class="chrome-topbar-mono" id="topbar-data"></span>' }],
+  });
+  const toast = AdminChrome.toast;
+
   const ADMIN_JWT = sessionStorage.getItem('pbm_admin_jwt');
 
   try {
     document.getElementById('topbar-data').textContent =
       new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   } catch (e) {}
-
-  document.getElementById('btn-sair').addEventListener('click', () => {
-    sessionStorage.removeItem('pbm_admin_jwt');
-    sessionStorage.removeItem('pbm_admin');
-    window.location.href = '/admin-login';
-  });
 
   function supaQuery(path, prefer, method, body) {
     return PBM.Admin.query(path, prefer, method, body);
@@ -298,14 +281,6 @@
   function escHtml(str) {
     if (!str) return '';
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-  }
-
-  function toast(msg, tipo) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'toast visivel' + (tipo ? ' ' + tipo : '');
-    clearTimeout(el._t);
-    el._t = setTimeout(() => { el.classList.remove('visivel'); }, 3000);
   }
 
   let cache = [];
@@ -382,9 +357,12 @@
         const area = questaoInfo.area_tematica || '';
         const leg = questaoInfo.legislacao_nome || '';
         const codigo = questaoInfo.codigo || '';
-        cabecalho = `<span class="badge-tipo-questao">Questão</span>${area ? `<strong style="color:#E0866E;">${area}</strong> · ` : ''}${codigo ? `<span style="color:#AFA9EC;margin-right:6px;">${escHtml(codigo)}</span>` : ''}${escHtml(leg ? leg + ' · ' : '')}${escHtml(trecho || d.questao_id || '')}`;
+        const auditadaBadge = questaoInfo.auditada_em
+          ? `<span title="Questão já auditada em ${new Date(questaoInfo.auditada_em).toLocaleDateString('pt-BR')}" style="font-family:'IBM Plex Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:var(--verde-bg);border:1px solid var(--verde-borda);color:#7DD99A;letter-spacing:0.04em;text-transform:uppercase;margin-right:6px;">✓ Auditada</span>`
+          : '';
+        cabecalho = `<span class="badge-tipo-questao">Questão</span>${auditadaBadge}${area ? `<strong style="color:#E0866E;">${area}</strong> · ` : ''}${codigo ? `<span style="color:#AFA9EC;margin-right:6px;">${escHtml(codigo)}</span>` : ''}${escHtml(leg ? leg + ' · ' : '')}${escHtml(trecho || d.questao_id || '')}`;
         acaoAdmin = d.questao_id
-          ? `<a href="/admin-questoes?editar=${d.questao_id}" class="btn-editar-questao">✏ Editar Questão</a>`
+          ? `<button class="btn-editar-questao" onclick="abrirEditarQuestao('${escHtml(d.questao_id)}')">✏ Editar Questão</button>`
           : '';
       }
 
@@ -417,30 +395,16 @@
     document.getElementById('stat-pendentes').textContent = pendentes;
     document.getElementById('stat-resolvidas').textContent = resolvidas;
 
-    const badge = document.getElementById('badge-denuncias');
-    if (pendentes > 0) {
-      badge.textContent = pendentes;
-      badge.style.display = 'inline-block';
-    } else {
-      badge.style.display = 'none';
-    }
+    AdminChrome.atualizarBadges();
   }
 
-  async function carregarBadgeAprovacoes() {
-    try {
-      const r = await PBM.Admin.aprovacoes.resumo();
-      const el = document.getElementById('nav-aprovacoes-badge');
-      if (!el) return;
-      if (r?.total > 0) { el.textContent = r.total; el.style.display = 'inline'; }
-      else { el.style.display = 'none'; }
-    } catch {}
-  }
+  function carregarBadgeAprovacoes() { AdminChrome.atualizarBadges(); }
 
   async function carregarDenuncias() {
     if (!ADMIN_JWT) return;
     try {
       const r = await supaQuery(
-        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,tipo,legislacao_id,legislacao_nome,questoes(codigo,area_tematica,legislacao_nome,enunciado),users(nome,email)&order=created_at.desc&limit=500'
+        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,tipo,legislacao_id,legislacao_nome,questoes(codigo,area_tematica,legislacao_nome,enunciado,auditada_em),users(nome,email)&order=created_at.desc&limit=500'
       );
       if (!r.ok) throw new Error('Falha ao buscar denúncias');
       cache = Array.isArray(r.data) ? r.data : [];
@@ -452,22 +416,69 @@
     }
   }
 
-  window.resolverDenuncia = async function(id, btn) {
-    btn.classList.add('resolvendo');
+  let _resolverDenunciaAtual = null;
+
+  window.resolverDenuncia = function(id) {
+    const d = cache.find(x => x.id === id);
+    if (!d) return;
+    _resolverDenunciaAtual = d;
+    const tipo = d.tipo || 'questao';
+    const ehLegislacao = tipo === 'legislacao' || !d.questao_id;
+    const auditadaEm = d.questoes?.auditada_em;
+
+    document.getElementById('resolver-comentario').value = '';
+    document.getElementById('resolver-marcar').checked = !ehLegislacao;
+    document.getElementById('resolver-checkbox-wrap').style.display = ehLegislacao ? 'none' : 'flex';
+    document.getElementById('resolver-info-legislacao').style.display = ehLegislacao ? 'block' : 'none';
+
+    const aviso = document.getElementById('resolver-aviso-auditada');
+    if (!ehLegislacao && auditadaEm) {
+      const dt = new Date(auditadaEm).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+      aviso.textContent = `⚠ Esta questão já foi auditada em ${dt}. Marcar novamente registrará outra entrada na trilha.`;
+      aviso.style.display = 'block';
+    } else {
+      aviso.style.display = 'none';
+    }
+
+    document.getElementById('overlay-resolver').style.display = 'flex';
+  };
+
+  window.fecharResolver = function() {
+    document.getElementById('overlay-resolver').style.display = 'none';
+    _resolverDenunciaAtual = null;
+  };
+
+  window.confirmarResolver = async function() {
+    const d = _resolverDenunciaAtual;
+    if (!d) return;
+    const btn = document.getElementById('btn-confirmar-resolver');
+    btn.disabled = true;
     btn.textContent = '…';
+    const marcar = document.getElementById('resolver-marcar').checked;
+    const comentario = document.getElementById('resolver-comentario').value.trim();
+
     try {
-      const r = await supaQuery(`/rest/v1/denuncias?id=eq.${id}`, 'return=minimal', 'PATCH', { resolvida: true });
-      if (!r.ok) throw new Error();
-      const idx = cache.findIndex(d => d.id === id);
-      if (idx !== -1) cache[idx].resolvida = true;
-      toast('Relato marcado como resolvido.', 'verde');
+      await PBM.Admin.denuncias.resolver(d.id, {
+        marcar_como_auditada: marcar,
+        comentario: comentario || undefined,
+      });
+      const idx = cache.findIndex(x => x.id === d.id);
+      if (idx !== -1) {
+        cache[idx].resolvida = true;
+        if (marcar && cache[idx].questoes) {
+          cache[idx].questoes.auditada_em = new Date().toISOString();
+        }
+      }
+      toast('Relato resolvido' + (marcar ? ' e auditoria registrada.' : '.'), 'sucesso');
+      fecharResolver();
       atualizarStats();
       renderLista();
       carregarBadgeAprovacoes();
-    } catch {
-      btn.classList.remove('resolvendo');
-      btn.textContent = '✓ Resolver';
-      toast('Erro ao resolver relato.', 'erro');
+    } catch (err) {
+      toast(err?.erro || 'Erro ao resolver relato.', 'erro');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Confirmar';
     }
   };
 
@@ -479,7 +490,7 @@
       const r = await supaQuery(`/rest/v1/denuncias?id=eq.${id}`, 'return=minimal', 'DELETE');
       if (!r.ok) throw new Error();
       cache = cache.filter(d => d.id !== id);
-      toast('Relato excluído.', 'verde');
+      toast('Relato excluído.', 'sucesso');
       atualizarStats();
       renderLista();
       carregarBadgeAprovacoes();
@@ -489,6 +500,184 @@
       toast('Erro ao excluir relato.', 'erro');
     }
   };
+
+  // ─── EDITAR QUESTÃO INLINE ───
+  const LETRAS = ['A','B','C','D','E'];
+  let _editAtual = null; // { id, auditada_em, original: { enunciado, gabarito, alternativas } }
+
+  function renderAltsEdit(alts, gabarito) {
+    const cont = document.getElementById('edit-alts');
+    cont.innerHTML = LETRAS.map((letra, i) => `
+      <div class="alt-edit-row ${i === gabarito ? 'gabarito-marcado' : ''}" data-idx="${i}">
+        <input type="radio" name="edit-gab" class="alt-edit-radio" value="${i}" ${i === gabarito ? 'checked' : ''} title="Marcar como gabarito">
+        <span class="alt-edit-letra">${letra}</span>
+        <input type="text" class="alt-edit-input" data-letra="${letra.toLowerCase()}" value="${(alts[i] || '').replace(/"/g,'&quot;')}" placeholder="Alternativa ${letra}${i >= 2 ? ' (opcional)' : ''}">
+      </div>`).join('');
+    cont.querySelectorAll('input[name="edit-gab"]').forEach(r => {
+      r.addEventListener('change', () => {
+        const idx = Number(r.value);
+        cont.querySelectorAll('.alt-edit-row').forEach((row, i) => {
+          row.classList.toggle('gabarito-marcado', i === idx);
+        });
+      });
+    });
+  }
+
+  window.abrirEditarQuestao = async function(questaoId) {
+    const overlay = document.getElementById('overlay-editar');
+    overlay.classList.add('aberto');
+    document.getElementById('edit-erro').style.display = 'none';
+    document.getElementById('edit-meta').textContent = 'Carregando…';
+    document.getElementById('edit-banner').style.display = 'none';
+    document.getElementById('edit-enunciado').value = '';
+    document.getElementById('edit-comentario').value = '';
+    document.getElementById('edit-alts').innerHTML = '';
+    document.getElementById('edit-id').value = questaoId;
+    document.getElementById('edit-link-completo').href = `/admin-questoes?editar=${encodeURIComponent(questaoId)}`;
+
+    const r = await supaQuery(`/rest/v1/questoes?id=eq.${encodeURIComponent(questaoId)}&select=*`);
+    if (!r.ok || !Array.isArray(r.data) || !r.data[0]) {
+      document.getElementById('edit-erro').textContent = 'Não foi possível carregar a questão.';
+      document.getElementById('edit-erro').style.display = 'block';
+      document.getElementById('edit-meta').textContent = '—';
+      return;
+    }
+    const q = r.data[0];
+    const alts = Array.isArray(q.alternativas) ? q.alternativas : [];
+    const gabarito = Number(q.gabarito ?? 0);
+
+    document.getElementById('edit-meta').textContent =
+      `${q.codigo || '—'} · ${q.area_tematica || ''} · ${(q.legislacao_nome || q.legislacao_id || '').slice(0, 60)}`;
+    document.getElementById('edit-enunciado').value = q.enunciado || '';
+    document.getElementById('edit-comentario').value = q.comentario || '';
+    document.getElementById('edit-ativa').value = String(q.ativa !== false);
+    document.getElementById('edit-curso').value = (q.curso || '').toUpperCase();
+    renderAltsEdit(alts, gabarito);
+
+    const banner = document.getElementById('edit-banner');
+    if (q.auditada_em) {
+      const dt = new Date(q.auditada_em).toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', year:'numeric' });
+      banner.className = 'banner-edit auditada';
+      banner.textContent = `✓ Questão auditada em ${dt} — editar campos críticos vai pedir reset da auditoria.`;
+      banner.style.display = 'block';
+    } else {
+      banner.className = 'banner-edit pendente';
+      banner.textContent = '⚠ Pendente de auditoria.';
+      banner.style.display = 'block';
+    }
+
+    _editAtual = {
+      id: q.id,
+      auditada_em: q.auditada_em || null,
+      original: {
+        enunciado: q.enunciado || '',
+        gabarito,
+        alternativas: alts.slice(),
+      },
+    };
+  };
+
+  window.fecharEditar = function() {
+    document.getElementById('overlay-editar').classList.remove('aberto');
+    _editAtual = null;
+  };
+
+  window.salvarEdicaoQuestao = async function() {
+    if (!_editAtual) return;
+    const erroEl = document.getElementById('edit-erro');
+    erroEl.style.display = 'none';
+
+    const enunciado = document.getElementById('edit-enunciado').value.trim();
+    const alts = ['a','b','c','d','e'].map(l =>
+      document.querySelector(`.alt-edit-input[data-letra="${l}"]`)?.value.trim() || ''
+    );
+    const gabEl = document.querySelector('input[name="edit-gab"]:checked');
+    const gabarito = gabEl ? Number(gabEl.value) : 0;
+
+    if (!enunciado || !alts[0] || !alts[1]) {
+      erroEl.textContent = 'Enunciado e alternativas A e B são obrigatórios.';
+      erroEl.style.display = 'block';
+      return;
+    }
+    if (!alts[gabarito]) {
+      erroEl.textContent = `A alternativa marcada como gabarito (${LETRAS[gabarito]}) não pode estar vazia.`;
+      erroEl.style.display = 'block';
+      return;
+    }
+    const alternativas = alts.filter((v, i) => i < 2 || v);
+
+    const payload = {
+      enunciado,
+      alternativas,
+      gabarito,
+      comentario: document.getElementById('edit-comentario').value.trim() || null,
+      ativa: document.getElementById('edit-ativa').value === 'true',
+    };
+
+    const btn = document.getElementById('btn-edit-salvar');
+    btn.disabled = true;
+    btn.textContent = 'Salvando…';
+
+    const r = await supaQuery(
+      `/rest/v1/questoes?id=eq.${encodeURIComponent(_editAtual.id)}`,
+      'return=representation',
+      'PATCH',
+      payload
+    );
+
+    btn.disabled = false;
+    btn.textContent = 'Salvar';
+
+    if (!r.ok) {
+      erroEl.textContent = r.data?.message || 'Erro ao salvar.';
+      erroEl.style.display = 'block';
+      return;
+    }
+
+    // Edição crítica em questão auditada → oferecer reset
+    if (_editAtual.auditada_em) {
+      const orig = _editAtual.original;
+      const mudouEnun = orig.enunciado !== enunciado;
+      const mudouGab  = Number(orig.gabarito) !== gabarito;
+      const origAlts  = (orig.alternativas || []).slice(0, 5);
+      const novasAlts = alternativas.slice(0, 5);
+      const mudouAlts = origAlts.length !== novasAlts.length
+        || origAlts.some((v, i) => (v || '') !== (novasAlts[i] || ''));
+      if (mudouEnun || mudouGab || mudouAlts) {
+        const ok = confirm('Você alterou enunciado, alternativas ou gabarito desta questão auditada.\n\nDeseja resetar o status de auditoria? A questão voltará para a fila de pendentes.');
+        if (ok) {
+          try {
+            await PBM.Admin.auditoria.registrar(_editAtual.id, 'auditoria_resetada', 'Reset automático após edição crítica via tela de denúncias.');
+            // Reflete no cache local
+            cache.forEach(d => {
+              if (d.questao_id === _editAtual.id && d.questoes) d.questoes.auditada_em = null;
+            });
+          } catch (e) {
+            toast(e?.erro || 'Falha ao resetar auditoria.', 'erro');
+          }
+        }
+      }
+    }
+
+    // Atualiza cache local com novos valores da questão
+    cache.forEach(d => {
+      if (d.questao_id === _editAtual.id && d.questoes) {
+        d.questoes.enunciado = enunciado;
+      }
+    });
+
+    toast('Questão atualizada.', 'sucesso');
+    fecharEditar();
+    renderLista();
+  };
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (document.getElementById('overlay-editar').classList.contains('aberto')) fecharEditar();
+      if (document.getElementById('overlay-resolver').style.display === 'flex') fecharResolver();
+    }
+  });
+  // ─── fim EDITAR QUESTÃO INLINE ───
 
   carregarDenuncias();
   carregarBadgeAprovacoes();

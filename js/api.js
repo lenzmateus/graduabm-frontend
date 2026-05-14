@@ -191,6 +191,9 @@ const PBM = {
       reportar(questao_id, comentario) {
         return request('/api/denuncias', { method: 'POST', body: JSON.stringify({ questao_id, comentario }) });
       },
+      minhas() {
+        return request('/api/denuncias/minhas');
+      },
     },
     flashcards: {
       listar(qs = '') {
@@ -458,6 +461,20 @@ const PBM = {
     },
     denuncias: {
       resumo() { return PBM.Admin.req('/api/admin/denuncias/resumo'); },
+      resolver(id, body) {
+        return PBM.Admin.req(`/api/admin/denuncias/${id}/resolver`, {
+          method: 'POST',
+          body: JSON.stringify(body || {}),
+        });
+      },
+    },
+    auditoria: {
+      registrar(questao_id, acao, comentario) {
+        return PBM.Admin.req(`/api/admin/questoes/${questao_id}/auditar`, {
+          method: 'POST',
+          body: JSON.stringify({ acao, comentario: comentario || null }),
+        });
+      },
     },
     legislacoes: {
       listar()           { return PBM.Admin.req('/api/admin/legislacoes'); },

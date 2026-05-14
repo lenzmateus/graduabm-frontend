@@ -13,52 +13,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Aprovações IA (Admin)</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/admin-chrome.css">
 <style>
   :root {
-    --vermelho: #C0270F;
-    --carvao: #0F0F0F;
-    --cinza-escuro: #1A1A1A;
-    --cinza-medio: #2A2A2A;
-    --cinza-borda: #333;
-    --cinza-texto: #888;
-    --branco: #F8F6F2;
-    --roxo: #7F77DD;
-    --roxo-bg: rgba(127,119,221,0.08);
-    --verde: #27A05A;
-    --verde-bg: rgba(39,160,90,0.08);
-    --verde-borda: rgba(39,160,90,0.3);
     --amarelo: #D4A017;
     --amarelo-bg: rgba(212,160,23,0.08);
-    --erro: #E24B4A;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
-  .layout { display: flex; min-height: 100vh; }
-
-  /* ── Sidebar ── */
-  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
-  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
-  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 16px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
-  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; background: rgba(192,39,15,0.15); color: var(--vermelho); border: 1px solid rgba(192,39,15,0.3); border-radius: 4px; padding: 2px 6px; }
-  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
-  .usuario-nome { font-size: 13px; font-weight: 600; color: var(--branco); }
-  .usuario-status { font-size: 11px; color: var(--cinza-texto); display: flex; align-items: center; gap: 5px; margin-top: 2px; }
-  .status-dot { width: 6px; height: 6px; background: var(--verde); border-radius: 50%; }
-  .sidebar-nav { flex: 1; padding: 1rem 0; }
-  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
-  .nav-label:first-child { margin-top: 0; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
-  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
-  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: rgba(192,39,15,0.08); }
-  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
-  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; transition: all 0.15s; font-family: 'Inter', sans-serif; }
-  .btn-sair:hover { border-color: #555; color: var(--branco); }
-
-  /* ── Main ── */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .topbar { padding: 1rem 2rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
-  .topbar-title { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.05em; }
   .content { flex: 1; overflow-y: auto; padding: 2rem; }
 
   /* ── Tabs ── */
@@ -170,25 +130,12 @@
   .btn-cancelar-edicao { background: transparent; color: var(--cinza-texto); border: 1px solid var(--cinza-borda); }
   .btn-cancelar-edicao:hover { color: var(--branco); }
 
-  /* ── Toast ── */
-  #toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 12px 20px; font-size: 13px; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 0.25s; pointer-events: none; }
-  #toast.visivel { opacity: 1; transform: translateY(0); }
-  #toast.sucesso { border-color: var(--verde); }
-  #toast.erro { border-color: var(--erro); }
-
   /* ── Loading ── */
   .loading { text-align: center; color: var(--cinza-texto); padding: 2rem; font-size: 13px; }
   .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid var(--cinza-borda); border-top-color: var(--vermelho); border-radius: 50%; animation: spin 0.7s linear infinite; }
   @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (max-width: 768px) {
-    .layout { flex-direction: column; }
-    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
-    .sidebar-logo { padding: 0; border-bottom: none; }
-    .sidebar-usuario, .sidebar-nav { display: none; }
-    .sidebar-footer { border-top: none; padding: 0; }
-    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
-    .topbar { padding: 0.75rem 1rem; }
     .content { padding: 1rem; }
     .tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .ig-thumbs { flex-wrap: wrap; }
@@ -204,80 +151,10 @@
 </head>
 <body>
 <div class="layout">
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
-      <span class="admin-chip">ADMIN</span>
-    </div>
-    <div class="sidebar-usuario">
-      <div class="usuario-nome">Administrador</div>
-      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-label">Painel</div>
-      <a class="nav-item" href="/admin">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Dashboard
-      </a>
-      <a class="nav-item" href="/admin-analytics">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Analytics
-      </a>
-      <div class="nav-label">Conteúdo</div>
-      <a class="nav-item" href="/admin-questoes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Questões
-      </a>
-      <a class="nav-item" href="/admin-legislacoes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
-        Legislações
-      </a>
-      <a class="nav-item" href="/admin-flashcards">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-        Flashcards
-      </a>
-      <a class="nav-item" href="/admin-simulados-mensais">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-        Protocolos QAP
-      </a>
-      <div class="nav-label">Alunos</div>
-      <a class="nav-item" href="/admin-assinaturas">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-        Assinaturas
-      </a>
-      <a class="nav-item" href="/admin-relatorios">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-        Relatórios
-      </a>
-      <a class="nav-item" href="/admin-denuncias" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          Relatórios de Problemas
-        </span>
-        <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
-      </a>
-      <div class="nav-label">Sistema</div>
-      <a class="nav-item ativo" href="/admin-aprovacoes" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          Aprovações IA
-        </span>
-        <span id="nav-aprovacoes-badge" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
-      </a>
-      <a class="nav-item" href="/" target="_blank">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Ver site
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-sair" id="btn-sair">Encerrar sessão admin</button>
-    </div>
-  </aside>
+  <aside id="admin-chrome"></aside>
 
   <div class="main">
-    <div class="topbar">
-      <span class="topbar-title">Aprovações IA</span>
-    </div>
+    <header id="admin-topbar"></header>
     <div class="content">
       <div class="tabs">
         <button class="tab-btn ativo" data-tab="questoes">
@@ -317,18 +194,16 @@
     </div>
   </div>
 </div>
-<div id="toast"></div>
-
 <div id="lightbox">
   <button id="lightbox-close">&#x2715;</button>
   <img id="lightbox-img" src="" alt="">
 </div>
 
 <script src="/js/api.js?v=2"></script>
+<script src="/js/admin-chrome.js"></script>
 <script>
 (async () => {
-  if (!PBM.isAdmin()) { window.location.href = '/admin-login'; return; }
-  document.getElementById('btn-sair').addEventListener('click', () => PBM.Admin.logout());
+  AdminChrome.init({ pagina: 'aprovacoes', titulo: 'Aprovações IA' });
 
   /* ── Lightbox ── */
   const lightbox = document.getElementById('lightbox');
@@ -367,14 +242,7 @@
     });
   });
 
-  /* ── Toast ── */
-  function toast(msg, tipo = 'sucesso') {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'visivel ' + tipo;
-    clearTimeout(el._t);
-    el._t = setTimeout(() => { el.className = ''; }, 3000);
-  }
+  const toast = AdminChrome.toast;
 
   /* ── Helpers de formatação ── */
   function fmtData(iso) {
@@ -439,7 +307,7 @@
     </div>`;
   }
 
-  /* ── Carregar resumo + badges ── */
+  /* ── Carregar resumo + badges das abas internas ── */
   async function carregarBadgeAprovacoes() {
     try {
       _resumo = await PBM.Admin.aprovacoes.resumo();
@@ -452,23 +320,11 @@
           else { el.classList.remove('visivel'); }
         }
       });
-      const nb = document.getElementById('nav-aprovacoes-badge');
-      if (nb) {
-        if (_resumo.total > 0) { nb.textContent = _resumo.total; nb.style.display = 'inline'; }
-        else { nb.style.display = 'none'; }
-      }
+      AdminChrome.atualizarBadges();
     } catch {}
   }
 
-  async function carregarBadgeDenuncias() {
-    try {
-      const r = await PBM.Admin.denuncias.resumo();
-      const el = document.getElementById('badge-denuncias');
-      if (!el) return;
-      if (r?.total > 0) { el.textContent = r.total; el.style.display = 'inline'; }
-      else { el.style.display = 'none'; }
-    } catch {}
-  }
+  async function carregarBadgeDenuncias() { AdminChrome.atualizarBadges(); }
 
   /* ── Ação genérica (aprovar / rejeitar) ── */
   async function executarAcao(btn, fn, msgOk, msgErro) {
@@ -500,9 +356,119 @@
     }
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     FILA DE APROVAÇÃO — runtime único + adapters por tipo de item.
+     Substitui ~600 LOC de blocos copy-paste.
+  ════════════════════════════════════════════════════════════════ */
+  const ICO_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  const ICO_X = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  const ICO_CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>';
+  const ICO_PUBLICAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+  const ICO_GERAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>';
+
+  const FilaAprovacao = {
+    adapters: {},
+    registrar(a) { this.adapters[a.key] = a; },
+
+    async carregar(key) {
+      const a = this.adapters[key];
+      if (!a) return;
+      const container = document.getElementById('tab-content-' + key);
+      container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
+      try {
+        const lista = await a.api.listar();
+        const toolbar = a.toolbarHTML || '';
+
+        if (!lista || lista.length === 0) {
+          container.innerHTML = toolbar + `<div class="empty">${a.emptyState.icon}<p>${a.emptyState.msg}</p></div>`;
+          if (a.onToolbar) a.onToolbar(container);
+          tabCarregadas[key] = true;
+          return;
+        }
+
+        container.innerHTML = toolbar + `<div class="cards-list" id="list-${key}"></div>`;
+        if (a.onToolbar) a.onToolbar(container);
+        const list = document.getElementById('list-' + key);
+        lista.forEach(item => list.appendChild(this._renderCard(a, item)));
+        tabCarregadas[key] = true;
+      } catch (e) {
+        mostrarErroTab(key, e);
+      }
+    },
+
+    _renderCard(a, item) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.id = item.id;
+      const podeEditar = !a.gateEdit || _isAdmin;
+      const temEdit = a.renderEditForm && podeEditar;
+
+      const metaHtml = (a.renderMeta(item) || []).join('');
+      const aprovarLabel = a.aprovarLabel || 'Aprovar';
+      const aprovarBtnClass = a.aprovarVariant === 'publicar' ? 'btn-publicar' : 'btn-aprovar';
+      const aprovarIcon = a.aprovarVariant === 'publicar' ? ICO_PUBLICAR : ICO_CHECK;
+
+      card.innerHTML = `
+        <div class="card-header">
+          <div><div class="card-meta">${metaHtml}</div>${a.renderHeaderExtra ? a.renderHeaderExtra(item) : ''}</div>
+          <div class="card-actions">
+            ${temEdit ? `<button class="btn btn-editar btn-toggle-edit">${ICO_EDIT}${a.editLabel || 'Editar'}</button>` : ''}
+            <button class="btn btn-rejeitar btn-rejeitar">${ICO_X}${a.rejeitarLabel || 'Rejeitar'}</button>
+            <button class="btn ${aprovarBtnClass} btn-aprovar">${aprovarIcon}${aprovarLabel}</button>
+          </div>
+        </div>
+        <div class="card-body">${a.renderBody(item)}</div>
+        ${temEdit ? `<div class="edit-form">${a.renderEditForm(item)}<div class="form-actions"><button class="btn btn-salvar-edicao btn-save">Salvar</button><button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button></div></div>` : ''}
+      `;
+
+      if (temEdit) {
+        card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
+        card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
+        card.querySelector('.btn-save').addEventListener('click', async function() {
+          const form = card.querySelector('.edit-form');
+          const body = a.coletarEdit(form, item);
+          this.disabled = true;
+          try {
+            await a.api.editar(item.id, body);
+            Object.assign(item, body);
+            if (a.aplicarEdit) a.aplicarEdit(card, item, body);
+            toast(a.msgEditado || 'Editado.', 'sucesso');
+            toggleEditForm(card, false);
+          } catch {
+            toast('Erro ao salvar edição.', 'erro');
+          }
+          this.disabled = false;
+        });
+      }
+
+      card.querySelector('.btn-aprovar').addEventListener('click', function() {
+        if (a.aprovar) return a.aprovar(item, this, card);
+        executarAcao(this, () => a.api.aprovar(item.id), a.msgAprovado || 'Aprovado!', 'Erro ao aprovar.');
+      });
+
+      card.querySelector('.btn-rejeitar').addEventListener('click', function() {
+        if (a.rejeitarConfirm && !confirm(a.rejeitarConfirm)) return;
+        executarAcao(this, () => a.api.rejeitar(item.id), a.msgRejeitado || 'Rejeitado.', 'Erro ao rejeitar.');
+      });
+
+      if (a.onCard) a.onCard(card, item);
+      return card;
+    },
+  };
+
+  /* ── Tag helpers para meta ── */
+  const tagArea = v => `<span class="tag tag-area">${esc(v || '—')}</span>`;
+  const tagCurso = v => `<span class="tag tag-curso">${esc(v || '—')}</span>`;
+  const tagData = v => `<span class="tag tag-data">${fmtData(v)}</span>`;
+  const tagLeg = v => v ? `<span class="tag tag-data">${esc(v)}</span>` : '';
+  const tagTipo = v => v && v !== 'direta' ? `<span class="tag tag-tipo">${esc(v)}</span>` : '';
+
   /* ════════════════════════════════════════════════
-     ABA — QUESTÕES IA
+     ADAPTER — QUESTÕES IA
   ════════════════════════════════════════════════ */
+  const ALT_LETRAS = ['A','B','C','D','E'];
+  const NUMERAIS = ['I','II','III','IV','V'];
+
   async function gerarQuestoes() {
     const btn = document.getElementById('btn-gerar-questoes');
     if (!btn) return;
@@ -526,228 +492,110 @@
     }
   }
 
-  async function carregarQuestoes() {
-    const container = document.getElementById('tab-content-questoes');
-    container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
-    try {
-      const lista = await PBM.Admin.aprovacoes.questoesIa.listar();
-      const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
-        <select id="sel-curso-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
-          <option value="ambos">CTSP + CBA</option>
-          <option value="ctsp">Só CTSP</option>
-          <option value="cba">Só CBA</option>
-        </select>
-        <select id="sel-area-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
-          <option value="todas">Todas as áreas</option>
-          <option value="AT1">AT1 — Segurança Incêndio</option>
-          <option value="AT2">AT2 — Combate a Incêndio</option>
-          <option value="AT3">AT3 — Buscas e APH</option>
-          <option value="AT4">AT4 — Direito Militar</option>
-          <option value="AT5">AT5 — Normas Administrativas</option>
-        </select>
-        <select id="sel-qtd-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
-          <option value="1">1 questão</option>
-          <option value="2">2 questões</option>
-          <option value="3">3 questões</option>
-          <option value="4">4 questões</option>
-          <option value="5">5 questões</option>
-        </select>
-        <button id="btn-gerar-questoes" class="btn btn-editar" style="gap:6px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          Gerar questões
-        </button>
-      </div>`;
-      if (!lista || lista.length === 0) {
-        container.innerHTML = btnGerar + `<div class="empty">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          <p>Nenhuma questão pendente de aprovação.</p></div>`;
-        document.getElementById('btn-gerar-questoes').addEventListener('click', gerarQuestoes);
-        tabCarregadas['questoes'] = true;
-        return;
+  FilaAprovacao.registrar({
+    key: 'questoes',
+    api: PBM.Admin.aprovacoes.questoesIa,
+    toolbarHTML: `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
+      <select id="sel-curso-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+        <option value="ambos">CTSP + CBA</option><option value="ctsp">Só CTSP</option><option value="cba">Só CBA</option>
+      </select>
+      <select id="sel-area-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+        <option value="todas">Todas as áreas</option>
+        <option value="AT1">AT1 — Segurança Incêndio</option>
+        <option value="AT2">AT2 — Combate a Incêndio</option>
+        <option value="AT3">AT3 — Buscas e APH</option>
+        <option value="AT4">AT4 — Direito Militar</option>
+        <option value="AT5">AT5 — Normas Administrativas</option>
+      </select>
+      <select id="sel-qtd-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+        <option value="1">1 questão</option><option value="2">2 questões</option><option value="3">3 questões</option><option value="4">4 questões</option><option value="5">5 questões</option>
+      </select>
+      <button id="btn-gerar-questoes" class="btn btn-editar" style="gap:6px;">${ICO_GERAR}Gerar questões</button>
+    </div>`,
+    onToolbar(c) { c.querySelector('#btn-gerar-questoes')?.addEventListener('click', gerarQuestoes); },
+    emptyState: {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+      msg: 'Nenhuma questão pendente de aprovação.',
+    },
+    renderMeta(q) {
+      return [tagArea(q.area_tematica), tagCurso(q.curso), tagTipo(q.tipo_questao), tagData(q.created_at), tagLeg(q.legislacao_nome)];
+    },
+    renderBody(q) {
+      const alts = (q.alternativas || []).map((txt, i) => {
+        const letra = ALT_LETRAS[i] || String(i + 1);
+        const classe = q.gabarito === i ? 'correta' : '';
+        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(txt)}</span></div>`;
+      }).join('');
+      const assertivasHtml = (q.assertivas && q.assertivas.length > 0)
+        ? `<div class="assertivas-list">${q.assertivas.map((a, i) => `<div class="assertiva-item"><strong>${NUMERAIS[i] || (i+1)+'.'}</strong>${esc(a)}</div>`).join('')}</div>` : '';
+      const topicosHtml = (q.topicos_cobertos && q.topicos_cobertos.length > 0)
+        ? `<div class="topicos">${q.topicos_cobertos.map(t => `<span class="topico-chip">${esc(t)}</span>`).join('')}</div>` : '';
+      return `<p class="enunciado">${esc(q.enunciado)}</p>${assertivasHtml}<div class="alternativas">${alts}</div>${renderJuizFeedback(q.revisao_notas)}${topicosHtml}${q.comentario ? `<div class="justificativa"><strong>Comentário:</strong> ${esc(q.comentario)}</div>` : ''}`;
+    },
+    renderEditForm(q) {
+      return `<div class="campo"><label>Enunciado</label><textarea name="enunciado" rows="4">${esc(q.enunciado)}</textarea></div>
+        ${(q.alternativas || []).map((txt, i) => `<div class="campo"><label>Alternativa ${ALT_LETRAS[i] || i+1}</label><input name="alt_${i}" value="${esc(txt)}"></div>`).join('')}
+        <div class="form-row">
+          <div class="campo"><label>Gabarito (índice 0=A, 1=B…)</label><select name="gabarito">${(q.alternativas || []).map((_, i) => `<option value="${i}" ${q.gabarito === i ? 'selected' : ''}>${ALT_LETRAS[i] || i}</option>`).join('')}</select></div>
+          <div class="campo"><label>Área Temática</label><select name="area_tematica">${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${q.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}</select></div>
+        </div>
+        <div class="form-row">
+          <div class="campo"><label>Curso</label><select name="curso">${['ctsp','cba','ambos'].map(c => `<option value="${c}" ${q.curso === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
+          <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(q.legislacao_nome || '')}"></div>
+        </div>
+        <div class="campo"><label>Comentário</label><textarea name="comentario" rows="3">${esc(q.comentario || '')}</textarea></div>
+        <div class="form-row">
+          <div class="campo"><label>Tipo de Questão</label><select name="tipo_questao">${['direta','assercoes','verdadeiro_falso','lacunas'].map(t => `<option value="${t}" ${(q.tipo_questao||'direta') === t ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
+          <div class="campo"><label>Tópicos Cobertos (um por linha)</label><textarea name="topicos_cobertos" rows="3">${esc((q.topicos_cobertos || []).join('\n'))}</textarea></div>
+        </div>
+        <div class="campo"><label>Assertivas (uma por linha — para tipo asserções/V/F)</label><textarea name="assertivas" rows="4">${esc((q.assertivas || []).join('\n'))}</textarea></div>
+        <div class="campo"><label>Feedback do Juiz IA</label><textarea name="revisao_notas" rows="2">${esc(q.revisao_notas || '')}</textarea></div>`;
+    },
+    coletarEdit(f) {
+      const alternativas = Array.from(f.querySelectorAll('[name^=alt_]')).map(el => el.value);
+      const assertivasRaw = f.querySelector('[name=assertivas]').value.trim();
+      const topicosRaw = f.querySelector('[name=topicos_cobertos]').value.trim();
+      return {
+        enunciado: f.querySelector('[name=enunciado]').value,
+        alternativas,
+        gabarito: parseInt(f.querySelector('[name=gabarito]').value, 10),
+        area_tematica: f.querySelector('[name=area_tematica]').value,
+        curso: f.querySelector('[name=curso]').value,
+        legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
+        comentario: f.querySelector('[name=comentario]').value,
+        tipo_questao: f.querySelector('[name=tipo_questao]').value,
+        assertivas: assertivasRaw ? assertivasRaw.split('\n').map(s => s.trim()).filter(Boolean) : [],
+        topicos_cobertos: topicosRaw ? topicosRaw.split('\n').map(s => s.trim()).filter(Boolean) : [],
+        revisao_notas: f.querySelector('[name=revisao_notas]').value || null,
+      };
+    },
+    aplicarEdit(card, q, body) {
+      const altsHtml = body.alternativas.map((txt, i) => {
+        const letra = ALT_LETRAS[i] || String(i + 1);
+        const classe = body.gabarito === i ? 'correta' : '';
+        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(txt)}</span></div>`;
+      }).join('');
+      card.querySelector('.enunciado').textContent = body.enunciado;
+      card.querySelector('.alternativas').innerHTML = altsHtml;
+      const justEl = card.querySelector('.justificativa');
+      if (body.comentario) {
+        if (justEl) justEl.innerHTML = `<strong>Comentário:</strong> ${esc(body.comentario)}`;
+        else card.querySelector('.card-body').insertAdjacentHTML('beforeend', `<div class="justificativa"><strong>Comentário:</strong> ${esc(body.comentario)}</div>`);
+      } else if (justEl) {
+        justEl.remove();
       }
-      const altLetras = ['A','B','C','D','E'];
-      container.innerHTML = btnGerar + '<div class="cards-list" id="list-questoes"></div>';
-      document.getElementById('btn-gerar-questoes').addEventListener('click', gerarQuestoes);
-      const list = document.getElementById('list-questoes');
-      lista.forEach(q => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.id = q.id;
-
-        const alts = (q.alternativas || []).map((txt, i) => {
-          const letra = altLetras[i] || String(i + 1);
-          const classe = q.gabarito === i ? 'correta' : '';
-          return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(txt)}</span></div>`;
-        }).join('');
-
-        const NUMERAIS = ['I','II','III','IV','V'];
-        const assertivasHtml = (q.assertivas && q.assertivas.length > 0)
-          ? `<div class="assertivas-list">${q.assertivas.map((a, i) => `<div class="assertiva-item"><strong>${NUMERAIS[i] || (i+1)+'.'}</strong>${esc(a)}</div>`).join('')}</div>`
-          : '';
-        const topicosHtml = (q.topicos_cobertos && q.topicos_cobertos.length > 0)
-          ? `<div class="topicos">${q.topicos_cobertos.map(t => `<span class="topico-chip">${esc(t)}</span>`).join('')}</div>`
-          : '';
-
-        card.innerHTML = `
-          <div class="card-header">
-            <div>
-              <div class="card-meta">
-                <span class="tag tag-area">${esc(q.area_tematica || '—')}</span>
-                <span class="tag tag-curso">${esc(q.curso || '—')}</span>
-                ${q.tipo_questao && q.tipo_questao !== 'direta' ? `<span class="tag tag-tipo">${esc(q.tipo_questao)}</span>` : ''}
-                <span class="tag tag-data">${fmtData(q.created_at)}</span>
-                ${q.legislacao_nome ? `<span class="tag tag-data">${esc(q.legislacao_nome)}</span>` : ''}
-              </div>
-            </div>
-            <div class="card-actions">
-              <button class="btn btn-editar btn-toggle-edit" title="Editar antes de aprovar">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Editar
-              </button>
-              <button class="btn btn-rejeitar btn-rejeitar-q" title="Rejeitar questão">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Rejeitar
-              </button>
-              <button class="btn btn-aprovar btn-aprovar-q" title="Aprovar questão">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
-                Aprovar
-              </button>
-            </div>
-          </div>
-          <div class="card-body">
-            <p class="enunciado">${esc(q.enunciado)}</p>
-            ${assertivasHtml}
-            <div class="alternativas">${alts}</div>
-            ${renderJuizFeedback(q.revisao_notas)}
-            ${topicosHtml}
-            ${q.comentario ? `<div class="justificativa"><strong>Comentário:</strong> ${esc(q.comentario)}</div>` : ''}
-          </div>
-          <div class="edit-form">
-            <div class="campo"><label>Enunciado</label><textarea name="enunciado" rows="4">${esc(q.enunciado)}</textarea></div>
-            ${(q.alternativas || []).map((txt, i) => `<div class="campo"><label>Alternativa ${altLetras[i] || i+1}</label><input name="alt_${i}" value="${esc(txt)}"></div>`).join('')}
-            <div class="form-row">
-              <div class="campo">
-                <label>Gabarito (índice 0=A, 1=B…)</label>
-                <select name="gabarito">
-                  ${(q.alternativas || []).map((_, i) => `<option value="${i}" ${q.gabarito === i ? 'selected' : ''}>${altLetras[i] || i}</option>`).join('')}
-                </select>
-              </div>
-              <div class="campo">
-                <label>Área Temática</label>
-                <select name="area_tematica">
-                  ${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${q.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="campo">
-                <label>Curso</label>
-                <select name="curso">
-                  ${['ctsp','cba','ambos'].map(c => `<option value="${c}" ${q.curso === c ? 'selected' : ''}>${c}</option>`).join('')}
-                </select>
-              </div>
-              <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(q.legislacao_nome || '')}"></div>
-            </div>
-            <div class="campo"><label>Comentário</label><textarea name="comentario" rows="3">${esc(q.comentario || '')}</textarea></div>
-            <div class="form-row">
-              <div class="campo">
-                <label>Tipo de Questão</label>
-                <select name="tipo_questao">
-                  ${['direta','assercoes','verdadeiro_falso','lacunas'].map(t => `<option value="${t}" ${(q.tipo_questao||'direta') === t ? 'selected' : ''}>${t}</option>`).join('')}
-                </select>
-              </div>
-              <div class="campo">
-                <label>Tópicos Cobertos (um por linha)</label>
-                <textarea name="topicos_cobertos" rows="3">${esc((q.topicos_cobertos || []).join('\n'))}</textarea>
-              </div>
-            </div>
-            <div class="campo">
-              <label>Assertivas (uma por linha — para tipo asserções/V/F)</label>
-              <textarea name="assertivas" rows="4">${esc((q.assertivas || []).join('\n'))}</textarea>
-            </div>
-            <div class="campo">
-              <label>Feedback do Juiz IA</label>
-              <textarea name="revisao_notas" rows="2">${esc(q.revisao_notas || '')}</textarea>
-            </div>
-            <div class="form-actions">
-              <button class="btn btn-salvar-edicao btn-save-q">Salvar Edição</button>
-              <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
-            </div>
-          </div>`;
-        list.appendChild(card);
-
-        card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
-        card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
-
-        card.querySelector('.btn-save-q').addEventListener('click', async function() {
-          const f = card.querySelector('.edit-form');
-          const alternativas = Array.from(f.querySelectorAll('[name^=alt_]')).map(el => el.value);
-          const assertivasRaw = f.querySelector('[name=assertivas]').value.trim();
-          const topicosRaw = f.querySelector('[name=topicos_cobertos]').value.trim();
-          const body = {
-            enunciado: f.querySelector('[name=enunciado]').value,
-            alternativas,
-            gabarito: parseInt(f.querySelector('[name=gabarito]').value, 10),
-            area_tematica: f.querySelector('[name=area_tematica]').value,
-            curso: f.querySelector('[name=curso]').value,
-            legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
-            comentario: f.querySelector('[name=comentario]').value,
-            tipo_questao: f.querySelector('[name=tipo_questao]').value,
-            assertivas: assertivasRaw ? assertivasRaw.split('\n').map(s => s.trim()).filter(Boolean) : [],
-            topicos_cobertos: topicosRaw ? topicosRaw.split('\n').map(s => s.trim()).filter(Boolean) : [],
-            revisao_notas: f.querySelector('[name=revisao_notas]').value || null,
-          };
-          this.disabled = true;
-          try {
-            await PBM.Admin.aprovacoes.questoesIa.editar(q.id, body);
-            Object.assign(q, body);
-            // Atualiza o card-body para refletir as mudanças visualmente
-            const altsHtml = body.alternativas.map((txt, i) => {
-              const letra = altLetras[i] || String(i + 1);
-              const classe = body.gabarito === i ? 'correta' : '';
-              return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(txt)}</span></div>`;
-            }).join('');
-            card.querySelector('.enunciado').textContent = body.enunciado;
-            card.querySelector('.alternativas').innerHTML = altsHtml;
-            const justEl = card.querySelector('.justificativa');
-            if (body.comentario) {
-              if (justEl) {
-                justEl.innerHTML = `<strong>Comentário:</strong> ${esc(body.comentario)}`;
-              } else {
-                card.querySelector('.card-body').insertAdjacentHTML('beforeend',
-                  `<div class="justificativa"><strong>Comentário:</strong> ${esc(body.comentario)}</div>`);
-              }
-            } else if (justEl) {
-              justEl.remove();
-            }
-            // Atualiza tags de área e curso no header
-            const tagArea = card.querySelector('.tag-area');
-            const tagCurso = card.querySelector('.tag-curso');
-            if (tagArea) tagArea.textContent = body.area_tematica;
-            if (tagCurso) tagCurso.textContent = body.curso;
-            toast('Questão editada com sucesso.', 'sucesso');
-            toggleEditForm(card, false);
-          } catch {
-            toast('Erro ao salvar edição.', 'erro');
-          }
-          this.disabled = false;
-        });
-
-        card.querySelector('.btn-aprovar-q').addEventListener('click', function() {
-          executarAcao(this, () => PBM.Admin.aprovacoes.questoesIa.aprovar(q.id), 'Questão aprovada!', 'Erro ao aprovar.');
-        });
-        card.querySelector('.btn-rejeitar-q').addEventListener('click', function() {
-          executarAcao(this, () => PBM.Admin.aprovacoes.questoesIa.rejeitar(q.id), 'Questão rejeitada.', 'Erro ao rejeitar.');
-        });
-      });
-      tabCarregadas['questoes'] = true;
-    } catch (e) {
-      mostrarErroTab('questoes', e);
-    }
-  }
+      const tagAreaEl = card.querySelector('.tag-area');
+      const tagCursoEl = card.querySelector('.tag-curso');
+      if (tagAreaEl) tagAreaEl.textContent = body.area_tematica;
+      if (tagCursoEl) tagCursoEl.textContent = body.curso;
+    },
+    msgEditado: 'Questão editada com sucesso.',
+    msgAprovado: 'Questão aprovada!',
+    msgRejeitado: 'Questão rejeitada.',
+  });
 
   /* ════════════════════════════════════════════════
-     ABA — FLASHCARDS
+     ADAPTER — FLASHCARDS
   ════════════════════════════════════════════════ */
   async function gerarFlashcard() {
     const btn = document.getElementById('btn-gerar-flashcard');
@@ -770,122 +618,52 @@
     }
   }
 
-  async function carregarFlashcards() {
-    const container = document.getElementById('tab-content-flashcards');
-    container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
-    try {
-      const lista = await PBM.Admin.aprovacoes.flashcards.listar();
-      const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
-        <button id="btn-gerar-flashcard" class="btn btn-editar" style="gap:6px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          Gerar flashcard agora
-        </button>
-      </div>`;
-      if (!lista || lista.length === 0) {
-        container.innerHTML = btnGerar + `<div class="empty">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-          <p>Nenhum flashcard pendente.</p></div>`;
-        document.getElementById('btn-gerar-flashcard').addEventListener('click', gerarFlashcard);
-        tabCarregadas['flashcards'] = true;
-        return;
-      }
-      container.innerHTML = btnGerar + '<div class="cards-list" id="list-flashcards"></div>';
-      document.getElementById('btn-gerar-flashcard').addEventListener('click', gerarFlashcard);
-      const list = document.getElementById('list-flashcards');
-      lista.forEach(fc => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.id = fc.id;
-        card.innerHTML = `
-          <div class="card-header">
-            <div>
-              <div class="card-meta">
-                <span class="tag tag-area">${esc(fc.area_tematica || '—')}</span>
-                <span class="tag tag-data">${fmtData(fc.created_at)}</span>
-                ${fc.legislacao_nome ? `<span class="tag tag-data">${esc(fc.legislacao_nome)}</span>` : ''}
-              </div>
-            </div>
-            <div class="card-actions">
-              <button class="btn btn-editar btn-toggle-edit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Editar
-              </button>
-              <button class="btn btn-rejeitar btn-rejeitar-fc">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Rejeitar
-              </button>
-              <button class="btn btn-aprovar btn-aprovar-fc">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
-                Aprovar
-              </button>
-            </div>
-          </div>
-          <div class="card-body">
-            <p class="flashcard-frente">${esc(fc.frente)}</p>
-            <p class="flashcard-verso">${esc(fc.verso)}</p>
-          </div>
-          <div class="edit-form">
-            <div class="campo"><label>Frente</label><textarea name="frente" rows="2">${esc(fc.frente)}</textarea></div>
-            <div class="campo"><label>Verso</label><textarea name="verso" rows="4">${esc(fc.verso)}</textarea></div>
-            <div class="form-row">
-              <div class="campo">
-                <label>Área Temática</label>
-                <select name="area_tematica">
-                  ${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${fc.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}
-                </select>
-              </div>
-              <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(fc.legislacao_nome || '')}"></div>
-            </div>
-            <div class="form-actions">
-              <button class="btn btn-salvar-edicao btn-save-fc">Salvar Edição</button>
-              <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
-            </div>
-          </div>`;
-        list.appendChild(card);
-
-        card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
-        card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
-
-        card.querySelector('.btn-save-fc').addEventListener('click', async function() {
-          const f = card.querySelector('.edit-form');
-          const body = {
-            frente: f.querySelector('[name=frente]').value,
-            verso: f.querySelector('[name=verso]').value,
-            area_tematica: f.querySelector('[name=area_tematica]').value,
-            legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
-          };
-          this.disabled = true;
-          try {
-            await PBM.Admin.aprovacoes.flashcards.editar(fc.id, body);
-            Object.assign(fc, body);
-            // Atualiza o card-body visualmente
-            card.querySelector('.flashcard-frente').textContent = body.frente;
-            card.querySelector('.flashcard-verso').textContent = body.verso;
-            const tagArea = card.querySelector('.tag-area');
-            if (tagArea) tagArea.textContent = body.area_tematica;
-            toast('Flashcard editado.', 'sucesso');
-            toggleEditForm(card, false);
-          } catch {
-            toast('Erro ao salvar edição.', 'erro');
-          }
-          this.disabled = false;
-        });
-
-        card.querySelector('.btn-aprovar-fc').addEventListener('click', function() {
-          executarAcao(this, () => PBM.Admin.aprovacoes.flashcards.aprovar(fc.id), 'Flashcard aprovado!', 'Erro ao aprovar.');
-        });
-        card.querySelector('.btn-rejeitar-fc').addEventListener('click', function() {
-          executarAcao(this, () => PBM.Admin.aprovacoes.flashcards.rejeitar(fc.id), 'Flashcard rejeitado.', 'Erro ao rejeitar.');
-        });
-      });
-      tabCarregadas['flashcards'] = true;
-    } catch (e) {
-      mostrarErroTab('flashcards', e);
-    }
-  }
+  FilaAprovacao.registrar({
+    key: 'flashcards',
+    api: PBM.Admin.aprovacoes.flashcards,
+    toolbarHTML: `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
+      <button id="btn-gerar-flashcard" class="btn btn-editar" style="gap:6px;">${ICO_GERAR}Gerar flashcard agora</button>
+    </div>`,
+    onToolbar(c) { c.querySelector('#btn-gerar-flashcard')?.addEventListener('click', gerarFlashcard); },
+    emptyState: {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
+      msg: 'Nenhum flashcard pendente.',
+    },
+    renderMeta(fc) {
+      return [tagArea(fc.area_tematica), tagData(fc.created_at), tagLeg(fc.legislacao_nome)];
+    },
+    renderBody(fc) {
+      return `<p class="flashcard-frente">${esc(fc.frente)}</p><p class="flashcard-verso">${esc(fc.verso)}</p>`;
+    },
+    renderEditForm(fc) {
+      return `<div class="campo"><label>Frente</label><textarea name="frente" rows="2">${esc(fc.frente)}</textarea></div>
+        <div class="campo"><label>Verso</label><textarea name="verso" rows="4">${esc(fc.verso)}</textarea></div>
+        <div class="form-row">
+          <div class="campo"><label>Área Temática</label><select name="area_tematica">${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${fc.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}</select></div>
+          <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(fc.legislacao_nome || '')}"></div>
+        </div>`;
+    },
+    coletarEdit(f) {
+      return {
+        frente: f.querySelector('[name=frente]').value,
+        verso: f.querySelector('[name=verso]').value,
+        area_tematica: f.querySelector('[name=area_tematica]').value,
+        legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
+      };
+    },
+    aplicarEdit(card, fc, body) {
+      card.querySelector('.flashcard-frente').textContent = body.frente;
+      card.querySelector('.flashcard-verso').textContent = body.verso;
+      const tagAreaEl = card.querySelector('.tag-area');
+      if (tagAreaEl) tagAreaEl.textContent = body.area_tematica;
+    },
+    msgEditado: 'Flashcard editado.',
+    msgAprovado: 'Flashcard aprovado!',
+    msgRejeitado: 'Flashcard rejeitado.',
+  });
 
   /* ════════════════════════════════════════════════
-     ABA — INSTAGRAM (admin only)
+     ADAPTER — INSTAGRAM (admin only)
   ════════════════════════════════════════════════ */
   async function gerarPostInstagram() {
     const btn = document.getElementById('btn-gerar-ig');
@@ -908,224 +686,123 @@
     }
   }
 
-  async function carregarInstagram() {
-    const container = document.getElementById('tab-content-instagram');
-    container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
-    try {
-      const lista = await PBM.Admin.aprovacoes.instagram.listar();
-      const btnGerar = `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
-        <select id="sel-area-ig" style="background:#1a1a1a;color:#ccc;border:1px solid #333;border-radius:4px;padding:6px 10px;font-size:12px;cursor:pointer;">
-          <option value="">Área automática</option>
-          <option value="AT1">AT1 — Seg. Incêndios</option>
-          <option value="AT2">AT2 — Combate</option>
-          <option value="AT3">AT3 — Buscas/APH</option>
-          <option value="AT4">AT4 — Direito Militar</option>
-          <option value="AT5">AT5 — Normas Admin.</option>
-        </select>
-        <button id="btn-gerar-ig" class="btn btn-editar" style="gap:6px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          Gerar post agora
-        </button>
-      </div>`;
-      if (!lista || lista.length === 0) {
-        container.innerHTML = btnGerar + `<div class="empty">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>
-          <p>Nenhum post Instagram pendente.</p></div>`;
-        document.getElementById('btn-gerar-ig').addEventListener('click', gerarPostInstagram);
-        tabCarregadas['instagram'] = true;
-        return;
-      }
-      container.innerHTML = btnGerar + '<div class="cards-list" id="list-instagram"></div>';
-      document.getElementById('btn-gerar-ig').addEventListener('click', gerarPostInstagram);
-      const list = document.getElementById('list-instagram');
-      lista.forEach(post => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.id = post.id;
-        const thumb1 = post.url_imagem_questao ? `/api/admin/aprovacoes/instagram/${post.id}/preview/questao` : '';
-        const thumb2 = post.url_imagem_gabarito ? `/api/admin/aprovacoes/instagram/${post.id}/preview/gabarito` : '';
-        card.innerHTML = `
-          <div class="card-header">
-            <div>
-              <div class="card-meta">
-                <span class="tag tag-area">${esc(post.area || '—')}</span>
-                <span class="tag tag-data">${fmtData(post.created_at)}</span>
-              </div>
-            </div>
-            <div class="card-actions">
-              ${_isAdmin ? `<button class="btn btn-editar btn-toggle-edit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Editar Caption
-              </button>` : ''}
-              <button class="btn btn-rejeitar btn-rejeitar-ig">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Rejeitar
-              </button>
-              <button class="btn btn-publicar btn-publicar-ig">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                Publicar Agora
-              </button>
-            </div>
-          </div>
-          <div class="card-body">
-            ${(thumb1 || thumb2) ? `<div class="ig-thumbs">${thumb1 ? `<img class="ig-thumb" src="${esc(thumb1)}" alt="Questão">` : ''} ${thumb2 ? `<img class="ig-thumb" src="${esc(thumb2)}" alt="Gabarito">` : ''}</div>` : ''}
-            <div class="ig-caption" id="caption-${post.id}">${esc(post.caption || '')}</div>
-            <span class="ig-caption-toggle" data-target="caption-${post.id}">ver mais ↓</span>
-          </div>
-          ${_isAdmin ? `<div class="edit-form">
-            <div class="campo"><label>Caption</label><textarea name="caption" rows="6">${esc(post.caption || '')}</textarea></div>
-            <div class="form-actions">
-              <button class="btn btn-salvar-edicao btn-save-ig">Salvar Caption</button>
-              <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
-            </div>
-          </div>` : ''}`;
-        list.appendChild(card);
+  // API "editar" do instagram recebe só (id, caption) — wrapper para casar com a interface (id, body)
+  const instagramApi = {
+    listar: () => PBM.Admin.aprovacoes.instagram.listar(),
+    editar: (id, body) => PBM.Admin.aprovacoes.instagram.editar(id, body.caption),
+    rejeitar: (id) => PBM.Admin.aprovacoes.instagram.rejeitar(id),
+    aprovar: (id) => { throw new Error('use adapter.aprovar override'); },
+  };
 
-        card.querySelector('.ig-caption-toggle').addEventListener('click', function() {
-          const el = document.getElementById(this.dataset.target);
-          el.classList.toggle('expandido');
-          this.textContent = el.classList.contains('expandido') ? 'ver menos ↑' : 'ver mais ↓';
-        });
-
-        if (_isAdmin) {
-          card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
-          card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
-          card.querySelector('.btn-save-ig').addEventListener('click', async function() {
-            const caption = card.querySelector('[name=caption]').value;
-            this.disabled = true;
-            try {
-              await PBM.Admin.aprovacoes.instagram.editar(post.id, caption);
-              toast('Caption atualizado.', 'sucesso');
-              toggleEditForm(card, false);
-            } catch {
-              toast('Erro ao salvar caption.', 'erro');
-            }
-            this.disabled = false;
-          });
-        }
-
-        card.querySelector('.btn-publicar-ig').addEventListener('click', async function() {
-          const btn = this;
-          btn.disabled = true;
-          const orig = btn.innerHTML;
-          btn.innerHTML = '<span class="spinner"></span>';
-          try {
-            const sig = AbortSignal.timeout ? AbortSignal.timeout(180000) : undefined;
-            await PBM.Admin.aprovacoes.instagram.publicar(post.id, sig ? { signal: sig } : {});
-            toast('Post publicado no Instagram!', 'sucesso');
-            btn.closest('.card').remove();
-            await carregarBadgeAprovacoes();
-            await carregarBadgeDenuncias();
-          } catch (err) {
-            const detail = err?.erro || err?.message || '';
-            toast(detail ? `Erro ao publicar. ${detail}` : 'Erro ao publicar.', 'erro');
-            btn.disabled = false;
-            btn.innerHTML = orig;
-          }
-        });
-        card.querySelector('.btn-rejeitar-ig').addEventListener('click', function() {
-          executarAcao(this, () => PBM.Admin.aprovacoes.instagram.rejeitar(post.id), 'Post rejeitado.', 'Erro ao rejeitar.');
-        });
+  FilaAprovacao.registrar({
+    key: 'instagram',
+    api: instagramApi,
+    gateEdit: true,
+    editLabel: 'Editar Caption',
+    aprovarLabel: 'Publicar Agora',
+    aprovarVariant: 'publicar',
+    toolbarHTML: `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
+      <select id="sel-area-ig" style="background:#1a1a1a;color:#ccc;border:1px solid #333;border-radius:4px;padding:6px 10px;font-size:12px;cursor:pointer;">
+        <option value="">Área automática</option>
+        <option value="AT1">AT1 — Seg. Incêndios</option>
+        <option value="AT2">AT2 — Combate</option>
+        <option value="AT3">AT3 — Buscas/APH</option>
+        <option value="AT4">AT4 — Direito Militar</option>
+        <option value="AT5">AT5 — Normas Admin.</option>
+      </select>
+      <button id="btn-gerar-ig" class="btn btn-editar" style="gap:6px;">${ICO_GERAR}Gerar post agora</button>
+    </div>`,
+    onToolbar(c) { c.querySelector('#btn-gerar-ig')?.addEventListener('click', gerarPostInstagram); },
+    emptyState: {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>',
+      msg: 'Nenhum post Instagram pendente.',
+    },
+    renderMeta(post) {
+      return [tagArea(post.area), tagData(post.created_at)];
+    },
+    renderBody(post) {
+      const thumb1 = post.url_imagem_questao ? `/api/admin/aprovacoes/instagram/${post.id}/preview/questao` : '';
+      const thumb2 = post.url_imagem_gabarito ? `/api/admin/aprovacoes/instagram/${post.id}/preview/gabarito` : '';
+      return `${(thumb1 || thumb2) ? `<div class="ig-thumbs">${thumb1 ? `<img class="ig-thumb" src="${esc(thumb1)}" alt="Questão">` : ''} ${thumb2 ? `<img class="ig-thumb" src="${esc(thumb2)}" alt="Gabarito">` : ''}</div>` : ''}
+        <div class="ig-caption" id="caption-${post.id}">${esc(post.caption || '')}</div>
+        <span class="ig-caption-toggle" data-target="caption-${post.id}">ver mais ↓</span>`;
+    },
+    renderEditForm(post) {
+      return `<div class="campo"><label>Caption</label><textarea name="caption" rows="6">${esc(post.caption || '')}</textarea></div>`;
+    },
+    coletarEdit(f) {
+      return { caption: f.querySelector('[name=caption]').value };
+    },
+    msgEditado: 'Caption atualizado.',
+    onCard(card, post) {
+      card.querySelector('.ig-caption-toggle').addEventListener('click', function() {
+        const el = document.getElementById(this.dataset.target);
+        el.classList.toggle('expandido');
+        this.textContent = el.classList.contains('expandido') ? 'ver menos ↑' : 'ver mais ↓';
       });
-      tabCarregadas['instagram'] = true;
-    } catch (e) {
-      mostrarErroTab('instagram', e);
-    }
-  }
+    },
+    // Override do aprovar — Instagram tem timeout grande (publicação real)
+    aprovar(post, btn, card) {
+      btn.disabled = true;
+      const orig = btn.innerHTML;
+      btn.innerHTML = '<span class="spinner"></span>';
+      (async () => {
+        try {
+          const sig = AbortSignal.timeout ? AbortSignal.timeout(180000) : undefined;
+          await PBM.Admin.aprovacoes.instagram.publicar(post.id, sig ? { signal: sig } : {});
+          toast('Post publicado no Instagram!', 'sucesso');
+          card.remove();
+          await carregarBadgeAprovacoes();
+          await carregarBadgeDenuncias();
+        } catch (err) {
+          const detail = err?.erro || err?.message || '';
+          toast(detail ? `Erro ao publicar. ${detail}` : 'Erro ao publicar.', 'erro');
+          btn.disabled = false;
+          btn.innerHTML = orig;
+        }
+      })();
+    },
+    msgRejeitado: 'Post rejeitado.',
+  });
 
   /* ════════════════════════════════════════════════
-     ABA — SIMULADOS MENSAIS (admin only)
+     ADAPTER — PROTOCOLOS QAP (admin only)
   ════════════════════════════════════════════════ */
-  async function carregarSimulados() {
-    const container = document.getElementById('tab-content-simulados');
-    container.innerHTML = '<div class="loading"><span class="spinner"></span></div>';
-    try {
-      const lista = await PBM.Admin.aprovacoes.simulados.listar();
-      if (!lista || lista.length === 0) {
-        container.innerHTML = `<div class="empty">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-          <p>Nenhum simulado mensal pendente de ativação.</p></div>`;
-        tabCarregadas['simulados'] = true;
-        return;
-      }
-      container.innerHTML = '<div class="cards-list" id="list-simulados"></div>';
-      const list = document.getElementById('list-simulados');
-      lista.forEach(sim => {
-        const questoesCount = sim.simulado_mensal_questoes?.[0]?.count ?? '—';
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.id = sim.id;
-        card.innerHTML = `
-          <div class="card-header">
-            <div>
-              <div class="card-meta">
-                <span class="tag tag-data">${fmtData(sim.created_at)}</span>
-                <span class="tag tag-area">${questoesCount} questões</span>
-              </div>
-              <p class="sim-titulo" style="margin-top:6px;">${esc(sim.titulo || 'Sem título')}</p>
-              <p class="sim-info">Encerramento: ${fmtData(sim.encerramento)}</p>
-            </div>
-            <div class="card-actions">
-              ${_isAdmin ? `<button class="btn btn-editar btn-toggle-edit">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Editar
-              </button>` : ''}
-              <button class="btn btn-rejeitar btn-rejeitar-sim">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Rejeitar
-              </button>
-              <button class="btn btn-aprovar btn-aprovar-sim">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="13" height="13"><polyline points="20 6 9 17 4 12"/></svg>
-                Ativar Simulado
-              </button>
-            </div>
-          </div>
-          ${_isAdmin ? `<div class="edit-form">
-            <div class="form-row">
-              <div class="campo"><label>Título</label><input name="titulo" value="${esc(sim.titulo || '')}"></div>
-              <div class="campo"><label>Encerramento</label><input name="encerramento" type="datetime-local" value="${sim.encerramento ? sim.encerramento.slice(0,16) : ''}"></div>
-            </div>
-            <div class="form-actions">
-              <button class="btn btn-salvar-edicao btn-save-sim">Salvar</button>
-              <button class="btn btn-cancelar-edicao btn-cancel-edit">Cancelar</button>
-            </div>
-          </div>` : ''}`;
-        list.appendChild(card);
-
-        if (_isAdmin) {
-          card.querySelector('.btn-toggle-edit').addEventListener('click', () => toggleEditForm(card, !card.querySelector('.edit-form').classList.contains('visivel')));
-          card.querySelector('.btn-cancel-edit').addEventListener('click', () => toggleEditForm(card, false));
-          card.querySelector('.btn-save-sim').addEventListener('click', async function() {
-            const f = card.querySelector('.edit-form');
-            const body = {
-              titulo: f.querySelector('[name=titulo]').value,
-              encerramento: f.querySelector('[name=encerramento]').value ? new Date(f.querySelector('[name=encerramento]').value).toISOString() : undefined,
-            };
-            this.disabled = true;
-            try {
-              await PBM.Admin.aprovacoes.simulados.editar(sim.id, body);
-              toast('Simulado atualizado.', 'sucesso');
-              toggleEditForm(card, false);
-            } catch {
-              toast('Erro ao salvar.', 'erro');
-            }
-            this.disabled = false;
-          });
-        }
-
-        card.querySelector('.btn-aprovar-sim').addEventListener('click', function() {
-          executarAcao(this, () => PBM.Admin.aprovacoes.simulados.aprovar(sim.id), 'Simulado ativado!', 'Erro ao ativar.');
-        });
-        card.querySelector('.btn-rejeitar-sim').addEventListener('click', function() {
-          if (!confirm('Tem certeza? Isso apagará o simulado e todas as suas questões.')) return;
-          executarAcao(this, () => PBM.Admin.aprovacoes.simulados.rejeitar(sim.id), 'Simulado rejeitado.', 'Erro ao rejeitar.');
-        });
-      });
-      tabCarregadas['simulados'] = true;
-    } catch (e) {
-      mostrarErroTab('simulados', e);
-    }
-  }
+  FilaAprovacao.registrar({
+    key: 'simulados',
+    api: PBM.Admin.aprovacoes.simulados,
+    gateEdit: true,
+    aprovarLabel: 'Ativar Simulado',
+    rejeitarConfirm: 'Tem certeza? Isso apagará o simulado e todas as suas questões.',
+    emptyState: {
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+      msg: 'Nenhum simulado mensal pendente de ativação.',
+    },
+    renderMeta(sim) {
+      const questoesCount = sim.simulado_mensal_questoes?.[0]?.count ?? '—';
+      return [tagData(sim.created_at), `<span class="tag tag-area">${questoesCount} questões</span>`];
+    },
+    renderHeaderExtra(sim) {
+      return `<p class="sim-titulo" style="margin-top:6px;">${esc(sim.titulo || 'Sem título')}</p>
+        <p class="sim-info">Encerramento: ${fmtData(sim.encerramento)}</p>`;
+    },
+    renderBody() { return ''; },
+    renderEditForm(sim) {
+      return `<div class="form-row">
+        <div class="campo"><label>Título</label><input name="titulo" value="${esc(sim.titulo || '')}"></div>
+        <div class="campo"><label>Encerramento</label><input name="encerramento" type="datetime-local" value="${sim.encerramento ? sim.encerramento.slice(0,16) : ''}"></div>
+      </div>`;
+    },
+    coletarEdit(f) {
+      return {
+        titulo: f.querySelector('[name=titulo]').value,
+        encerramento: f.querySelector('[name=encerramento]').value ? new Date(f.querySelector('[name=encerramento]').value).toISOString() : undefined,
+      };
+    },
+    msgEditado: 'Simulado atualizado.',
+    msgAprovado: 'Simulado ativado!',
+    msgRejeitado: 'Simulado rejeitado.',
+  });
 
   /* ── Helpers de erro e retry ── */
   function mostrarErroTab(tab, err) {
@@ -1147,12 +824,7 @@
   }
 
   /* ── Carregar tab ── */
-  async function carregarTab(tab) {
-    if (tab === 'questoes') await carregarQuestoes();
-    else if (tab === 'flashcards') await carregarFlashcards();
-    else if (tab === 'instagram') await carregarInstagram();
-    else if (tab === 'simulados') await carregarSimulados();
-  }
+  const carregarTab = (tab) => FilaAprovacao.carregar(tab);
 
   /* ── Init ── */
   carregarBadgeAprovacoes();

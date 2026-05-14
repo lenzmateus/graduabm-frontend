@@ -8,54 +8,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PBM Admin — Legislações</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/admin-chrome.css">
 <style>
   :root {
-    --carvao: #0F0F0F;
-    --cinza-escuro: #1A1A1A;
-    --cinza-medio: #2A2A2A;
-    --cinza-borda: #333;
-    --cinza-texto: #888;
-    --branco: #F8F6F2;
-    --vermelho: #C0270F;
     --vermelho-bg: rgba(192,39,15,0.08);
     --vermelho-borda: rgba(192,39,15,0.3);
-    --roxo: #7F77DD;
-    --roxo-bg: rgba(127,119,221,0.08);
-    --roxo-borda: rgba(127,119,221,0.3);
-    --verde: #27A05A;
-    --verde-bg: rgba(39,160,90,0.08);
-    --verde-borda: rgba(39,160,90,0.3);
     --amarelo: #BA7517;
     --amarelo-bg: rgba(186,117,23,0.12);
     --amarelo-borda: rgba(186,117,23,0.45);
-    --erro: #E24B4A;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
-  .layout { display: flex; min-height: 100vh; }
-  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
-  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
-  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
-  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.06em; background: var(--roxo-bg); border: 1px solid var(--roxo-borda); color: #AFA9EC; }
-  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
-  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
-  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; color: #AFA9EC; }
-  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--roxo); }
-  .sidebar-nav { flex: 1; padding: 1rem 0; }
-  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
-  .nav-label:first-child { margin-top: 0; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
-  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
-  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: var(--vermelho-bg); }
-  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
-  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; }
-  .btn-sair:hover { border-color: #555; color: var(--branco); }
-
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
-  .topbar-titulo { font-size: 14px; font-weight: 500; }
-  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
 
   .hero { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
   .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.04em; margin-bottom: 6px; }
@@ -136,66 +97,19 @@
   .btn-reset { background: transparent; border: 1px solid rgba(226,75,74,0.3); color: #888; border-radius: 6px; padding: 6px 12px; font-size: 10px; cursor: pointer; font-family: 'IBM Plex Mono', monospace; }
   .btn-reset:hover { border-color: var(--erro); color: #F09595; }
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; transition: transform 0.25s ease; z-index: 999; }
-  .toast.visivel { transform: translateX(-50%) translateY(0); }
-  .toast.verde { border-color: var(--verde-borda); color: #7DD99A; }
-  .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
-
   @media (max-width: 900px) {
     .leg-row { grid-template-columns: 1fr; gap: 0.5rem; }
     .leg-acoes { justify-content: flex-start; flex-wrap: wrap; }
-  }
-  @media (max-width: 768px) {
-    .layout { flex-direction: column; }
-    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
-    .sidebar-logo { padding: 0; border-bottom: none; }
-    .sidebar-usuario, .sidebar-nav { display: none; }
-    .sidebar-footer { border-top: none; padding: 0; }
-    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
-    .topbar { padding: 0 1rem; }
-    .conteudo { padding: 1rem; }
   }
 </style>
 </head>
 <body>
 
 <div class="layout">
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
-      <span class="admin-chip">ADMIN</span>
-    </div>
-    <div class="sidebar-usuario">
-      <div class="usuario-nome">Administrador</div>
-      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-label">Painel</div>
-      <a class="nav-item" href="/admin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a>
-      <a class="nav-item" href="/admin-analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analytics</a>
-      <div class="nav-label">Conteúdo</div>
-      <a class="nav-item" href="/admin-questoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Questões</a>
-      <a class="nav-item ativo" href="/admin-legislacoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>Legislações</a>
-      <a class="nav-item" href="/admin-flashcards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Flashcards</a>
-      <a class="nav-item" href="/admin-simulados-mensais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Protocolos QAP</a>
-      <div class="nav-label">Alunos</div>
-      <a class="nav-item" href="/admin-assinaturas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Assinaturas</a>
-      <a class="nav-item" href="/admin-relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Relatórios</a>
-      <a class="nav-item" href="/admin-denuncias"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Relatórios de Problemas</a>
-      <div class="nav-label">Sistema</div>
-      <a class="nav-item" href="/admin-aprovacoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Aprovações IA</a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-sair" id="btn-sair">Encerrar sessão admin</button>
-    </div>
-  </aside>
+  <aside id="admin-chrome"></aside>
 
   <div class="main">
-    <div class="topbar">
-      <span class="topbar-titulo">Gestão de Legislações</span>
-    </div>
-
+    <header id="admin-topbar"></header>
     <div class="conteudo">
       <div class="hero">
         <h1>Legislações cobradas nos editais</h1>
@@ -275,24 +189,15 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
 <script src="/js/api.js"></script>
+<script src="/js/admin-chrome.js"></script>
 <script>
-  PBM.Admin.protegerRota();
-
-  document.getElementById('btn-sair').addEventListener('click', () => PBM.Admin.logout());
+  AdminChrome.init({ pagina: 'legislacoes', titulo: 'Gestão de Legislações' });
+  const toast = AdminChrome.toast;
 
   function esc(s) {
     if (s === null || s === undefined) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function toast(msg, tipo) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'toast visivel' + (tipo ? ' ' + tipo : '');
-    clearTimeout(el._t);
-    el._t = setTimeout(() => el.classList.remove('visivel'), 2800);
   }
   function fmtData(iso) {
     if (!iso) return '';
@@ -423,7 +328,7 @@
   window.alternarAtualizada = async function(id, atualEstava) {
     try {
       await PBM.Admin.legislacoes.salvar(id, { marcar_atualizada: !atualEstava });
-      toast(atualEstava ? 'Desmarcada como atualizada.' : 'Marcada como atualizada.', 'verde');
+      toast(atualEstava ? 'Desmarcada como atualizada.' : 'Marcada como atualizada.', 'sucesso');
       await carregar();
     } catch (e) {
       toast(e.erro || 'Erro ao salvar.', 'erro');
@@ -467,7 +372,7 @@
     btn.disabled = true; btn.textContent = 'Salvando…';
     try {
       await PBM.Admin.legislacoes.salvar(legEdit.id, body);
-      toast('Salvo.', 'verde');
+      toast('Salvo.', 'sucesso');
       fecharModal();
       await carregar();
     } catch (e) {
@@ -482,7 +387,7 @@
     if (!confirm('Remover override e restaurar nome do manifesto?\n\nO nome customizado, observação e marca de atualizada serão apagados.')) return;
     try {
       await PBM.Admin.legislacoes.removerOverride(legEdit.id);
-      toast('Override removido.', 'verde');
+      toast('Override removido.', 'sucesso');
       fecharModal();
       await carregar();
     } catch (e) {

@@ -13,52 +13,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Protocolos QAP (Admin)</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/admin-chrome.css">
 <style>
   :root {
-    --vermelho: #C0270F; --carvao: #0F0F0F; --cinza-escuro: #1A1A1A;
-    --cinza-medio: #2A2A2A; --cinza-borda: #333; --cinza-texto: #888;
-    --branco: #F8F6F2; --verde: #7DD99A; --dourado: #F0C050;
-    --roxo: #7C3AED; --roxo-bg: rgba(124,58,237,0.1);
+    --dourado: #F0C050;
+    /* override: esta página usa shades diferentes do chrome */
+    --roxo: #7C3AED;
+    --roxo-bg: rgba(124,58,237,0.1);
+    --verde: #7DD99A;
   }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 14px; min-height: 100vh; }
 
-  /* Layout */
-  .layout { display: flex; min-height: 100vh; }
-  .main { flex: 1; overflow-x: hidden; }
+  /* Container e layout específico desta página */
   .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
-
-  /* Sidebar */
-  .sidebar { width: 220px; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; flex-shrink: 0; }
-  .sidebar-logo { padding: 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; gap: 10px; }
-  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--branco); letter-spacing: 0.04em; text-decoration: none; line-height: 1.2; }
-  .admin-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--cinza-texto); border: 1px solid var(--cinza-borda); padding: 2px 6px; border-radius: 4px; }
-  .sidebar-usuario { padding: 0.75rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
-  .usuario-nome { font-size: 13px; font-weight: 600; color: var(--branco); }
-  .usuario-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); display: flex; align-items: center; gap: 6px; margin-top: 2px; }
-  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--verde); display: inline-block; }
-  .sidebar-nav { flex: 1; padding: 1rem 0; overflow-y: auto; }
-  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.12em; padding: 0 1.25rem; margin: 12px 0 4px; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-left: 2px solid transparent; text-decoration: none; transition: all 0.12s; }
-  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
-  .nav-item.ativo { color: var(--branco); border-left-color: var(--roxo); background: var(--roxo-bg); }
-  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
-  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 8px; font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; transition: all 0.15s; }
-  .btn-sair:hover { border-color: #E24B4A; color: #E24B4A; }
-  @media (max-width: 768px) {
-    .sidebar { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; border-right: none; border-bottom: 1px solid var(--cinza-borda); padding: 0 1rem; height: 52px; flex-shrink: 0; }
-    .sidebar-logo { padding: 0; border-bottom: none; }
-    .sidebar-usuario, .sidebar-nav { display: none; }
-    .sidebar-footer { border-top: none; padding: 0; }
-    .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
-    .layout { flex-direction: column; }
-  }
+  .main { overflow-x: hidden; }
 
   .btn-sm { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 500; font-family: 'Inter', sans-serif; cursor: pointer; border: 1px solid var(--cinza-borda); background: transparent; color: var(--cinza-texto); transition: all 0.15s; text-decoration: none; }
   .btn-sm:hover { color: var(--branco); border-color: #555; }
-  .btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
-  .btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
   .btn-primary { background: var(--vermelho); color: #fff; border-color: var(--vermelho); }
   .btn-primary:hover { background: #8B1A08; border-color: #8B1A08; color: #fff; }
 
@@ -269,81 +239,15 @@
 <body>
 
 <div class="layout">
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <a href="/admin" class="logo-text">Protocolo Bravo Mike</a>
-      <span class="admin-chip">ADMIN</span>
-    </div>
-    <div class="sidebar-usuario">
-      <div class="usuario-nome">Administrador</div>
-      <div class="usuario-status"><span class="status-dot"></span>Sessão ativa</div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-label">Painel</div>
-      <a class="nav-item" href="/admin">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Dashboard
-      </a>
-      <a class="nav-item" href="/admin-analytics">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-        Analytics
-      </a>
-      <div class="nav-label">Conteúdo</div>
-      <a class="nav-item" href="/admin-questoes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        Questões
-      </a>
-      <a class="nav-item" href="/admin-legislacoes">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
-        Legislações
-      </a>
-      <a class="nav-item" href="/admin-flashcards">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-        Flashcards
-      </a>
-      <a class="nav-item ativo" href="/admin-simulados-mensais">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h2m2 0h2m-6 4h2"/></svg>
-        Protocolos QAP
-      </a>
-      <div class="nav-label">Alunos</div>
-      <a class="nav-item" href="/admin-assinaturas">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-        Assinaturas
-      </a>
-      <a class="nav-item" href="/admin-denuncias" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          Relatórios de Problemas
-        </span>
-        <span id="badge-denuncias" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
-      </a>
-      <div class="nav-label">Sistema</div>
-      <a class="nav-item" href="/admin-aprovacoes" style="justify-content:space-between;">
-        <span style="display:flex;align-items:center;gap:10px;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          Aprovações IA
-        </span>
-        <span id="nav-aprovacoes-badge" style="display:none;background:#C0270F;color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:600;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;"></span>
-      </a>
-      <a class="nav-item" href="/" target="_blank">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-        Ver site
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <button class="btn-sair" onclick="encerrarSessao()">Encerrar sessão admin</button>
-    </div>
-  </aside>
+  <aside id="admin-chrome"></aside>
 
   <div class="main">
+<header id="admin-topbar"></header>
 <div class="container">
   <div class="page-header">
     <div>
       <div class="page-titulo">Protocolos QAP</div>
       <div class="page-sub">Gerencie eventos mensais (Protocolo QAP), questões e acompanhe participações.</div>
-    </div>
-    <div>
-      <button class="btn-topbar-sair" onclick="encerrarSessao()">Encerrar sessão</button>
     </div>
   </div>
 
@@ -505,22 +409,13 @@
   </div><!-- /main -->
 </div><!-- /layout -->
 
-<div class="toast" id="toast"></div>
-
 <script src="/js/api.js"></script>
+<script src="/js/admin-chrome.js"></script>
 <script>
-PBM.Admin.protegerRota();
-
-function encerrarSessao() { PBM.Admin.logout(); }
+AdminChrome.init({ pagina: 'simulados-mensais', titulo: 'Protocolos QAP' });
+const toast = AdminChrome.toast;
 
 const req = (path, opts = {}) => PBM.Admin.req(path, opts);
-
-function toast(msg, tipo = 'ok') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = `toast ${tipo} visivel`;
-  setTimeout(() => el.classList.remove('visivel'), 3500);
-}
 
 function formatarData(iso) {
   return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
@@ -916,29 +811,6 @@ function abrirModalEditar(simId, questaoId) {
 }
 
 carregarSimulados();
-
-
-async function carregarBadgeAprovacoes() {
-  try {
-    const r = await PBM.Admin.aprovacoes.resumo();
-    const el = document.getElementById('nav-aprovacoes-badge');
-    if (!el) return;
-    if (r?.total > 0) { el.textContent = r.total; el.style.display = 'inline'; }
-    else { el.style.display = 'none'; }
-  } catch {}
-}
-async function carregarBadgeDenuncias() {
-  try {
-    const r = await PBM.Admin.denuncias.resumo();
-    const el = document.getElementById('badge-denuncias');
-    if (!el) return;
-    if (r?.total > 0) { el.textContent = r.total; el.style.display = 'inline'; }
-    else { el.style.display = 'none'; }
-  } catch {}
-}
-carregarBadgeAprovacoes();
-carregarBadgeDenuncias();
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { carregarBadgeAprovacoes(); carregarBadgeDenuncias(); } });
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONSTRUTOR DE BLOCOS — Sprint 3
@@ -2067,16 +1939,7 @@ carregarBlocos();
 </script>
 <style>
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
-.pbm-watermark {
-  pointer-events: none; user-select: none;
-  position: fixed; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 520px; height: 520px;
-  background: url('/images/emblem-pbm.png') center/contain no-repeat;
-  opacity: 0.05; z-index: 0;
-}
 </style>
-<div class="pbm-watermark" aria-hidden="true"></div>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
 </body>
 </html>
