@@ -170,44 +170,31 @@
   function writePosition(pos) {
     try { sessionStorage.setItem(POSITION_KEY, JSON.stringify(pos || {})); } catch (_) {}
   }
-  // Garante que o widget caiba no viewport atual após mount, resize ou troca de monitor.
+  // Garante que o widget caiba no viewport atual após mount, expand, resize ou troca de monitor.
+  // Usa getBoundingClientRect para funcionar tanto com ancoragem left/top quanto right/bottom —
+  // necessário para o caso "expandir minimizado em tela curta" empurrar o topo do widget pra fora.
   function clampPositionToViewport(el) {
     if (!el || !el.offsetWidth) return;
+    var rect = el.getBoundingClientRect();
+    var overflowLeft = rect.left < 0;
+    var overflowTop = rect.top < 0;
+    var overflowRight = rect.right > window.innerWidth;
+    var overflowBottom = rect.bottom > window.innerHeight;
+    if (!overflowLeft && !overflowTop && !overflowRight && !overflowBottom) return;
     var maxLeft = Math.max(0, window.innerWidth - el.offsetWidth);
     var maxTop = Math.max(0, window.innerHeight - el.offsetHeight);
-    var changed = false;
-    var leftStr = el.style.left;
-    if (leftStr && leftStr !== 'auto') {
-      var left = parseFloat(leftStr);
-      if (!isNaN(left)) {
-        var clampedLeft = Math.max(0, Math.min(maxLeft, left));
-        if (clampedLeft !== left) {
-          el.style.left = clampedLeft + 'px';
-          el.style.right = 'auto';
-          changed = true;
-        }
-      }
-    }
-    var topStr = el.style.top;
-    if (topStr && topStr !== 'auto') {
-      var top = parseFloat(topStr);
-      if (!isNaN(top)) {
-        var clampedTop = Math.max(0, Math.min(maxTop, top));
-        if (clampedTop !== top) {
-          el.style.top = clampedTop + 'px';
-          el.style.bottom = 'auto';
-          changed = true;
-        }
-      }
-    }
-    if (changed) {
-      writePosition({
-        left: el.style.left || '',
-        top: el.style.top || '',
-        right: el.style.right === 'auto' ? '' : (el.style.right || ''),
-        bottom: el.style.bottom === 'auto' ? '' : (el.style.bottom || ''),
-      });
-    }
+    var newLeft = Math.max(0, Math.min(maxLeft, rect.left));
+    var newTop = Math.max(0, Math.min(maxTop, rect.top));
+    el.style.left = newLeft + 'px';
+    el.style.top = newTop + 'px';
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+    writePosition({
+      left: newLeft + 'px',
+      top: newTop + 'px',
+      right: '',
+      bottom: '',
+    });
   }
 
   // ────────────────────────────────────────────────────────────────
@@ -475,13 +462,32 @@
   transition: box-shadow .15s;
 }
 #pbm-pomo-float.dragging { box-shadow: 0 16px 48px rgba(0,0,0,.7); }
-#pbm-pomo-float.minimizado { min-width: 0; width: auto; border-radius: 20px; }
-#pbm-pomo-float.minimizado #pbm-pomo-float-bar { border-bottom: none; border-radius: 20px; padding: 5px 10px 5px 9px; cursor: pointer; gap: 0; }
+#pbm-pomo-float.minimizado { min-width: 0; width: auto; border-radius: 22px; background: transparent; border: none; box-shadow: 0 6px 20px rgba(0,0,0,.5); }
+#pbm-pomo-float.minimizado #pbm-pomo-float-bar { border-bottom: none; border-radius: 22px; padding: 3px 4px; cursor: pointer; gap: 0; background: #1A1A1A; }
 #pbm-pomo-float.minimizado #pbm-pomo-body { display: none; }
 #pbm-pomo-float.minimizado #pbm-pomo-title-text { display: none; }
-#pbm-pomo-float.minimizado #pbm-pomo-time-mini { display: inline; font-size: 12px; }
+#pbm-pomo-float.minimizado .pbm-pomo-dot { display: none; }
+#pbm-pomo-float.minimizado #pbm-pomo-apple { display: inline-block; }
 #pbm-pomo-float.minimizado #pbm-pomo-actions { display: none; }
-#pbm-pomo-float.minimizado .pbm-pomo-dot { width: 6px; height: 6px; margin-right: 6px; }
+
+/* Tomate minimalista — modo minimizado e pílula de reabrir.
+   Cor do corpo segue o estado (currentColor); folha verde é fixa. */
+.pbm-pomo-apple { display: none; position: relative; width: 42px; height: 42px; color: #C0270F; line-height: 0; }
+.pbm-pomo-apple.pausa-curta { color: #5C9BD9; }
+.pbm-pomo-apple.pausa-longa { color: #B58AE0; }
+.pbm-pomo-apple.pausado { color: #6A6A6A; }
+.pbm-pomo-apple-svg { width: 100%; height: 100%; display: block; }
+.pbm-pomo-apple-sm { width: 26px; height: 26px; }
+.pbm-pomo-apple-sm .pbm-pomo-apple-time { display: none; }
+.pbm-pomo-apple-time {
+  position: absolute; left: 0; right: 0;
+  top: 55%; transform: translateY(-50%); /* centro do corpo do tomate (viewBox cy=22 / 40) */
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace; font-weight: 700;
+  font-size: 10px; color: #fff; letter-spacing: 0; line-height: 1;
+  text-shadow: 0 1px 2px rgba(0,0,0,.55);
+  pointer-events: none;
+}
 
 #pbm-pomo-float-bar {
   display: flex; align-items: center; justify-content: space-between;
@@ -501,7 +507,6 @@
 .pbm-pomo-dot.rodando { background: #C0270F; }
 .pbm-pomo-dot.pausa-curta { background: #5C9BD9; }
 .pbm-pomo-dot.pausa-longa { background: #B58AE0; }
-#pbm-pomo-time-mini { display: none; font-size: 13px; letter-spacing: .06em; color: #fff; font-weight: 600; }
 #pbm-pomo-actions { display: flex; gap: 2px; }
 .pbm-pomo-win-btn {
   background: none; border: none; cursor: pointer;
@@ -646,7 +651,9 @@
 #pbm-pomo-reabrir:hover { color: #fff; border-color: #555; }
 
 @media (max-width: 480px) {
-  #pbm-pomo-float { min-width: 240px; right: 12px; bottom: 12px; }
+  /* bottom: 80 deixa o widget acima da bottombar fixa (que tem ~64-72px) */
+  #pbm-pomo-float { min-width: 240px; right: 12px; bottom: 80px; }
+  #pbm-pomo-reabrir { right: 12px; bottom: 80px; }
   .pbm-pomo-display { font-size: 32px; min-width: 80px; }
   .pbm-pomo-audio-btn { font-size: 10px; padding: 3px 6px; }
 }
@@ -657,13 +664,27 @@
     document.head.appendChild(styleEl);
   }
 
+  // Tomate minimalista — círculo vermelho com folha verde discreta e brilho.
+  // Corpo usa currentColor para refletir estado (rodando/pausa/pausado).
+  function appleSvg() {
+    return ''
+      + '<svg class="pbm-pomo-apple-svg" viewBox="0 0 40 40" aria-hidden="true">'
+      +   '<circle cx="20" cy="22" r="16" fill="currentColor"/>'
+      +   '<ellipse cx="14" cy="17" rx="2.8" ry="3.5" fill="rgba(255,255,255,0.20)"/>'
+      +   '<path d="M20 4 C 17.5 7, 18.5 9.5, 20 9.5 C 21.5 9.5, 22.5 7, 20 4 Z" fill="#3F9D55"/>'
+      + '</svg>';
+  }
+
   function floatingHTML() {
     return ''
       + '<div id="pbm-pomo-float-bar">'
       + '  <div id="pbm-pomo-title">'
       + '    <span class="pbm-pomo-dot" id="pbm-pomo-dot"></span>'
-      + '    <span id="pbm-pomo-title-text">Temporizador</span>'
-      + '    <span id="pbm-pomo-time-mini">25:00</span>'
+      + '    <span id="pbm-pomo-title-text">Pomodoro</span>'
+      + '    <span class="pbm-pomo-apple" id="pbm-pomo-apple">'
+      + '      ' + appleSvg()
+      + '      <span class="pbm-pomo-apple-time" id="pbm-pomo-time-mini">25:00</span>'
+      + '    </span>'
       + '  </div>'
       + '  <div id="pbm-pomo-actions">'
       + '    <button class="pbm-pomo-win-btn" id="pbm-pomo-min-btn" title="Minimizar / Expandir">&#8722;</button>'
@@ -733,7 +754,10 @@
 
     var rab = document.createElement('button');
     rab.id = 'pbm-pomo-reabrir';
-    rab.innerHTML = '<span class="pbm-pomo-dot" id="pbm-pomo-dot-reabrir"></span> Temporizador';
+    rab.innerHTML = ''
+      + '<span class="pbm-pomo-apple pbm-pomo-apple-sm" id="pbm-pomo-apple-reabrir">'
+      +   appleSvg()
+      + '</span> Pomodoro';
     document.body.appendChild(rab);
     reabrirEl = rab;
     rab.addEventListener('click', reabrir);
@@ -743,12 +767,17 @@
 
     wireFloatingEvents(el);
 
-    // Posição persistida
-    var pos = readPosition();
-    if (pos.left) { el.style.left = pos.left; el.style.right = 'auto'; }
-    if (pos.top) { el.style.top = pos.top; el.style.bottom = 'auto'; }
-    if (pos.right) el.style.right = pos.right;
-    if (pos.bottom) el.style.bottom = pos.bottom;
+    // Posição persistida só é aplicada quando o mount NÃO força minimizado.
+    // Em /questoes (mount minimizado), a pos salva veio do widget expandido em /ciclo
+    // e empurrava a pílula pra um left/top que virava bug ao expandir.
+    // Mount minimizado sempre começa no canto inferior direito (defaults do CSS).
+    if (floatingMountOpts.minimizado !== true) {
+      var pos = readPosition();
+      if (pos.left) { el.style.left = pos.left; el.style.right = 'auto'; }
+      if (pos.top) { el.style.top = pos.top; el.style.bottom = 'auto'; }
+      if (pos.right) el.style.right = pos.right;
+      if (pos.bottom) el.style.bottom = pos.bottom;
+    }
     // Clamp imediato: se o viewport encolheu desde a última sessão (troca de monitor, mobile),
     // a posição salva pode ter ficado fora da tela.
     clampPositionToViewport(el);
@@ -882,14 +911,18 @@
     if (!floatingEl) return;
     floatingEl.classList.toggle('minimizado');
     state.uiMinimizado = floatingEl.classList.contains('minimizado');
-    salvar();
-    // Ao expandir: clamp pra dentro do viewport. POSITION_KEY persiste em sessionStorage
-    // e usuários com sessão antiga podem ter posições pixel-fixadas em x maior que
-    // (innerWidth - larguraExpandida), o que jogaria o widget pra fora.
-    if (!state.uiMinimizado) {
-      // offsetWidth só atualiza após o reflow do toggle de classe — aguarda 1 frame.
-      requestAnimationFrame(function () { clampPositionToViewport(floatingEl); });
+    if (state.uiMinimizado) {
+      // Snap pro canto inferior direito ao minimizar. Limpa qualquer left/top
+      // que tenha sido pinado pelo drag da forma expandida.
+      floatingEl.style.left = '';
+      floatingEl.style.top = '';
+      floatingEl.style.right = '';
+      floatingEl.style.bottom = '';
     }
+    salvar();
+    var doClamp = function () { if (floatingEl) clampPositionToViewport(floatingEl); };
+    requestAnimationFrame(doClamp);
+    setTimeout(doClamp, 80);
   }
 
   function updateFloatingUI() {
@@ -946,12 +979,18 @@
     }
     display.textContent = tempo;
     display.className = displayClass;
-    if (mini) {
-      mini.textContent = tempo;
-      mini.style.color = state.rodando ? 'var(--cor-area, #C0270F)' : '#888';
-    }
+    if (mini) mini.textContent = tempo;
     if (dot) dot.className = dotClass;
-    if (dotReabrir) dotReabrir.className = dotClass.replace('pbm-pomo-dot', 'pbm-pomo-dot');
+
+    // Apple/tomate (modo minimizado e pílula reabrir) — espelha a cor de estado do dot.
+    var appleClass = 'pbm-pomo-apple';
+    if (dotClass.indexOf('pausa-curta') >= 0) appleClass += ' pausa-curta';
+    else if (dotClass.indexOf('pausa-longa') >= 0) appleClass += ' pausa-longa';
+    else if (!state.rodando) appleClass += ' pausado';
+    var apple = floatingEl.querySelector('#pbm-pomo-apple');
+    if (apple) apple.className = appleClass;
+    var appleReabrir = document.querySelector('#pbm-pomo-apple-reabrir');
+    if (appleReabrir) appleReabrir.className = appleClass;
 
     // Botão play/pause
     if (play) {
@@ -1036,8 +1075,10 @@
   var pomDragged = false;
   function setupDrag(win) {
     var bar = win.querySelector('#pbm-pomo-float-bar');
+    var DRAG_THRESHOLD_PX = 6; // movimento mínimo antes de virar drag — protege tap de jitter
     var startX = 0, startY = 0, dragging = false;
     var startRectLeft = 0, startRectTop = 0;
+    var startMouseX = 0, startMouseY = 0;
 
     function persistPos() {
       writePosition({
@@ -1047,25 +1088,36 @@
         bottom: win.style.bottom === 'auto' ? '' : (win.style.bottom || ''),
       });
     }
-    // Só pina a posição em pixels no primeiro movimento real. Pinar no mousedown/touchstart
-    // sem movimento quebrava o click-to-expand da pílula (perdia ancoragem right/bottom
-    // e widget expandido caía fora do viewport).
+    // Só pina em pixels após cruzar o threshold de movimento. Pinar antes faz tap
+    // virar drag (sub-pixel jitter de touch) — o widget congela em coordenadas
+    // que viram problema quando o usuário expande depois.
     function ensurePinnedOnce() {
       if (pomDragged) return;
       win.style.right = 'auto'; win.style.bottom = 'auto';
       win.style.left = startRectLeft + 'px'; win.style.top = startRectTop + 'px';
     }
+    function passedThreshold(curX, curY) {
+      var dx = curX - startMouseX, dy = curY - startMouseY;
+      return (dx * dx + dy * dy) >= (DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX);
+    }
     bar.addEventListener('mousedown', function (e) {
       if (e.target.closest('.pbm-pomo-win-btn')) return;
+      // Drag só funciona no widget expandido. Minimizado fica fixo no canto inferior
+      // direito — clicar nele só alterna pra expandido. Tentar arrastar a forma
+      // minimizada (wrapper width:auto, transparente) tinha um glitch de posição
+      // que jogava o ícone pra fora do viewport.
+      if (win.classList.contains('minimizado')) return;
       dragging = true; pomDragged = false;
       var rect = win.getBoundingClientRect();
       startX = e.clientX - rect.left; startY = e.clientY - rect.top;
+      startMouseX = e.clientX; startMouseY = e.clientY;
       startRectLeft = rect.left; startRectTop = rect.top;
-      win.classList.add('dragging');
       e.preventDefault();
     });
     document.addEventListener('mousemove', function (e) {
       if (!dragging) return;
+      if (!pomDragged && !passedThreshold(e.clientX, e.clientY)) return;
+      if (!pomDragged) win.classList.add('dragging');
       ensurePinnedOnce();
       pomDragged = true;
       var nx = Math.max(0, Math.min(window.innerWidth - win.offsetWidth, e.clientX - startX));
@@ -1081,17 +1133,21 @@
     });
     bar.addEventListener('touchstart', function (e) {
       if (e.target.closest('.pbm-pomo-win-btn')) return;
+      if (win.classList.contains('minimizado')) return; // drag desabilitado no minimizado
       var t = e.touches[0];
       var rect = win.getBoundingClientRect();
       startX = t.clientX - rect.left; startY = t.clientY - rect.top;
+      startMouseX = t.clientX; startMouseY = t.clientY;
       startRectLeft = rect.left; startRectTop = rect.top;
       dragging = true; pomDragged = false;
     }, { passive: true });
     document.addEventListener('touchmove', function (e) {
       if (!dragging) return;
+      var t = e.touches[0];
+      if (!pomDragged && !passedThreshold(t.clientX, t.clientY)) return;
+      if (!pomDragged) win.classList.add('dragging');
       ensurePinnedOnce();
       pomDragged = true;
-      var t = e.touches[0];
       var nx = Math.max(0, Math.min(window.innerWidth - win.offsetWidth, t.clientX - startX));
       var ny = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, t.clientY - startY));
       win.style.left = nx + 'px'; win.style.top = ny + 'px';
@@ -1099,6 +1155,7 @@
     document.addEventListener('touchend', function () {
       if (dragging) {
         dragging = false;
+        win.classList.remove('dragging');
         if (pomDragged) persistPos();
       }
     });
