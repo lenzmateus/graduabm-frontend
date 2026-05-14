@@ -999,34 +999,12 @@ async function init() {
       await PBM.protegerRota();
     }
 
-    const modoRevisao = sessionStorage.getItem('pbm_modo_revisao');
-    if (modoRevisao) {
-      sessionStorage.removeItem('pbm_modo_revisao');
-      modoAtualTipo = 'revisao';
-      const qtd = parseInt(modoRevisao) || 20;
-      questoes = await PBM.Revisao.sessao(qtd);
-      if (!questoes.length) {
-        mostrarErro('Nenhuma questão na fila de revisão. Continue estudando para adicionar questões à fila!');
-        return;
-      }
-      setCor(questoes[0].area_tematica || 'AT1');
-      iniciarTimer();
-      document.getElementById('hdr-total').textContent = questoes.length;
-      document.getElementById('hdr-contexto').textContent = 'REVISÃO ESPAÇADA';
-      mostrarQuestao();
-      document.getElementById('tela-loading').style.display = 'none';
-      document.getElementById('tela-questao').style.display = 'flex';
-      document.getElementById('seta-esq').style.display = 'flex';
-      document.getElementById('seta-dir').style.display = 'flex';
-      if (window.PBMTour) PBMTour.init();
-      return;
-    }
-
     const filtro = sessionStorage.getItem('pbm_filtro');
     const revisaoErros = sessionStorage.getItem('pbm_revisao_erros') === '1';
 
     if (revisaoErros) {
       sessionStorage.removeItem('pbm_revisao_erros');
+      modoAtualTipo = 'erros';
       const dados = await PBM.api.questoes.erros();
       questoes = Array.isArray(dados) ? dados : [];
       if (!questoes.length) {
@@ -1037,10 +1015,10 @@ async function init() {
         const j = Math.floor(Math.random() * (i + 1));
         [questoes[i], questoes[j]] = [questoes[j], questoes[i]];
       }
-      setCor(area);
+      setCor(questoes[0].area_tematica || area || 'AT1');
       iniciarTimer();
       document.getElementById('hdr-total').textContent = questoes.length;
-      document.getElementById('hdr-contexto').textContent = 'REVISÃO DE ERROS';
+      document.getElementById('hdr-contexto').textContent = 'CADERNO DE ERROS';
       mostrarQuestao();
       document.getElementById('tela-loading').style.display = 'none';
       document.getElementById('tela-questao').style.display = 'flex';
@@ -1142,8 +1120,8 @@ function mostrarQuestao() {
 
   document.getElementById('hdr-atual').textContent  = idxAtual + 1;
   document.getElementById('prog-fill').style.width  = (idxAtual / questoes.length * 100) + '%';
-  const displayArea = modoAtualTipo === 'revisao' ? (q.area_tematica || area) : area;
-  if (modoAtualTipo === 'revisao') setCor(q.area_tematica || area);
+  const displayArea = modoAtualTipo === 'erros' ? (q.area_tematica || area) : area;
+  if (modoAtualTipo === 'erros') setCor(q.area_tematica || area);
   document.getElementById('badge-area').textContent = displayArea;
   document.getElementById('badge-leg').textContent  = leg || '—';
   document.getElementById('enunciado').textContent  = getEnunciado(q);
@@ -1385,7 +1363,7 @@ function mostrarResultados() {
 
   document.getElementById('res-titulo').textContent =
     pct >= 70 ? 'Muito bem!' : pct >= 50 ? 'Bom desempenho' : 'Continue praticando';
-  document.getElementById('res-sub').textContent = modoAtualTipo === 'revisao'
+  document.getElementById('res-sub').textContent = modoAtualTipo === 'erros'
     ? 'Revisão Espaçada · ' + tempo + ' de estudo'
     : curso.toUpperCase() + ' — ' + area + ' · ' + tempo + ' de estudo';
   document.getElementById('res-acertos').textContent = acertos;
@@ -1413,7 +1391,7 @@ function mostrarResultados() {
     lista.appendChild(div);
   });
 
-  if (modoAtualTipo === 'revisao') {
+  if (modoAtualTipo === 'erros') {
     document.getElementById('btn-resultado-primario').href = '/dashboard';
     document.getElementById('btn-resultado-primario').innerHTML = '← Voltar ao Dashboard';
     document.getElementById('btn-resultado-secundario').href = '/dashboard';
@@ -1676,7 +1654,7 @@ async function sairSessao() {
   }
   pararTimer();
   if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
-  window.location.href = modoAtualTipo === 'revisao' ? '/dashboard' : '/selecao-legislacao';
+  window.location.href = modoAtualTipo === 'erros' ? '/dashboard' : '/selecao-legislacao';
 }
 
 // ── SAÍDA POR ABA/NAVEGAÇÃO ──

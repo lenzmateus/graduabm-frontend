@@ -14,61 +14,10 @@
 <title>Protocolo Bravo Mike — Editais</title>
 <script src="/js/font-size.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/pbm-layout.css">
 <style>
-  :root {
-    --vermelho: #C0270F;
-    --carvao: #0F0F0F;
-    --cinza-escuro: #1A1A1A;
-    --cinza-medio: #2A2A2A;
-    --cinza-borda: #333;
-    --cinza-texto: #888;
-    --branco: #F8F6F2;
-    --ctsp: #C0270F;
-    --ctsp-bg: rgba(192,39,15,0.08);
-    --ctsp-borda: rgba(192,39,15,0.3);
-    --cba: #185FA5;
-    --cba-bg: rgba(24,95,165,0.08);
-    --cba-borda: rgba(24,95,165,0.3);
-    --amarelo: #BA7517;
-    --amarelo-bg: rgba(186,117,23,0.12);
-    --amarelo-borda: rgba(186,117,23,0.45);
-    --verde: #27A05A;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
-  .layout { display: flex; min-height: 100vh; }
 
-  /* SIDEBAR */
-  .sidebar { width: 220px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda); display: flex; flex-direction: column; }
-  .sidebar-logo { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; gap: 8px; }
-  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
-  .sidebar-usuario { padding: 1rem 1.25rem; border-bottom: 1px solid var(--cinza-borda); }
-  .usuario-nome { font-size: 13px; font-weight: 500; color: var(--branco); margin-bottom: 2px; }
-  .usuario-status { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: #7DD99A; letter-spacing: 0.04em; }
-  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
-  .sidebar-nav { flex: 1; padding: 1rem 0; }
-  .nav-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: #555; letter-spacing: 0.1em; text-transform: uppercase; padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px; }
-  .nav-label:first-child { margin-top: 0; }
-  .nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 1.25rem; font-size: 13px; color: var(--cinza-texto); cursor: pointer; transition: background 0.12s, color 0.12s; border-left: 2px solid transparent; text-decoration: none; }
-  .nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
-  .nav-item.ativo { color: var(--branco); border-left-color: var(--vermelho); background: rgba(192,39,15,0.08); }
-  .nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
-  .sidebar-footer { padding: 1rem 1.25rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-sair { width: 100%; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 7px 0; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
-  .btn-sair:hover { border-color: #555; color: var(--branco); }
-
-  /* MAIN */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .topbar { height: 56px; flex-shrink: 0; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; }
-  .topbar-titulo { font-size: 14px; font-weight: 500; color: var(--branco); }
-  .topbar-right { display: flex; align-items: center; gap: 12px; }
-  .topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
-  .btn-logout-top { display: flex; align-items: center; gap: 6px; background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
-  .btn-logout-top:hover { border-color: #E24B4A; color: #E24B4A; }
-  .btn-logout-top svg { width: 13px; height: 13px; }
-  .conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
-
-  /* HERO */
+/* HERO */
   .editais-hero { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; }
   .editais-hero-eyebrow { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--vermelho); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
   .editais-hero-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.04em; color: var(--branco); line-height: 1.1; margin-bottom: 6px; }
@@ -81,7 +30,6 @@
   .tab.ativo[data-curso="ctsp"] { color: var(--branco); border-bottom-color: var(--ctsp); }
   .tab.ativo[data-curso="cba"]  { color: var(--branco); border-bottom-color: var(--cba); }
 
-  /* LAYOUT 2 colunas */
   .editais-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 1.5rem; align-items: start; }
 
   /* Coluna principal: AT cards */
@@ -150,22 +98,12 @@
   .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
 
   /* MOBILE */
-  .bottombar { display: none; position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--cinza-escuro); border-top: 1px solid var(--cinza-borda); z-index: 200; grid-template-columns: repeat(7, 1fr); }
-  .bottombar a { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: #555; text-decoration: none; font-size: 9px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.12s; }
-  .bottombar a svg { width: 20px; height: 20px; }
-  .bottombar a.ativo { color: var(--vermelho); }
-  .bottombar a:hover { color: var(--branco); }
 
   @media (max-width: 1024px) {
     .editais-grid { grid-template-columns: 1fr; }
     .side-card { position: static; }
   }
   @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .bottombar { display: grid; }
-    .conteudo { padding: 1rem 1rem 76px; }
-    .topbar { padding: 0 1rem; }
-    .topbar-mono { display: none; }
     .editais-hero { padding: 1rem; }
     .editais-hero-titulo { font-size: 22px; }
     .at-card { padding: 1rem; }
@@ -178,61 +116,10 @@
 
 <div class="layout">
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
-    </div>
-    <div class="sidebar-usuario">
-      <div class="usuario-nome" id="user-nome">Carregando…</div>
-      <div class="usuario-status"><div class="status-dot"></div>ALUNO PRO</div>
-    </div>
-    <nav class="sidebar-nav">
-      <div class="nav-label">Menu</div>
-      <a class="nav-item" href="/dashboard">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-        Dashboard
-      </a>
-      <a class="nav-item ativo" href="/editais">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
-        Editais
-      </a>
-      <a class="nav-item" href="/area-estudos">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        Papirar
-      </a>
-      <a class="nav-item" href="/ciclo-estudos">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-        Ciclo de Estudos
-      </a>
-      <a class="nav-item" href="#" id="nav-revisao" onclick="sessionStorage.setItem('pbm_abre_revisao','1');window.location.href='/dashboard';return false;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
-        Revisão Espaçada
-      </a>
-      <a class="nav-item" href="/simulados">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        Simulados Oficiais
-      </a>
-      <div class="nav-item nav-missao locked" id="nav-missao-fds">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <span class="nav-missao-label">PROTOCOLO QAP</span>
-        <span class="nav-missao-timer" id="missao-timer" style="display:none">--:--:--</span>
-        <div class="nav-missao-tooltip" id="missao-tooltip"></div>
-      </div>
-      <a class="nav-item" href="/ranking">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
-        Ranking
-      </a>
-      <a class="nav-item" href="/flashcards">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-        Flashcards
-      </a>
-    </nav>
-    <div class="sidebar-footer">
-      <a href="/regras" style="display:block;font-size:11px;color:#555;text-decoration:none;margin-bottom:8px;">Regras & Informações</a>
-      <button class="btn-sair" id="btn-sair">Encerrar sessão</button>
-    </div>
-  </aside>
+  <!-- SIDEBAR (dinâmica) -->
+  <aside id="pbm-sidebar"></aside>
+  <!-- BOTTOMBAR mobile (dinâmica, position:fixed) -->
+  <nav id="pbm-bottombar"></nav>
 
   <!-- MAIN -->
   <div class="main">
@@ -281,16 +168,7 @@
   </div>
 </div>
 
-<!-- BOTTOMBAR MOBILE -->
-<nav class="bottombar">
-  <a href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg><span>Início</span></a>
-  <a href="/editais" class="ativo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span>Editais</span></a>
-  <a href="/area-estudos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>Estudar</span></a>
-  <a href="/simulados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Simulados</span></a>
-  <a href="/simulado-mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>QAP</span></a>
-  <a href="/flashcards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg><span>Cards</span></a>
-  <a href="/ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg><span>Ranking</span></a>
-</nav>
+<!-- BOTTOMBAR mobile já é renderizada pelo container #pbm-bottombar acima -->
 
 <!-- MODAL REPORTAR -->
 <div class="modal-overlay" id="modal-reportar">
@@ -310,17 +188,13 @@
 <div class="toast" id="toast"></div>
 
 <script src="/js/api.js"></script>
+<script src="/js/pbm-components.js"></script>
+<script>PBM.Layout.mount({active:'editais'});</script>
 <script>
-  const usuario = PBM.getUsuario() || {};
-  document.getElementById('user-nome').textContent = usuario.nome || usuario.email || 'Aluno';
-
   try {
     document.getElementById('topbar-data').textContent =
       new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
   } catch (e) {}
-
-  document.getElementById('btn-sair').addEventListener('click', () => PBM.Auth.logout());
-  document.getElementById('btn-logout-top').addEventListener('click', () => PBM.Auth.logout());
 
   function esc(str) {
     if (str === null || str === undefined) return '';
@@ -481,110 +355,7 @@
     carregarEdital();
   })();
 </script>
-<style>
-.nav-missao{display:flex;align-items:center;gap:8px;padding:8px 1.25rem;font-size:13px;font-weight:500;position:relative;border-left:2px solid transparent;}
-.nav-missao.locked{cursor:default;color:#444;}
-.nav-missao-label{flex:1;}
-.nav-missao-timer{font-family:'IBM Plex Mono',monospace;font-size:9px;color:#555;letter-spacing:.05em;}
-.nav-missao-tooltip{display:none;position:absolute;left:220px;top:0;background:#1A1A1A;border:1px solid #333;padding:8px 12px;border-radius:6px;font-size:11px;white-space:nowrap;z-index:100;color:#AAA;}
-.nav-missao.locked:hover .nav-missao-tooltip{display:block;}
-.nav-missao.active{color:#7DD99A;border-left-color:#7DD99A;background:rgba(125,217,154,.06);text-decoration:none;animation:pulse-missao 2s ease-in-out infinite;}
-.nav-missao-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;background:rgba(125,217,154,.12);color:#7DD99A;border-radius:4px;padding:1px 6px;letter-spacing:.08em;}
-@keyframes pulse-missao{0%,100%{opacity:1}50%{opacity:.72}}
-.nav-missao.encerrado{color:#888;text-decoration:none;}
-.nav-missao.encerrado:hover{color:#AAA;}
-.nav-missao-ranking-badge{font-family:'IBM Plex Mono',monospace;font-size:8px;color:#666;letter-spacing:.05em;}
-</style>
-<script>
-(async function initMissaoFDSSidebar(){
-  const el=document.getElementById('nav-missao-fds');
-  if(!el)return;
-  let status;
-  try{status=await PBM.MissaoFDS.status();}catch{return;}
-  if(status.estado==='active'){
-    const a=document.createElement('a');
-    a.className='nav-item nav-missao active';a.href='/simulado-mensal';
-    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span class="nav-missao-label">PROTOCOLO QAP</span><span class="nav-missao-badge">ABERTA</span>';
-    el.replaceWith(a);
-  }else if(status.estado==='locked'&&status.proximo){
-    const abertura=new Date(status.proximo.abertura);
-    const encerramento=new Date(status.proximo.encerramento);
-    const fmt=d=>d.toLocaleString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit',timeZone:'America/Sao_Paulo'});
-    const tip=document.getElementById('missao-tooltip');
-    if(tip)tip.textContent='Abre '+fmt(abertura)+' · Fecha '+fmt(encerramento)+' BRT';
-    el.style.cursor='pointer';
-    el.addEventListener('click',function(){
-      const ov=document.createElement('div');
-      ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;';
-      ov.innerHTML='<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem 1.75rem;max-width:320px;width:90%;">'+
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid #222;padding-bottom:.75rem;">'+
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+
-          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">PROTOCOLO QAP — BLOQUEADO</span>'+
-        '</div>'+
-        '<div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">Abertura</div>'+
-        '<div style="font-size:14px;color:#CCC;margin-bottom:1rem;">'+fmt(abertura)+' BRT</div>'+
-        '<div style="font-size:11px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.35rem;">Encerramento</div>'+
-        '<div style="font-size:14px;color:#CCC;margin-bottom:1.25rem;">'+fmt(encerramento)+' BRT</div>'+
-        '<div style="text-align:center;background:#111;border-radius:8px;padding:.75rem;margin-bottom:1.25rem;">'+
-          '<div style="font-family:\'IBM Plex Mono\',monospace;font-size:9px;color:#444;letter-spacing:.1em;margin-bottom:.4rem;">ABRE EM</div>'+
-          '<div id="missao-modal-timer" style="font-family:\'IBM Plex Mono\',monospace;font-size:24px;color:#C0270F;letter-spacing:.04em;"></div>'+
-        '</div>'+
-        '<button id="missao-modal-close" style="width:100%;background:none;border:1px solid #2A2A2A;color:#555;padding:7px;border-radius:6px;cursor:pointer;font-size:12px;font-family:\'IBM Plex Mono\',monospace;letter-spacing:.06em;">FECHAR</button>'+
-      '</div>';
-      document.body.appendChild(ov);
-      function tickModal(){
-        const pt=document.getElementById('missao-modal-timer');if(!pt)return;
-        const diff=Math.max(0,abertura-Date.now());
-        const dd=Math.floor(diff/86400000),hh=Math.floor((diff%86400000)/3600000);
-        const mm=Math.floor((diff%3600000)/60000),ss=Math.floor((diff%60000)/1000);
-        pt.textContent=dd>0?dd+'d '+String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0'):String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
-      }
-      tickModal();const iv=setInterval(tickModal,1000);
-      function closeModal(){ov.remove();clearInterval(iv);document.removeEventListener('keydown',onKey);}
-      function onKey(e){if(e.key==='Escape')closeModal();}
-      document.addEventListener('keydown',onKey);
-      ov.addEventListener('click',function(e){if(e.target===ov)closeModal();});
-      document.getElementById('missao-modal-close').addEventListener('click',closeModal);
-    });
-    function tick(){
-      const diff=Math.max(0,abertura-Date.now());
-      const d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000);
-      const m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
-      const t=document.getElementById('missao-timer');
-      if(t)t.textContent=d>0?d+'d '+String(h).padStart(2,'0')+':'+String(m).padStart(2,'0'):String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-    }
-    const _t=document.getElementById("missao-timer");if(_t)_t.style.display="";tick();setInterval(tick,1000);
-  }else if(status.estado==='encerrado'&&status.ultimo){
-    const a=document.createElement('a');
-    a.className='nav-item nav-missao encerrado';
-    a.href='/simulado-mensal-ranking?id='+status.ultimo.id;
-    a.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg><span class="nav-missao-label">PROTOCOLO QAP</span><span class="nav-missao-ranking-badge">RANKING →</span>';
-    el.replaceWith(a);
-  }else{
-    el.style.cursor='pointer';
-    el.addEventListener('click',function(){
-      const ov=document.createElement('div');
-      ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:9999;display:flex;align-items:center;justify-content:center;';
-      ov.innerHTML='<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;padding:1.5rem 1.75rem;max-width:320px;width:90%;">'+
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:1.25rem;border-bottom:1px solid #222;padding-bottom:.75rem;">'+
-          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'+
-          '<span style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;color:#555;letter-spacing:.12em;">PROTOCOLO QAP</span>'+
-        '</div>'+
-        '<div style="text-align:center;padding:1rem 0;">'+
-          '<div style="font-size:13px;color:#666;line-height:1.7;">Nenhuma missão agendada<br>no momento.<br><br>Fique atento — a próxima<br>será anunciada em breve.</div>'+
-        '</div>'+
-        '<button id="missao-modal-close" style="margin-top:1rem;width:100%;background:none;border:1px solid #2A2A2A;color:#555;padding:7px;border-radius:6px;cursor:pointer;font-size:12px;font-family:\'IBM Plex Mono\',monospace;letter-spacing:.06em;">FECHAR</button>'+
-      '</div>';
-      document.body.appendChild(ov);
-      function closeModal(){ov.remove();document.removeEventListener('keydown',onKey);}
-      function onKey(e){if(e.key==='Escape')closeModal();}
-      document.addEventListener('keydown',onKey);
-      ov.addEventListener('click',function(e){if(e.target===ov)closeModal();});
-      document.getElementById('missao-modal-close').addEventListener('click',closeModal);
-    });
-  }
-})();
-</script>
+
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
 </body>
 </html>

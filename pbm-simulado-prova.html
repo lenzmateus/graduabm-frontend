@@ -14,30 +14,11 @@
 <title>Protocolo Bravo Mike — Simulado Oficial</title>
 <script src="/js/font-size.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/pbm-layout.css">
 <style>
-  :root {
-    --vermelho: #C0270F;
-    --vermelho-escuro: #8B1A08;
-    --carvao: #0F0F0F;
-    --cinza-escuro: #1A1A1A;
-    --cinza-medio: #2A2A2A;
-    --cinza-borda: #333;
-    --cinza-texto: #888;
-    --branco: #F8F6F2;
-    --verde: #7DD99A;
-    --bg-verde: rgba(125,217,154,0.1);
-  }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; }
 
-  .layout { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-
-  /* ── TOPBAR ── */
-  .topbar {
-    height: 60px; flex-shrink: 0; background: var(--cinza-escuro); border-bottom: 1px solid var(--cinza-borda);
-    display: flex; align-items: center; justify-content: space-between; padding: 0 2rem;
-  }
   .topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--branco); letter-spacing: 0.05em; text-decoration: none;}
   
   .timer-box {
@@ -52,10 +33,8 @@
   }
   .btn-finalizar:hover { background: var(--vermelho-escuro); }
 
-  /* ── MAIN AREA ── */
   .main-area { flex: 1; display: flex; overflow: hidden; }
 
-  /* ── SIDEBAR NAVEGAÇÃO ── */
   .nav-sidebar {
     width: 250px; flex-shrink: 0; background: var(--cinza-escuro); border-right: 1px solid var(--cinza-borda);
     display: flex; flex-direction: column;
@@ -322,7 +301,6 @@
 
   @media (max-width: 768px) {
     /* Topbar */
-    .topbar { padding: 0 1rem; gap: 8px; }
     .btn-toggle-nav { display: inline-flex; }
 
     /* Esconde sidebar lateral */
@@ -443,30 +421,8 @@
   .seta-sim-dir { right: 12px; }
   @media (max-width: 960px) { .seta-sim { display: none !important; } }
 
-  /* ── BOTTOMBAR MOBILE ── */
-  .bottombar {
-    display: none; position: fixed;
-    bottom: 0; left: 0; right: 0; height: 60px;
-    background: var(--cinza-escuro);
-    border-top: 1px solid var(--cinza-borda);
-    z-index: 200;
-    grid-template-columns: repeat(7, 1fr);
-  }
-  .bottombar a {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    gap: 3px; color: #555; text-decoration: none;
-    font-size: 9px; font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.04em; text-transform: uppercase;
-    transition: color 0.12s;
-  }
-  .bottombar a svg { width: 20px; height: 20px; }
-  .bottombar a.ativo { color: var(--vermelho); }
-  .bottombar a:hover { color: var(--branco); }
   /* Durante a prova cronometrada NÃO mostramos bottombar — evita que o
      aluno saia por engano da prova oficial de 4h tocando em outro link. */
-  @media (max-width: 768px) {
-    .bottombar { display: none !important; }
-  }
 
   /* ── SPRINT 4 — AJUSTES FINOS MOBILE ── */
   @media (max-width: 480px) {
@@ -615,6 +571,8 @@
 <!-- API -->
 <script src="/js/api.js"></script>
 <script src="/js/tour.js"></script>
+<script src="/js/pbm-components.js"></script>
+<script>PBM.Layout.mount({active:'simulados'});</script>
 
 <script>
 // Proteção Anti-Cópia
@@ -1092,27 +1050,8 @@ function mostrarResultado() {
 init();
 </script>
 <style>
-.pbm-watermark {
-  pointer-events: none; user-select: none;
-  position: fixed; top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 520px; height: 520px;
-  background: url('/images/emblem-pbm.png') center/contain no-repeat;
-  opacity: 0.05; z-index: 0;
-}
 </style>
-<nav class="bottombar" id="bottombar">
-  <a href="/dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Início</a>
-  <a href="/editais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Editais</a>
-  <a href="/area-estudos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Estudar</a>
-  <a href="/simulados"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Simulados</a>
-  <a href="/simulado-mensal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>QAP</a>
-  <a href="/flashcards"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>Cards</a>
-  <a href="/ranking"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>Ranking</a>
-</nav>
-<script>
-(function(){var p=window.location.pathname,m={'/dashboard':'/dashboard','/area-estudos':'/area-estudos','/selecao-legislacao':'/area-estudos','/questoes':'/area-estudos','/simulados':'/simulados','/simulado-prova':'/simulados','/simulado-mensal':'/simulado-mensal','/simulado-mensal-ranking':'/simulado-mensal','/flashcards':'/flashcards','/ranking':'/ranking'},a=m[p]||p;document.querySelectorAll('#bottombar a').forEach(function(l){if(l.getAttribute('href')===a)l.classList.add('ativo');});})();
-</script>
+
 <div class="pbm-watermark" aria-hidden="true"></div>
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
 <!-- FERRAMENTAS DE PROVA -->

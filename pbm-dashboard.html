@@ -475,30 +475,16 @@
       <!-- CARD CICLO DE ESTUDOS (renderizado por carregarCiclo) -->
       <div id="card-ciclo-wrap" style="margin-bottom:1.25rem;"></div>
 
-      <!-- CARD REVISÃO ESPAÇADA (visível só quando há pendentes) -->
-      <div id="card-revisao" style="display:none;margin-bottom:1.25rem;background:#1A1A1A;border:1px solid #2A2A2A;border-left:3px solid var(--vermelho);border-radius:10px;padding:1rem 1.25rem;align-items:center;gap:1rem;cursor:pointer;" onclick="abrirModalRevisao()">
+      <!-- CARD CADERNO DE ERROS (visível só quando o aluno tem erros acumulados) -->
+      <div id="card-erros" style="display:none;margin-bottom:1.25rem;background:#1A1A1A;border:1px solid #2A2A2A;border-left:3px solid var(--vermelho);border-radius:10px;padding:1rem 1.25rem;align-items:center;gap:1rem;cursor:pointer;" onclick="abrirCadernoErros()">
         <div style="background:rgba(192,39,15,0.12);border-radius:8px;padding:9px;flex-shrink:0;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="1.8"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="8" x2="15" y2="14"/><line x1="15" y1="8" x2="9" y2="14"/></svg>
         </div>
         <div style="flex:1;">
-          <div style="font-weight:600;font-size:14px;color:var(--branco);margin-bottom:2px;">Fila de Revisão</div>
-          <div style="font-size:12px;color:var(--cinza-texto);"><span id="revisao-count">0</span> questões aguardando revisão hoje</div>
+          <div style="font-weight:600;font-size:14px;color:var(--branco);margin-bottom:2px;">Caderno de Erros</div>
+          <div style="font-size:12px;color:var(--cinza-texto);"><span id="erros-count">0</span> questões erradas para revisar</div>
         </div>
         <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.06em;color:var(--vermelho);">REVISAR →</div>
-      </div>
-
-      <!-- MODAL REVISÃO ESPAÇADA -->
-      <div id="modal-revisao" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;">
-        <div style="background:#1A1A1A;border:1px solid #333;border-radius:12px;padding:2rem;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.6);">
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.04em;margin-bottom:6px;">Revisão Espaçada</div>
-          <div id="modal-revisao-desc" style="font-size:13px;color:var(--cinza-texto);margin-bottom:1.25rem;line-height:1.5;"></div>
-          <label style="display:block;font-size:13px;font-weight:500;margin-bottom:6px;">Quantidade de questões</label>
-          <input type="number" id="revisao-qtd" min="1" style="width:100%;background:#2A2A2A;border:1px solid #444;border-radius:6px;color:var(--branco);padding:9px 12px;font-size:14px;font-family:'Inter',sans-serif;">
-          <div style="display:flex;gap:8px;margin-top:1.25rem;">
-            <button onclick="fecharModalRevisao()" style="flex:1;background:transparent;border:1px solid #444;color:var(--cinza-texto);border-radius:6px;padding:10px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;">Cancelar</button>
-            <button onclick="iniciarRevisao()" style="flex:2;background:var(--vermelho);border:none;color:#fff;border-radius:6px;padding:10px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;cursor:pointer;">Iniciar →</button>
-          </div>
-        </div>
       </div>
 
       <div class="dash-grid" id="stats-grid">
@@ -1009,10 +995,8 @@ async function init() {
 
   const user = PBM.getUsuario();
   if (user) {
-    const nomeEl = document.getElementById('sidebar-nome');
-    if (nomeEl) nomeEl.textContent = user.nome;
     const heroNome = document.getElementById('dash-hero-nome');
-    if (heroNome) heroNome.textContent = user.nome.split(' ')[0];
+    if (heroNome && user.nome) heroNome.textContent = user.nome.split(' ')[0];
     renderRankBadge(user.curso);
   }
 
@@ -1033,20 +1017,7 @@ async function init() {
       document.getElementById('stat-sessoes').textContent = desempenho.total_sessoes || 0;
 
       const totalErros = desempenho.erros || 0;
-      if (totalErros > 0) {
-        const btnRevisar = document.createElement('a');
-        btnRevisar.href = '#';
-        btnRevisar.className = 'btn-iniciar';
-        btnRevisar.style.cssText = 'background:transparent;border:1px solid rgba(240,149,149,0.4);color:#F09595;';
-        btnRevisar.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> REVISAR ERROS (${totalErros})`;
-        btnRevisar.addEventListener('click', (e) => {
-          e.preventDefault();
-          sessionStorage.setItem('pbm_revisao_erros', '1');
-          sessionStorage.setItem('pbm_filtro', 'erradas');
-          window.location.href = '/questoes';
-        });
-        document.querySelector('.header-actions').appendChild(btnRevisar);
-      }
+      atualizarCadernoErros(totalErros);
     }
 
     // Carregar gráfico de evolução
@@ -1096,48 +1067,25 @@ async function init() {
   }
 }
 
-// ── REVISÃO ESPAÇADA ──
-let revisaoPendentes = 0;
-
-async function carregarRevisao() {
-  try {
-    const data = await PBM.Revisao.pendentes();
-    revisaoPendentes = data.total || 0;
-    if (revisaoPendentes > 0) {
-      document.getElementById('revisao-count').textContent = revisaoPendentes;
-      document.getElementById('card-revisao').style.display = 'flex';
-      const badge = document.getElementById('badge-revisao-nav');
-      badge.textContent = revisaoPendentes > 99 ? '99+' : revisaoPendentes;
+// ── CADERNO DE ERROS ──
+function atualizarCadernoErros(totalErros) {
+  const card = document.getElementById('card-erros');
+  const badge = document.getElementById('badge-erros-nav');
+  if (totalErros > 0) {
+    document.getElementById('erros-count').textContent = totalErros;
+    if (card) card.style.display = 'flex';
+    if (badge) {
+      badge.textContent = totalErros > 99 ? '99+' : totalErros;
       badge.style.display = 'inline-block';
     }
-    if (sessionStorage.getItem('pbm_abre_revisao') === '1') {
-      sessionStorage.removeItem('pbm_abre_revisao');
-      if (revisaoPendentes > 0) abrirModalRevisao();
-    }
-  } catch (e) {
-    console.warn('[Revisão] Falha ao carregar pendentes', e);
+  } else {
+    if (card) card.style.display = 'none';
+    if (badge) badge.style.display = 'none';
   }
 }
 
-function abrirModalRevisao() {
-  const modal = document.getElementById('modal-revisao');
-  modal.style.display = 'flex';
-  const qtdDefault = Math.min(revisaoPendentes, 20);
-  const inp = document.getElementById('revisao-qtd');
-  inp.max = revisaoPendentes;
-  inp.value = qtdDefault;
-  document.getElementById('modal-revisao-desc').textContent =
-    `Você tem ${revisaoPendentes} questão${revisaoPendentes === 1 ? '' : 'ões'} na fila. Quantas quer revisar agora?`;
-}
-
-function fecharModalRevisao() {
-  document.getElementById('modal-revisao').style.display = 'none';
-}
-
-function iniciarRevisao() {
-  const inp = document.getElementById('revisao-qtd');
-  const qtd = Math.max(1, Math.min(parseInt(inp.value) || 20, revisaoPendentes));
-  sessionStorage.setItem('pbm_modo_revisao', String(qtd));
+function abrirCadernoErros() {
+  sessionStorage.setItem('pbm_revisao_erros', '1');
   window.location.href = '/questoes';
 }
 
@@ -1148,15 +1096,6 @@ function mostrarAviso(msg) {
   document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 3000);
 }
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && document.getElementById('modal-revisao').style.display === 'flex') {
-    fecharModalRevisao();
-  }
-});
-document.getElementById('modal-revisao').addEventListener('click', e => {
-  if (e.target === document.getElementById('modal-revisao')) fecharModalRevisao();
-});
 
 const CICLO_AT_CORES = {
   AT1: { fg: '#F5BABA', bg: 'rgba(192,39,15,0.18)' },
@@ -1283,7 +1222,6 @@ async function carregarCiclo() {
 }
 
 init();
-carregarRevisao();
 carregarCiclo();
 </script>
 <div class="pbm-watermark" aria-hidden="true"></div>

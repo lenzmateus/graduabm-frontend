@@ -205,15 +205,6 @@ const PBM = {
     },
   },
 
-  Revisao: {
-    pendentes() {
-      return request('/api/revisao/pendentes');
-    },
-    sessao(quantidade) {
-      return request('/api/revisao/sessao?quantidade=' + (quantidade || 20));
-    },
-  },
-
   Ciclo: {
     get() {
       return request('/api/ciclo');

@@ -1,0 +1,274 @@
+/* ============================================================
+   PBM Layout — estilos compartilhados das páginas do aluno
+   Fonte única para sidebar, bottombar, topbar e tokens base.
+   Carregar ANTES do <style> inline da página.
+   ============================================================ */
+
+:root {
+  --vermelho: #C0270F;
+  --vermelho-escuro: #8B1A08;
+  --carvao: #0F0F0F;
+  --cinza-escuro: #1A1A1A;
+  --cinza-medio: #2A2A2A;
+  --cinza-borda: #333;
+  --cinza-texto: #888;
+  --branco: #F8F6F2;
+  --branco-suave: #EFEFEA;
+
+  --ctsp: #C0270F;
+  --ctsp-bg: rgba(192,39,15,0.08);
+  --ctsp-borda: rgba(192,39,15,0.3);
+
+  --cba: #185FA5;
+  --cba-bg: rgba(24,95,165,0.08);
+  --cba-borda: rgba(24,95,165,0.3);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--carvao);
+  color: var(--branco);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── LAYOUT ── */
+.layout { display: flex; min-height: 100vh; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--cinza-escuro);
+  border-right: 1px solid var(--cinza-borda);
+  display: flex; flex-direction: column;
+  padding: 0;
+}
+
+.sidebar-logo {
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--cinza-borda);
+  display: flex; align-items: center; gap: 8px;
+}
+.logo-text {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: 0.05em;
+  color: var(--branco);
+  text-decoration: none;
+}
+
+.sidebar-usuario {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--cinza-borda);
+}
+.usuario-nome {
+  font-size: 13px; font-weight: 500;
+  color: var(--branco); margin-bottom: 2px;
+}
+.usuario-status {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 10px; font-weight: 500;
+  color: #7DD99A; letter-spacing: 0.04em;
+}
+.status-dot { width: 5px; height: 5px; border-radius: 50%; background: #7DD99A; }
+
+.sidebar-nav { flex: 1; padding: 1rem 0; }
+.nav-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; color: #555;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0 1.25rem; margin-bottom: 6px; margin-top: 16px;
+}
+.nav-label:first-child { margin-top: 0; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 1.25rem;
+  font-size: 13px; color: var(--cinza-texto);
+  cursor: pointer; transition: background 0.12s, color 0.12s;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+}
+.nav-item:hover { background: var(--cinza-medio); color: var(--branco); }
+.nav-item.ativo {
+  color: var(--branco);
+  border-left-color: var(--vermelho);
+  background: rgba(192,39,15,0.08);
+}
+.nav-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--cinza-borda);
+}
+.btn-sair {
+  width: 100%; background: transparent;
+  border: 1px solid var(--cinza-borda);
+  color: var(--cinza-texto); border-radius: 6px;
+  padding: 7px 0; font-size: 12px;
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.btn-sair:hover { border-color: #555; color: var(--branco); }
+
+/* ── PROTOCOLO QAP (Missão FDS) — entrada na sidebar ── */
+.nav-missao {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 1.25rem;
+  font-size: 13px; font-weight: 500;
+  position: relative;
+  border-left: 2px solid transparent;
+}
+.nav-missao.locked { cursor: default; color: #444; }
+.nav-missao-label { flex: 1; }
+.nav-missao-timer {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px; color: #555; letter-spacing: 0.05em;
+}
+.nav-missao-tooltip {
+  display: none; position: absolute;
+  left: 220px; top: 0;
+  background: #1A1A1A; border: 1px solid #333;
+  padding: 8px 12px; border-radius: 6px;
+  font-size: 11px; white-space: nowrap; z-index: 100; color: #AAA;
+}
+.nav-missao.locked:hover .nav-missao-tooltip { display: block; }
+.nav-missao.active {
+  color: #7DD99A;
+  border-left-color: #7DD99A;
+  background: rgba(125,217,154,.06);
+  text-decoration: none;
+  animation: pulse-missao 2s ease-in-out infinite;
+}
+.nav-missao-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  background: rgba(125,217,154,.12);
+  color: #7DD99A;
+  border-radius: 4px;
+  padding: 1px 6px;
+  letter-spacing: 0.08em;
+}
+@keyframes pulse-missao { 0%, 100% { opacity: 1 } 50% { opacity: .72 } }
+.nav-missao.encerrado { color: #888; text-decoration: none; }
+.nav-missao.encerrado:hover { color: #AAA; }
+.nav-missao-ranking-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px; color: #666; letter-spacing: 0.05em;
+}
+
+/* Badge de revisão pendente (sidebar) */
+.nav-badge-revisao {
+  display: none;
+  margin-left: auto;
+  background: var(--vermelho); color: #fff;
+  border-radius: 9px; padding: 1px 6px;
+  font-size: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  min-width: 18px; text-align: center;
+}
+
+/* ── MAIN + TOPBAR ── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  height: 56px; flex-shrink: 0;
+  border-bottom: 1px solid var(--cinza-borda);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem;
+}
+.topbar-titulo {
+  font-size: 14px; font-weight: 500;
+  color: var(--branco);
+}
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.topbar-mono {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px; color: var(--cinza-texto);
+}
+.btn-logout-top {
+  display: flex; align-items: center; gap: 6px;
+  background: transparent; border: 1px solid var(--cinza-borda);
+  color: var(--cinza-texto); border-radius: 6px;
+  padding: 5px 12px; font-size: 12px; cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+.btn-logout-top:hover { border-color: #E24B4A; color: #E24B4A; }
+.btn-logout-top svg { width: 13px; height: 13px; }
+
+.conteudo { flex: 1; padding: 2rem; overflow-y: auto; }
+
+/* ── BOTTOMBAR MOBILE ── */
+.bottombar {
+  display: none; position: fixed;
+  bottom: 0; left: 0; right: 0; height: 60px;
+  background: var(--cinza-escuro);
+  border-top: 1px solid var(--cinza-borda);
+  z-index: 200;
+  grid-template-columns: repeat(7, 1fr);
+}
+.bottombar a {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; color: #555; text-decoration: none;
+  font-size: 9px; font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  transition: color 0.12s;
+}
+.bottombar a svg { width: 20px; height: 20px; }
+.bottombar a.ativo { color: var(--vermelho); }
+.bottombar a:hover { color: var(--branco); }
+
+/* ── RESPONSIVO ── */
+@media (max-width: 768px) {
+  .layout { flex-direction: column; }
+  .sidebar { display: none !important; }
+  .topbar { padding: 0 1rem; }
+  .topbar-mono { display: none; }
+  .conteudo { padding: 1rem 1rem 76px; }
+  .bottombar { display: grid; }
+}
+
+/* ── BOTÕES UTILITÁRIOS (compartilhados) ── */
+.btn-primary {
+  background: var(--vermelho);
+  color: #fff; border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+  transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--vermelho-escuro); }
+.btn-ghost {
+  background: transparent;
+  color: var(--cinza-texto);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.btn-ghost:hover { border-color: #555; color: var(--branco); }
+
+/* ── WATERMARK ── */
+.pbm-watermark {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 520px; height: 520px;
+  background: url('/images/emblem-pbm.png') center/contain no-repeat;
+  opacity: 0.05;
+  z-index: 0;
+  pointer-events: none;
+}
+</content>
+</invoke>
