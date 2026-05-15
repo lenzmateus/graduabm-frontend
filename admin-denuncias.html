@@ -115,6 +115,15 @@
   .link-completo { font-size: 11px; color: #AFA9EC; text-decoration: none; font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em; }
   .link-completo:hover { color: #fff; }
 
+  /* UPLOAD DE IMAGEM (modal de edição) */
+  .upload-area { background: var(--cinza-medio); border: 2px dashed var(--cinza-borda); border-radius: 8px; padding: 1.25rem; text-align: center; cursor: pointer; transition: border-color 0.2s; display: flex; align-items: center; justify-content: center; min-height: 80px; }
+  .upload-area:hover { border-color: var(--roxo); }
+  .upload-area.tem-imagem { padding: 6px; border-style: solid; border-color: #444; }
+  .upload-placeholder-txt { font-size: 12px; color: var(--cinza-texto); display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  #edit-upload-preview { max-width: 100%; max-height: 200px; border-radius: 4px; object-fit: contain; display: none; }
+  .btn-remover-img { background: transparent; border: 1px solid rgba(226,75,74,0.3); color: #F09595; border-radius: 6px; padding: 4px 12px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; display: none; transition: all 0.15s; }
+  .btn-remover-img:hover { border-color: var(--erro); background: rgba(226,75,74,0.08); }
+
   @media (max-width: 768px) {
     .grid-cards { grid-template-columns: repeat(2, 1fr); }
     .chrome-topbar-mono { display: none; }
@@ -189,26 +198,62 @@
     </div>
     <div class="modal-edit-body">
       <div id="edit-banner" class="banner-edit" style="display:none"></div>
+      <div class="grid-2">
+        <div class="campo-edit">
+          <label>Curso</label>
+          <select id="edit-curso">
+            <option value="ctsp">CTSP</option>
+            <option value="cba">CBA</option>
+            <option value="ambos">Ambos (CTSP e CBA)</option>
+          </select>
+        </div>
+        <div class="campo-edit">
+          <label>Área Temática</label>
+          <select id="edit-area">
+            <option value="AT1">AT1 - Segurança contra incêndios</option>
+            <option value="AT2">AT2 - Combate a incêndios</option>
+            <option value="AT3">AT3 - Buscas e salvamentos / APH</option>
+            <option value="AT4">AT4 - Direito institucional, constitucional e militar</option>
+            <option value="AT5">AT5 - Normas e documentação técnica</option>
+          </select>
+        </div>
+      </div>
+      <div class="campo-edit">
+        <label>Legislação</label>
+        <select id="edit-leg-id"></select>
+        <input type="hidden" id="edit-leg-nome">
+      </div>
       <div class="campo-edit">
         <label>Enunciado</label>
         <textarea id="edit-enunciado" rows="4" placeholder="Enunciado da questão"></textarea>
       </div>
       <div class="campo-edit">
+        <label>Imagem (opcional)</label>
+        <div class="upload-area" id="edit-upload-area">
+          <div id="edit-upload-placeholder" class="upload-placeholder-txt">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            <span>Clique para adicionar imagem</span>
+            <span style="font-size:10px;opacity:0.6">jpg · png · webp · máx 2MB</span>
+          </div>
+          <img id="edit-upload-preview" alt="Preview">
+        </div>
+        <input type="file" id="edit-imagem-input" accept="image/jpeg,image/png,image/webp" style="display:none">
+        <input type="hidden" id="edit-imagem-url">
+        <div style="display:flex;align-items:center;gap:10px;margin-top:5px;">
+          <span id="edit-upload-status" style="font-size:11px;color:#888;flex:1"></span>
+          <button type="button" class="btn-remover-img" id="edit-btn-remover-img">Remover imagem</button>
+        </div>
+      </div>
+      <div class="campo-edit">
         <label>Alternativas (marque o gabarito à esquerda)</label>
         <div class="alts-edit" id="edit-alts"></div>
       </div>
-      <div class="grid-2">
-        <div class="campo-edit">
-          <label>Status</label>
-          <select id="edit-ativa">
-            <option value="true">Ativa</option>
-            <option value="false">Inativa</option>
-          </select>
-        </div>
-        <div class="campo-edit">
-          <label>Curso</label>
-          <input id="edit-curso" type="text" readonly style="opacity:0.6;cursor:not-allowed">
-        </div>
+      <div class="campo-edit">
+        <label>Status</label>
+        <select id="edit-ativa">
+          <option value="true">Ativa</option>
+          <option value="false">Inativa</option>
+        </select>
       </div>
       <div class="campo-edit">
         <label>Comentário / Justificativa</label>
@@ -217,7 +262,7 @@
       <div id="edit-erro" style="font-size:12px;color:#F09595;margin-top:4px;display:none"></div>
     </div>
     <div class="modal-edit-footer">
-      <a id="edit-link-completo" class="link-completo" href="#">Editor completo (legislação, imagem, IA) ↗</a>
+      <div></div>
       <div style="display:flex;gap:10px">
         <button class="btn-edit-secundario" onclick="fecharEditar()">Cancelar</button>
         <button class="btn-edit-primario" id="btn-edit-salvar" onclick="salvarEdicaoQuestao()">Salvar</button>
@@ -276,6 +321,157 @@
 
   function supaQuery(path, prefer, method, body) {
     return PBM.Admin.query(path, prefer, method, body);
+  }
+
+  // ─── MANIFESTO DE LEGISLAÇÕES (compartilhado com /admin-questoes) ───
+  const AREAS_META = {
+    at1: { titulo: 'Segurança contra incêndios' },
+    at2: { titulo: 'Combate a incêndios' },
+    at3: { titulo: 'Buscas e salvamentos / APH' },
+    at4: { titulo: 'Direito institucional, constitucional e militar' },
+    at5: { titulo: 'Normas administrativas e documentação técnica' }
+  };
+  let AREAS = {};
+  let _manifestoCarregado = false;
+
+  async function carregarManifesto() {
+    if (_manifestoCarregado) return;
+    let legislacoes = [];
+    try {
+      const resp = await fetch(API_URL + '/api/legislacoes/manifesto');
+      if (!resp.ok) throw new Error('HTTP ' + resp.status);
+      const data = await resp.json();
+      legislacoes = Array.isArray(data.legislacoes) ? data.legislacoes : [];
+    } catch (err) {
+      console.error('Falha ao carregar manifesto de legislações:', err);
+      toast('Falha ao carregar lista de legislações', 'erro');
+      return;
+    }
+    const tmp = {};
+    for (const at of Object.keys(AREAS_META)) {
+      tmp[at] = { ctsp: { ...AREAS_META[at], grupos: [] }, cba: { ...AREAS_META[at], grupos: [] } };
+    }
+    function addItem(cursoSlot, areaSlot, leg, tag) {
+      const grupos = tmp[areaSlot][cursoSlot].grupos;
+      const grupoTitulo = leg.grupo || 'Outras';
+      let grupo = grupos.find(g => g.titulo === grupoTitulo);
+      if (!grupo) { grupo = { titulo: grupoTitulo, items: [] }; grupos.push(grupo); }
+      if (grupo.items.some(it => it.id === leg.id)) return;
+      grupo.items.push({
+        id: leg.id, nome: leg.nome, detalhe: leg.descricao || '', tag,
+        tagTxt: tag === 'comum' ? 'CTSP e CBA' : (cursoSlot === 'ctsp' ? 'Exclusivo CTSP' : 'Exclusivo CBA')
+      });
+    }
+    for (const leg of legislacoes) {
+      const areaSlot = (leg.area_tematica || '').toLowerCase();
+      if (!tmp[areaSlot]) continue;
+      if (leg.curso === 'ambos') { addItem('ctsp', areaSlot, leg, 'comum'); addItem('cba', areaSlot, leg, 'comum'); }
+      else if (leg.curso === 'ctsp') addItem('ctsp', areaSlot, leg, 'exclusivo');
+      else if (leg.curso === 'cba') addItem('cba', areaSlot, leg, 'exclusivo-cba');
+    }
+    AREAS = tmp;
+    _manifestoCarregado = true;
+  }
+
+  function atualizarOpcaoCursoAmbos() {
+    const areaNum = document.getElementById('edit-area').value.toLowerCase();
+    const areaData = AREAS[areaNum];
+    const optAmbos = document.querySelector('#edit-curso option[value="ambos"]');
+    if (!optAmbos) return;
+    const temComum = areaData && areaData['ctsp'] && areaData['ctsp'].grupos.some(g => g.items.some(item => item.tag === 'comum'));
+    optAmbos.disabled = !temComum;
+    optAmbos.textContent = temComum ? 'Ambos (CTSP e CBA)' : 'Ambos (CTSP e CBA) — indisponível para esta área';
+    if (!temComum && document.getElementById('edit-curso').value === 'ambos') {
+      document.getElementById('edit-curso').value = 'ctsp';
+    }
+  }
+
+  function atualizarSelectLegislacoes() {
+    const curso = document.getElementById('edit-curso').value;
+    const areaNum = document.getElementById('edit-area').value.toLowerCase();
+    const sel = document.getElementById('edit-leg-id');
+    sel.innerHTML = '';
+    const areaData = AREAS[areaNum];
+    if (!areaData) return;
+    atualizarOpcaoCursoAmbos();
+    let gruposParaMostrar = [];
+    if (curso === 'ambos') {
+      if (areaData['ctsp']) {
+        gruposParaMostrar = areaData['ctsp'].grupos.map(g => ({
+          titulo: g.titulo,
+          items: g.items.filter(item => item.tag === 'comum')
+        })).filter(g => g.items.length > 0);
+      }
+    } else {
+      if (!areaData[curso]) return;
+      gruposParaMostrar = areaData[curso].grupos;
+    }
+    gruposParaMostrar.forEach(g => {
+      const optgroup = document.createElement('optgroup');
+      optgroup.label = g.titulo;
+      g.items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.id;
+        opt.textContent = item.nome;
+        if (curso !== 'ambos' && item.tag !== 'comum') {
+          opt.textContent = item.nome + ' ★';
+          opt.title = item.tagTxt;
+        }
+        optgroup.appendChild(opt);
+      });
+      sel.appendChild(optgroup);
+    });
+    atualizarNomeLegislacao();
+  }
+
+  function atualizarNomeLegislacao() {
+    const sel = document.getElementById('edit-leg-id');
+    if (sel.selectedIndex >= 0) {
+      document.getElementById('edit-leg-nome').value = sel.options[sel.selectedIndex].text.replace(' ★', '');
+    } else {
+      document.getElementById('edit-leg-nome').value = '';
+    }
+  }
+
+  // ─── UPLOAD DE IMAGEM ───
+  async function uploadImagemQuestao(file) {
+    const statusEl = document.getElementById('edit-upload-status');
+    statusEl.textContent = 'Enviando…';
+    statusEl.style.color = '#888';
+    const formData = new FormData();
+    formData.append('imagem', file);
+    const jwt = sessionStorage.getItem('pbm_admin_jwt');
+    try {
+      const res = await fetch(API_URL + '/api/admin/questoes/upload-imagem', {
+        method: 'POST',
+        headers: jwt ? { Authorization: 'Bearer ' + jwt } : {},
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok && data.url) return { ok: true, url: data.url };
+      return { ok: false, erro: data.erro || 'Erro no upload.' };
+    } catch { return { ok: false, erro: 'Erro de rede.' }; }
+  }
+
+  function setPreviewImagem(url) {
+    const preview = document.getElementById('edit-upload-preview');
+    const placeholder = document.getElementById('edit-upload-placeholder');
+    const area = document.getElementById('edit-upload-area');
+    const btnRemover = document.getElementById('edit-btn-remover-img');
+    if (url) {
+      preview.src = url;
+      preview.style.display = 'block';
+      placeholder.style.display = 'none';
+      area.classList.add('tem-imagem');
+      btnRemover.style.display = 'inline-block';
+    } else {
+      preview.src = '';
+      preview.style.display = 'none';
+      placeholder.style.display = 'flex';
+      area.classList.remove('tem-imagem');
+      btnRemover.style.display = 'none';
+    }
+    document.getElementById('edit-imagem-url').value = url || '';
   }
 
   function escHtml(str) {
@@ -570,7 +766,11 @@
     document.getElementById('edit-enunciado').value = '';
     document.getElementById('edit-comentario').value = '';
     document.getElementById('edit-alts').innerHTML = '';
-    document.getElementById('edit-link-completo').href = `/admin-questoes?editar=${encodeURIComponent(questaoId)}`;
+    document.getElementById('edit-upload-status').textContent = '';
+    setPreviewImagem(null);
+
+    // Carrega manifesto sob demanda (primeira abertura).
+    await carregarManifesto();
 
     let q;
     try {
@@ -594,7 +794,6 @@
     }
     const { alts, gabarito, comentario } = normalized;
     const altsVazias = alts.slice(0, 2).every(a => !a);
-    console.log('[edit-questao] dados crus:', { id: q.id, alternativas: q.alternativas, alternativa_a: q.alternativa_a, alternativa_b: q.alternativa_b, alternativa_c: q.alternativa_c, alternativa_d: q.alternativa_d, alternativa_e: q.alternativa_e, gabarito: q.gabarito, resposta_correta: q.resposta_correta, alts });
 
     const legNome = q.legislacao_nome || q.legislacao_id || '';
     const metaEl = document.getElementById('edit-meta');
@@ -603,7 +802,14 @@
     document.getElementById('edit-enunciado').value = q.enunciado || '';
     document.getElementById('edit-comentario').value = comentario;
     document.getElementById('edit-ativa').value = String(q.ativa !== false);
-    document.getElementById('edit-curso').value = (q.curso || '').toUpperCase();
+    document.getElementById('edit-curso').value = q.curso || 'ctsp';
+    document.getElementById('edit-area').value = q.area_tematica || 'AT1';
+    atualizarSelectLegislacoes();
+    if (q.legislacao_id) {
+      document.getElementById('edit-leg-id').value = q.legislacao_id;
+    }
+    atualizarNomeLegislacao();
+    setPreviewImagem(q.imagem_url || null);
     renderAltsEdit(alts, gabarito);
 
     const banner = document.getElementById('edit-banner');
@@ -622,7 +828,20 @@
       banner.style.display = 'block';
     }
 
-    _editAtual = { id: q.id, auditada_em: q.auditada_em || null, original: { enunciado: q.enunciado || '', gabarito, alternativas: alts.slice() } };
+    _editAtual = {
+      id: q.id,
+      auditada_em: q.auditada_em || null,
+      original: {
+        enunciado: q.enunciado || '',
+        gabarito,
+        alternativas: alts.slice(),
+        curso: q.curso || 'ctsp',
+        area_tematica: q.area_tematica || 'AT1',
+        legislacao_id: q.legislacao_id || '',
+        legislacao_nome: q.legislacao_nome || '',
+        imagem_url: q.imagem_url || null,
+      },
+    };
   };
 
   window.fecharEditar = function() {
@@ -658,6 +877,11 @@
       gabarito,
       comentario: document.getElementById('edit-comentario').value.trim() || null,
       ativa: document.getElementById('edit-ativa').value === 'true',
+      curso: document.getElementById('edit-curso').value,
+      area_tematica: document.getElementById('edit-area').value,
+      legislacao_id: document.getElementById('edit-leg-id').value.trim(),
+      legislacao_nome: document.getElementById('edit-leg-nome').value.trim(),
+      imagem_url: document.getElementById('edit-imagem-url').value || null,
     };
 
     const btn = document.getElementById('btn-edit-salvar');
@@ -688,7 +912,11 @@
     }
 
     cache.forEach(d => {
-      if (d.questao_id === _editAtual.id && d.questoes) d.questoes.enunciado = enunciado;
+      if (d.questao_id === _editAtual.id && d.questoes) {
+        d.questoes.enunciado = enunciado;
+        d.questoes.area_tematica = payload.area_tematica;
+        d.questoes.legislacao_nome = payload.legislacao_nome;
+      }
     });
 
     toast('Questão atualizada.', 'sucesso');
@@ -700,6 +928,48 @@
     if (e.key !== 'Escape') return;
     if (document.getElementById('overlay-editar').classList.contains('aberto')) fecharEditar();
     else if (document.getElementById('overlay-resolver').style.display === 'flex') fecharResolver();
+  });
+
+  // ─── WIRING DOS NOVOS CAMPOS DO MODAL ───
+  document.getElementById('edit-curso').addEventListener('change', atualizarSelectLegislacoes);
+  document.getElementById('edit-area').addEventListener('change', atualizarSelectLegislacoes);
+  document.getElementById('edit-leg-id').addEventListener('change', atualizarNomeLegislacao);
+
+  document.getElementById('edit-upload-area').addEventListener('click', () => {
+    document.getElementById('edit-imagem-input').click();
+  });
+  document.getElementById('edit-imagem-input').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const statusEl = document.getElementById('edit-upload-status');
+    if (!['image/jpeg','image/png','image/webp'].includes(file.type)) {
+      statusEl.textContent = 'Tipo inválido. Use jpg, png ou webp.';
+      statusEl.style.color = '#F09595';
+      e.target.value = '';
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      statusEl.textContent = 'Arquivo muito grande. Máximo 2MB.';
+      statusEl.style.color = '#F09595';
+      e.target.value = '';
+      return;
+    }
+    const result = await uploadImagemQuestao(file);
+    if (result.ok) {
+      setPreviewImagem(result.url);
+      statusEl.textContent = 'Imagem carregada com sucesso.';
+      statusEl.style.color = '#7DD99A';
+      setTimeout(() => { if (statusEl.textContent.includes('carregada')) statusEl.textContent = ''; }, 3000);
+    } else {
+      statusEl.textContent = result.erro;
+      statusEl.style.color = '#F09595';
+    }
+    e.target.value = '';
+  });
+  document.getElementById('edit-btn-remover-img').addEventListener('click', (e) => {
+    e.stopPropagation();
+    setPreviewImagem(null);
+    document.getElementById('edit-upload-status').textContent = '';
   });
 
   carregarDenuncias();
