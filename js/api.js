@@ -411,15 +411,29 @@ const PBM = {
       return PBM.Admin.req('/api/admin/stats');
     },
     async query(path, prefer, method, body) {
-      const res = await fetch(API_URL + '/api/admin/query', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...PBM.Admin._authHeader() },
-        body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
-      });
+      let res;
+      try {
+        res = await fetch(API_URL + '/api/admin/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...PBM.Admin._authHeader() },
+          body: JSON.stringify({ path, method: method || 'GET', body: body || undefined, prefer: prefer || null }),
+          signal: AbortSignal.timeout ? AbortSignal.timeout(30000) : undefined,
+        });
+      } catch (err) {
+        const erro = err?.name === 'TimeoutError'
+          ? 'Servidor demorou mais de 30s para responder.'
+          : 'Falha de rede: ' + (err?.message || err?.name || 'desconhecido');
+        return { ok: false, status: 0, data: { erro }, contentRange: null };
+      }
       if (res.status === 401) { PBM.Admin.logout(); return { ok: false, status: 401, data: null, contentRange: null }; }
       const text = await res.text();
       const contentRange = res.headers.get('Content-Range');
-      return { ok: res.ok, status: res.status, data: text ? JSON.parse(text) : null, contentRange };
+      let data = null;
+      if (text) {
+        try { data = JSON.parse(text); }
+        catch { data = { erro: 'Resposta não-JSON do servidor', raw: text.slice(0, 200) }; }
+      }
+      return { ok: res.ok, status: res.status, data, contentRange };
     },
     usuarios: {
       zerarProgresso(id) {

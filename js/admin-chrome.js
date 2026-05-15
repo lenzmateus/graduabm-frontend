@@ -181,6 +181,41 @@
     }[c]));
   }
 
+  function setTimestamp(id = 'topbar-ts', data = new Date()) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = data.toLocaleString('pt-BR', {
+      day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+  }
+
+  function extrairErro(r, fallback = 'Erro desconhecido') {
+    if (!r) return fallback;
+    return r.data?.erro || r.data?.message || r.data?.raw || `HTTP ${r.status || '?'}` || fallback;
+  }
+
+  // Normaliza questão: aceita formato novo (alternativas[]+gabarito+comentario)
+  // e formato legado (alternativa_a..e+resposta_correta+justificativa).
+  // Retorna sempre o novo formato.
+  const _LETRA_TO_IDX = { A: 0, B: 1, C: 2, D: 3, E: 4 };
+  function normalizarQuestao(q) {
+    if (!q) return { alts: [], gabarito: 0, comentario: '' };
+    let alts = Array.isArray(q.alternativas) ? q.alternativas.slice() : [];
+    if (alts.length === 0 || alts.every(a => !a)) {
+      alts = ['a', 'b', 'c', 'd', 'e'].map(l => q[`alternativa_${l}`] || '');
+    }
+    let gabarito = Number.isInteger(q.gabarito) ? q.gabarito : null;
+    if (gabarito == null) {
+      const letra = String(q.resposta_correta || '').trim().toUpperCase();
+      if (letra in _LETRA_TO_IDX) gabarito = _LETRA_TO_IDX[letra];
+    }
+    return {
+      alts,
+      gabarito: gabarito ?? 0,
+      comentario: q.comentario || q.justificativa || '',
+    };
+  }
+
   // ---------- API PÚBLICA ----------
   async function init({ pagina, titulo, acoes = [] } = {}) {
     if (!window.PBM || !PBM.Admin) {
@@ -215,5 +250,5 @@
     });
   }
 
-  window.AdminChrome = { init, toast, atualizarBadges };
+  window.AdminChrome = { init, toast, atualizarBadges, setTimestamp, extrairErro, normalizarQuestao };
 })();

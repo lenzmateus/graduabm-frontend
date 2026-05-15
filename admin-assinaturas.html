@@ -422,7 +422,7 @@
   let acaoAtual = { userId: null, acao: null };
 
   // ── Init ───────────────────────────────────────────────────
-  document.getElementById('topbar-ts').textContent = new Date().toLocaleString('pt-BR');
+  AdminChrome.setTimestamp();
   carregarStats();
   carregarAlunos();
   carregarCupons();

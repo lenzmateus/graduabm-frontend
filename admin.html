@@ -55,33 +55,6 @@
   .instrucoes-claude { background: var(--roxo-bg); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #AFA9EC; line-height: 1.7; }
   .instrucoes-claude strong { color: var(--branco); font-weight: 500; }
 
-  /* DENÚNCIAS */
-  .denuncia-item { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--cinza-borda); align-items: flex-start; }
-  .denuncia-item:last-child { border-bottom: none; }
-  .denuncia-status { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
-  .denuncia-status.pendente { background: #C0270F; box-shadow: 0 0 6px rgba(192,39,15,0.5); }
-  .denuncia-status.resolvida { background: #444; }
-  .denuncia-body { flex: 1; min-width: 0; }
-  .denuncia-questao { font-size: 12px; color: #888; font-family: 'IBM Plex Mono', monospace; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .denuncia-comentario { font-size: 13px; color: var(--branco); line-height: 1.5; margin-bottom: 6px; word-break: break-word; }
-  .denuncia-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  .denuncia-aluno { font-size: 11px; color: var(--cinza-texto); }
-  .denuncia-data { font-size: 10px; color: #444; font-family: 'IBM Plex Mono', monospace; }
-  .denuncia-badges { display: flex; gap: 6px; }
-  .denuncia-badge { font-size: 10px; padding: 2px 8px; border-radius: 20px; font-family: 'IBM Plex Mono', monospace; font-weight: 500; }
-  .badge-area-d { background: rgba(192,39,15,0.1); border: 1px solid rgba(192,39,15,0.25); color: #E0866E; }
-  .btn-resolver { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
-  .btn-resolver:hover { border-color: var(--verde); color: #7DD99A; }
-  .btn-resolver.resolvendo { opacity: 0.5; cursor: default; }
-  .btn-excluir-denuncia { background: transparent; border: 1px solid rgba(226,75,74,0.3); color: #888; border-radius: 6px; padding: 4px 10px; font-size: 10px; cursor: pointer; font-family: 'IBM Plex Mono', monospace; transition: all 0.15s; white-space: nowrap; }
-  .btn-excluir-denuncia:hover { border-color: #E24B4A; color: #F09595; }
-  .btn-editar-questao { background: transparent; border: 1px solid rgba(170,170,200,0.25); color: #888; border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; text-decoration: none; display: inline-block; }
-  .btn-editar-questao:hover { border-color: #AFA9EC; color: #AFA9EC; }
-  #denuncias-filtro { display: flex; gap: 6px; margin-bottom: 1rem; }
-  .filtro-btn { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
-  .filtro-btn:hover { border-color: #555; color: var(--branco); }
-  .filtro-btn.ativo { border-color: var(--roxo-borda); color: #AFA9EC; background: var(--roxo-bg); }
-
   @media (max-width: 768px) {
     .grid-cards { grid-template-columns: repeat(2, 1fr); }
     .atalhos { flex-direction: column; }
@@ -234,23 +207,6 @@
     </div>
   </div>
 </div>
-      </div>
-
-      <!-- DENÚNCIAS -->
-      <div class="secao-titulo" id="denuncias">Relatórios de Problemas</div>
-      <div class="painel-card" id="painel-denuncias">
-        <div class="painel-card-titulo">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7F77DD" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          Relatos de alunos
-        </div>
-        <div id="denuncias-filtro">
-          <button class="filtro-btn ativo" onclick="filtrarDenuncias('pendente', this)">Pendentes</button>
-          <button class="filtro-btn" onclick="filtrarDenuncias('todas', this)">Todas</button>
-          <button class="filtro-btn" onclick="filtrarDenuncias('resolvida', this)">Resolvidas</button>
-        </div>
-        <div id="denuncias-lista">
-          <div style="font-size:13px;color:#555;padding:1rem 0;">Carregando…</div>
-        </div>
       </div>
 
       <!-- ADMINISTRADORES -->
@@ -643,140 +599,10 @@
     statEl.style.fontSize = '22px';
   }
 
-  /* ── Denúncias ── */
-  let denunciasCache = [];
-  let filtroDenuncias = 'pendente';
-
-  window.scrollToDenuncias = function() {
-    setTimeout(() => {
-      const el = document.getElementById('denuncias');
-      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 50);
-  };
-
-  window.filtrarDenuncias = function(filtro, btn) {
-    filtroDenuncias = filtro;
-    document.querySelectorAll('.filtro-btn').forEach(b => b.classList.remove('ativo'));
-    if (btn) btn.classList.add('ativo');
-    renderDenuncias();
-  };
-
-  function renderDenuncias() {
-    const lista = document.getElementById('denuncias-lista');
-    let itens = denunciasCache;
-    if (filtroDenuncias === 'pendente') itens = itens.filter(d => !d.resolvida);
-    else if (filtroDenuncias === 'resolvida') itens = itens.filter(d => d.resolvida);
-
-    if (!itens.length) {
-      lista.innerHTML = '<div style="font-size:13px;color:#555;padding:1rem 0;">' +
-        (filtroDenuncias === 'pendente' ? 'Nenhum relatório pendente.' : 'Nenhum relatório encontrado.') + '</div>';
-      return;
-    }
-
-    lista.innerHTML = itens.map(d => {
-      const tipo = d.tipo || 'questao';
-      const aluno = d.users?.nome || d.users?.email || 'Aluno desconhecido';
-      const data = d.created_at ? new Date(d.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
-      const resolvida = d.resolvida;
-
-      let cabecalho = '';
-      let acaoAdmin = '';
-
-      if (tipo === 'legislacao') {
-        const legNome = d.legislacao_nome || d.legislacao_id || '';
-        cabecalho = `<span style="font-family:'IBM Plex Mono',monospace;font-size:9px;padding:2px 7px;border-radius:20px;background:rgba(186,117,23,0.12);border:1px solid rgba(186,117,23,0.45);color:#E0A858;letter-spacing:0.04em;text-transform:uppercase;margin-right:6px;">Legislação</span>${escHtml(legNome)}`;
-        const legId = d.legislacao_id ? `?id=${encodeURIComponent(d.legislacao_id)}` : '';
-        acaoAdmin = `<a href="/admin-legislacoes${legId}" class="btn-editar-questao">📜 Gerenciar legislação</a>`;
-      } else {
-        const questaoInfo = d.questoes;
-        const enunciado = questaoInfo?.enunciado || '';
-        const trecho = enunciado.length > 90 ? enunciado.slice(0, 90) + '…' : enunciado;
-        const area = questaoInfo?.area_tematica || '';
-        const leg = questaoInfo?.legislacao_nome || '';
-        cabecalho = `${area ? `<span style="margin-right:6px;">${area}</span>` : ''}${leg ? `${escHtml(leg)} · ` : ''}${escHtml(trecho || d.questao_id || '')}`;
-        acaoAdmin = d.questao_id
-          ? `<a href="/admin-questoes?editar=${d.questao_id}" class="btn-editar-questao">✏ Editar Questão</a>`
-          : '';
-      }
-
-      return `<div class="denuncia-item" id="denuncia-${d.id}">
-        <div class="denuncia-status ${resolvida ? 'resolvida' : 'pendente'}"></div>
-        <div class="denuncia-body">
-          <div class="denuncia-questao">${cabecalho}</div>
-          <div class="denuncia-comentario">${escHtml(d.comentario)}</div>
-          <div class="denuncia-meta">
-            <span class="denuncia-aluno">${escHtml(aluno)}</span>
-            <span class="denuncia-data">${data}</span>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
-          ${acaoAdmin}
-          ${!resolvida
-            ? `<button class="btn-resolver" onclick="resolverDenuncia('${d.id}', this)">✓ Resolver</button>`
-            : `<span style="font-size:11px;color:#444;font-family:'IBM Plex Mono',monospace;">resolvida</span>
-               <button class="btn-excluir-denuncia" onclick="excluirDenuncia('${d.id}', this)">🗑 Excluir</button>`}
-        </div>
-      </div>`;
-    }).join('');
-  }
-
   function escHtml(str) {
     if (!str) return '';
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   }
-
-  async function carregarDenuncias() {
-    if (!ADMIN_JWT) return;
-    try {
-      const r = await supaQuery(
-        '/rest/v1/denuncias?select=id,created_at,comentario,resolvida,questao_id,usuario_id,tipo,legislacao_id,legislacao_nome,questoes(area_tematica,legislacao_nome,enunciado),users(nome,email)&order=created_at.desc&limit=100'
-      );
-      if (!r.ok) return;
-      denunciasCache = Array.isArray(r.data) ? r.data : [];
-      renderDenuncias();
-
-      AdminChrome.atualizarBadges();
-    } catch (e) {
-      document.getElementById('denuncias-lista').innerHTML =
-        '<div style="font-size:13px;color:#555;padding:1rem 0;">Erro ao carregar denúncias.</div>';
-    }
-  }
-
-  window.resolverDenuncia = async function(id, btn) {
-    btn.classList.add('resolvendo');
-    btn.textContent = '…';
-    try {
-      const r = await supaQuery(`/rest/v1/denuncias?id=eq.${id}`, 'return=minimal', 'PATCH', { resolvida: true });
-      if (!r.ok) throw new Error();
-      const idx = denunciasCache.findIndex(d => d.id === id);
-      if (idx !== -1) denunciasCache[idx].resolvida = true;
-      toast('Denúncia marcada como resolvida.', 'sucesso');
-      renderDenuncias();
-      AdminChrome.atualizarBadges();
-    } catch {
-      btn.classList.remove('resolvendo');
-      btn.textContent = '✓ Resolver';
-      toast('Erro ao resolver denúncia.', 'erro');
-    }
-  };
-
-  window.excluirDenuncia = async function(id, btn) {
-    if (!confirm('Excluir esta denúncia permanentemente?')) return;
-    btn.disabled = true;
-    btn.textContent = '…';
-    try {
-      const r = await supaQuery(`/rest/v1/denuncias?id=eq.${id}`, 'return=minimal', 'DELETE');
-      if (!r.ok) throw new Error();
-      denunciasCache = denunciasCache.filter(d => d.id !== id);
-      renderDenuncias();
-      AdminChrome.atualizarBadges();
-      toast('Denúncia excluída.', 'sucesso');
-    } catch {
-      btn.disabled = false;
-      btn.textContent = '🗑 Excluir';
-      toast('Erro ao excluir denúncia.', 'erro');
-    }
-  };
 
   /* ── Administradores ── */
   const ADMIN_ROLE = sessionStorage.getItem('pbm_admin_role') || 'viewer';
@@ -846,11 +672,7 @@
   /* ── Iniciar ── */
   carregarStats();
   verificarServicos();
-  carregarDenuncias();
   carregarAdmins();
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) carregarDenuncias();
-  });
 }());
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>

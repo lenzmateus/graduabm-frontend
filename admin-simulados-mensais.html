@@ -556,19 +556,19 @@ function renderizarQuestoesDo(id) {
           <button class="btn-remover" onclick="removerQuestao('${id}','${q.id}')">Remover</button>
         </div>
       </div>
-      <div class="q-detalhe" id="qd-${q.id}" style="display:none;">
+      ${(() => {
+        const norm = AdminChrome.normalizarQuestao(q);
+        const letras = ['A','B','C','D','E'];
+        return `<div class="q-detalhe" id="qd-${q.id}" style="display:none;">
         <div class="q-detalhe-enun">${q.enunciado || ''}</div>
         <div class="q-detalhe-alts">
-          <div class="q-alt"><strong>A.</strong> ${q.alternativa_a || '—'}</div>
-          <div class="q-alt"><strong>B.</strong> ${q.alternativa_b || '—'}</div>
-          <div class="q-alt"><strong>C.</strong> ${q.alternativa_c || '—'}</div>
-          <div class="q-alt"><strong>D.</strong> ${q.alternativa_d || '—'}</div>
-          <div class="q-alt"><strong>E.</strong> ${q.alternativa_e || '—'}</div>
+          ${letras.map((l, i) => `<div class="q-alt"><strong>${l}.</strong> ${norm.alts[i] || '—'}</div>`).join('')}
         </div>
-        <div class="q-gabarito">Gabarito: <strong>${q.resposta_correta || '—'}</strong></div>
-        ${q.justificativa ? `<div class="q-justificativa">${q.justificativa}</div>` : ''}
-        <a href="/admin-questoes?id=${q.id}" target="_blank" class="btn-sm" style="display:inline-block;margin-top:8px;">Editar no Editor ↗</a>
-      </div>
+        <div class="q-gabarito">Gabarito: <strong>${letras[norm.gabarito] || '—'}</strong></div>
+        ${norm.comentario ? `<div class="q-justificativa">${norm.comentario}</div>` : ''}
+        <a href="/admin-questoes?editar=${q.id}" class="btn-sm" style="display:inline-block;margin-top:8px;">Editar no Editor ↗</a>
+      </div>`;
+      })()}
     </div>`).join('');
 }
 
@@ -757,14 +757,13 @@ function abrirModalEditar(simId, questaoId) {
     </div>`;
   document.body.appendChild(ov);
 
+  const _norm = AdminChrome.normalizarQuestao(q);
   document.getElementById('eq-enunciado').value = q.enunciado || '';
-  document.getElementById('eq-alt-a').value = q.alternativa_a || '';
-  document.getElementById('eq-alt-b').value = q.alternativa_b || '';
-  document.getElementById('eq-alt-c').value = q.alternativa_c || '';
-  document.getElementById('eq-alt-d').value = q.alternativa_d || '';
-  document.getElementById('eq-alt-e').value = q.alternativa_e || '';
-  document.getElementById('eq-gabarito').value = (q.resposta_correta || 'A').toUpperCase();
-  document.getElementById('eq-justificativa').value = q.justificativa || '';
+  ['a','b','c','d','e'].forEach((l, i) => {
+    document.getElementById(`eq-alt-${l}`).value = _norm.alts[i] || '';
+  });
+  document.getElementById('eq-gabarito').value = ['A','B','C','D','E'][_norm.gabarito] || 'A';
+  document.getElementById('eq-justificativa').value = _norm.comentario;
 
   const fechar = () => ov.remove();
   document.getElementById('eq-fechar').addEventListener('click', fechar);
@@ -775,15 +774,13 @@ function abrirModalEditar(simId, questaoId) {
     const enunciado = document.getElementById('eq-enunciado').value.trim();
     if (!enunciado) { toast('O enunciado não pode estar vazio.', 'err'); return; }
 
+    const alts = ['a','b','c','d','e'].map(l => document.getElementById(`eq-alt-${l}`).value.trim());
+    const letraGab = document.getElementById('eq-gabarito').value;
     const body = {
       enunciado,
-      alternativa_a: document.getElementById('eq-alt-a').value.trim(),
-      alternativa_b: document.getElementById('eq-alt-b').value.trim(),
-      alternativa_c: document.getElementById('eq-alt-c').value.trim(),
-      alternativa_d: document.getElementById('eq-alt-d').value.trim(),
-      alternativa_e: document.getElementById('eq-alt-e').value.trim(),
-      resposta_correta: document.getElementById('eq-gabarito').value,
-      justificativa: document.getElementById('eq-justificativa').value.trim() || null,
+      alternativas: alts.filter((v, i) => i < 2 || v),
+      gabarito: { A:0, B:1, C:2, D:3, E:4 }[letraGab] ?? 0,
+      comentario: document.getElementById('eq-justificativa').value.trim() || null,
     };
 
     const btn = document.getElementById('eq-salvar');
@@ -1171,8 +1168,9 @@ function renderizarQuestoesDoBlocoNoDOM(blocoId) {
 
 function renderQuestaoDoBloco(q, blocoId) {
   const bloco = blocosDadosPorId[blocoId] || {};
-  const alts = Array.isArray(q.alternativas) ? q.alternativas : [];
-  const gabLetra = alts.length > 0 && q.gabarito != null ? (LETRA[q.gabarito] || '?') : (q.resposta_correta || '?');
+  const norm = AdminChrome.normalizarQuestao(q);
+  const alts = norm.alts;
+  const gabLetra = LETRA[norm.gabarito] || '?';
   const enun = q.enunciado || '';
 
   // F2 — Badge "Elegível CBA": mostrado em questões CTSP aprovadas ainda não marcadas como "ambos"
@@ -1203,13 +1201,10 @@ function renderQuestaoDoBloco(q, blocoId) {
     </div>
     <div class="bq-detalhe" id="bqdet-${q.id}">
       <div class="bq-detalhe-enun">${enun}</div>
-      ${alts.length
-        ? alts.map((a,i) => `<div class="bq-alt ${i===q.gabarito?'correta':''}">${LETRA[i]}. ${a}</div>`).join('')
-        : (q.alternativa_a ? ['a','b','c','d','e'].map(l => `<div class="bq-alt ${(q.resposta_correta||'').toUpperCase()===l.toUpperCase()?'correta':''}">${l.toUpperCase()}. ${q[`alternativa_${l}`]||''}</div>`).join('') : '')
-      }
+      ${alts.map((a, i) => `<div class="bq-alt ${i === norm.gabarito ? 'correta' : ''}">${LETRA[i]}. ${a || '—'}</div>`).join('')}
       <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--verde);">Gabarito: ${gabLetra}</div>
       ${q.legislacao_nome ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-top:4px;">Legislação: ${q.legislacao_nome}</div>` : ''}
-      ${q.comentario || q.justificativa ? `<div class="bq-coment">${q.comentario||q.justificativa}</div>` : ''}
+      ${norm.comentario ? `<div class="bq-coment">${norm.comentario}</div>` : ''}
     </div>
   </div>`;
 }
@@ -1370,8 +1365,7 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
   const q  = qs.find(x => x.id === questaoId);
   if (!q) { toast('Questão não encontrada. Recarregue o bloco.', 'err'); return; }
 
-  const alts = Array.isArray(q.alternativas) ? q.alternativas : [q.alternativa_a, q.alternativa_b, q.alternativa_c, q.alternativa_d, q.alternativa_e].filter(Boolean);
-  const gabIdx = q.gabarito != null ? q.gabarito : ['A','B','C','D','E'].indexOf((q.resposta_correta||'A').toUpperCase());
+  const { alts, gabarito: gabIdx } = AdminChrome.normalizarQuestao(q);
 
   const ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:10000;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;';
@@ -1420,8 +1414,8 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
 
   document.getElementById('beq-enunciado').value = q.enunciado || '';
   alts.forEach((a,i) => { const el = document.getElementById(`beq-alt-${LETRA[i]}`); if(el) el.value = a||''; });
-  document.getElementById('beq-gabarito').value = String(gabIdx >= 0 ? gabIdx : 0);
-  document.getElementById('beq-comentario').value = q.comentario || q.justificativa || '';
+  document.getElementById('beq-gabarito').value = String(gabIdx);
+  document.getElementById('beq-comentario').value = AdminChrome.normalizarQuestao(q).comentario;
 
   // Popula select de legislação filtrado pela AT da questão
   const bloco = blocosDadosPorId[blocoId] || {};
