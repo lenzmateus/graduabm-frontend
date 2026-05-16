@@ -1,3 +1,18 @@
+/* ─────────────────────────────────────────────────────────────
+   ANTI-FLASH DE TEMA
+   Aplicar a classe .light-mode ANTES do CSS pintar evita o flash
+   branco-para-preto (FOUC) na carga inicial. Executado imediato.
+   ───────────────────────────────────────────────────────────── */
+(function aplicarTemaImediato() {
+  try {
+    const pref = localStorage.getItem('pbm-theme') || 'dark';
+    let isLight = false;
+    if (pref === 'light') isLight = true;
+    else if (pref === 'system' && window.matchMedia('(prefers-color-scheme: light)').matches) isLight = true;
+    if (isLight) document.documentElement.classList.add('light-mode');
+  } catch (e) { /* localStorage indisponível: assume escuro */ }
+})();
+
 const API_URL = 'https://graduabm-backend-production.up.railway.app';
 
 // Decide admin-vs-aluno a partir do JWT efetivamente enviado, não de string-match com sessionStorage.
@@ -65,6 +80,91 @@ async function request(path, options = {}) {
 }
 
 const PBM = {
+  /* ───────────────────────────────────────────────
+     Tema (Escuro / Claro / Sistema)
+     - Preferência persistida em localStorage('pbm-theme')
+     - Reativo a mudanças do SO quando preferência == 'system'
+     - Sincronizado entre abas via evento 'storage'
+     - Notifica componentes via 'pbm-theme-changed'
+     ─────────────────────────────────────────────── */
+  Theme: {
+    _started: false,
+    _mediaQuery: null,
+    getPreference() {
+      try { return localStorage.getItem('pbm-theme') || 'dark'; }
+      catch { return 'dark'; }
+    },
+    getEffective() {
+      const pref = this.getPreference();
+      if (pref === 'light') return 'light';
+      if (pref === 'dark') return 'dark';
+      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    },
+    setTheme(mode) {
+      if (!['light', 'dark', 'system'].includes(mode)) return;
+      try { localStorage.setItem('pbm-theme', mode); } catch (e) {}
+      this.applyTheme();
+      this.updateUISelector();
+      this._dispatch();
+    },
+    applyTheme() {
+      const root = document.documentElement;
+      const isLight = this.getEffective() === 'light';
+      root.classList.toggle('light-mode', isLight);
+    },
+    updateUISelector() {
+      const pref = this.getPreference();
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        const active = btn.dataset.theme === pref;
+        btn.classList.toggle('is-active', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    },
+    _dispatch() {
+      try {
+        window.dispatchEvent(new CustomEvent('pbm-theme-changed', {
+          detail: { preference: this.getPreference(), effective: this.getEffective() }
+        }));
+      } catch (e) {}
+    },
+    init() {
+      if (this._started) return;
+      this._started = true;
+
+      this.applyTheme();
+      this.updateUISelector();
+
+      this._mediaQuery = window.matchMedia('(prefers-color-scheme: light)');
+      const onSystemChange = () => {
+        if (this.getPreference() === 'system') {
+          this.applyTheme();
+          this._dispatch();
+        }
+      };
+      if (this._mediaQuery.addEventListener) {
+        this._mediaQuery.addEventListener('change', onSystemChange);
+      } else if (this._mediaQuery.addListener) {
+        this._mediaQuery.addListener(onSystemChange);
+      }
+
+      window.addEventListener('storage', (event) => {
+        if (event.key !== 'pbm-theme') return;
+        this.applyTheme();
+        this.updateUISelector();
+        this._dispatch();
+      });
+
+      document.addEventListener('click', (event) => {
+        const btn = event.target && event.target.closest && event.target.closest('.theme-btn[data-theme]');
+        if (!btn) return;
+        event.preventDefault();
+        this.setTheme(btn.dataset.theme);
+      });
+
+      requestAnimationFrame(() => document.documentElement.classList.add('tema-pronto'));
+    },
+  },
+
   getUsuario() {
     try { return JSON.parse(sessionStorage.getItem('usuario')); }
     catch { return null; }
@@ -727,15 +827,18 @@ const PBM = {
 
 window.PBM = PBM;
 
-/* Injeção de CSS Global (Scrollbar Unificada) */
+/* Inicializa o sistema de tema (listeners de SO, multi-aba e clique) */
+try { PBM.Theme.init(); } catch (e) { console.warn('[PBM.Theme] falha ao iniciar', e); }
+
+/* Injeção de CSS Global (Scrollbar Unificada — reage ao tema) */
 (function() {
   const style = document.createElement('style');
   style.textContent = `
     ::-webkit-scrollbar { width: 8px; height: 8px; }
-    ::-webkit-scrollbar-track { background: #0F0F0F; }
-    ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; border: 2px solid #0F0F0F; }
-    ::-webkit-scrollbar-thumb:hover { background: #333333; }
-    * { scrollbar-width: thin; scrollbar-color: #2A2A2A #0F0F0F; }
+    ::-webkit-scrollbar-track { background: var(--bg-primario); }
+    ::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 4px; border: 2px solid var(--bg-primario); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-color); }
+    * { scrollbar-width: thin; scrollbar-color: var(--bg-hover) var(--bg-primario); }
   `;
   document.head.appendChild(style);
 })();

@@ -13,6 +13,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Área de Estudos</title>
 <script src="/js/font-size.js"></script>
+<script src="/js/pbm-theme-boot.js"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
 <style>
@@ -118,7 +120,7 @@
   .area-item::before {
     content: '';
     position: absolute; inset: 0;
-    background: linear-gradient(90deg, rgba(15,15,15,0.97) 0%, rgba(15,15,15,0.93) 45%, rgba(15,15,15,0.55) 75%, rgba(15,15,15,0.15) 100%);
+    background: linear-gradient(90deg, var(--banner-fade-strong) 0%, var(--banner-fade-medium) 45%, var(--banner-fade-light) 75%, rgba(0,0,0,0) 100%);
     pointer-events: none; z-index: 0;
   }
   .area-item { cursor: pointer; }
@@ -212,7 +214,7 @@
   .btn-estudar.cba-btn:hover { background: #0C447C; }
 
   .area-prog { width: 100%; }
-  .prog-bar { height: 3px; background: #2A2A2A; border-radius: 3px; margin-bottom: 3px; }
+  .prog-bar { height: 3px; background: var(--bg-hover); border-radius: 3px; margin-bottom: 3px; }
   .prog-fill { height: 100%; border-radius: 3px; width: 0%; }
   .prog-txt { font-size: 10px; color: #555; text-align: right; }
 

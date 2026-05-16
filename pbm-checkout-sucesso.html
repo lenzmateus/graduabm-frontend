@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -13,15 +13,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Pagamento confirmado</title>
 <script src="/js/font-size.js"></script>
+<script src="/js/pbm-theme-boot.js"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
-    --carvao: #0F0F0F;
-    --cinza-escuro: #1A1A1A;
+    --carvao: var(--bg-primario);
+    --cinza-escuro: var(--bg-secundario);
     --cinza-borda: #333;
     --cinza-texto: #888;
-    --branco: #F8F6F2;
+    --branco: var(--texto-principal);
     --verde: #27A05A;
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -109,7 +111,7 @@
 
   .progress-bar {
     height: 3px;
-    background: #2A2A2A;
+    background: var(--bg-hover);
     border-radius: 3px;
     overflow: hidden;
     margin-bottom: 1.5rem;
@@ -142,10 +144,10 @@
 
   /* Scrollbar unificada PBM */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #0F0F0F; }
-  ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; border: 2px solid #0F0F0F; }
+  ::-webkit-scrollbar-track { background: var(--bg-primario); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 4px; border: 2px solid var(--bg-primario); }
   ::-webkit-scrollbar-thumb:hover { background: #333333; }
-  * { scrollbar-width: thin; scrollbar-color: #2A2A2A #0F0F0F; }
+  * { scrollbar-width: thin; scrollbar-color: var(--bg-hover) var(--bg-primario); }
 </style>
 </head>
 <body>

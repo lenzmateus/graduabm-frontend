@@ -1,0 +1,74 @@
+/* Padronização de Rich Text para Protocolo Bravo Mike */
+
+/* Cores do Quill que precisam de ajuste para Dark Mode */
+.ql-editor {
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #F8F6F2;
+    min-height: 120px;
+}
+
+.ql-container.ql-snow {
+    border-color: #333 !important;
+    border-radius: 0 0 8px 8px;
+    background: #222;
+}
+
+.ql-toolbar.ql-snow {
+    border-color: #333 !important;
+    border-radius: 8px 8px 0 0;
+    background: #2A2A2A;
+}
+
+.ql-snow .ql-stroke {
+    stroke: #888 !important;
+}
+
+.ql-snow .ql-fill {
+    fill: #888 !important;
+}
+
+.ql-snow .ql-picker {
+    color: #888 !important;
+}
+
+.ql-snow .ql-picker-options {
+    background-color: #2A2A2A !important;
+    border-color: #333 !important;
+}
+
+.ql-snow .ql-picker-item:hover {
+    color: #fff !important;
+}
+
+.ql-editor.ql-blank::before {
+    color: #555 !important;
+    font-style: normal;
+}
+
+/* Ajustes de cores para os textos formatados */
+.ql-editor strong {
+    font-weight: 600;
+    color: #fff;
+}
+
+.ql-editor em {
+    font-style: italic;
+}
+
+/* Classes de utilidade para cores se necessário */
+.text-red { color: var(--brand-primary); }
+.text-green { color: #27A05A; }
+.text-blue { color: #185FA5; }
+.text-yellow { color: #BA7517; }
+
+/* Renderização no Frontend (Questões) */
+.questao-enunciado, .feedback-txt {
+    word-break: break-word;
+}
+
+.questao-enunciado b, .questao-enunciado strong,
+.feedback-txt b, .feedback-txt strong {
+    font-weight: 600;
+}

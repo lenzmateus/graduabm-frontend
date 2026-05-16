@@ -56,7 +56,7 @@
     const css = `
       .pbm-hl-marca { background: rgba(255, 213, 79, 0.45); color: inherit; border-radius: 2px; padding: 0 1px; }
 
-      .pbm-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; }
+      .pbm-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; display: block; }
       .pbm-canvas.is-active {
         pointer-events: auto !important;
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14'><circle cx='7' cy='7' r='3' fill='%236EAAFF' stroke='%23000' stroke-width='1'/></svg>") 7 7, crosshair;
@@ -209,8 +209,12 @@
     // Body class para cursores e indicação visual
     Object.values(MODES).forEach(m => { if (m) document.body.classList.remove('pbm-tool-' + m); });
     if (state.mode) document.body.classList.add('pbm-tool-' + state.mode);
-    // Garante canvas se modo precisar dele
-    if (state.mode === MODES.LAPIS || state.mode === MODES.BORRACHA) ensureCanvas();
+    // Garante canvas se modo precisar dele e recalcula dimensões
+    // (zoom do ajustador de fonte pode ter mudado desde o último resize).
+    if (state.mode === MODES.LAPIS || state.mode === MODES.BORRACHA) {
+      ensureCanvas();
+      resizeCanvas(false);
+    }
     updateCanvasMode();
   }
 
@@ -241,14 +245,26 @@
 
   function resizeCanvas(skipRestore) {
     if (!state.canvas) return;
-    const rect = state.canvas.parentElement.getBoundingClientRect();
+    // Inline width/height interagem mal com `zoom` (legacy CSS) aplicado no <html>:
+    // o valor px é reinterpretado no espaço pré-zoom, deixando o canvas maior
+    // que o pai. Sem inline, o CSS (.pbm-canvas: inset:0; 100%/100%) garante
+    // que o canvas tem o MESMO tamanho visual do pai.
+    state.canvas.style.width = '';
+    state.canvas.style.height = '';
+    // getBoundingClientRect retorna no mesmo sistema de coords que clientX/Y,
+    // então buffer e pos() ficam consistentes mesmo com zoom em ancestral.
+    const rect = state.canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    state.canvas.width  = Math.max(1, Math.floor(rect.width  * dpr));
-    state.canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-    state.canvas.style.width  = rect.width + 'px';
-    state.canvas.style.height = rect.height + 'px';
+    const bw = Math.max(1, Math.floor(rect.width  * dpr));
+    const bh = Math.max(1, Math.floor(rect.height * dpr));
+    const sizeChanged = (state.canvas.width !== bw || state.canvas.height !== bh);
+    if (sizeChanged) {
+      // Reatribuir width/height limpa o buffer; só faz isso quando precisa.
+      state.canvas.width = bw;
+      state.canvas.height = bh;
+    }
     state.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (!skipRestore) redrawAllStrokes();
+    if (sizeChanged && !skipRestore) redrawAllStrokes();
   }
 
   function updateCanvasMode() {
@@ -261,6 +277,8 @@
   function bindCanvasEvents(c) {
     c.addEventListener('pointerdown', e => {
       if (state.mode !== MODES.LAPIS) return;
+      // Zoom da fonte pode ter mudado desde o último resize; idempotente.
+      resizeCanvas(false);
       pushHistory();
       state.drawing = true;
       const p = pos(e, c);
@@ -289,9 +307,12 @@
     c.addEventListener('pointercancel', finish);
   }
 
+  // Coords do canvas no MESMO sistema que clientX/Y e getBoundingClientRect
+  // (viewport CSS px). Evita offsetX/clientWidth porque, com `zoom` em
+  // ancestral, o Chrome relata esses dois em sistemas diferentes.
   function pos(e, c) {
-    const r = c.getBoundingClientRect();
-    return { x: e.clientX - r.left, y: e.clientY - r.top };
+    const rect = c.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
   }
 
   function drawSegment(x1, y1, x2, y2, stroke) {

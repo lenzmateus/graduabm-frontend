@@ -13,6 +13,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Questões</title>
 <script src="/js/font-size.js"></script>
+<script src="/js/pbm-theme-boot.js"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
 <style>
@@ -51,7 +53,7 @@
     display: flex; align-items: center; gap: 10px;
     min-width: 160px;
   }
-  .header-sep { color: #444; }
+  .header-sep { color: var(--border-color); }
   .header-contexto {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 11px; color: var(--cinza-texto);
@@ -115,7 +117,7 @@
     letter-spacing: 0.08em; margin-bottom: 5px;
   }
   .bloco-rel-bar {
-    height: 6px; background: #2A2A2A; border-radius: 3px;
+    height: 6px; background: var(--bg-hover); border-radius: 3px;
     overflow: hidden; margin-bottom: 14px;
   }
   .bloco-rel-bar > div {
@@ -166,7 +168,7 @@
   .prog-info span:first-child { color: var(--branco); font-weight: 500; }
   .prog-track {
     width: 200px; height: 3px;
-    background: #2A2A2A; border-radius: 3px;
+    background: var(--bg-hover); border-radius: 3px;
     overflow: hidden;
   }
   .prog-fill {
@@ -191,7 +193,7 @@
     display: flex; align-items: center; justify-content: center;
     cursor: pointer; transition: all 0.15s;
   }
-  .btn-sair-quiz:hover { border-color: #555; color: var(--branco); }
+  .btn-sair-quiz:hover { border-color: var(--texto-suporte); color: var(--branco); }
 
   .quiz-main {
     flex: 1;
@@ -252,10 +254,10 @@
     border-radius: 8px;
     padding: 12px 48px 12px 16px; /* padding-right reservado para a tesoura */
     cursor: pointer; transition: all 0.15s;
-    font-size: 15px; line-height: 1.55; color: #bbb;
+    font-size: 15px; line-height: 1.55; color: var(--texto-principal);
     user-select: none;
   }
-  .alt:hover:not(.bloqueada) { border-color: #555; background: var(--cinza-medio); color: var(--branco); }
+  .alt:hover:not(.bloqueada) { border-color: var(--texto-suporte); background: var(--cinza-medio); color: var(--branco); }
   .alt.selecionada {
     border-color: var(--cor-area);
     background: rgba(192,39,15,0.07);
@@ -336,7 +338,7 @@
     text-align: center; margin-bottom: 2rem;
     width: 100%; max-width: 680px;
   }
-  .resultado-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #444; margin-bottom: 1.5rem; }
+  .resultado-logo { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--border-color); margin-bottom: 1.5rem; }
   .resultado-titulo {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 48px; letter-spacing: 0.03em;
@@ -388,7 +390,7 @@
   }
   .res-ok { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
   .res-err { background: var(--erro-bg); border: 1px solid var(--erro-borda); color: #F09595; }
-  .res-texto { flex: 1; color: #bbb; line-height: 1.5; }
+  .res-texto { flex: 1; color: var(--texto-principal); line-height: 1.5; }
   .res-gabarito {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10px; color: var(--cinza-texto); flex-shrink: 0;
@@ -461,9 +463,9 @@
     transition: border-color 0.15s;
     user-select: text; -webkit-user-select: text;
   }
-  .modal-denuncia-textarea:focus { border-color: #555; }
-  .modal-denuncia-textarea::placeholder { color: #555; }
-  .modal-char { font-size: 11px; color: #555; text-align: right; margin-top: 4px; }
+  .modal-denuncia-textarea:focus { border-color: var(--texto-suporte); }
+  .modal-denuncia-textarea::placeholder { color: var(--texto-suporte); }
+  .modal-char { font-size: 11px; color: var(--texto-suporte); text-align: right; margin-top: 4px; }
 
   /* ── CONFIRMAÇÃO SAÍDA ── */
   .modal-overlay {
@@ -628,7 +630,7 @@
     </div>
     <div class="header-right">
       <div class="timer-display" id="timer-display">00:00</div>
-      <button onclick="if(window.PBMTour)PBMTour.start()" title="Tutorial da página" style="background:transparent;border:1px solid #2A2A2A;color:#555;border-radius:6px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s;margin-right:6px;" onmouseover="this.style.borderColor='#555';this.style.color='#888'" onmouseout="this.style.borderColor='#2A2A2A';this.style.color='#555'">?</button>
+      <button onclick="if(window.PBMTour)PBMTour.start()" title="Tutorial da página" style="background:transparent;border:1px solid var(--bg-hover);color:#555;border-radius:6px;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;transition:all .15s;margin-right:6px;" onmouseover="this.style.borderColor='#555';this.style.color='#888'" onmouseout="this.style.borderColor='var(--bg-hover)';this.style.color='#555'">?</button>
       <button class="btn-sair-quiz" onclick="confirmarSaida()" title="Encerrar sessão">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -639,7 +641,7 @@
 
   <div id="nav-questoes">
     <div id="nav-legenda">
-      <span><span class="nav-dot" style="background:#2A2A2A;border:1px solid #333;"></span>Não respondida</span>
+      <span><span class="nav-dot" style="background:var(--bg-hover);border:1px solid #333;"></span>Não respondida</span>
       <span><span class="nav-dot" style="background:rgba(39,160,90,0.3);"></span>Acerto</span>
       <span><span class="nav-dot" style="background:rgba(226,75,74,0.25);"></span>Erro</span>
       <span><span class="nav-dot" style="border:1px solid var(--cor-area);"></span>Atual</span>

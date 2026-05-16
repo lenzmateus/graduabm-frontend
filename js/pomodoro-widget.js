@@ -472,7 +472,7 @@
 
 /* Tomate minimalista — modo minimizado e pílula de reabrir.
    Cor do corpo segue o estado (currentColor); folha verde é fixa. */
-.pbm-pomo-apple { display: none; position: relative; width: 42px; height: 42px; color: #C0270F; line-height: 0; }
+.pbm-pomo-apple { display: none; position: relative; width: 42px; height: 42px; color: var(--brand-primary); line-height: 0; }
 .pbm-pomo-apple.pausa-curta { color: #5C9BD9; }
 .pbm-pomo-apple.pausa-longa { color: #B58AE0; }
 .pbm-pomo-apple.pausado { color: #6A6A6A; }
@@ -504,7 +504,7 @@
   width: 7px; height: 7px; border-radius: 50%;
   background: #2A2A2A; flex-shrink: 0; transition: background .25s;
 }
-.pbm-pomo-dot.rodando { background: #C0270F; }
+.pbm-pomo-dot.rodando { background: var(--brand-primary); }
 .pbm-pomo-dot.pausa-curta { background: #5C9BD9; }
 .pbm-pomo-dot.pausa-longa { background: #B58AE0; }
 #pbm-pomo-actions { display: flex; gap: 2px; }
@@ -523,7 +523,7 @@
 #pbm-pomo-classico-tag.show { display: block; }
 .pbm-pomo-bloco-area {
   font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em;
-  color: #C0270F; text-transform: uppercase; font-weight: 600;
+  color: var(--brand-primary); text-transform: uppercase; font-weight: 600;
 }
 .pbm-pomo-bloco-leg { font-size: 12px; color: #ddd; margin-top: 2px; line-height: 1.3; }
 #pbm-pomo-fase-label {
@@ -544,7 +544,7 @@
   font-family: 'IBM Plex Mono', monospace; transition: all .12s;
 }
 .pbm-pomo-preset:hover { border-color: #555; color: #fff; }
-.pbm-pomo-preset.ativo { border-color: #C0270F; color: #fff; }
+.pbm-pomo-preset.ativo { border-color: var(--brand-primary); color: #fff; }
 .pbm-pomo-custom { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 11px; color: #888; }
 .pbm-pomo-custom input[type="range"] {
   flex: 1; min-width: 80px; height: 4px; background: #2A2A2A; border-radius: 2px;
@@ -552,12 +552,12 @@
 }
 .pbm-pomo-custom input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none; appearance: none; width: 14px; height: 14px;
-  background: #C0270F; border-radius: 50%; cursor: pointer;
+  background: var(--brand-primary); border-radius: 50%; cursor: pointer;
   border: 2px solid #1A1A1A; transition: transform .1s;
 }
 .pbm-pomo-custom input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 .pbm-pomo-custom input[type="range"]::-moz-range-thumb {
-  width: 14px; height: 14px; background: #C0270F; border-radius: 50%; cursor: pointer;
+  width: 14px; height: 14px; background: var(--brand-primary); border-radius: 50%; cursor: pointer;
   border: 2px solid #1A1A1A;
 }
 .pbm-pomo-custom-val {
@@ -570,7 +570,7 @@
   font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: .06em;
   color: #fff; line-height: 1; min-width: 95px; text-align: center;
 }
-.pbm-pomo-display.rodando { color: #C0270F; }
+.pbm-pomo-display.rodando { color: var(--brand-primary); }
 .pbm-pomo-display.pausa-curta { color: #5C9BD9; }
 .pbm-pomo-display.pausa-longa { color: #B58AE0; }
 .pbm-pomo-display.pausado { color: #888; }
@@ -593,12 +593,12 @@
   font-family: 'IBM Plex Mono', monospace; transition: all .12s;
 }
 .pbm-pomo-audio-btn:hover { border-color: #555; color: #fff; }
-.pbm-pomo-audio-btn.ativo { background: rgba(192,39,15,.15); color: #fff; border-color: #C0270F; }
+.pbm-pomo-audio-btn.ativo { background: rgba(192,39,15,.15); color: #fff; border-color: var(--brand-primary); }
 .pbm-pomo-so-audio {
   display: flex; align-items: center; gap: 6px; margin-top: 8px;
   font-size: 11px; color: #888; cursor: pointer; user-select: none;
 }
-.pbm-pomo-so-audio input { accent-color: #C0270F; }
+.pbm-pomo-so-audio input { accent-color: var(--brand-primary); }
 .pbm-pomo-tp-btn-row {
   display: flex; gap: 6px; margin-top: 8px;
 }
@@ -617,7 +617,7 @@
 }
 #pbm-pomo-tela-preta.ativa { display: flex; }
 .pbm-pomo-tp-tempo {
-  font-family: 'Bebas Neue', sans-serif; font-size: 22vw; color: #C0270F;
+  font-family: 'Bebas Neue', sans-serif; font-size: 22vw; color: var(--brand-primary);
   letter-spacing: .08em; line-height: .9;
 }
 .pbm-pomo-tp-tempo.pausa-curta { color: #5C9BD9; }

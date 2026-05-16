@@ -1,0 +1,121 @@
+/* ============================================================
+   PBM Tokens — Variáveis CSS semânticas (tema Escuro/Claro)
+   Fonte ÚNICA da paleta. Importado por pbm-layout.css e
+   por todas as páginas standalone (login, admin-*, regras, etc.)
+   via <link rel="stylesheet" href="/css/pbm-tokens.css">.
+   ============================================================ */
+
+:root {
+  /* Sem semantic — Modo Escuro (padrão) */
+  --bg-primario: #0F0F0F;
+  --bg-secundario: #1A1A1A;
+  --bg-hover: #2A2A2A;
+  --border-color: #333333;
+  --texto-principal: #F8F6F2;
+  --texto-suporte: #888888;
+  --texto-suave: #EFEFEA;
+  --brand-primary: #C0270F;
+  --brand-primary-hover: #8B1A08;
+  --brand-on-primary: #FFFFFF;
+
+  /* Estados (idem nos dois temas, identidade) */
+  --success: #7DD99A;
+  --warning: #E0A845;
+  --danger: #E24B4A;
+  --erro: #E24B4A;
+  --sucesso: #2D7D46;
+
+  /* Aliases legados (compat com HTMLs existentes — 1.300+ usos) */
+  --vermelho: var(--brand-primary);
+  --vermelho-escuro: var(--brand-primary-hover);
+  --carvao: var(--bg-primario);
+  --cinza-escuro: var(--bg-secundario);
+  --cinza-medio: var(--bg-hover);
+  --cinza-borda: var(--border-color);
+  --cinza-texto: var(--texto-suporte);
+  --branco: var(--texto-principal);
+  --branco-suave: var(--texto-suave);
+
+  /* Identidade de curso — FIXA nos dois temas */
+  --ctsp: #C0270F;
+  --ctsp-bg: rgba(192,39,15,0.08);
+  --ctsp-borda: rgba(192,39,15,0.3);
+
+  --cba: #185FA5;
+  --cba-bg: rgba(24,95,165,0.08);
+  --cba-borda: rgba(24,95,165,0.3);
+
+  /* Overlays de banner (fade sobre imagens / emblema) */
+  --banner-fade-strong: rgba(15,15,15,1);
+  --banner-fade-medium: rgba(15,15,15,0.92);
+  --banner-fade-light: rgba(15,15,15,0.4);
+}
+
+:root.light-mode {
+  --bg-primario: #F4F5F7;
+  --bg-secundario: #FFFFFF;
+  --bg-hover: #E9ECEF;
+  --border-color: #DCE0E5;
+  --texto-principal: #1B1F23;
+  --texto-suporte: #5A6470;
+  --texto-suave: #343A40;
+  --brand-primary: #9A1F0C;
+  --brand-primary-hover: #7B1808;
+  --sucesso: #1F6135;
+
+  /* Tints de curso ganham mais densidade sobre fundo claro */
+  --ctsp-bg: rgba(154,31,12,0.10);
+  --ctsp-borda: rgba(154,31,12,0.40);
+  --cba-bg: rgba(24,95,165,0.10);
+  --cba-borda: rgba(24,95,165,0.40);
+
+  /* Banner fade no claro — opacidade reduzida pra não lavar o texto */
+  --banner-fade-strong: rgba(244,245,247,1);
+  --banner-fade-medium: rgba(244,245,247,0.94);
+  --banner-fade-light: rgba(244,245,247,0.5);
+}
+
+/* Transição suave entre temas (não anima durante o boot) */
+html.tema-pronto body,
+html.tema-pronto .sidebar,
+html.tema-pronto .topbar,
+html.tema-pronto .bottombar,
+html.tema-pronto .conteudo,
+html.tema-pronto .card,
+html.tema-pronto .painel {
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   SELETOR DE TEMA (Sol / Sistema / Lua)
+   Compartilhado por sidebar do aluno e do admin.
+   ───────────────────────────────────────────────────────────── */
+.theme-switcher {
+  display: inline-flex; align-items: center;
+  margin-top: 10px;
+  background: var(--bg-primario);
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 2px;
+}
+.theme-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 22px;
+  background: transparent; border: 0;
+  color: var(--texto-suporte);
+  cursor: pointer;
+  border-radius: 999px;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
+}
+.theme-btn svg { width: 13px; height: 13px; display: block; }
+.theme-btn:hover { color: var(--texto-principal); }
+.theme-btn.is-active {
+  background: var(--bg-hover);
+  color: var(--texto-principal);
+}
+.theme-btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 1px;
+}

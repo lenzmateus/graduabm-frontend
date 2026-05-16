@@ -13,6 +13,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Selecionar legislação</title>
 <script src="/js/font-size.js"></script>
+<script src="/js/pbm-theme-boot.js"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
 <style>
@@ -281,7 +283,7 @@
     flex-shrink: 0;
   }
   .btn-sel-grupo:hover { border-color: #555; color: var(--cinza-texto); }
-  .btn-sel-grupo.limpar { color: #444; border-color: #2A2A2A; }
+  .btn-sel-grupo.limpar { color: #444; border-color: var(--bg-hover); }
   .btn-sel-grupo.limpar:hover { border-color: #555; color: #666; }
 
   /* ── BOTÃO INICIAR ── */
@@ -301,7 +303,7 @@
     display: flex; align-items: center; gap: 8px;
   }
   .btn-iniciar:hover { opacity: 0.88; transform: translateY(-1px); }
-  .btn-iniciar:disabled { background: #2A2A2A; color: #555; cursor: default; transform: none; }
+  .btn-iniciar:disabled { background: var(--bg-hover); color: #555; cursor: default; transform: none; }
 
   .rodape-info-wrap {
     display: flex; flex-direction: column; gap: 3px;
@@ -383,7 +385,7 @@
     cursor: pointer; transition: opacity 0.15s, transform 0.15s;
   }
   .btn-iniciar-topo:hover { opacity: 0.88; transform: translateY(-1px); }
-  .btn-iniciar-topo:disabled { background: #2A2A2A; color: #555; cursor: default; transform: none; }
+  .btn-iniciar-topo:disabled { background: var(--bg-hover); color: #555; cursor: default; transform: none; }
 
   /* ── STEPPER POR LEGISLAÇÃO ── */
   .qtd-leg-ctrl {

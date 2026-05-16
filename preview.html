@@ -6,19 +6,21 @@
 <title>DESIGN.md Preview — Protocolo Bravo Mike</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="/js/pbm-theme-boot.js"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --carvao:          #0F0F0F;
-    --cinza-escuro:    #1A1A1A;
-    --cinza-medio:     #2A2A2A;
+    --carvao:          var(--bg-primario);
+    --cinza-escuro:    var(--bg-secundario);
+    --cinza-medio:     var(--bg-hover);
     --cinza-borda:     #333333;
     --cinza-texto:     #888888;
     --vermelho:        #C0270F;
     --vermelho-escuro: #8B1A08;
     --azul:            #185FA5;
-    --branco:          #F8F6F2;
-    --branco-suave:    #EFEFEA;
+    --branco:          var(--texto-principal);
+    --branco-suave:    var(--texto-suave);
     --sucesso:         #27A060;
     --atencao:         #BA7517;
     --at1-color: #C0270F;
@@ -374,10 +376,10 @@
 
   /* Scrollbar unificada PBM */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #0F0F0F; }
-  ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; border: 2px solid #0F0F0F; }
+  ::-webkit-scrollbar-track { background: var(--bg-primario); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 4px; border: 2px solid var(--bg-primario); }
   ::-webkit-scrollbar-thumb:hover { background: #333333; }
-  * { scrollbar-width: thin; scrollbar-color: #2A2A2A #0F0F0F; }
+  * { scrollbar-width: thin; scrollbar-color: var(--bg-hover) var(--bg-primario); }
 </style>
 </head>
 <body>
@@ -392,16 +394,16 @@
   <div class="section-title">1 · Color Palette</div>
   <div class="color-grid">
     <div class="swatch">
-      <div class="swatch-color" style="background:#0F0F0F; border-bottom:1px solid #333;"></div>
-      <div class="swatch-info"><div class="swatch-name">Carvão</div><div class="swatch-hex">#0F0F0F · Page bg</div></div>
+      <div class="swatch-color" style="background:var(--bg-primario); border-bottom:1px solid #333;"></div>
+      <div class="swatch-info"><div class="swatch-name">Carvão</div><div class="swatch-hex">var(--bg-primario) · Page bg</div></div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:#1A1A1A;"></div>
-      <div class="swatch-info"><div class="swatch-name">Cinza Escuro</div><div class="swatch-hex">#1A1A1A · Cards</div></div>
+      <div class="swatch-color" style="background:var(--bg-secundario);"></div>
+      <div class="swatch-info"><div class="swatch-name">Cinza Escuro</div><div class="swatch-hex">var(--bg-secundario) · Cards</div></div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:#2A2A2A;"></div>
-      <div class="swatch-info"><div class="swatch-name">Cinza Médio</div><div class="swatch-hex">#2A2A2A · Hover</div></div>
+      <div class="swatch-color" style="background:var(--bg-hover);"></div>
+      <div class="swatch-info"><div class="swatch-name">Cinza Médio</div><div class="swatch-hex">var(--bg-hover) · Hover</div></div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:#333333;"></div>
@@ -424,8 +426,8 @@
       <div class="swatch-info"><div class="swatch-name">Azul</div><div class="swatch-hex">#185FA5 · CBA course</div></div>
     </div>
     <div class="swatch">
-      <div class="swatch-color" style="background:#F8F6F2;"></div>
-      <div class="swatch-info"><div class="swatch-name">Branco</div><div class="swatch-hex">#F8F6F2 · Primary text</div></div>
+      <div class="swatch-color" style="background:var(--branco);"></div>
+      <div class="swatch-info"><div class="swatch-name">Branco</div><div class="swatch-hex">var(--branco) · Primary text</div></div>
     </div>
     <div class="swatch">
       <div class="swatch-color" style="background:#27A060;"></div>

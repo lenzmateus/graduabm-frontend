@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -12,6 +12,8 @@
 <link rel="apple-touch-icon" href="/images/pwa-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Analytics</title>
+<script src="/js/pbm-theme-boot.js"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/admin-chrome.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -110,7 +112,7 @@
   .btn-lembrete:disabled { opacity: 0.4; cursor: default; }
 
   /* SKELETON */
-  .skeleton { display: inline-block; background: linear-gradient(90deg, #1A1A1A 25%, #222 50%, #1A1A1A 75%); background-size: 400% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; height: 34px; width: 70px; }
+  .skeleton { display: inline-block; background: linear-gradient(90deg, var(--bg-secundario) 25%, #222 50%, var(--bg-secundario) 75%); background-size: 400% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; height: 34px; width: 70px; }
   @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
 
   @media (max-width: 900px) {
@@ -683,8 +685,8 @@ async function carregarIaCustos() {
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
-          x: { ticks: { color: '#555', font: { size: 10 } }, grid: { color: '#1A1A1A' } },
-          y: { ticks: { color: '#555', font: { size: 10 }, callback: v => '$' + v.toFixed(4) }, grid: { color: '#1A1A1A' } },
+          x: { ticks: { color: '#555', font: { size: 10 } }, grid: { color: 'var(--bg-secundario)' } },
+          y: { ticks: { color: '#555', font: { size: 10 }, callback: v => '$' + v.toFixed(4) }, grid: { color: 'var(--bg-secundario)' } },
         },
       },
     });

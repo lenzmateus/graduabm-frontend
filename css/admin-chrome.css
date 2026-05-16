@@ -1,24 +1,27 @@
 /* ============================================================
    PBM Admin Chrome — estilos compartilhados das páginas admin
    Sidebar + Topbar + Toast + Scaffold base.
+   Tokens base (escuro/claro) vêm de pbm-tokens.css.
    Carregar ANTES do <style> inline da página admin.
    ============================================================ */
+@import url('./pbm-tokens.css');
 
 :root {
-  --carvao: #0F0F0F;
-  --cinza-escuro: #1A1A1A;
-  --cinza-medio: #2A2A2A;
-  --cinza-borda: #333;
-  --cinza-texto: #888;
-  --branco: #F8F6F2;
+  /* Identidades específicas do chrome admin (não trocam por tema) */
   --roxo: #7F77DD;
   --roxo-bg: rgba(127,119,221,0.08);
   --roxo-borda: rgba(127,119,221,0.3);
   --verde: #27A05A;
   --verde-bg: rgba(39,160,90,0.08);
   --verde-borda: rgba(39,160,90,0.3);
-  --erro: #E24B4A;
-  --vermelho: #C0270F;
+}
+
+:root.light-mode {
+  /* Tints admin com mais densidade no claro */
+  --roxo-bg: rgba(127,119,221,0.12);
+  --roxo-borda: rgba(127,119,221,0.40);
+  --verde-bg: rgba(39,160,90,0.12);
+  --verde-borda: rgba(39,160,90,0.40);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

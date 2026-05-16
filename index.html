@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
@@ -12,19 +12,21 @@
 <link rel="apple-touch-icon" href="/images/pwa-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike</title>
+<script src="/js/pbm-theme-boot.js"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --vermelho: #C0270F;
     --vermelho-escuro: #8B1A08;
     --vermelho-claro: #F5E8E5;
-    --carvao: #0F0F0F;
-    --cinza-escuro: #1A1A1A;
-    --cinza-medio: #2A2A2A;
+    --carvao: var(--bg-primario);
+    --cinza-escuro: var(--bg-secundario);
+    --cinza-medio: var(--bg-hover);
     --cinza-borda: #333;
     --cinza-texto: #888;
-    --branco: #F8F6F2;
-    --branco-suave: #EFEFEA;
+    --branco: var(--texto-principal);
+    --branco-suave: var(--texto-suave);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -46,7 +48,7 @@
     display: flex; align-items: center; justify-content: space-between;
     padding: 0 2rem;
     height: 56px;
-    background: rgba(15,15,15,0.92);
+    background: var(--banner-fade-medium);
     border-bottom: 1px solid var(--cinza-borda);
     backdrop-filter: blur(8px);
   }
@@ -258,7 +260,7 @@
   .hero-visual::after {
     content: '';
     position: absolute; inset: 0;
-    background: linear-gradient(105deg, #0F0F0F 0%, #0F0F0F 8%, transparent 40%);
+    background: linear-gradient(105deg, var(--bg-primario) 0%, var(--bg-primario) 8%, transparent 40%);
     pointer-events: none;
   }
 
@@ -615,10 +617,10 @@
 
   /* Scrollbar unificada PBM */
   ::-webkit-scrollbar { width: 8px; height: 8px; }
-  ::-webkit-scrollbar-track { background: #0F0F0F; }
-  ::-webkit-scrollbar-thumb { background: #2A2A2A; border-radius: 4px; border: 2px solid #0F0F0F; }
+  ::-webkit-scrollbar-track { background: var(--bg-primario); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 4px; border: 2px solid var(--bg-primario); }
   ::-webkit-scrollbar-thumb:hover { background: #333333; }
-  * { scrollbar-width: thin; scrollbar-color: #2A2A2A #0F0F0F; }
+  * { scrollbar-width: thin; scrollbar-color: var(--bg-hover) var(--bg-primario); }
 </style>
 </head>
 <body>
@@ -685,20 +687,20 @@
 
       <!-- CTSP -->
       <div class="curso-card">
-        <div class="curso-stripe" style="color:#C0270F;"></div>
+        <div class="curso-stripe" style="color:var(--brand-primary);"></div>
         <div class="curso-card-inner">
           <div>
             <span class="curso-sigla">CTSP</span>
             <div class="curso-nome-completo">Curso Técnico de<br>Segurança Pública</div>
             <div style="margin-top:14px;">
               <div class="curso-posto-label">Posto de ingresso</div>
-              <div class="curso-posto-valor" style="color:#C0270F;">Sargento</div>
+              <div class="curso-posto-valor" style="color:var(--brand-primary);">Sargento</div>
             </div>
           </div>
           <div class="curso-direita">
-            <div class="curso-q-num" style="color:#C0270F;">60</div>
+            <div class="curso-q-num" style="color:var(--brand-primary);">60</div>
             <div class="curso-q-label">questões</div>
-            <div class="curso-estrelas" style="color:#C0270F;">
+            <div class="curso-estrelas" style="color:var(--brand-primary);">
               <div class="estrela ativa"></div>
               <div class="estrela ativa"></div>
               <div class="estrela ativa"></div>
@@ -793,8 +795,8 @@
 
   <div class="areas-grid">
     <div class="area-card">
-      <div class="area-icon" style="color:#C0270F;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L21 7V13C21 17.5 17 21.5 12 22C7 21.5 3 17.5 3 13V7Z"/><path d="M12 18C10 15.5 9.2 12.5 10.5 10.5C11.2 9.3 12 8.5 12 8.5C12 8.5 12.8 9.3 13.5 10.5C14.8 12.5 14 15.5 12 18Z"/></svg></div>
-      <div class="area-num-big" style="color:#C0270F;">01</div>
+      <div class="area-icon" style="color:var(--brand-primary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L21 7V13C21 17.5 17 21.5 12 22C7 21.5 3 17.5 3 13V7Z"/><path d="M12 18C10 15.5 9.2 12.5 10.5 10.5C11.2 9.3 12 8.5 12 8.5C12 8.5 12.8 9.3 13.5 10.5C14.8 12.5 14 15.5 12 18Z"/></svg></div>
+      <div class="area-num-big" style="color:var(--brand-primary);">01</div>
       <div class="area-q" style="background:rgba(192,39,15,0.12);color:#E0866E;">14 questões</div>
       <div class="area-nome">Segurança contra incêndios</div>
       <div class="area-refs">Lei 13.425/17 · LC 14.376/13 (cons. 2025) · Dec. 51.803/14 (cons. 2023) · RTs CBMRS</div>
