@@ -5,6 +5,10 @@
    ───────────────────────────────────────────────────────────── */
 (function aplicarTemaImediato() {
   try {
+    if (document.querySelector('meta[name="pbm-force-dark"]')) {
+      document.documentElement.classList.remove('light-mode');
+      return;
+    }
     const pref = localStorage.getItem('pbm-theme') || 'dark';
     let isLight = false;
     if (pref === 'light') isLight = true;
@@ -109,6 +113,10 @@ const PBM = {
     },
     applyTheme() {
       const root = document.documentElement;
+      if (document.querySelector('meta[name="pbm-force-dark"]')) {
+        root.classList.remove('light-mode');
+        return;
+      }
       const isLight = this.getEffective() === 'light';
       root.classList.toggle('light-mode', isLight);
     },
@@ -178,7 +186,7 @@ const PBM = {
     return PBM.isAdmin();
   },
 
-  async protegerRota() {
+  async protegerRota(opts = {}) {
     if (PBM.isAdmin()) return;
 
     if (!PBM.Auth.estaLogado()) {
@@ -188,10 +196,43 @@ const PBM = {
     try {
       const data = await PBM.Auth.me();
       if (data.usuario) sessionStorage.setItem('usuario', JSON.stringify(data.usuario));
-      if (!data.usuario?.ativo) {
-        window.location.href = '/login';
+
+      // Conta marcada para exclusão: força /conta (única tela acessível).
+      if (data.usuario?.deletado_em) {
+        const aqui = (window.location.pathname || '').replace(/\/$/, '');
+        if (aqui !== '/conta') {
+          window.location.href = '/conta';
+          return;
+        }
       }
-    } catch {
+
+      if (!data.usuario?.ativo) {
+        // Inadimplente: por padrão vai pra /conta (não mais /login).
+        // {permitirInativo:true} é usado por /conta para permitir que o aluno
+        // edite dados/assine sem ser ejetado.
+        if (!opts.permitirInativo) {
+          window.location.href = '/conta';
+        }
+      }
+    } catch (err) {
+      // /api/auth/me usa middleware estrito: retorna 403 para inativo/exclusão
+      // pendente. Quando estamos em rota permissiva (ex: /conta), tratamos esses
+      // sinais como "OK, deixe passar" — o cache em sessionStorage cobre os dados
+      // do usuário e a página fará GET /api/auth/assinatura para status fresco.
+      const codigo = err && err.codigo;
+      const inativo = err?.status === 403 && codigo === 'ASSINATURA_INATIVA';
+      const emExclusao = err?.status === 403 && codigo === 'CONTA_EM_EXCLUSAO';
+
+      if (emExclusao) {
+        const aqui = (window.location.pathname || '').replace(/\/$/, '');
+        if (aqui !== '/conta') { window.location.href = '/conta'; return; }
+        return;
+      }
+      if (inativo) {
+        if (opts.permitirInativo) return;
+        window.location.href = '/conta';
+        return;
+      }
       sessionStorage.clear();
       window.location.href = '/login';
     }
@@ -250,6 +291,50 @@ const PBM = {
     },
     async me() {
       return request('/api/auth/me');
+    },
+
+    /* ── Gerenciamento de conta (PRD docs/prd/gerenciamento-conta-aluno.md) ── */
+    assinatura() {
+      return request('/api/auth/assinatura');
+    },
+    async atualizarPerfil({ nome, nickname, email, senha_atual } = {}) {
+      const body = {};
+      if (nome !== undefined) body.nome = nome;
+      if (nickname !== undefined) body.nickname = nickname;
+      if (email !== undefined) body.email = email;
+      if (senha_atual !== undefined) body.senha_atual = senha_atual;
+      const data = await request('/api/auth/perfil', {
+        method: 'PATCH',
+        body: JSON.stringify(body),
+      });
+      // Reflete imediatamente as mudanças confirmadas (nome/nickname) no cache local.
+      if (data?.ok) {
+        try {
+          const u = PBM.getUsuario() || {};
+          if (data.dados_atualizados?.nome) u.nome = data.dados_atualizados.nome;
+          if (data.dados_atualizados?.nickname) u.nickname = data.dados_atualizados.nickname;
+          sessionStorage.setItem('usuario', JSON.stringify(u));
+        } catch (_) {}
+      }
+      return data;
+    },
+    confirmarEmail(token) {
+      return request('/api/auth/confirmar-email', {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
+    },
+    excluirConta(senha_atual) {
+      return request('/api/auth/conta', {
+        method: 'DELETE',
+        body: JSON.stringify({ senha_atual }),
+      });
+    },
+    desfazerExclusao(token) {
+      return request('/api/auth/conta/desfazer-exclusao', {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+      });
     },
   },
 

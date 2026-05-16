@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/images/pwa-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Aprovações IA (Admin)</title>
-<script src="/js/pbm-theme-boot.js"></script>
+<script src="/js/pbm-theme-boot.js?v=2"></script>
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/admin-chrome.css">
@@ -206,9 +206,10 @@
   :root.light-mode .btn-rejeitar:hover:not(:disabled) { background: rgba(226,75,74,0.20); }
   :root.light-mode .btn-editar             { color: #8C6300; border-color: rgba(212,160,23,0.45); }
 
-  :root.light-mode .justificativa          { background: var(--bg-hover); color: var(--texto-suporte); border-left-color: var(--border-color); }
-  :root.light-mode .ig-caption             { background: var(--bg-hover); color: var(--texto-suporte); }
-  :root.light-mode .flashcard-verso        { color: var(--texto-suporte); }
+  :root.light-mode .justificativa          { background: var(--bg-hover); color: var(--texto-principal); border-left-color: var(--border-color); }
+  :root.light-mode .ig-caption             { background: var(--bg-hover); color: var(--texto-principal); }
+  :root.light-mode .flashcard-verso        { color: var(--texto-principal); }
+  :root.light-mode .juiz-justificativa     { color: var(--texto-principal); }
 </style>
 </head>
 <body>
@@ -261,7 +262,7 @@
   <img id="lightbox-img" src="" alt="">
 </div>
 
-<script src="/js/api.js?v=2"></script>
+<script src="/js/api.js?v=3"></script>
 <script src="/js/admin-chrome.js"></script>
 <script>
 (async () => {

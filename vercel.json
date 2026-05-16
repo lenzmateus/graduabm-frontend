@@ -27,7 +27,10 @@
     { "source": "/admin-aprovacoes", "destination": "/admin-aprovacoes" },
     { "source": "/admin-denuncias", "destination": "/admin-denuncias" },
     { "source": "/admin-analytics", "destination": "/admin-analytics" },
-    { "source": "/admin-legislacoes", "destination": "/admin-legislacoes" }
+    { "source": "/admin-legislacoes", "destination": "/admin-legislacoes" },
+    { "source": "/conta", "destination": "/pbm-conta" },
+    { "source": "/confirmar-email", "destination": "/pbm-confirmar-email" },
+    { "source": "/desfazer-exclusao", "destination": "/pbm-desfazer-exclusao" }
   ],
   "headers": [
     {

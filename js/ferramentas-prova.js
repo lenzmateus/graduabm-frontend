@@ -163,6 +163,42 @@
       @media (max-width: 720px) {
         .pbm-fe-toolbar { top: auto; bottom: 96px; }
       }
+
+      /* ── LIGHT MODE ── superfícies claras + texto escuro */
+      :root.light-mode .pbm-fe-toolbar {
+        background: rgba(255,255,255,0.98);
+        border-color: rgba(15,20,30,0.10);
+        box-shadow: -6px 0 24px rgba(15,20,30,0.10);
+      }
+      :root.light-mode .pbm-fe-btn { color: #343A40; }
+      :root.light-mode .pbm-fe-btn:hover { background: rgba(15,20,30,0.06); color: #1B1F23; }
+      :root.light-mode .pbm-fe-btn.is-active {
+        background: rgba(154,31,12,0.10);
+        border-color: rgba(154,31,12,0.45);
+        color: #8B1A08;
+      }
+      :root.light-mode .pbm-fe-btn::after {
+        background: rgba(27,31,35,0.92);
+        color: #fff;
+        border-color: rgba(15,20,30,0.10);
+      }
+      :root.light-mode .pbm-fe-divider { background: rgba(15,20,30,0.08); }
+
+      :root.light-mode .alt-tesoura {
+        background: rgba(15,20,30,0.04);
+        border-color: rgba(15,20,30,0.12);
+        color: #5A6470;
+      }
+      :root.light-mode .alt-tesoura:hover {
+        background: rgba(154,31,12,0.10);
+        border-color: rgba(154,31,12,0.45);
+        color: #8B1A08;
+      }
+      :root.light-mode .alt-eliminada .alt-tesoura {
+        background: rgba(154,31,12,0.18);
+        border-color: rgba(154,31,12,0.55);
+        color: #8B1A08;
+      }
     `;
     const style = document.createElement('style');
     style.id = 'pbm-ferramentas-css';

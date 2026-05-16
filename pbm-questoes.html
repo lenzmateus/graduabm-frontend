@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Questões</title>
 <script src="/js/font-size.js"></script>
-<script src="/js/pbm-theme-boot.js"></script>
+<script src="/js/pbm-theme-boot.js?v=2"></script>
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
@@ -306,6 +306,9 @@
   .feedback-acerto .feedback-titulo { color: #7DD99A; }
   .feedback-erro .feedback-titulo { color: #F09595; }
   .feedback-txt { color: var(--cinza-texto); line-height: 1.7; }
+  :root.light-mode .feedback-txt { color: var(--texto-principal); }
+  :root.light-mode .feedback-acerto .feedback-titulo { color: #1F6135; }
+  :root.light-mode .feedback-erro   .feedback-titulo { color: #8B1A08; }
 
   /* ── AÇÃO ── */
   .questao-acao {
@@ -778,9 +781,9 @@
   </div>
 </div>
 
-<script src="/js/api.js"></script>
+<script src="/js/api.js?v=3"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js"></script>
+<script src="/js/pbm-components.js?v=3"></script>
 <script>PBM.Layout.mount({active:'estudar'});</script>
 <button class="seta-nav seta-esq" id="seta-esq" onclick="voltarQuestao()" title="Questão anterior" disabled>
   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
@@ -1634,7 +1637,7 @@ init();
 <div class="pbm-watermark" aria-hidden="true"></div>
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
 <!-- FERRAMENTAS DE PROVA -->
-<script src="/js/ferramentas-prova.js?v=9"></script>
+<script src="/js/ferramentas-prova.js?v=10"></script>
 <script>
   if (window.PBMFerramentas) PBMFerramentas.init({
     containerSelector:     '.questao-card',

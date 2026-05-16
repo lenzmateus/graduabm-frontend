@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PBM">
+<link rel="apple-touch-icon" href="/images/pwa-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Minha Conta</title>
+<script src="/js/font-size.js"></script>
+<script src="/js/pbm-theme-boot.js?v=2"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/pbm-layout.css">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: var(--bg-primario);
+    --cinza-escuro: var(--bg-secundario);
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: var(--texto-principal);
+    --erro: #E24B4A;
+    --sucesso: #2D7D46;
+    --aviso: #F1BC1C;
+  }
+
+  .conta-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 760px;
+  }
+
+  .conta-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.75rem;
+    position: relative;
+  }
+  .conta-card.zona-perigo {
+    border-color: rgba(226, 75, 74, 0.45);
+    background: linear-gradient(180deg, rgba(226,75,74,0.04) 0%, var(--cinza-escuro) 100%);
+  }
+
+  .card-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-sub {
+    font-size: 12px;
+    color: var(--cinza-texto);
+    margin-bottom: 1.25rem;
+    line-height: 1.5;
+  }
+
+  .form-row {
+    margin-bottom: 1rem;
+  }
+  .form-row label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: #bbb;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .form-row input {
+    width: 100%;
+    padding: 11px 14px;
+    background: #111;
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    color: var(--branco);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-row input:focus { border-color: var(--vermelho); }
+  .form-row input:disabled { opacity: 0.55; cursor: not-allowed; }
+  .form-row .ajuda {
+    font-size: 11px;
+    color: var(--cinza-texto);
+    margin-top: 4px;
+  }
+
+  .senha-extra {
+    display: none;
+    margin-top: 0.5rem;
+    padding: 0.85rem;
+    background: rgba(192, 39, 15, 0.06);
+    border: 1px dashed rgba(192, 39, 15, 0.3);
+    border-radius: 6px;
+  }
+  .senha-extra.visivel { display: block; }
+  .senha-extra .form-row { margin-bottom: 0; }
+
+  .campo-senha { position: relative; }
+  .campo-senha input { padding-right: 44px !important; }
+  .btn-ver-senha {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; padding: 4px; cursor: pointer;
+    color: var(--cinza-texto); display: flex; align-items: center;
+  }
+
+  .btn-primary {
+    background: var(--vermelho);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 22px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.15s;
+  }
+  .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--cinza-texto);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
+    padding: 11px 18px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .btn-ghost:hover { color: var(--branco); border-color: #555; }
+  .btn-danger {
+    background: rgba(226, 75, 74, 0.12);
+    color: #F09595;
+    border: 1px solid rgba(226, 75, 74, 0.4);
+    border-radius: 6px;
+    padding: 12px 22px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-danger:hover { background: rgba(226, 75, 74, 0.2); }
+  .btn-danger.solid {
+    background: #B23E3E;
+    color: #fff;
+    border-color: #B23E3E;
+  }
+  .btn-danger.solid:hover { background: #C44848; }
+
+  .spinner {
+    display: inline-block;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast-wrap {
+    position: fixed; right: 20px; bottom: 20px;
+    display: flex; flex-direction: column; gap: 10px;
+    z-index: 9999;
+  }
+  .toast {
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.45;
+    max-width: 340px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    animation: toast-in 0.2s ease-out;
+  }
+  .toast.sucesso { background: rgba(45,125,70,0.95); color: #fff; border: 1px solid rgba(125,217,154,0.4); }
+  .toast.erro    { background: rgba(178,40,40,0.95); color: #fff; border: 1px solid rgba(240,149,149,0.4); }
+  @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
+
+  /* ── Card 2 — assinatura ── */
+  .badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .badge-status.ativo  { background: rgba(125,217,154,0.12); color: #7DD99A; border: 1px solid rgba(125,217,154,0.3); }
+  .badge-status.trial  { background: rgba(241,188,28,0.12);  color: #F6D67B; border: 1px solid rgba(241,188,28,0.35); }
+  .badge-status.expirado { background: rgba(226,75,74,0.12); color: #F09595; border: 1px solid rgba(226,75,74,0.35); }
+  .badge-status .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: currentColor;
+  }
+
+  .info-linha {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #222;
+    font-size: 13px;
+  }
+  .info-linha:last-child { border-bottom: none; }
+  .info-linha .rotulo {
+    color: var(--cinza-texto);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .planos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 1rem;
+  }
+  .plano-btn {
+    background: var(--carvao);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 1rem;
+    color: var(--branco);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .plano-btn:hover { border-color: var(--vermelho); transform: translateY(-1px); }
+  .plano-btn .preco {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--vermelho);
+    letter-spacing: 0.04em;
+  }
+  .plano-btn .periodo {
+    font-size: 11px;
+    color: var(--cinza-texto);
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .plano-btn .nome {
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .cupom-row {
+    display: flex; gap: 8px; margin-top: 0.75rem;
+  }
+  .cupom-row input { flex: 1; }
+  .cupom-row button {
+    background: transparent;
+    border: 1px solid var(--vermelho);
+    color: var(--vermelho);
+    padding: 0 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .cupom-row button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .cupom-msg { font-size: 12px; margin-top: 6px; display: none; }
+  .cupom-msg.sucesso { display: block; color: #7DD99A; }
+  .cupom-msg.erro    { display: block; color: #F09595; }
+
+  /* ── Card 4 — indicação ── */
+  .ref-link-box {
+    background: var(--carvao);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .ref-link-box code {
+    flex: 1;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #DDD;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ref-tabela {
+    width: 100%;
+    margin-top: 0.5rem;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .ref-tabela th, .ref-tabela td {
+    text-align: left;
+    padding: 8px 10px;
+    border-bottom: 1px solid #222;
+  }
+  .ref-tabela th {
+    color: var(--cinza-texto);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+  }
+  .ref-vazio {
+    color: var(--cinza-texto);
+    font-size: 13px;
+    padding: 1rem 0;
+    text-align: center;
+  }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.72);
+    z-index: 9998;
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.visivel { display: flex; }
+  .modal-overlay:not(.visivel) { display: none; }
+  .modal {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 460px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+    color: #F09595;
+  }
+  .modal p { color: var(--cinza-texto); font-size: 13px; line-height: 1.6; margin-bottom: 1rem; }
+  .modal ul { margin: 0.5rem 0 1rem 1.2rem; color: var(--cinza-texto); font-size: 13px; line-height: 1.7; }
+  .modal-acoes {
+    display: flex; gap: 10px; margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+  .modal-acoes button { flex: 1; min-width: 140px; }
+
+  .delete-pendente {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    border: 2px dashed rgba(226, 75, 74, 0.5);
+    border-radius: 10px;
+    background: rgba(226, 75, 74, 0.04);
+  }
+  .delete-pendente .icon {
+    margin-bottom: 0.75rem;
+    color: #F09595;
+  }
+  .delete-pendente h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: #F09595;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+  }
+  .delete-pendente p {
+    color: var(--cinza-texto);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+
+  @media (max-width: 600px) {
+    .planos-grid { grid-template-columns: 1fr; }
+    .conta-card { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside id="pbm-sidebar"></aside>
+  <nav id="pbm-bottombar"></nav>
+
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Minha Conta</span>
+      <div class="topbar-right">
+        <span class="topbar-mono" id="topbar-data"></span>
+        <button class="btn-logout-top" id="btn-logout-top">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sair
+        </button>
+      </div>
+    </div>
+
+    <div class="conteudo">
+      <div class="conta-grid">
+
+        <!-- ─── CARD 1 — Dados Pessoais ─── -->
+        <section class="conta-card" id="card-dados">
+          <div class="card-titulo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Dados Pessoais
+          </div>
+          <p class="card-sub">Suas informações de identificação na plataforma.</p>
+
+          <form id="form-dados" onsubmit="return false;">
+            <div class="form-row">
+              <label for="nome">Nome completo</label>
+              <input type="text" id="nome" maxlength="100" autocomplete="name">
+            </div>
+            <div class="form-row">
+              <label for="nickname">Nickname (Ranking)</label>
+              <input type="text" id="nickname" maxlength="20" placeholder="Como aparece no ranking">
+              <div class="ajuda">2–20 caracteres. Letras, números, ponto, hífen e underscore.</div>
+            </div>
+            <div class="form-row">
+              <label for="email">E-mail</label>
+              <input type="email" id="email" maxlength="254" autocomplete="email">
+              <div class="ajuda">Trocar o e-mail exige confirmação no novo endereço e deslogará a sessão.</div>
+            </div>
+
+            <div class="senha-extra" id="senha-extra-email">
+              <div class="form-row">
+                <label for="senha-atual-email">Senha atual (obrigatória para trocar o e-mail)</label>
+                <div class="campo-senha">
+                  <input type="password" id="senha-atual-email" autocomplete="current-password">
+                  <button type="button" class="btn-ver-senha" onclick="toggleSenha('senha-atual-email',this)" tabindex="-1" aria-label="Mostrar senha">
+                    <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:1rem;flex-wrap:wrap;">
+              <button type="submit" class="btn-primary" id="btn-salvar-dados" onclick="salvarDados()">
+                <span class="spinner" id="spin-dados" style="display:none;"></span>
+                <span id="txt-dados">Salvar alterações</span>
+              </button>
+              <button type="button" class="btn-ghost" id="btn-reset-dados" onclick="resetarDados()">Descartar</button>
+            </div>
+          </form>
+        </section>
+
+        <!-- ─── CARD 2 — Assinatura ─── -->
+        <section class="conta-card" id="card-assinatura">
+          <div class="card-titulo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            Assinatura
+          </div>
+          <p class="card-sub">Status do seu acesso e gerenciamento de plano.</p>
+          <div id="card-assinatura-body">
+            <div style="color:var(--cinza-texto);font-size:13px;padding:1rem 0;">Carregando…</div>
+          </div>
+        </section>
+
+        <!-- ─── CARD 3 — Alterar Senha ─── -->
+        <section class="conta-card" id="card-senha">
+          <div class="card-titulo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Alterar Senha
+          </div>
+          <p class="card-sub">Use ao menos 8 caracteres. Você será deslogado dos outros dispositivos.</p>
+
+          <form id="form-senha" onsubmit="return false;">
+            <div class="form-row">
+              <label for="senha-atual">Senha atual</label>
+              <div class="campo-senha">
+                <input type="password" id="senha-atual" autocomplete="current-password">
+                <button type="button" class="btn-ver-senha" onclick="toggleSenha('senha-atual',this)" tabindex="-1">
+                  <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="nova-senha">Nova senha</label>
+              <div class="campo-senha">
+                <input type="password" id="nova-senha" autocomplete="new-password" placeholder="Mínimo 8 caracteres">
+                <button type="button" class="btn-ver-senha" onclick="toggleSenha('nova-senha',this)" tabindex="-1">
+                  <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="form-row">
+              <label for="confirma-senha">Confirmar nova senha</label>
+              <input type="password" id="confirma-senha" autocomplete="new-password">
+            </div>
+            <button type="submit" class="btn-primary" id="btn-salvar-senha" onclick="salvarSenha()">
+              <span class="spinner" id="spin-senha" style="display:none;"></span>
+              <span id="txt-senha">Salvar nova senha</span>
+            </button>
+          </form>
+        </section>
+
+        <!-- ─── CARD 4 — Indicação ─── -->
+        <section class="conta-card" id="card-indicacao">
+          <div class="card-titulo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 11h-6"/><path d="M19 8v6"/></svg>
+            Indique colegas
+          </div>
+          <p class="card-sub">Compartilhe seu link. Você acompanha as indicações abaixo.</p>
+
+          <div class="ref-link-box">
+            <code id="ref-link">—</code>
+            <button class="btn-ghost" onclick="copiarLinkRef()" id="btn-copiar-ref" style="padding:6px 12px;font-size:12px;">Copiar</button>
+          </div>
+
+          <div id="ref-historico">
+            <div class="ref-vazio">Carregando…</div>
+          </div>
+        </section>
+
+        <!-- ─── CARD 5 — Excluir conta ─── -->
+        <section class="conta-card zona-perigo" id="card-excluir">
+          <div class="card-titulo" style="color:#F09595;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Excluir minha conta
+          </div>
+          <p class="card-sub" style="color:#aaa;">
+            A exclusão é agendada com <strong>30 dias de carência</strong>. Você pode cancelar a qualquer momento dentro desse período usando o link enviado por e-mail.
+          </p>
+          <button class="btn-danger" onclick="abrirModalExcluir()">Excluir minha conta</button>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Modal: confirmar exclusão ─── -->
+<div class="modal-overlay" id="modal-excluir">
+  <div class="modal">
+    <h2>Confirmar exclusão</h2>
+    <p>Esta ação agenda a exclusão da sua conta para daqui <strong>30 dias</strong>. Dentro desse prazo você pode reverter usando o link enviado ao seu e-mail.</p>
+
+    <p style="color:#bbb;font-weight:500;margin-bottom:0.25rem;">O que será removido após o prazo:</p>
+    <ul>
+      <li>Seus dados pessoais (nome, e-mail, nickname)</li>
+      <li>Histórico de indicações que você fez</li>
+      <li>Configurações pessoais e preferências</li>
+    </ul>
+    <p style="color:#bbb;font-weight:500;margin-bottom:0.25rem;">O que pode ser preservado de forma anonimizada:</p>
+    <ul>
+      <li>Estatísticas agregadas (para rankings históricos)</li>
+      <li>Respostas individuais a questões (sem vínculo com você)</li>
+    </ul>
+
+    <p id="aviso-cobranca" style="color:#F6D67B;font-size:12px;display:none;">
+      ⚠ Sua assinatura externa (Kiwify) <strong>não é cancelada automaticamente</strong>. Gerencie diretamente no Kiwify para evitar novas cobranças.
+    </p>
+
+    <div class="form-row" style="margin-top:1rem;">
+      <label for="senha-excluir">Senha atual</label>
+      <div class="campo-senha">
+        <input type="password" id="senha-excluir" autocomplete="current-password">
+        <button type="button" class="btn-ver-senha" onclick="toggleSenha('senha-excluir',this)" tabindex="-1">
+          <svg class="icon-eye" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="icon-eye-off" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="modal-acoes">
+      <button class="btn-ghost" onclick="fecharModalExcluir()">Cancelar</button>
+      <button class="btn-danger solid" id="btn-confirma-excluir" onclick="confirmarExclusao()">
+        <span class="spinner" id="spin-excluir" style="display:none;"></span>
+        <span id="txt-excluir">Confirmar exclusão</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Modal: e-mail pendente ─── -->
+<div class="modal-overlay" id="modal-email-pendente">
+  <div class="modal">
+    <h2 style="color:#F6D67B;">Confirme no seu novo e-mail</h2>
+    <p>Enviamos um link de confirmação para <strong id="modal-email-destino"></strong>.</p>
+    <p>O link expira em <strong>1 hora</strong>. Sua sessão atual foi encerrada — após confirmar, faça login com o novo e-mail.</p>
+    <p style="font-size:12px;color:var(--cinza-texto);">Também avisamos seu e-mail antigo. Se a troca não foi solicitada por você, redefina sua senha imediatamente.</p>
+    <div class="modal-acoes" style="margin-top:0.5rem;">
+      <button class="btn-primary" onclick="window.location.href='/login'" style="flex:1;">Ir para o login</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Toasts ─── -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script src="/js/api.js?v=3"></script>
+<script src="/js/pbm-components.js?v=3"></script>
+<script>
+PBM.Layout.mount({active:'conta'});
+
+let usuarioAtual = null;
+let assinaturaAtual = null;
+
+// ── Bootstrap ─────────────────────────────────────────────
+(async function init() {
+  // Protege rota em modo permissivo: aluno inativo pode acessar /conta.
+  await PBM.protegerRota({ permitirInativo: true });
+
+  // Atualiza data no topbar
+  const dataEl = document.getElementById('topbar-data');
+  if (dataEl) {
+    dataEl.textContent = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+  }
+
+  await carregarDados();
+
+  // Detecta mudanças no e-mail e mostra/oculta o campo de senha atual
+  const emailInput = document.getElementById('email');
+  emailInput.addEventListener('input', atualizarVisibilidadeSenhaEmail);
+})();
+
+async function carregarDados() {
+  // Carrega user + assinatura em paralelo. /me devolve dados frescos do banco.
+  let user = PBM.getUsuario() || {};
+  try {
+    const [meRes, assRes] = await Promise.allSettled([PBM.Auth.me(), PBM.Auth.assinatura()]);
+    if (meRes.status === 'fulfilled' && meRes.value.usuario) {
+      user = meRes.value.usuario;
+      sessionStorage.setItem('usuario', JSON.stringify(user));
+    }
+    if (assRes.status === 'fulfilled') {
+      assinaturaAtual = assRes.value;
+    }
+  } catch (_) {}
+
+  usuarioAtual = user;
+  hidratarCardDados(user);
+  hidratarCardAssinatura(assinaturaAtual, user);
+  carregarIndicacao();
+}
+
+function hidratarCardDados(u) {
+  document.getElementById('nome').value = u.nome || '';
+  document.getElementById('nickname').value = u.nickname || '';
+  document.getElementById('email').value = u.email || '';
+  atualizarVisibilidadeSenhaEmail();
+}
+
+function atualizarVisibilidadeSenhaEmail() {
+  const u = usuarioAtual || PBM.getUsuario() || {};
+  const atual = (u.email || '').toLowerCase().trim();
+  const novo = (document.getElementById('email').value || '').toLowerCase().trim();
+  const mudou = novo && novo !== atual;
+  document.getElementById('senha-extra-email').classList.toggle('visivel', !!mudou);
+  if (!mudou) document.getElementById('senha-atual-email').value = '';
+}
+
+function resetarDados() {
+  hidratarCardDados(usuarioAtual || {});
+  toast('Alterações descartadas.', 'sucesso');
+}
+
+async function salvarDados() {
+  if (!usuarioAtual) return;
+  if (assinaturaAtual && assinaturaAtual.deletado_em) {
+    toast('Cancele a exclusão antes de editar dados.', 'erro');
+    return;
+  }
+
+  const nome = document.getElementById('nome').value.trim();
+  const nickname = document.getElementById('nickname').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const senhaAtual = document.getElementById('senha-atual-email').value;
+
+  const body = {};
+  if (nome && nome !== (usuarioAtual.nome || '')) body.nome = nome;
+  if (nickname !== (usuarioAtual.nickname || '')) body.nickname = nickname;
+  if (email && email.toLowerCase() !== (usuarioAtual.email || '').toLowerCase()) {
+    body.email = email;
+    if (!senhaAtual) { toast('Informe a senha atual para trocar o e-mail.', 'erro'); return; }
+    body.senha_atual = senhaAtual;
+  }
+
+  if (Object.keys(body).length === 0) {
+    toast('Nada para salvar.', 'erro'); return;
+  }
+
+  setLoading('dados', true);
+  try {
+    const data = await PBM.Auth.atualizarPerfil(body);
+    if (data?.email_pendente) {
+      document.getElementById('modal-email-destino').textContent = data.email_pendente;
+      document.getElementById('modal-email-pendente').classList.add('visivel');
+      // Sessão derrubada pelo backend — preserva o JWT só pra reverter UI; a próxima
+      // requisição autenticada vai dar 401 e levar para /login. Limpamos manualmente
+      // pra evitar essa janela de erro.
+      setTimeout(() => sessionStorage.clear(), 500);
+    } else {
+      // Atualiza estado local e sidebar
+      if (data?.dados_atualizados?.nome) usuarioAtual.nome = data.dados_atualizados.nome;
+      if (data?.dados_atualizados?.nickname !== undefined) usuarioAtual.nickname = data.dados_atualizados.nickname;
+      try { sessionStorage.setItem('usuario', JSON.stringify(usuarioAtual)); } catch (_) {}
+      PBM.Layout.refreshUsuario && PBM.Layout.refreshUsuario();
+      toast('Dados atualizados!', 'sucesso');
+    }
+  } catch (err) {
+    toast(err?.erro || 'Não foi possível salvar.', 'erro');
+  } finally {
+    setLoading('dados', false);
+  }
+}
+
+// ── Card 2 — Assinatura ───────────────────────────────────
+function hidratarCardAssinatura(ass, u) {
+  const body = document.getElementById('card-assinatura-body');
+  if (!body) return;
+
+  if (ass && ass.deletado_em) {
+    body.innerHTML = renderDeletePendente(ass);
+    body.querySelector('#btn-cancela-exclusao')?.addEventListener('click', () => {
+      toast('Use o link "Desfazer" enviado por e-mail. Se não encontrar, contate o suporte.', 'erro');
+    });
+    return;
+  }
+
+  if (!ass) {
+    body.innerHTML = '<div style="color:var(--cinza-texto);font-size:13px;">Não foi possível carregar.</div>';
+    return;
+  }
+
+  const ativo = ass.status === 'ativa';
+  const trial = ass.tipo === 'trial';
+  const dias = typeof ass.dias_restantes === 'number' ? ass.dias_restantes : null;
+  const venc = ass.vencimento ? new Date(ass.vencimento).toLocaleDateString('pt-BR') : '—';
+
+  if (ativo && !trial) {
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.5rem;">
+        <span class="badge-status ativo"><span class="dot"></span>Ativa</span>
+        ${dias !== null && dias <= 7 ? `<span style="font-size:12px;color:#F6D67B;">Vence em ${dias} dia${dias!==1?'s':''}</span>` : ''}
+      </div>
+      <div class="info-linha"><span class="rotulo">Plano</span><span>Assinatura paga</span></div>
+      <div class="info-linha"><span class="rotulo">Vencimento</span><span>${venc}</span></div>
+      <div style="margin-top:1rem;">
+        ${botaoKiwify(u?.email)}
+      </div>
+    `;
+  } else if (ativo && trial) {
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;">
+        <span class="badge-status trial"><span class="dot"></span>Trial</span>
+        ${dias !== null ? `<span style="font-size:12px;color:var(--cinza-texto);">${dias} dia${dias!==1?'s':''} restantes</span>` : ''}
+      </div>
+      <div class="info-linha"><span class="rotulo">Vencimento</span><span>${venc}</span></div>
+      <p style="color:var(--cinza-texto);font-size:13px;margin:1rem 0 0.5rem;">Assine antes do término para não perder o acesso.</p>
+      ${renderPlanos()}
+      ${renderCupom()}
+    `;
+    wireCupom();
+  } else {
+    // expirada ou aguardando
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.75rem;">
+        <span class="badge-status expirado"><span class="dot"></span>${ass.status === 'expirada' ? 'Expirada' : 'Aguardando ativação'}</span>
+      </div>
+      ${ass.vencimento ? `<div class="info-linha"><span class="rotulo">Expirou em</span><span>${venc}</span></div>` : ''}
+      <p style="color:var(--cinza-texto);font-size:13px;margin:1rem 0 0.5rem;">${ass.status === 'expirada' ? 'Sua assinatura expirou. Renove para retomar o acesso.' : 'Sua conta foi criada. Assine um plano ou aplique um cupom para liberar o acesso.'}</p>
+      ${renderPlanos()}
+      ${renderCupom()}
+    `;
+    wireCupom();
+  }
+}
+
+function renderDeletePendente(ass) {
+  let diasRest = null;
+  // Sem expira_em direto na resposta: usa deletado_em + 30 dias como proxy.
+  if (ass.deletado_em) {
+    const inicio = new Date(ass.deletado_em).getTime();
+    const fim = inicio + 30 * 24 * 60 * 60 * 1000;
+    diasRest = Math.max(0, Math.ceil((fim - Date.now()) / (24*60*60*1000)));
+  }
+  return `
+    <div class="delete-pendente">
+      <div class="icon">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </div>
+      <h3>Conta marcada para exclusão</h3>
+      <p>${diasRest !== null ? `Sua conta será excluída definitivamente em <strong>${diasRest} dia${diasRest !== 1 ? 's' : ''}</strong>.` : 'Sua conta será excluída em breve.'}<br>Para reverter, use o link <strong>"Desfazer exclusão"</strong> enviado ao seu e-mail original.</p>
+      <button class="btn-ghost" id="btn-cancela-exclusao">Como cancelar?</button>
+    </div>
+  `;
+}
+
+function renderPlanos() {
+  return `
+    <div class="planos-grid">
+      <a href="https://pay.kiwify.com.br/ZraZE7k" class="plano-btn">
+        <div class="preco">R$ 29,90</div>
+        <div class="periodo">por mês</div>
+        <div class="nome">Plano Mensal</div>
+      </a>
+      <a href="https://pay.kiwify.com.br/Cxo6JhA" class="plano-btn">
+        <div class="preco">R$ 79,90</div>
+        <div class="periodo">trimestral · ~R$ 26,63/mês</div>
+        <div class="nome">Plano Trimestral</div>
+      </a>
+    </div>
+  `;
+}
+
+function renderCupom() {
+  return `
+    <div style="margin-top:1.25rem;border-top:1px solid #222;padding-top:1rem;">
+      <label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">Tem um cupom de acesso?</label>
+      <div class="cupom-row">
+        <input type="text" id="cupom-codigo-conta" placeholder="Digite o código" maxlength="30" oninput="this.value=this.value.toUpperCase().replace(/\\s+/g,'')">
+        <button id="btn-cupom-conta">Aplicar</button>
+      </div>
+      <div class="cupom-msg" id="cupom-msg-conta"></div>
+    </div>
+  `;
+}
+
+function wireCupom() {
+  const btn = document.getElementById('btn-cupom-conta');
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const codigo = document.getElementById('cupom-codigo-conta').value.trim();
+    const msgEl = document.getElementById('cupom-msg-conta');
+    msgEl.className = 'cupom-msg';
+    msgEl.textContent = '';
+    if (!codigo) { msgEl.textContent = 'Digite um código.'; msgEl.className = 'cupom-msg erro'; return; }
+    btn.disabled = true;
+    btn.textContent = '…';
+    try {
+      const data = await PBM.Cupons.aplicar(codigo);
+      msgEl.textContent = data.mensagem || 'Acesso liberado!';
+      msgEl.className = 'cupom-msg sucesso';
+      setTimeout(() => carregarDados(), 1200);
+    } catch (err) {
+      msgEl.textContent = err?.erro || 'Cupom inválido ou expirado.';
+      msgEl.className = 'cupom-msg erro';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Aplicar';
+    }
+  });
+}
+
+function botaoKiwify(email) {
+  const url = email ? 'https://dashboard.kiwify.com.br/?email=' + encodeURIComponent(email) : 'https://dashboard.kiwify.com.br/';
+  return `<a href="${url}" target="_blank" rel="noopener" class="btn-ghost" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+    Gerenciar pagamentos no Kiwify
+  </a>`;
+}
+
+// ── Card 3 — Senha ────────────────────────────────────────
+async function salvarSenha() {
+  const atual = document.getElementById('senha-atual').value;
+  const nova  = document.getElementById('nova-senha').value;
+  const conf  = document.getElementById('confirma-senha').value;
+
+  if (!atual || !nova || !conf) { toast('Preencha todos os campos.', 'erro'); return; }
+  if (nova.length < 8) { toast('A nova senha deve ter pelo menos 8 caracteres.', 'erro'); return; }
+  if (nova !== conf)   { toast('As senhas não coincidem.', 'erro'); return; }
+
+  setLoading('senha', true);
+  try {
+    await PBM.Auth.alterarSenha({ senha_atual: atual, nova_senha: nova });
+    toast('Senha alterada! Você será deslogado em 2s para refazer login.', 'sucesso');
+    document.getElementById('senha-atual').value = '';
+    document.getElementById('nova-senha').value = '';
+    document.getElementById('confirma-senha').value = '';
+    // Backend rotaciona sessao_token; reentrada forçada.
+    setTimeout(() => { sessionStorage.clear(); window.location.href = '/login'; }, 2000);
+  } catch (err) {
+    toast(err?.erro || 'Não foi possível alterar a senha.', 'erro');
+  } finally {
+    setLoading('senha', false);
+  }
+}
+
+// ── Card 4 — Indicação ────────────────────────────────────
+async function carregarIndicacao() {
+  const linkEl = document.getElementById('ref-link');
+  const histEl = document.getElementById('ref-historico');
+  try {
+    const meu = await PBM.Indicacoes.meuLink();
+    const codigo = meu?.codigo || (usuarioAtual?.indicacao_codigo) || '';
+    const url = 'https://protocolobravomike.com.br/?ref=' + codigo;
+    linkEl.textContent = codigo ? url : '—';
+    linkEl.dataset.url = url;
+  } catch (_) {
+    linkEl.textContent = '—';
+  }
+  try {
+    const hist = await PBM.Indicacoes.historico();
+    const itens = Array.isArray(hist?.indicacoes) ? hist.indicacoes : (Array.isArray(hist) ? hist : []);
+    if (itens.length === 0) {
+      histEl.innerHTML = '<div class="ref-vazio">Você ainda não indicou ninguém.</div>';
+      return;
+    }
+    const ultimos = itens.slice(0, 3);
+    histEl.innerHTML = `
+      <table class="ref-tabela">
+        <thead><tr><th>Indicado</th><th>Status</th><th>Quando</th></tr></thead>
+        <tbody>
+          ${ultimos.map(i => `
+            <tr>
+              <td>${escapeHtml(i.indicado_nome || i.indicado_email || '—')}</td>
+              <td>${escapeHtml(i.status || 'pendente')}</td>
+              <td>${i.criado_em ? new Date(i.criado_em).toLocaleDateString('pt-BR') : '—'}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `;
+  } catch (_) {
+    histEl.innerHTML = '<div class="ref-vazio">Não foi possível carregar o histórico.</div>';
+  }
+}
+
+function copiarLinkRef() {
+  const linkEl = document.getElementById('ref-link');
+  const url = linkEl.dataset.url || linkEl.textContent;
+  if (!url || url === '—') { toast('Link indisponível.', 'erro'); return; }
+  navigator.clipboard.writeText(url).then(
+    () => toast('Link copiado!', 'sucesso'),
+    () => toast('Não foi possível copiar.', 'erro')
+  );
+}
+
+// ── Card 5 — Excluir conta ────────────────────────────────
+function abrirModalExcluir() {
+  const aviso = document.getElementById('aviso-cobranca');
+  aviso.style.display = (assinaturaAtual && assinaturaAtual.status === 'ativa' && assinaturaAtual.tipo === 'pago') ? 'block' : 'none';
+  document.getElementById('senha-excluir').value = '';
+  document.getElementById('modal-excluir').classList.add('visivel');
+}
+function fecharModalExcluir() {
+  document.getElementById('modal-excluir').classList.remove('visivel');
+}
+async function confirmarExclusao() {
+  const senha = document.getElementById('senha-excluir').value;
+  if (!senha) { toast('Informe sua senha.', 'erro'); return; }
+  setLoading('excluir', true);
+  try {
+    await PBM.Auth.excluirConta(senha);
+    toast('Conta marcada para exclusão. Verifique seu e-mail.', 'sucesso');
+    setTimeout(() => {
+      sessionStorage.clear();
+      sessionStorage.setItem('pbm_session_msg', 'Sua conta foi marcada para exclusão. Use o link enviado por e-mail para reverter dentro de 30 dias.');
+      window.location.href = '/login';
+    }, 1800);
+  } catch (err) {
+    toast(err?.erro || 'Não foi possível excluir a conta.', 'erro');
+  } finally {
+    setLoading('excluir', false);
+  }
+}
+
+// ── Utilidades ────────────────────────────────────────────
+function setLoading(prefixo, on) {
+  const btn = document.getElementById('btn-salvar-' + prefixo) || document.getElementById('btn-confirma-' + prefixo);
+  const spin = document.getElementById('spin-' + prefixo);
+  const txt  = document.getElementById('txt-' + prefixo);
+  if (btn) btn.disabled = !!on;
+  if (spin) spin.style.display = on ? 'inline-block' : 'none';
+  if (txt)  txt.style.opacity  = on ? '0.6' : '1';
+}
+
+function toast(msg, tipo) {
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (tipo || 'sucesso');
+  el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; }, 3200);
+  setTimeout(() => el.remove(), 3600);
+}
+
+function toggleSenha(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const eyeEl    = btn.querySelector('.icon-eye');
+  const eyeOffEl = btn.querySelector('.icon-eye-off');
+  if (input.type === 'password') {
+    input.type = 'text';
+    eyeEl.style.display = 'none';
+    eyeOffEl.style.display = '';
+  } else {
+    input.type = 'password';
+    eyeEl.style.display = '';
+    eyeOffEl.style.display = 'none';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') fecharModalExcluir();
+});
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</body>
+</html>

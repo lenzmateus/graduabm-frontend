@@ -1,4 +1,4 @@
-const CACHE = 'pbm-v4';
+const CACHE = 'pbm-v5';
 const CACHE_ASSETS = [
   '/images/emblem-pbm.png',
   '/images/pwa-192.png',
@@ -50,10 +50,11 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // JS/CSS dinâmicos: network-first também, evita servir api.js/tour.js antigos
+  // JS/CSS dinâmicos: força revalidação (no-cache) para não servir versões
+  // antigas que ficaram no HTTP cache do browser entre deploys.
   if (/\.(js|css)$/i.test(url.pathname)) {
     e.respondWith(
-      fetch(req).then(res => {
+      fetch(req, { cache: 'no-cache' }).then(res => {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
         return res;

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Cancelar exclusão</title>
+<meta name="pbm-force-dark" content="1">
+<script src="/js/pbm-theme-boot.js?v=2"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vermelho: #C0270F;
+    --carvao: var(--bg-primario);
+    --cinza-escuro: var(--bg-secundario);
+    --cinza-borda: #333;
+    --cinza-texto: #888;
+    --branco: var(--texto-principal);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--carvao);
+    color: var(--branco);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 2rem 1rem;
+  }
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; padding: 0 2rem; height: 56px;
+    border-bottom: 1px solid var(--cinza-borda);
+    background: var(--carvao);
+  }
+  .logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.05em; color: var(--branco); text-decoration: none; }
+  .card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    width: 100%;
+    max-width: 440px;
+    margin-top: 56px;
+    text-align: center;
+  }
+  .icon-wrap {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: rgba(192, 39, 15, 0.08);
+    border: 1px solid rgba(192, 39, 15, 0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.25rem;
+  }
+  .icon-wrap.sucesso { background: rgba(125,217,154,0.08); border-color: rgba(125,217,154,0.4); }
+  .icon-wrap.erro    { background: rgba(226,75,74,0.08);  border-color: rgba(226,75,74,0.4); }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 0.04em;
+    margin-bottom: 0.5rem;
+  }
+  p { color: var(--cinza-texto); font-size: 14px; line-height: 1.6; margin-bottom: 1.5rem; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; padding: 12px 22px;
+    background: var(--vermelho); color: #fff;
+    border: none; border-radius: 6px;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; text-decoration: none;
+  }
+  .spinner { width: 28px; height: 28px; border: 3px solid rgba(255,255,255,0.15); border-top-color: var(--vermelho); border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 1rem; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<nav><a href="/" class="logo-text">Protocolo Bravo Mike</a></nav>
+
+<div class="card" id="card-loading">
+  <div class="spinner"></div>
+  <h1>Cancelando exclusão…</h1>
+  <p>Estamos restaurando sua conta. Aguarde.</p>
+</div>
+
+<div class="card" id="card-sucesso" style="display:none;">
+  <div class="icon-wrap sucesso">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7DD99A" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+  </div>
+  <h1>Conta restaurada</h1>
+  <p>A exclusão foi cancelada e seu acesso voltou ao normal. Faça login para continuar.</p>
+  <a href="/login" class="btn">Ir para o login</a>
+</div>
+
+<div class="card" id="card-erro" style="display:none;">
+  <div class="icon-wrap erro">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F09595" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  </div>
+  <h1>Link inválido</h1>
+  <p id="erro-msg">Este link é inválido, expirou ou já foi utilizado.</p>
+  <a href="/login" class="btn">Ir para o login</a>
+</div>
+
+<script src="/js/api.js?v=3"></script>
+<script>
+(async function() {
+  const token = new URLSearchParams(window.location.search).get('token');
+  const loading = document.getElementById('card-loading');
+  const sucesso = document.getElementById('card-sucesso');
+  const erro = document.getElementById('card-erro');
+  const erroMsg = document.getElementById('erro-msg');
+
+  if (!token) {
+    loading.style.display = 'none';
+    erro.style.display = 'block';
+    return;
+  }
+
+  try {
+    await PBM.Auth.desfazerExclusao(token);
+    try { sessionStorage.clear(); } catch (_) {}
+    loading.style.display = 'none';
+    sucesso.style.display = 'block';
+    setTimeout(() => { window.location.href = '/login'; }, 3000);
+  } catch (err) {
+    if (err?.erro) erroMsg.textContent = err.erro;
+    loading.style.display = 'none';
+    erro.style.display = 'block';
+  }
+})();
+</script>
+</body>
+</html>

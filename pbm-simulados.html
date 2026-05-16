@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Simulados Oficiais</title>
 <script src="/js/font-size.js"></script>
-<script src="/js/pbm-theme-boot.js"></script>
+<script src="/js/pbm-theme-boot.js?v=2"></script>
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
@@ -140,6 +140,41 @@
     transition: background 0.2s;
   }
   .btn-iniciar:hover { background: var(--vermelho-escuro); }
+
+  /* ── HERO BANNER ── */
+  .simulado-hero {
+    width: 100%; border-radius: 12px; margin-bottom: 1.5rem;
+    overflow: hidden; position: relative; height: 160px;
+    background: var(--bg-secundario);
+    border: 1px solid var(--border-color);
+  }
+  .simulado-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--banner-fade-strong) 0%, var(--banner-fade-medium) 50%, var(--banner-fade-light) 100%);
+    pointer-events: none;
+  }
+  .simulado-hero::after {
+    content: ''; position: absolute;
+    top: 0; left: 0; bottom: 0; width: 4px;
+    background: var(--brand-primary);
+  }
+  .simulado-hero-body {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 2rem 0 2.25rem; z-index: 1;
+  }
+  .simulado-hero-kicker {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--brand-primary); letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .simulado-hero-titulo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+    letter-spacing: 0.04em; color: var(--texto-principal); line-height: 1.1;
+  }
+  .simulado-hero-sub {
+    font-size: 12px; color: var(--texto-suporte); margin-top: 5px;
+  }
 
   /* ── SIMULADO MENSAL BANNER ── */
   .mensal-banner {
@@ -308,12 +343,11 @@
       <!-- BANNER SIMULADO MENSAL -->
       <div id="mensal-banner-wrap"></div>
 
-      <div style="width:100%;border-radius:12px;margin-bottom:1.5rem;overflow:hidden;position:relative;height:160px;background:#111;">
-        
-        <div style="position:absolute;inset:0;background:linear-gradient(90deg,var(--banner-fade-strong) 0%,var(--banner-fade-medium) 50%,var(--banner-fade-light) 100%);display:flex;flex-direction:column;justify-content:center;padding:0 2rem;">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brand-primary);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Simulados Oficiais</div>
-          <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--branco);line-height:1.1;">Formato Real da Prova</div>
-          <div style="font-size:12px;color:#666;margin-top:5px;">4 horas · Cartão Resposta · CTSP e CBA</div>
+      <div class="simulado-hero">
+        <div class="simulado-hero-body">
+          <div class="simulado-hero-kicker">Simulados Oficiais</div>
+          <div class="simulado-hero-titulo">Formato Real da Prova</div>
+          <div class="simulado-hero-sub">4 horas · Cartão Resposta · CTSP e CBA</div>
         </div>
       </div>
       <div class="simulado-header">
@@ -369,9 +403,9 @@
   </div>
 </div>
 
-<script src="/js/api.js"></script>
+<script src="/js/api.js?v=3"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js"></script>
+<script src="/js/pbm-components.js?v=3"></script>
 <script>PBM.Layout.mount({active:'simulados'});</script>
 <script>
 let cursoSelecionado = 'ctsp';

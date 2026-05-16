@@ -18,7 +18,8 @@
     simulados: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
     qap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
     ranking: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>',
-    flashcards: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>'
+    flashcards: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/></svg>',
+    conta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
   };
 
   const ACTIVE_MAP = {
@@ -33,7 +34,8 @@
     '/simulado-mensal': 'qap',
     '/simulado-mensal-ranking': 'qap',
     '/flashcards': 'flashcards',
-    '/ranking': 'ranking'
+    '/ranking': 'ranking',
+    '/conta': 'conta'
   };
 
   function detectActive() {
@@ -91,6 +93,7 @@
         </div>
         ${item('ranking', '/ranking', 'Ranking')}
         ${item('flashcards', '/flashcards', 'Flashcards')}
+        ${item('conta', '/conta', 'Minha Conta')}
       </nav>
 
       <div class="sidebar-footer">
@@ -315,6 +318,63 @@
     openOverlay({ bodyHTML: body });
   }
 
+  /* ── Banner global de vencimento (≤7 dias) ──
+     Vive no topo do <main> e some via sessionStorage. Não renderiza em /conta
+     (página de destino do CTA) nem em modo admin-preview. Busca dias_restantes
+     do endpoint /api/auth/assinatura para sobreviver a cache de sessionStorage
+     defasado. */
+  const BANNER_DISMISS_KEY = 'pbm_banner_dismissed_v1';
+
+  function bannerVencimentoHTML(diasRestantes) {
+    const txt = diasRestantes <= 0
+      ? 'Seu acesso vence hoje.'
+      : (diasRestantes === 1
+          ? 'Seu acesso vence amanhã.'
+          : 'Seu acesso vence em ' + diasRestantes + ' dias.');
+    return (
+      '<div class="banner-vencimento" role="status" style="' +
+        'display:flex;align-items:center;gap:12px;padding:10px 16px;' +
+        'background:rgba(241,188,28,0.10);border:1px solid rgba(241,188,28,0.35);' +
+        'border-radius:8px;color:#F6D67B;font-size:13px;line-height:1.4;' +
+        'margin:0 0 16px 0;font-family:Inter,sans-serif;">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' +
+        '<span style="flex:1;"><strong style="font-weight:600;">' + txt + '</strong> Renove agora para não perder o acesso.</span>' +
+        '<a href="/conta" style="background:#C0270F;color:#fff;text-decoration:none;font-size:12px;font-weight:600;padding:7px 14px;border-radius:6px;white-space:nowrap;">Ir para Minha Conta</a>' +
+        '<button type="button" id="pbm-banner-dismiss" aria-label="Dispensar aviso" style="background:none;border:none;color:#F6D67B;cursor:pointer;padding:4px;display:flex;opacity:0.7;">' +
+          '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+        '</button>' +
+      '</div>'
+    );
+  }
+
+  async function renderBannerVencimento() {
+    if (sessionStorage.getItem(BANNER_DISMISS_KEY) === '1') return;
+    const aqui = (window.location.pathname || '').replace(/\/$/, '');
+    if (aqui === '/conta') return; // CTA leva pra /conta, redundante lá
+    if (!(window.PBM && PBM.Auth && PBM.Auth.estaLogado && PBM.Auth.estaLogado())) return;
+    if (PBM.isAdmin && PBM.isAdmin()) return;
+
+    let dados;
+    try { dados = await PBM.Auth.assinatura(); } catch (_) { return; }
+    if (!dados || dados.status !== 'ativa') return;
+    if (dados.deletado_em) return;
+    const d = typeof dados.dias_restantes === 'number' ? dados.dias_restantes : null;
+    if (d === null || d > 7 || d < 0) return;
+
+    const main = document.querySelector('.main .conteudo') || document.querySelector('.main') || document.body;
+    if (!main || document.getElementById('pbm-banner-vencimento-wrap')) return;
+    const wrap = document.createElement('div');
+    wrap.id = 'pbm-banner-vencimento-wrap';
+    wrap.innerHTML = bannerVencimentoHTML(d);
+    main.insertBefore(wrap, main.firstChild);
+
+    const dismiss = document.getElementById('pbm-banner-dismiss');
+    if (dismiss) dismiss.addEventListener('click', () => {
+      try { sessionStorage.setItem(BANNER_DISMISS_KEY, '1'); } catch (_) {}
+      wrap.remove();
+    });
+  }
+
   PBM.Layout = {
     mount(opts) {
       const active = (opts && opts.active) || detectActive();
@@ -336,6 +396,7 @@
       wireTour();
       wireErros();
       initMissaoFDS();
+      renderBannerVencimento();
       try { PBM.Theme && PBM.Theme.updateUISelector(); } catch (e) {}
     },
     refreshUsuario: populateUsuario

@@ -12,7 +12,8 @@
 <link rel="apple-touch-icon" href="/images/pwa-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Protocolo Bravo Mike — Entrar</title>
-<script src="/js/pbm-theme-boot.js"></script>
+<meta name="pbm-force-dark" content="1">
+<script src="/js/pbm-theme-boot.js?v=2"></script>
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -613,25 +614,17 @@
           </button>
         </div>
 
-        <!-- Assinatura inativa -->
+        <!-- Assinatura inativa — UI rica (planos+cupom) migrou para /conta -->
         <div class="bloqueado-card" id="bloco-inativo" style="display:none;">
           <div class="bloqueado-icon">
             <svg width="16" height="16" fill="none" stroke="#F09595" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </div>
           <div class="bloqueado-titulo" id="bloqueado-titulo">Acesso inativo</div>
-          <div class="bloqueado-desc" id="bloqueado-desc">Assine para ter acesso ao conteúdo completo.</div>
-          <div style="display:flex;flex-direction:column;gap:8px;width:100%;">
-            <button class="btn-assinar" onclick="irParaAssinatura('mensal')" style="width:100%;">Plano Mensal — R$29,90/mês</button>
-            <button class="btn-assinar" onclick="irParaAssinatura('trimestral')" style="width:100%;background:transparent;border:1px solid var(--vermelho);color:var(--vermelho);">Plano Trimestral — R$79,90 <span style="font-size:10px;opacity:0.8;">(~R$26,63/mês)</span></button>
-          </div>
-          <div class="cupom-wrap">
-            <span class="cupom-label">Tem um cupom de acesso?</span>
-            <div class="cupom-row">
-              <input class="cupom-input" type="text" id="cupom-codigo" placeholder="Digite o código" maxlength="30" autocomplete="off" oninput="this.value=this.value.toUpperCase().replace(/\s+/g,'')">
-              <button class="btn-cupom" id="btn-cupom" onclick="aplicarCupom()">Aplicar</button>
-            </div>
-            <div class="cupom-msg" id="cupom-msg"></div>
-          </div>
+          <div class="bloqueado-desc" id="bloqueado-desc">Renove ou aplique um cupom em Minha Conta para retomar o acesso.</div>
+          <a class="btn-assinar" href="/conta" style="width:100%;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Ir para Minha Conta
+          </a>
         </div>
 
         <!-- Alterar senha (expansível) -->
@@ -840,7 +833,7 @@
 
 </div>
 
-<script src="/js/api.js"></script>
+<script src="/js/api.js?v=3"></script>
 <script>
   // ── Se já está logado e ativo, vai direto para estudos ──
   (function() {
