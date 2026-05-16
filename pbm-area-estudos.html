@@ -296,6 +296,24 @@
     .leg-tag, .config-label, .mensal-info, .countdown-label,
     .historico-data, .historico-stats, .prog-info, .modal-char { font-size: 13px; }
   }
+
+  /* ════════════════════════════════════════════════════════
+     LIGHT MODE — overrides de cores hardcoded
+     (mantém o modo escuro intocado)
+     ════════════════════════════════════════════════════════ */
+  :root.light-mode .ctsp .curso-pill        { color: #8B1A08; }
+  :root.light-mode .cba  .curso-pill        { color: #0C447C; }
+  :root.light-mode .area-item:hover         { border-color: var(--texto-suporte); box-shadow: 0 2px 16px rgba(0,0,0,0.10); }
+  :root.light-mode .area-acoes              { border-left-color: var(--border-color); }
+  :root.light-mode .rank-badge-titulo,
+  :root.light-mode .area-num-label,
+  :root.light-mode .stat-label,
+  :root.light-mode .prog-txt                { color: var(--texto-suporte); }
+  :root.light-mode .tag-igual               { background: rgba(0,0,0,0.04); color: var(--texto-suporte); border-color: var(--border-color); }
+  :root.light-mode .tag-exclusivo-ctsp      { color: #8B1A08; }
+  :root.light-mode .tag-exclusivo-cba       { color: #0C447C; }
+  :root.light-mode .stat-val.muted          { color: var(--texto-suporte) !important; }
+  :root.light-mode #banner-bv-close         { color: var(--texto-suporte) !important; }
 </style>
 </head>
 <body>
@@ -373,7 +391,7 @@
         </div>
         <div class="stat-card">
           <div class="stat-label">Taxa de acerto</div>
-          <div class="stat-val" style="font-size:13px;padding-top:6px;color:#555;">Estude para ver</div>
+          <div class="stat-val muted" style="font-size:13px;padding-top:6px;color:#555;">Estude para ver</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Próximo passo</div>
@@ -397,7 +415,7 @@
             Selecione o curso, escolha uma área temática, filtre as legislações que quer estudar e inicie. As questões são sorteadas aleatoriamente entre os temas selecionados.
           </div>
         </div>
-        <button onclick="document.getElementById('banner-bv').style.display='none'" style="
+        <button id="banner-bv-close" onclick="document.getElementById('banner-bv').style.display='none'" style="
           background:none;border:none;color:#555;cursor:pointer;font-size:18px;
           flex-shrink:0;line-height:1;padding:0 4px;
         ">×</button>

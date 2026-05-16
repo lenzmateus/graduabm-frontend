@@ -149,6 +149,66 @@
     .card-actions .btn { flex: 1; justify-content: center; }
     .edit-form .form-row { grid-template-columns: 1fr; }
   }
+
+  /* ── Toolbar selects (tokens em vez de inline hardcoded) ── */
+  .toolbar-select {
+    background: var(--bg-secundario);
+    color: var(--texto-principal);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  .toolbar-select:focus { outline: none; border-color: var(--brand-primary); }
+  .toolbar-select option { background: var(--bg-secundario); color: var(--texto-principal); }
+
+  /* ════════════════════════════════════════════════════════
+     LIGHT MODE — override de cores que vinham hardcoded
+     (mantém o tema escuro intocado)
+     ════════════════════════════════════════════════════════ */
+  :root.light-mode {
+    --amarelo-bg: rgba(140, 99, 0, 0.10);
+  }
+  :root.light-mode .edit-form { background: var(--bg-primario); }
+  :root.light-mode .edit-form textarea,
+  :root.light-mode .edit-form input,
+  :root.light-mode .edit-form select { background: var(--bg-secundario); }
+  :root.light-mode .edit-form select option { background: var(--bg-secundario); }
+
+  :root.light-mode .tag-area     { color: #8B1A08; background: rgba(154,31,12,0.10); border-color: rgba(154,31,12,0.40); }
+  :root.light-mode .tag-curso    { color: #4B43C0; background: rgba(127,119,221,0.12); border-color: rgba(127,119,221,0.45); }
+  :root.light-mode .tag-data     { background: rgba(90,100,112,0.10); border-color: rgba(90,100,112,0.30); color: var(--texto-suporte); }
+  :root.light-mode .tag-tipo     { color: #8C6300; background: rgba(212,160,23,0.12); border-color: rgba(212,160,23,0.45); }
+
+  :root.light-mode .alt-letra.correta { color: #1F6135; }
+
+  :root.light-mode .assertiva-item        { color: var(--texto-principal); border-left-color: rgba(127,119,221,0.55); }
+  :root.light-mode .assertiva-item strong { color: #4B43C0; }
+
+  :root.light-mode .juiz-feedback         { color: #4B43C0; background: rgba(127,119,221,0.09); border-left-color: rgba(127,119,221,0.55); }
+  :root.light-mode .juiz-feedback strong  { color: #4B43C0; }
+  :root.light-mode .juiz-header           { color: #4B43C0; }
+  :root.light-mode .juiz-justificativa    { color: var(--texto-suporte); }
+  :root.light-mode .juiz-scores-table th  { color: var(--texto-suporte); border-bottom-color: rgba(127,119,221,0.30); }
+  :root.light-mode .juiz-scores-table td  { color: #4B43C0; }
+  :root.light-mode .juiz-scores-table tr.vencedora td { color: var(--texto-principal); background: rgba(127,119,221,0.16); }
+  :root.light-mode .juiz-scores-table tr.vencedora td:first-child { color: #4B43C0; }
+  :root.light-mode .juiz-scores-table .total-col { color: #1F6135 !important; }
+  :root.light-mode .juiz-badge.dificuldade { color: #8C6300; background: rgba(212,160,23,0.12); border-color: rgba(212,160,23,0.45); }
+  :root.light-mode .juiz-badge.similar-sim { color: #8B1A08; background: rgba(154,31,12,0.10); border-color: rgba(154,31,12,0.40); }
+  :root.light-mode .juiz-badge.similar-nao { color: #1F6135; background: rgba(31,97,53,0.10); border-color: rgba(31,97,53,0.40); }
+  :root.light-mode .juiz-badge.tentativa   { color: #4B43C0; background: rgba(127,119,221,0.12); border-color: rgba(127,119,221,0.45); }
+  :root.light-mode .topico-chip            { color: #1F6135; background: rgba(31,97,53,0.10); border-color: rgba(31,97,53,0.40); }
+
+  :root.light-mode .btn-rejeitar           { background: rgba(226,75,74,0.12); color: #8B1A08; border-color: rgba(226,75,74,0.40); }
+  :root.light-mode .btn-rejeitar:hover:not(:disabled) { background: rgba(226,75,74,0.20); }
+  :root.light-mode .btn-editar             { color: #8C6300; border-color: rgba(212,160,23,0.45); }
+
+  :root.light-mode .justificativa          { background: var(--bg-hover); color: var(--texto-suporte); border-left-color: var(--border-color); }
+  :root.light-mode .ig-caption             { background: var(--bg-hover); color: var(--texto-suporte); }
+  :root.light-mode .flashcard-verso        { color: var(--texto-suporte); }
 </style>
 </head>
 <body>
@@ -498,10 +558,10 @@
     key: 'questoes',
     api: PBM.Admin.aprovacoes.questoesIa,
     toolbarHTML: `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;flex-wrap:wrap;">
-      <select id="sel-curso-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+      <select id="sel-curso-questao" class="toolbar-select">
         <option value="ambos">CTSP + CBA</option><option value="ctsp">Só CTSP</option><option value="cba">Só CBA</option>
       </select>
-      <select id="sel-area-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+      <select id="sel-area-questao" class="toolbar-select">
         <option value="todas">Todas as áreas</option>
         <option value="AT1">AT1 — Segurança Incêndio</option>
         <option value="AT2">AT2 — Combate a Incêndio</option>
@@ -509,7 +569,7 @@
         <option value="AT4">AT4 — Direito Militar</option>
         <option value="AT5">AT5 — Normas Administrativas</option>
       </select>
-      <select id="sel-qtd-questao" style="background:#1a1a1a;color:#e0e0e0;border:1px solid #333;border-radius:6px;padding:6px 10px;font-size:13px;cursor:pointer;">
+      <select id="sel-qtd-questao" class="toolbar-select">
         <option value="1">1 questão</option><option value="2">2 questões</option><option value="3">3 questões</option><option value="4">4 questões</option><option value="5">5 questões</option>
       </select>
       <button id="btn-gerar-questoes" class="btn btn-editar" style="gap:6px;">${ICO_GERAR}Gerar questões</button>
@@ -704,7 +764,7 @@
     aprovarLabel: 'Publicar Agora',
     aprovarVariant: 'publicar',
     toolbarHTML: `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
-      <select id="sel-area-ig" style="background:#1a1a1a;color:#ccc;border:1px solid #333;border-radius:4px;padding:6px 10px;font-size:12px;cursor:pointer;">
+      <select id="sel-area-ig" class="toolbar-select" style="font-size:12px;">
         <option value="">Área automática</option>
         <option value="AT1">AT1 — Seg. Incêndios</option>
         <option value="AT2">AT2 — Combate</option>
