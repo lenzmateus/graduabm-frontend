@@ -18,12 +18,38 @@
   --brand-primary-hover: #8B1A08;
   --brand-on-primary: #FFFFFF;
 
-  /* Estados (idem nos dois temas, identidade) */
-  --success: #7DD99A;
-  --warning: #E0A845;
-  --danger: #E24B4A;
-  --erro: #E24B4A;
-  --sucesso: #2D7D46;
+  /* ─── Estados semânticos ───
+     Cada estado expõe TRÊS variantes:
+       --xxx     = cor base (alinhada ao DESIGN.md §2)
+       --xxx-fg  = versão clareada para texto em fundo escuro (WCAG)
+       --xxx-bg  = tint de background (rgba) — uso em badges/cards de aviso
+     Aliases em pt-BR (--sucesso/--erro/--aviso) permanecem para compat. */
+
+  /* Sucesso — DESIGN.md: Verde #27A060 */
+  --success:    #27A060;
+  --success-fg: #7DD99A;
+  --success-bg: rgba(39,160,96,0.12);
+  --success-border: rgba(39,160,96,0.35);
+
+  /* Erro — DESIGN.md: compartilha o brand vermelho #C0270F */
+  --danger:    #C0270F;
+  --danger-fg: #F09595;
+  --danger-bg: rgba(192,39,15,0.12);
+  --danger-border: rgba(192,39,15,0.40);
+
+  /* Atenção — DESIGN.md: Âmbar #BA7517 */
+  --warning:    #BA7517;
+  --warning-fg: #E0A845;
+  --warning-bg: rgba(186,117,23,0.12);
+  --warning-border: rgba(186,117,23,0.40);
+
+  /* Aliases em pt-BR (compat retroativa — 200+ usos no projeto) */
+  --sucesso: var(--success);
+  --sucesso-fg: var(--success-fg);
+  --erro: var(--danger);
+  --erro-fg: var(--danger-fg);
+  --aviso: var(--warning);
+  --aviso-fg: var(--warning-fg);
 
   /* Aliases legados (compat com HTMLs existentes — 1.300+ usos) */
   --vermelho: var(--brand-primary);
@@ -61,7 +87,10 @@
   --texto-suave: #343A40;
   --brand-primary: #9A1F0C;
   --brand-primary-hover: #7B1808;
-  --sucesso: #1F6135;
+  /* Estados em light-mode — texto mais escuro para legibilidade em fundo claro */
+  --success-fg: #1F6135;
+  --danger-fg: #9A1F0C;
+  --warning-fg: #7A4D0E;
 
   /* Tints de curso ganham mais densidade sobre fundo claro */
   --ctsp-bg: rgba(154,31,12,0.10);

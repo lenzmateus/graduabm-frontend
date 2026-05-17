@@ -18,17 +18,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
 <style>
-  :root {
-    --vermelho: #C0270F;
-    --carvao: var(--bg-primario);
-    --cinza-escuro: var(--bg-secundario);
-    --cinza-borda: #333;
-    --cinza-texto: #888;
-    --branco: var(--texto-principal);
-    --erro: #E24B4A;
-    --sucesso: #2D7D46;
-    --aviso: #F1BC1C;
-  }
+  /* Vars semânticas (--erro/--sucesso/--aviso + -fg/-bg/-border) e
+     aliases (--vermelho, --carvao, --cinza-*) vêm de /css/pbm-tokens.css. */
 
   .conta-grid {
     display: grid;
@@ -50,13 +41,16 @@
   }
 
   .card-titulo {
+    /* DESIGN.md §3 — Card Headline: Bebas Neue 28px / letter-spacing 0.02em */
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 0.04em;
+    font-size: 28px;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
     margin-bottom: 0.25rem;
     display: flex;
     align-items: center;
     gap: 10px;
+    color: var(--branco);
   }
   .card-sub {
     font-size: 12px;
@@ -144,9 +138,10 @@
   }
   .btn-ghost:hover { color: var(--branco); border-color: #555; }
   .btn-danger {
-    background: rgba(226, 75, 74, 0.12);
-    color: #F09595;
-    border: 1px solid rgba(226, 75, 74, 0.4);
+    /* DESIGN.md §2 — Erro = vermelho (#C0270F). Variante outline em fundo escuro. */
+    background: rgba(192, 39, 15, 0.10);
+    color: var(--erro-fg);
+    border: 1px solid rgba(192, 39, 15, 0.40);
     border-radius: 6px;
     padding: 12px 22px;
     font-family: 'Inter', sans-serif;
@@ -155,13 +150,13 @@
     cursor: pointer;
     transition: background 0.15s;
   }
-  .btn-danger:hover { background: rgba(226, 75, 74, 0.2); }
+  .btn-danger:hover { background: rgba(192, 39, 15, 0.18); }
   .btn-danger.solid {
-    background: #B23E3E;
+    background: var(--erro);
     color: #fff;
-    border-color: #B23E3E;
+    border-color: var(--erro);
   }
-  .btn-danger.solid:hover { background: #C44848; }
+  .btn-danger.solid:hover { background: #8B1A08; }
 
   .spinner {
     display: inline-block;
@@ -187,26 +182,28 @@
     box-shadow: 0 8px 24px rgba(0,0,0,0.45);
     animation: toast-in 0.2s ease-out;
   }
-  .toast.sucesso { background: rgba(45,125,70,0.95); color: #fff; border: 1px solid rgba(125,217,154,0.4); }
-  .toast.erro    { background: rgba(178,40,40,0.95); color: #fff; border: 1px solid rgba(240,149,149,0.4); }
+  .toast.sucesso { background: rgba(39,160,96,0.95); color: #fff; border: 1px solid rgba(94,194,136,0.4); }
+  .toast.erro    { background: rgba(192,39,15,0.95); color: #fff; border: 1px solid rgba(226,95,74,0.4); }
   @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
 
   /* ── Card 2 — assinatura ── */
   .badge-status {
+    /* DESIGN.md §3 — Mono Tag: IBM Plex Mono 11px / letter-spacing 0.05em+ */
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 3px 10px;
+    padding: 4px 10px;
     border-radius: 999px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.1em;
+    font-size: 11px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     font-weight: 500;
   }
-  .badge-status.ativo  { background: rgba(125,217,154,0.12); color: #7DD99A; border: 1px solid rgba(125,217,154,0.3); }
-  .badge-status.trial  { background: rgba(241,188,28,0.12);  color: #F6D67B; border: 1px solid rgba(241,188,28,0.35); }
-  .badge-status.expirado { background: rgba(226,75,74,0.12); color: #F09595; border: 1px solid rgba(226,75,74,0.35); }
+  /* Tints on-dark derivados das cores semânticas do DESIGN.md §2 */
+  .badge-status.ativo    { background: rgba(39,160,96,0.12);  color: var(--sucesso-fg); border: 1px solid rgba(39,160,96,0.35); }
+  .badge-status.trial    { background: rgba(186,117,23,0.12); color: var(--aviso-fg);   border: 1px solid rgba(186,117,23,0.40); }
+  .badge-status.expirado { background: rgba(192,39,15,0.12);  color: var(--erro-fg);    border: 1px solid rgba(192,39,15,0.40); }
   .badge-status .dot {
     width: 6px; height: 6px; border-radius: 50%;
     background: currentColor;
@@ -216,9 +213,12 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #222;
-    font-size: 13px;
+    padding: 12px 0;
+    /* DESIGN.md §2 — borders são sempre Cinza Borda #333 */
+    border-bottom: 1px solid var(--cinza-borda);
+    font-size: 14px;
+    color: var(--branco);
+    font-family: 'Inter', sans-serif;
   }
   .info-linha:last-child { border-bottom: none; }
   .info-linha .rotulo {
@@ -249,10 +249,12 @@
   }
   .plano-btn:hover { border-color: var(--vermelho); transform: translateY(-1px); }
   .plano-btn .preco {
+    /* Preço em branco (Bebas Neue) — vermelho fica reservado para o CTA. */
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    color: var(--vermelho);
-    letter-spacing: 0.04em;
+    font-size: 32px;
+    color: var(--branco);
+    letter-spacing: 0.02em;
+    line-height: 1;
   }
   .plano-btn .periodo {
     font-size: 11px;
@@ -260,11 +262,13 @@
     font-family: 'IBM Plex Mono', monospace;
     text-transform: uppercase;
     letter-spacing: 0.08em;
+    margin-top: 4px;
   }
   .plano-btn .nome {
     font-size: 13px;
     font-weight: 600;
-    margin-top: 4px;
+    margin-top: 8px;
+    color: var(--branco);
   }
 
   .cupom-row {
@@ -272,19 +276,23 @@
   }
   .cupom-row input { flex: 1; }
   .cupom-row button {
+    /* Ghost button alinhado a .btn-ghost — aplicar cupom não é primary */
     background: transparent;
-    border: 1px solid var(--vermelho);
-    color: var(--vermelho);
+    border: 1px solid var(--cinza-borda);
+    color: var(--branco);
     padding: 0 18px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color 0.15s, color 0.15s;
   }
+  .cupom-row button:hover { border-color: var(--vermelho); color: var(--vermelho); }
   .cupom-row button:disabled { opacity: 0.5; cursor: not-allowed; }
   .cupom-msg { font-size: 12px; margin-top: 6px; display: none; }
-  .cupom-msg.sucesso { display: block; color: #7DD99A; }
-  .cupom-msg.erro    { display: block; color: #F09595; }
+  .cupom-msg.sucesso { display: block; color: var(--sucesso-fg); }
+  .cupom-msg.erro    { display: block; color: var(--erro-fg); }
 
   /* ── Card 4 — indicação ── */
   .ref-link-box {
@@ -315,7 +323,8 @@
   .ref-tabela th, .ref-tabela td {
     text-align: left;
     padding: 8px 10px;
-    border-bottom: 1px solid #222;
+    /* DESIGN.md §2 — borders #333 */
+    border-bottom: 1px solid var(--cinza-borda);
   }
   .ref-tabela th {
     color: var(--cinza-texto);
@@ -353,11 +362,12 @@
     overflow-y: auto;
   }
   .modal h2 {
+    /* DESIGN.md §3 — Card Headline-style: Bebas Neue 28px / 0.02em */
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
-    letter-spacing: 0.04em;
+    font-size: 28px;
+    letter-spacing: 0.02em;
     margin-bottom: 0.5rem;
-    color: #F09595;
+    color: var(--erro-fg);
   }
   .modal p { color: var(--cinza-texto); font-size: 13px; line-height: 1.6; margin-bottom: 1rem; }
   .modal ul { margin: 0.5rem 0 1rem 1.2rem; color: var(--cinza-texto); font-size: 13px; line-height: 1.7; }
@@ -370,19 +380,21 @@
   .delete-pendente {
     text-align: center;
     padding: 1.5rem 1rem;
-    border: 2px dashed rgba(226, 75, 74, 0.5);
+    /* DESIGN.md §2 — borders 1px solid; dashed não está no sistema */
+    border: 1px solid rgba(192, 39, 15, 0.45);
+    border-left: 3px solid var(--erro);
     border-radius: 10px;
-    background: rgba(226, 75, 74, 0.04);
+    background: rgba(192, 39, 15, 0.04);
   }
   .delete-pendente .icon {
     margin-bottom: 0.75rem;
-    color: #F09595;
+    color: var(--erro-fg);
   }
   .delete-pendente h3 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    color: #F09595;
-    letter-spacing: 0.04em;
+    font-size: 28px;
+    color: var(--erro-fg);
+    letter-spacing: 0.02em;
     margin-bottom: 0.5rem;
   }
   .delete-pendente p {
@@ -756,7 +768,7 @@ function hidratarCardAssinatura(ass, u) {
     body.innerHTML = `
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:0.5rem;">
         <span class="badge-status ativo"><span class="dot"></span>Ativa</span>
-        ${dias !== null && dias <= 7 ? `<span style="font-size:12px;color:#F6D67B;">Vence em ${dias} dia${dias!==1?'s':''}</span>` : ''}
+        ${dias !== null && dias <= 7 ? `<span style="font-size:12px;color:var(--aviso-fg);">Vence em ${dias} dia${dias!==1?'s':''}</span>` : ''}
       </div>
       <div class="info-linha"><span class="rotulo">Plano</span><span>Assinatura paga</span></div>
       <div class="info-linha"><span class="rotulo">Vencimento</span><span>${venc}</span></div>
