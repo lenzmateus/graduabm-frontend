@@ -1690,6 +1690,22 @@ function mostrarErro(msg) {
 
 // ── KEYBOARD ──
 document.addEventListener('keydown', e => {
+  // Se o modal de denúncia está aberto, não deixa atalhos globais agirem
+  // (Enter avançaria a questão; A-E marcaria alternativa por baixo do modal).
+  const modalDenuncia = document.getElementById('modal-denuncia');
+  if (modalDenuncia && modalDenuncia.classList.contains('visivel')) {
+    if (e.key === 'Escape') { e.preventDefault(); fecharModalDenuncia(); }
+    return;
+  }
+  // Se o foco está num campo de texto, ignora atalhos de letra/Enter
+  const alvo = e.target;
+  const emCampoTexto = alvo && (
+    alvo.tagName === 'TEXTAREA' ||
+    alvo.tagName === 'INPUT' ||
+    alvo.isContentEditable
+  );
+  if (emCampoTexto) return;
+
   if (e.key === 'Escape') { if (document.getElementById('modal-saida').classList.contains('visivel')) fecharModal(); else confirmarSaida(); }
   if (e.key === 'Enter' && !document.getElementById('btn-acao').disabled) acaoPrincipal();
   const idx = ['a','b','c','d','e'].indexOf(e.key.toLowerCase());

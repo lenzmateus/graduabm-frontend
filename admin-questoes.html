@@ -427,6 +427,41 @@ function atualizarNomeLegislacao() {
   } else {
     document.getElementById('m-leg-nome').value = '';
   }
+  travarCursoSeLegExclusiva();
+}
+
+// Se a legislação selecionada é exclusiva de um curso (tag != 'comum'), desabilita
+// a opção "ambos" no select de curso e força para o curso compatível.
+// Defesa em UI; o backend (rota + trigger SQL) é a defesa real.
+function travarCursoSeLegExclusiva() {
+  const legId = document.getElementById('m-leg-id').value;
+  const optAmbos = document.querySelector('#m-curso option[value="ambos"]');
+  const elCurso  = document.getElementById('m-curso');
+  if (!optAmbos || !legId) return;
+
+  // Procura o item nas estruturas em AREAS
+  let item = null;
+  for (const at of Object.keys(AREAS || {})) {
+    for (const cursoSlot of ['ctsp', 'cba']) {
+      const grupos = AREAS[at][cursoSlot]?.grupos || [];
+      for (const g of grupos) {
+        const found = g.items.find(it => it.id === legId);
+        if (found) { item = found; break; }
+      }
+      if (item) break;
+    }
+    if (item) break;
+  }
+  if (!item) return;
+
+  const exclusivoCtsp = item.tag === 'exclusivo';
+  const exclusivoCba  = item.tag === 'exclusivo-cba';
+  if (exclusivoCtsp || exclusivoCba) {
+    optAmbos.disabled = true;
+    const cursoForcado = exclusivoCtsp ? 'ctsp' : 'cba';
+    optAmbos.textContent = `Ambos — indisponível (legislação é exclusiva ${cursoForcado.toUpperCase()})`;
+    if (elCurso.value === 'ambos') elCurso.value = cursoForcado;
+  }
 }
 
 let todasQuestoes = [];
@@ -660,7 +695,19 @@ async function abrirModalEditar(id) {
   document.getElementById('m-area').value = q.area_tematica || 'AT1';
   atualizarSelectLegislacoes();
   if (q.legislacao_id) {
-    document.getElementById('m-leg-id').value = q.legislacao_id;
+    const sel = document.getElementById('m-leg-id');
+    // Se a legislação atual da questão não bate com o filtro curso/área (ex.: curso='ambos'
+    // mas a leg é exclusiva de um curso no manifesto), insere uma option avulsa pra evitar
+    // que o select silenciosamente caia no primeiro item — bug que trocava a legislação ao salvar.
+    const existe = Array.from(sel.options).some(o => o.value === q.legislacao_id);
+    if (!existe) {
+      const opt = document.createElement('option');
+      opt.value = q.legislacao_id;
+      opt.textContent = (q.legislacao_nome || q.legislacao_id) + '  ⚠ fora do filtro';
+      opt.dataset.foraFiltro = '1';
+      sel.insertBefore(opt, sel.firstChild);
+    }
+    sel.value = q.legislacao_id;
   }
   atualizarNomeLegislacao();
   RichText.setHTML('m-enunciado', q.enunciado || '');
@@ -681,7 +728,16 @@ async function abrirModalEditar(id) {
     enunciado: q.enunciado || '',
     gabarito: q.gabarito ?? null,
     alternativas: Array.isArray(q.alternativas) ? q.alternativas.slice() : [],
+    legislacao_id: q.legislacao_id || '',
+    legislacao_nome: q.legislacao_nome || '',
+    curso: q.curso || '',
+    area_tematica: q.area_tematica || '',
   };
+  // Reseta flags de "dirty" — só assumimos mudança de legislação/curso/área se o user
+  // realmente interagiu com o respectivo select.
+  document.getElementById('m-leg-id').dataset.dirty = '';
+  document.getElementById('m-curso').dataset.dirty = '';
+  document.getElementById('m-area').dataset.dirty = '';
   atualizarBannerAuditoria(q);
 }
 
@@ -722,12 +778,29 @@ async function salvarQuestao() {
     .map(lerAlt)
     .filter((v, i) => i < 2 || v);
 
-  const area = document.getElementById('m-area').value;
+  // Preserva valores originais se o usuário não tocou nos respectivos selects —
+  // evita que um filtro silencioso (ex.: curso='ambos' + leg só-CTSP) sobrescreva
+  // legislação/área/curso da questão ao salvar uma simples edição de enunciado.
+  const elCurso = document.getElementById('m-curso');
+  const elArea  = document.getElementById('m-area');
+  const elLeg   = document.getElementById('m-leg-id');
+  const elLegNome = document.getElementById('m-leg-nome');
+
+  const cursoFinal = (_editOriginal && !elCurso.dataset.dirty && _editOriginal.curso)
+    ? _editOriginal.curso : elCurso.value;
+  const areaFinal = (_editOriginal && !elArea.dataset.dirty && _editOriginal.area_tematica)
+    ? _editOriginal.area_tematica : elArea.value;
+  const legIdFinal = (_editOriginal && !elLeg.dataset.dirty && _editOriginal.legislacao_id)
+    ? _editOriginal.legislacao_id : elLeg.value.trim();
+  const legNomeFinal = (_editOriginal && !elLeg.dataset.dirty && _editOriginal.legislacao_nome)
+    ? _editOriginal.legislacao_nome : elLegNome.value.trim();
+
+  const area = areaFinal;
   const payload = {
-    curso: document.getElementById('m-curso').value,
+    curso: cursoFinal,
     area_tematica: area,
-    legislacao_id: document.getElementById('m-leg-id').value.trim(),
-    legislacao_nome: document.getElementById('m-leg-nome').value.trim(),
+    legislacao_id: legIdFinal,
+    legislacao_nome: legNomeFinal,
     enunciado,
     alternativas,
     gabarito: parseInt(document.getElementById('m-gabarito').value),
@@ -896,9 +969,18 @@ document.getElementById('btn-remover-img').addEventListener('click', (e) => {
   document.getElementById('upload-status').textContent = '';
 });
 
-document.getElementById('m-curso').addEventListener('change', atualizarSelectLegislacoes);
-document.getElementById('m-area').addEventListener('change', atualizarSelectLegislacoes);
-document.getElementById('m-leg-id').addEventListener('change', atualizarNomeLegislacao);
+document.getElementById('m-curso').addEventListener('change', e => {
+  e.target.dataset.dirty = '1';
+  atualizarSelectLegislacoes();
+});
+document.getElementById('m-area').addEventListener('change', e => {
+  e.target.dataset.dirty = '1';
+  atualizarSelectLegislacoes();
+});
+document.getElementById('m-leg-id').addEventListener('change', e => {
+  e.target.dataset.dirty = '1';
+  atualizarNomeLegislacao();
+});
 
 ['filtro-curso','filtro-area','filtro-status','filtro-auditoria'].forEach(id => {
   document.getElementById(id).addEventListener('change', aplicarFiltros);

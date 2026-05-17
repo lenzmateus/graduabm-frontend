@@ -657,6 +657,10 @@
   .pbm-pomo-display { font-size: 32px; min-width: 80px; }
   .pbm-pomo-audio-btn { font-size: 10px; padding: 3px 6px; }
 }
+@media (max-width: 720px) {
+  /* Pomodoro/ferramentas não fazem sentido em mobile e sobrepunham a UI. */
+  #pbm-pomo-float, #pbm-pomo-reabrir { display: none !important; }
+}
 `;
     var styleEl = document.createElement('style');
     styleEl.id = 'pbm-pomo-styles';

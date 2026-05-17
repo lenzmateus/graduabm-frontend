@@ -165,7 +165,13 @@
       .pbm-fe-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 4px; }
 
       @media (max-width: 720px) {
-        .pbm-fe-toolbar { top: auto; bottom: 96px; }
+        .pbm-fe-toolbar { display: none !important; }
+        body.pbm-tool-marca [data-pbm-zone],
+        body.pbm-tool-marca [data-pbm-zone] *,
+        body.pbm-tool-borracha [data-pbm-zone],
+        body.pbm-tool-borracha [data-pbm-zone] * { cursor: auto !important; }
+        .alt-tesoura { display: none !important; }
+        .pbm-canvas { display: none !important; }
       }
 
       /* ── LIGHT MODE ── superfícies claras + texto escuro */
