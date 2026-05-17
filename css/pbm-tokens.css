@@ -43,6 +43,12 @@
   --warning-bg: rgba(186,117,23,0.12);
   --warning-border: rgba(186,117,23,0.40);
 
+  /* Informação — Azul (compartilha base com curso CBA) */
+  --info:    #185FA5;
+  --info-fg: #85B7EB;
+  --info-bg: rgba(24,95,165,0.10);
+  --info-border: rgba(24,95,165,0.30);
+
   /* Aliases em pt-BR (compat retroativa — 200+ usos no projeto) */
   --sucesso: var(--success);
   --sucesso-fg: var(--success-fg);
@@ -75,6 +81,18 @@
   --banner-fade-strong: rgba(15,15,15,1);
   --banner-fade-medium: rgba(15,15,15,0.92);
   --banner-fade-light: rgba(15,15,15,0.4);
+
+  /* ─── Áreas Temáticas (AT1–AT5) ───
+     Tokens semânticos para tags/cards/badges. Cada AT expõe:
+       --atN-fg     = cor do texto
+       --atN-bg     = tint de background (rgba)
+       --atN-border = borda (rgba) — usado por hero-bloco / proximo-area destacado
+     Modo escuro: tons claros sobre fundo carvão. Modo claro: tons escurecidos. */
+  --at1-fg: #E0866E;  --at1-bg: rgba(192,39,15,0.10);  --at1-border: rgba(192,39,15,0.35);
+  --at2-fg: #D4A24A;  --at2-bg: rgba(186,117,23,0.10); --at2-border: rgba(186,117,23,0.35);
+  --at3-fg: #5C9BD9;  --at3-bg: rgba(24,95,165,0.12);  --at3-border: rgba(24,95,165,0.35);
+  --at4-fg: #7DD99A;  --at4-bg: rgba(47,111,68,0.15);  --at4-border: rgba(47,111,68,0.35);
+  --at5-fg: #B58AE0;  --at5-bg: rgba(127,119,221,0.12); --at5-border: rgba(127,119,221,0.35);
 }
 
 :root.light-mode {
@@ -91,6 +109,7 @@
   --success-fg: #1F6135;
   --danger-fg: #9A1F0C;
   --warning-fg: #7A4D0E;
+  --info-fg:    #1A4F87;
 
   /* Tints de curso ganham mais densidade sobre fundo claro */
   --ctsp-bg: rgba(154,31,12,0.10);
@@ -102,6 +121,13 @@
   --banner-fade-strong: rgba(244,245,247,1);
   --banner-fade-medium: rgba(244,245,247,0.94);
   --banner-fade-light: rgba(244,245,247,0.5);
+
+  /* AT — versões escurecidas para legibilidade sobre fundo claro */
+  --at1-fg: #9A1F0C;  --at1-bg: rgba(154,31,12,0.10);  --at1-border: rgba(154,31,12,0.40);
+  --at2-fg: #7A4D0E;  --at2-bg: rgba(186,117,23,0.14); --at2-border: rgba(122,77,14,0.40);
+  --at3-fg: #1A4F87;  --at3-bg: rgba(24,95,165,0.10);  --at3-border: rgba(24,95,165,0.40);
+  --at4-fg: #1F6135;  --at4-bg: rgba(47,111,68,0.12);  --at4-border: rgba(47,111,68,0.40);
+  --at5-fg: #5F45A8;  --at5-bg: rgba(127,119,221,0.12); --at5-border: rgba(95,69,168,0.40);
 }
 
 /* Transição suave entre temas (não anima durante o boot) */

@@ -109,8 +109,8 @@
     font-size: 12px;
     font-weight: 500;
   }
-  .stat-ok { background: rgba(125, 217, 154, 0.1); color: #7DD99A; }
-  .stat-err { background: rgba(240, 149, 149, 0.1); color: #F09595; }
+  .stat-ok { background: rgba(125, 217, 154, 0.1); color: var(--success-fg); }
+  .stat-err { background: rgba(240, 149, 149, 0.1); color: var(--danger-fg); }
 
   .header-actions {
     display: flex;
@@ -191,7 +191,7 @@
     display: inline-flex; align-items: center; gap: 6px;
     background: transparent;
     border: 1px solid #2A5A2A;
-    color: #7DD99A;
+    color: var(--success-fg);
     border-radius: 7px; padding: 7px 14px;
     font-size: 12px; font-weight: 500;
     font-family: 'Inter', sans-serif;
@@ -503,7 +503,7 @@
           <div class="dash-val" id="stat-acertos">—</div>
           <div class="dash-label">Taxa de Acerto Geral</div>
         </div>
-        <div class="dash-card" style="border-top-color: #85B7EB;">
+        <div class="dash-card" style="border-top-color: var(--info-fg);">
           <div class="dash-val" id="stat-sessoes">—</div>
           <div class="dash-label">Sessões Concluídas</div>
         </div>

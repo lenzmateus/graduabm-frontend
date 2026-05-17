@@ -55,16 +55,16 @@
   /* BADGES */
   .badge { display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.04em; }
   .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-  .badge-ativo { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
-  .badge-inativo { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); color: #F09595; }
+  .badge-ativo { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .badge-inativo { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); color: var(--danger-fg); }
   .badge-vencendo { background: var(--amarelo-bg); border: 1px solid var(--amarelo-borda); color: #EF9F27; }
 
   /* AÇÕES */
   .acoes { display: flex; gap: 6px; }
   .btn-acao { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
   .btn-acao:hover { border-color: var(--roxo); color: #AFA9EC; }
-  .btn-acao.verde:hover { border-color: var(--verde-borda); color: #7DD99A; }
-  .btn-acao.vermelho:hover { border-color: var(--vermelho-borda); color: #F09595; }
+  .btn-acao.verde:hover { border-color: var(--verde-borda); color: var(--success-fg); }
+  .btn-acao.vermelho:hover { border-color: var(--vermelho-borda); color: var(--danger-fg); }
 
   /* PAGINAÇÃO */
   .paginacao { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-top: 1px solid var(--cinza-borda); font-size: 12px; color: var(--cinza-texto); }
@@ -106,7 +106,7 @@
   .log-data { font-size: 10px; color: #555; margin-top: 2px; }
 
   /* BADGE INATIVO 6M */
-  .badge-inativo6m { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.35); color: #E24B4A; }
+  .badge-inativo6m { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.35); color: var(--danger); }
 
   /* LOADING */
   .loading-row td { text-align: center; color: var(--cinza-texto); padding: 2rem; font-size: 13px; }
@@ -383,7 +383,7 @@
   <div class="modal" style="max-width:460px;">
     <div class="modal-titulo" style="color:var(--erro);">Excluir Usuário</div>
     <div class="modal-sub" id="modal-excluir-sub"></div>
-    <div style="background:rgba(226,75,74,0.08);border:1px solid rgba(226,75,74,0.3);border-radius:8px;padding:12px 14px;margin-bottom:1.25rem;font-size:12px;color:#F09595;line-height:1.6;">
+    <div style="background:rgba(226,75,74,0.08);border:1px solid rgba(226,75,74,0.3);border-radius:8px;padding:12px 14px;margin-bottom:1.25rem;font-size:12px;color:var(--danger-fg);line-height:1.6;">
       Esta ação é <strong>permanente e irreversível</strong>. Serão excluídos:<br>
       · Todas as sessões e respostas do aluno<br>
       · Participações em simulados mensais<br>
@@ -403,7 +403,7 @@
 </div>
 
 <script src="/js/api.js?v=3"></script>
-<script src="/js/admin-chrome.js"></script>
+<script src="/js/admin-chrome.js?v=2"></script>
 <script>
   // ── Chrome (sidebar/topbar/toast/watermark + auth guard) ────
   AdminChrome.init({
@@ -613,7 +613,7 @@
         </div>
       `).join('');
     } catch {
-      document.getElementById('modal-logs-lista').innerHTML = '<div class="log-item" style="color:#F09595;">Erro ao carregar logs.</div>';
+      document.getElementById('modal-logs-lista').innerHTML = '<div class="log-item" style="color:var(--danger-fg);">Erro ao carregar logs.</div>';
     }
   }
 
@@ -806,13 +806,13 @@
 
       const total = (rAtivos ?? 0) + (rInativos ?? 0);
       const pct = (n) => n === null ? '—' : (total > 0 ? ((n / total) * 100).toFixed(1) + '%' : '—');
-      const fmt = (n) => n === null ? '<span style="color:#F09595">erro</span>' : n;
+      const fmt = (n) => n === null ? '<span style="color:var(--danger-fg)">erro</span>' : n;
 
       const linhas = [
-        { label: 'Ativos — CTSP (Sargento)', n: rCTSP, cor: '#7DD99A' },
+        { label: 'Ativos — CTSP (Sargento)', n: rCTSP, cor: 'var(--success-fg)' },
         { label: 'Ativos — CBA (Tenente)', n: rCBA, cor: '#AFA9EC' },
         { label: 'Ativos — Ambos', n: rAmbos, cor: '#EF9F27' },
-        { label: 'Inativos (sem acesso)', n: rInativos, cor: '#F09595' },
+        { label: 'Inativos (sem acesso)', n: rInativos, cor: 'var(--danger-fg)' },
         { label: 'Total de cadastros', n: total, cor: 'var(--branco)', bold: true },
       ];
 

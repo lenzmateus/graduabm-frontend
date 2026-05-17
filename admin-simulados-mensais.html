@@ -16,13 +16,14 @@
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/admin-chrome.css">
+<link rel="stylesheet" href="/css/rich-text.css?v=2">
 <style>
   :root {
     --dourado: #F0C050;
     /* override: esta página usa shades diferentes do chrome */
     --roxo: #7C3AED;
     --roxo-bg: rgba(124,58,237,0.1);
-    --verde: #7DD99A;
+    --verde: var(--success-fg);
   }
 
   /* Container e layout específico desta página */
@@ -67,7 +68,7 @@
   .q-area-tag { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 1px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); border: 1px solid var(--cinza-borda); color: var(--cinza-texto); flex-shrink: 0; }
   .q-enun { font-size: 12px; color: var(--branco); flex: 1; line-height: 1.4; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; }
   .btn-remover { background: none; border: 1px solid #333; color: var(--cinza-texto); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
-  .btn-remover:hover { border-color: #E24B4A; color: #E24B4A; }
+  .btn-remover:hover { border-color: var(--danger); color: var(--danger); }
   .btn-ver { background: none; border: 1px solid #333; color: var(--cinza-texto); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
   .btn-ver:hover { border-color: #555; color: var(--branco); }
   .btn-editar { background: none; border: 1px solid #333; color: var(--cinza-texto); border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: 0.15s; }
@@ -120,7 +121,7 @@
   }
   .toast.visivel { opacity: 1; }
   .toast.ok { border-color: rgba(125,217,154,0.4); color: var(--verde); }
-  .toast.err { border-color: rgba(240,149,149,0.4); color: #F09595; }
+  .toast.err { border-color: rgba(240,149,149,0.4); color: var(--danger-fg); }
 
   @media (max-width: 768px) {
     .container { padding: 1rem; }
@@ -195,7 +196,7 @@
   .bq-status-chip { font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 1px 7px; border-radius: 10px; }
   .bq-s-pendente_ia  { background: rgba(240,192,80,.1); color: var(--dourado); border: 1px solid rgba(240,192,80,.3); }
   .bq-s-aprovado     { background: rgba(125,217,154,.1); color: var(--verde); border: 1px solid rgba(125,217,154,.3); }
-  .bq-s-rejeitado    { background: rgba(240,149,149,.1); color: #F09595; border: 1px solid rgba(240,149,149,.3); }
+  .bq-s-rejeitado    { background: rgba(240,149,149,.1); color: var(--danger-fg); border: 1px solid rgba(240,149,149,.3); }
   .bq-enun { flex: 1; font-size: 12px; color: var(--branco); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; cursor: pointer; }
   .bq-acoes { display: flex; gap: 4px; flex-shrink: 0; }
   .bq-detalhe { display: none; padding: 10px 12px; border-top: 1px solid var(--bg-hover); }
@@ -412,7 +413,8 @@
 </div><!-- /layout -->
 
 <script src="/js/api.js?v=3"></script>
-<script src="/js/admin-chrome.js"></script>
+<script src="/js/admin-chrome.js?v=2"></script>
+<script src="/js/rich-text.js?v=1"></script>
 <script>
 AdminChrome.init({ pagina: 'simulados-mensais', titulo: 'Protocolos QAP' });
 const toast = AdminChrome.toast;
@@ -515,7 +517,7 @@ async function carregarSimulados(tentativa = 1) {
       grid.innerHTML = `<div style="color:var(--cinza-texto);text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:13px;">Conectando ao servidor (tentativa ${tentativa}/3)…</div>`;
       setTimeout(() => carregarSimulados(tentativa + 1), 3000);
     } else {
-      grid.innerHTML = `<div style="color:#F09595;padding:2rem;">${err.erro || 'Erro ao carregar.'} <button class="btn-sm" style="margin-left:12px;" onclick="carregarSimulados()">Tentar novamente</button></div>`;
+      grid.innerHTML = `<div style="color:var(--danger-fg);padding:2rem;">${err.erro || 'Erro ao carregar.'} <button class="btn-sm" style="margin-left:12px;" onclick="carregarSimulados()">Tentar novamente</button></div>`;
     }
   }
 }
@@ -532,7 +534,7 @@ async function carregarQuestoesDoSimulado(id) {
     const data = await req(`/api/simulados-mensais/admin/${id}/questoes`);
     questoesSimulado[id] = data;
     renderizarQuestoesDo(id);
-  } catch (err) { lista.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro || 'Erro'}</div>`; }
+  } catch (err) { lista.innerHTML = `<div style="color:var(--danger-fg);font-size:12px;">${err.erro || 'Erro'}</div>`; }
 }
 
 function renderizarQuestoesDo(id) {
@@ -550,8 +552,8 @@ function renderizarQuestoesDo(id) {
     <div>
       <div class="questao-item">
         <span class="q-ord">${ordem}</span>
-        <span class="q-area-tag">${q.area_tematica || '—'}</span>
-        <span class="q-enun">${q.enunciado || ''}</span>
+        <span class="q-area-tag">${q.area_tematica || '-'}</span>
+        <span class="q-enun">${window.RichText ? RichText.escapeHtml(RichText.normalizeForCompare(q.enunciado || '')) : (q.enunciado || '')}</span>
         <div style="display:flex;gap:4px;flex-shrink:0;">
           <button class="btn-ver" onclick="toggleDetalhe('${q.id}')">Ver</button>
           <button class="btn-editar" onclick="abrirModalEditar('${id}','${q.id}')">Editar</button>
@@ -562,12 +564,12 @@ function renderizarQuestoesDo(id) {
         const norm = AdminChrome.normalizarQuestao(q);
         const letras = ['A','B','C','D','E'];
         return `<div class="q-detalhe" id="qd-${q.id}" style="display:none;">
-        <div class="q-detalhe-enun">${q.enunciado || ''}</div>
+        <div class="q-detalhe-enun rt-render">${window.RichText ? RichText.render(q.enunciado || '') : (q.enunciado || '')}</div>
         <div class="q-detalhe-alts">
-          ${letras.map((l, i) => `<div class="q-alt"><strong>${l}.</strong> ${norm.alts[i] || '—'}</div>`).join('')}
+          ${letras.map((l, i) => `<div class="q-alt"><strong>${l}.</strong> <span class="rt-render">${window.RichText ? RichText.renderInline(norm.alts[i] || '') : (norm.alts[i] || '-')}</span></div>`).join('')}
         </div>
-        <div class="q-gabarito">Gabarito: <strong>${letras[norm.gabarito] || '—'}</strong></div>
-        ${norm.comentario ? `<div class="q-justificativa">${norm.comentario}</div>` : ''}
+        <div class="q-gabarito">Gabarito: <strong>${letras[norm.gabarito] || '-'}</strong></div>
+        ${norm.comentario ? `<div class="q-justificativa rt-render">${window.RichText ? RichText.render(norm.comentario) : norm.comentario}</div>` : ''}
         <a href="/admin-questoes?editar=${q.id}" class="btn-sm" style="display:inline-block;margin-top:8px;">Editar no Editor ↗</a>
       </div>`;
       })()}
@@ -636,7 +638,7 @@ async function buscarQuestoes(simId, curso) {
     questoesDisponiveis[simId] = data;
     if (!selecionadosPorSimulado[simId]) selecionadosPorSimulado[simId] = new Set();
     renderizarBuscaResult(simId);
-  } catch (err) { el.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro || 'Erro'}</div>`; }
+  } catch (err) { el.innerHTML = `<div style="color:var(--danger-fg);font-size:12px;">${err.erro || 'Erro'}</div>`; }
 }
 
 function renderizarBuscaResult(simId) {
@@ -650,8 +652,8 @@ function renderizarBuscaResult(simId) {
     <div class="busca-item ${selecionadosPorSimulado[simId]?.has(q.id) ? 'selecionado' : ''}" onclick="toggleSelecionado('${simId}','${q.id}')">
       <input type="checkbox" ${selecionadosPorSimulado[simId]?.has(q.id) ? 'checked' : ''} onclick="event.stopPropagation();" onchange="toggleSelecionado('${simId}','${q.id}')">
       <div class="busca-item-info">
-        <div class="busca-item-enun">${q.enunciado || ''}</div>
-        <div class="busca-item-meta">${q.area_tematica || '—'} · ${q.legislacao_nome || '—'} · ${q.ativa ? 'ativa' : '<span style="color:#F09595">inativa</span>'}</div>
+        <div class="busca-item-enun">${window.RichText ? RichText.escapeHtml(RichText.normalizeForCompare(q.enunciado || '')) : (q.enunciado || '')}</div>
+        <div class="busca-item-meta">${q.area_tematica || '—'} · ${q.legislacao_nome || '—'} · ${q.ativa ? 'ativa' : '<span style="color:var(--danger-fg)">inativa</span>'}</div>
       </div>
     </div>`).join('');
   atualizarContador(simId);
@@ -715,10 +717,11 @@ async function toggleAtivo(simId, novoAtivo) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 
-function abrirModalEditar(simId, questaoId) {
+async function abrirModalEditar(simId, questaoId) {
   const entrada = (questoesSimulado[simId] || []).find(e => e.questoes?.id === questaoId);
   if (!entrada) { toast('Questão não encontrada. Feche e reabra o simulado.', 'err'); return; }
   const q = entrada.questoes;
+  await RichText.ensureLoaded();
 
   const ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:9999;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:2rem 1rem;';
@@ -760,29 +763,35 @@ function abrirModalEditar(simId, questaoId) {
   document.body.appendChild(ov);
 
   const _norm = AdminChrome.normalizarQuestao(q);
-  document.getElementById('eq-enunciado').value = q.enunciado || '';
+  // Monta editores Rich Text nos campos
+  RichText.mountField('eq-enunciado', { initial: q.enunciado || '' });
   ['a','b','c','d','e'].forEach((l, i) => {
-    document.getElementById(`eq-alt-${l}`).value = _norm.alts[i] || '';
+    RichText.mountField('eq-alt-' + l, { oneLine: true, initial: _norm.alts[i] || '' });
   });
   document.getElementById('eq-gabarito').value = ['A','B','C','D','E'][_norm.gabarito] || 'A';
-  document.getElementById('eq-justificativa').value = _norm.comentario;
+  RichText.mountField('eq-justificativa', { initial: _norm.comentario || '' });
 
-  const fechar = () => ov.remove();
+  const fechar = () => {
+    RichText.destroy('eq-enunciado');
+    ['a','b','c','d','e'].forEach(l => RichText.destroy('eq-alt-' + l));
+    RichText.destroy('eq-justificativa');
+    ov.remove();
+  };
   document.getElementById('eq-fechar').addEventListener('click', fechar);
   document.getElementById('eq-cancelar').addEventListener('click', fechar);
   ov.addEventListener('click', e => { if (e.target === ov) fechar(); });
 
   document.getElementById('eq-salvar').addEventListener('click', async () => {
-    const enunciado = document.getElementById('eq-enunciado').value.trim();
-    if (!enunciado) { toast('O enunciado não pode estar vazio.', 'err'); return; }
+    const enunciado = RichText.getHTML('eq-enunciado');
+    if (!enunciado) { toast('O enunciado nao pode estar vazio.', 'err'); return; }
 
-    const alts = ['a','b','c','d','e'].map(l => document.getElementById(`eq-alt-${l}`).value.trim());
+    const alts = ['a','b','c','d','e'].map(l => RichText.getInline('eq-alt-' + l));
     const letraGab = document.getElementById('eq-gabarito').value;
     const body = {
       enunciado,
       alternativas: alts.filter((v, i) => i < 2 || v),
       gabarito: { A:0, B:1, C:2, D:3, E:4 }[letraGab] ?? 0,
-      comentario: document.getElementById('eq-justificativa').value.trim() || null,
+      comentario: RichText.getHTML('eq-justificativa') || null,
     };
 
     const btn = document.getElementById('eq-salvar');
@@ -862,7 +871,7 @@ async function carregarBlocos() {
       atualizarBotaoPublicar(b.id);
     });
   } catch(err) {
-    grid.innerHTML = `<div style="color:#F09595;padding:1rem;">${err.erro||'Erro ao carregar blocos.'} <button class="btn-sm" onclick="carregarBlocos()" style="margin-left:8px;">Tentar novamente</button></div>`;
+    grid.innerHTML = `<div style="color:var(--danger-fg);padding:1rem;">${err.erro||'Erro ao carregar blocos.'} <button class="btn-sm" onclick="carregarBlocos()" style="margin-left:8px;">Tentar novamente</button></div>`;
   }
 }
 
@@ -937,7 +946,7 @@ function renderBlocoCard(bloco) {
           <div id="reap-lista-${bloco.id}" style="display:flex;flex-direction:column;gap:4px;max-height:240px;overflow-y:auto;"></div>
           <div style="margin-top:10px;">
             <button class="btn-sm btn-primary" id="reap-salvar-btn-${bloco.id}" onclick="salvarSelecaoReap('${bloco.id}')">Salvar Seleção</button>
-            <span id="reap-salvar-msg-${bloco.id}" style="font-size:11px;color:#7DD99A;margin-left:8px;display:none;">Salvo!</span>
+            <span id="reap-salvar-msg-${bloco.id}" style="font-size:11px;color:var(--success-fg);margin-left:8px;display:none;">Salvo!</span>
           </div>
         </div>
       </div>` : ''}
@@ -949,7 +958,7 @@ function renderBlocoCard(bloco) {
           : `<button id="pub-btn-${bloco.id}" class="btn-sm btn-primary" ${tot.completo ? '' : 'disabled title="Atingir todas as metas (próprias + reaproveitadas) para publicar"'} onclick="abrirModalPublicar('${bloco.id}')">Publicar Protocolo QAP</button>`}
         ${bloco.status === 'em_andamento' ? `<button class="btn-sm" onclick="encerrarEvento('${bloco.id}')">Encerrar Evento</button>` : ''}
         ${bloco.status === 'encerrado' ? `<button class="btn-sm" onclick="liberarBanco('${bloco.id}')">Liberar ao Banco</button>` : ''}
-        <button class="btn-sm" style="margin-left:auto;color:#F09595;" onclick="confirmarExcluirBloco('${bloco.id}')">Excluir Bloco</button>
+        <button class="btn-sm" style="margin-left:auto;color:var(--danger-fg);" onclick="confirmarExcluirBloco('${bloco.id}')">Excluir Bloco</button>
       </div>
     </div>
   </div>`;
@@ -995,8 +1004,8 @@ function renderLegislacoes(usadas, manifesto, bloco) {
 
   const totalAprovadas = (usadas || []).reduce((s, l) => s + (l.aprovadas || 0), 0);
   const cobertos = manifesto.todos.filter(l => usadasMap[l.legislacao_id]?.total > 0).length;
-  const corBadge = cobertos === manifesto.total ? '#7DD99A'
-                 : cobertos >= manifesto.total * 0.7 ? '#D97706' : '#F09595';
+  const corBadge = cobertos === manifesto.total ? 'var(--success-fg)'
+                 : cobertos >= manifesto.total * 0.7 ? '#D97706' : 'var(--danger-fg)';
   const badge = `<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${corBadge};">${cobertos}/${manifesto.total} leis</span>`;
 
   const gruposHtml = ['AT1','AT2','AT3','AT4','AT5'].map(at => {
@@ -1008,13 +1017,13 @@ function renderLegislacoes(usadas, manifesto, bloco) {
 
       let countEl, gerarBtn = '';
       if (!uso || uso.total === 0) {
-        countEl  = `<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#F09595;flex-shrink:0;">NÃO UTILIZADA</span>`;
+        countEl  = `<span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--danger-fg);flex-shrink:0;">NÃO UTILIZADA</span>`;
         gerarBtn = `<button class="btn-sm" style="font-size:10px;padding:2px 8px;flex-shrink:0;" onclick="preencherGerar('${bloco.id}','${at}','${nomeEsc}')">Gerar ↗</button>`;
       } else if (uso.aprovadas > 0) {
         const pct    = totalAprovadas > 0 ? Math.round(uso.aprovadas / totalAprovadas * 100) : 0;
         const alerta = pct > 35 ? ` <span title="Alta concentração: ${pct}% do bloco nesta lei" style="color:#D97706;font-size:9px;">⚠${pct}%</span>` : '';
         const pend   = uso.pendentes > 0 ? ` <span style="color:#D97706;font-size:10px;">(+${uso.pendentes}⏳)</span>` : '';
-        countEl = `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7DD99A;flex-shrink:0;">${uso.aprovadas}q${alerta}${pend}</span>`;
+        countEl = `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--success-fg);flex-shrink:0;">${uso.aprovadas}q${alerta}${pend}</span>`;
       } else if (uso.pendentes > 0) {
         countEl = `<span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#D97706;flex-shrink:0;">${uso.pendentes} pend.</span>`;
       } else {
@@ -1156,7 +1165,7 @@ async function carregarQuestoesDoBlocoFiltradas(blocoId) {
     questoesPorBloco[blocoId] = data;
     renderizarQuestoesDoBlocoNoDOM(blocoId);
   } catch(err) {
-    if (lista) lista.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro||'Erro'}</div>`;
+    if (lista) lista.innerHTML = `<div style="color:var(--danger-fg);font-size:12px;">${err.erro||'Erro'}</div>`;
   }
 }
 
@@ -1191,10 +1200,10 @@ function renderQuestaoDoBloco(q, blocoId) {
       <span class="bq-area-badge">${q.area_tematica||'?'}</span>
       <span class="bq-status-chip bq-s-${q.revisao_status}">${{ pendente_ia:'PENDENTE', aprovado:'APROVADO', rejeitado:'REJEITADO' }[q.revisao_status]||q.revisao_status}</span>
       ${elegivel_cba_badge}
-      <span class="bq-enun" onclick="toggleBqDetalhe('${q.id}')" title="Clique para expandir">${enun}</span>
+      <span class="bq-enun" onclick="toggleBqDetalhe('${q.id}')" title="Clique para expandir">${window.RichText ? RichText.escapeHtml(RichText.normalizeForCompare(enun)) : enun}</span>
       <div class="bq-acoes">
         ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--verde);border-color:rgba(125,217,154,.3);" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Aprovar</button>` : ''}
-        ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" style="color:#F09595;border-color:rgba(240,149,149,.3);" onclick="rejeitarQuestaoBloco('${q.id}','${blocoId}')">Rejeitar</button>` : ''}
+        ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" style="color:var(--danger-fg);border-color:rgba(240,149,149,.3);" onclick="rejeitarQuestaoBloco('${q.id}','${blocoId}')">Rejeitar</button>` : ''}
         ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" id="btn-ambos-${q.id}" style="${q.curso==='ambos'?'color:#A78BFA;border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.08);':''}" onclick="toggleCursoAmbos('${q.id}','${blocoId}')" title="Marcar como válida para CTSP e CBA">${q.curso==='ambos'?'✓ Ambos':'Para Ambos'}</button>` : ''}
         <button class="btn-sm" style="color:var(--dourado);border-color:rgba(240,192,80,.3);" onclick="abrirEditarQuestaoBloco('${blocoId}','${q.id}')">Editar</button>
         ${q.revisao_status === 'rejeitado'   ? `<button class="btn-sm" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Restaurar</button>` : ''}
@@ -1202,11 +1211,11 @@ function renderQuestaoDoBloco(q, blocoId) {
       </div>
     </div>
     <div class="bq-detalhe" id="bqdet-${q.id}">
-      <div class="bq-detalhe-enun">${enun}</div>
-      ${alts.map((a, i) => `<div class="bq-alt ${i === norm.gabarito ? 'correta' : ''}">${LETRA[i]}. ${a || '—'}</div>`).join('')}
+      <div class="bq-detalhe-enun rt-render">${window.RichText ? RichText.render(enun) : enun}</div>
+      ${alts.map((a, i) => `<div class="bq-alt ${i === norm.gabarito ? 'correta' : ''}">${LETRA[i]}. <span class="rt-render">${window.RichText ? RichText.renderInline(a || '') : (a || '-')}</span></div>`).join('')}
       <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--verde);">Gabarito: ${gabLetra}</div>
-      ${q.legislacao_nome ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-top:4px;">Legislação: ${q.legislacao_nome}</div>` : ''}
-      ${norm.comentario ? `<div class="bq-coment">${norm.comentario}</div>` : ''}
+      ${q.legislacao_nome ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-top:4px;">Legislacao: ${q.legislacao_nome}</div>` : ''}
+      ${norm.comentario ? `<div class="bq-coment rt-render">${window.RichText ? RichText.render(norm.comentario) : norm.comentario}</div>` : ''}
     </div>
   </div>`;
 }
@@ -1275,13 +1284,13 @@ async function verificarStatusGeracao(blocoId) {
     }
     const linhas = logs.slice(0, 8).map(l => {
       const icone = l.status === 'done' ? '✓' : l.status === 'failed' ? '✗' : '⏳';
-      const cor   = l.status === 'done' ? 'var(--verde)' : l.status === 'failed' ? '#F09595' : 'var(--dourado)';
+      const cor   = l.status === 'done' ? 'var(--verde)' : l.status === 'failed' ? 'var(--danger-fg)' : 'var(--dourado)';
       const det   = typeof l.detalhes === 'string' ? l.detalhes : JSON.stringify(l.detalhes||{});
       return `<span style="color:${cor};">${icone} ${l.job_name?.split('-').slice(2).join('-')||l.job_name} — ${det}</span>`;
     });
     if (sgEl) { sgEl.style.display = 'block'; sgEl.style.color = '#ccc'; sgEl.innerHTML = linhas.join('<br>'); }
   } catch(err) {
-    if (sgEl) { sgEl.style.display = 'block'; sgEl.style.color = '#F09595'; sgEl.textContent = err.erro||'Erro'; }
+    if (sgEl) { sgEl.style.display = 'block'; sgEl.style.color = 'var(--danger-fg)'; sgEl.textContent = err.erro||'Erro'; }
   }
 }
 
@@ -1414,10 +1423,15 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
     </div>`;
   document.body.appendChild(ov);
 
-  document.getElementById('beq-enunciado').value = q.enunciado || '';
-  alts.forEach((a,i) => { const el = document.getElementById(`beq-alt-${LETRA[i]}`); if(el) el.value = a||''; });
+  // Monta editores Rich Text
+  await RichText.ensureLoaded();
+  RichText.mountField('beq-enunciado', { initial: q.enunciado || '' });
+  alts.forEach((a,i) => {
+    const id = `beq-alt-${LETRA[i]}`;
+    if (document.getElementById(id)) RichText.mountField(id, { oneLine: true, initial: a || '' });
+  });
   document.getElementById('beq-gabarito').value = String(gabIdx);
-  document.getElementById('beq-comentario').value = AdminChrome.normalizarQuestao(q).comentario;
+  RichText.mountField('beq-comentario', { initial: AdminChrome.normalizarQuestao(q).comentario });
 
   // Popula select de legislação filtrado pela AT da questão
   const bloco = blocosDadosPorId[blocoId] || {};
@@ -1431,17 +1445,22 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
   };
   garantirManifesto(cursoBloco).then(popularBeqSel);
 
-  const fechar = () => ov.remove();
+  const fechar = () => {
+    RichText.destroy('beq-enunciado');
+    LETRA.forEach(l => RichText.destroy('beq-alt-' + l));
+    RichText.destroy('beq-comentario');
+    ov.remove();
+  };
   document.getElementById('beq-fechar').addEventListener('click', fechar);
   document.getElementById('beq-cancelar').addEventListener('click', fechar);
   ov.addEventListener('click', e => { if(e.target === ov) fechar(); });
 
   document.getElementById('beq-salvar').addEventListener('click', async () => {
-    const enunciado = document.getElementById('beq-enunciado').value.trim();
-    if (!enunciado) { toast('O enunciado não pode estar vazio.', 'err'); return; }
-    const altsNew = LETRA.map(l => document.getElementById(`beq-alt-${l}`).value.trim());
+    const enunciado = RichText.getHTML('beq-enunciado');
+    if (!enunciado) { toast('O enunciado nao pode estar vazio.', 'err'); return; }
+    const altsNew = LETRA.map(l => RichText.getInline('beq-alt-' + l));
     const gabNew  = parseInt(document.getElementById('beq-gabarito').value, 10);
-    const coment  = document.getElementById('beq-comentario').value.trim() || null;
+    const coment  = RichText.getHTML('beq-comentario') || null;
 
     const beqSelEl     = document.getElementById('beq-legislacao-sel');
     const legislacao_id   = beqSelEl?.value || q.legislacao_id || null;
@@ -1568,7 +1587,7 @@ async function carregarQuestoesReaproveitaveis(blocoId) {
     if (!reaproveitadasPorBloco[blocoId]) reaproveitadasPorBloco[blocoId] = new Set();
     renderizarReaproveitaveis(blocoId);
   } catch(err) {
-    lista.innerHTML = `<div style="color:#F09595;font-size:12px;">${err.erro || 'Erro ao carregar.'}</div>`;
+    lista.innerHTML = `<div style="color:var(--danger-fg);font-size:12px;">${err.erro || 'Erro ao carregar.'}</div>`;
   }
 }
 
@@ -1587,7 +1606,7 @@ function renderizarReaproveitaveis(blocoId) {
     <div class="busca-item ${sel.has(q.id) ? 'selecionado' : ''}" onclick="toggleReapSelecionada('${blocoId}','${q.id}')">
       <input type="checkbox" ${sel.has(q.id) ? 'checked' : ''} onclick="event.stopPropagation();" onchange="toggleReapSelecionada('${blocoId}','${q.id}')">
       <div class="busca-item-info">
-        <div class="busca-item-enun">${q.enunciado || ''}</div>
+        <div class="busca-item-enun">${window.RichText ? RichText.escapeHtml(RichText.normalizeForCompare(q.enunciado || '')) : (q.enunciado || '')}</div>
         <div class="busca-item-meta">${q.area_tematica} · ${q.legislacao_nome || '—'} · <span style="color:#A78BFA;">AMBOS</span></div>
       </div>
     </div>`).join('');
@@ -1885,12 +1904,21 @@ async function garantirManifesto(curso) {
   manifestoCache[curso] = m;
 }
 
-function abrirModalQuestaoManual(blocoId, cursoPadrao) {
+const QM_IDS = ['qm-enunciado','qm-alt-A','qm-alt-B','qm-alt-C','qm-alt-D','qm-alt-E','qm-comentario'];
+const QM_INLINE = new Set(['qm-alt-A','qm-alt-B','qm-alt-C','qm-alt-D','qm-alt-E']);
+async function montarEditoresQM() {
+  await RichText.ensureLoaded();
+  for (const id of QM_IDS) {
+    if (RichText.get(id)) continue;
+    if (document.getElementById(id)) RichText.mountField(id, { oneLine: QM_INLINE.has(id) });
+  }
+}
+async function abrirModalQuestaoManual(blocoId, cursoPadrao) {
+  await montarEditoresQM();
   document.getElementById('qm-bloco-id').value = blocoId;
   const cursoEl = document.getElementById('qm-curso');
   if (cursoEl) cursoEl.value = cursoPadrao || 'ctsp';
-  ['enunciado','comentario'].forEach(f => { const el = document.getElementById(`qm-${f}`); if(el) el.value=''; });
-  ['A','B','C','D','E'].forEach(l => { const el = document.getElementById(`qm-alt-${l}`); if(el) el.value=''; });
+  QM_IDS.forEach(id => RichText.setHTML(id, ''));
   document.getElementById('qm-gabarito').value = '0';
   const areaEl = document.getElementById('qm-area');
   if (areaEl) areaEl.onchange = () => preencherSelectLegislacoes(blocoId);
@@ -1902,12 +1930,12 @@ function fecharModalQuestaoManual() { document.getElementById('modal-questao-man
 
 async function salvarQuestaoManual(salvarEAprovar) {
   const blocoId = document.getElementById('qm-bloco-id').value;
-  const enunciado = document.getElementById('qm-enunciado').value.trim();
+  const enunciado = RichText.getHTML('qm-enunciado');
   if (!enunciado) { toast('Informe o enunciado.', 'err'); return; }
-  const alternativas = ['A','B','C','D','E'].map(l => document.getElementById(`qm-alt-${l}`).value.trim());
+  const alternativas = ['A','B','C','D','E'].map(l => RichText.getInline('qm-alt-' + l));
   if (alternativas.some(a => !a)) { toast('Preencha todas as alternativas.', 'err'); return; }
   const gabarito      = parseInt(document.getElementById('qm-gabarito').value, 10);
-  const comentario    = document.getElementById('qm-comentario').value.trim() || null;
+  const comentario    = RichText.getHTML('qm-comentario') || null;
   const area_tematica = document.getElementById('qm-area').value;
   const curso         = document.getElementById('qm-curso').value;
   const sel           = document.getElementById('qm-legislacao-sel');

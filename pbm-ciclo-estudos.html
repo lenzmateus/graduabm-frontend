@@ -83,14 +83,14 @@
     font-size: 11px; letter-spacing: 0.08em;
     padding: 2px 6px; border-radius: 4px;
   }
-  .at-card.AT1 .at-card-tag { color: #E0866E; background: rgba(192,39,15,0.08); }
-  .at-card.AT2 .at-card-tag { color: #D4A24A; background: rgba(186,117,23,0.10); }
-  .at-card.AT3 .at-card-tag { color: #5C9BD9; background: rgba(24,95,165,0.12); }
-  .at-card.AT4 .at-card-tag { color: #7DD99A; background: rgba(47,111,68,0.15); }
-  .at-card.AT5 .at-card-tag { color: #B58AE0; background: rgba(127,119,221,0.12); }
+  .at-card.AT1 .at-card-tag { color: var(--at1-fg); background: var(--at1-bg); }
+  .at-card.AT2 .at-card-tag { color: var(--at2-fg); background: var(--at2-bg); }
+  .at-card.AT3 .at-card-tag { color: var(--at3-fg); background: var(--at3-bg); }
+  .at-card.AT4 .at-card-tag { color: var(--at4-fg); background: var(--at4-bg); }
+  .at-card.AT5 .at-card-tag { color: var(--at5-fg); background: var(--at5-bg); }
   .at-card-peso {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: #666;
+    font-size: 10px; color: var(--texto-suporte);
   }
   .at-card-nome {
     font-size: 12px; color: var(--cinza-texto);
@@ -109,12 +109,12 @@
   .at-nivel-hint {
     margin-top: 6px;
     font-family: 'IBM Plex Mono', monospace; font-size: 9px;
-    color: #555; letter-spacing: 0.06em;
+    color: var(--texto-suporte); letter-spacing: 0.06em;
   }
 
   .nudges-card {
-    border-left: 3px solid #D4A24A;
-    background: rgba(186,117,23,0.06);
+    border-left: 3px solid var(--at2-fg);
+    background: var(--warning-bg);
   }
   .nudge-item {
     font-size: 12px; color: var(--cinza-texto);
@@ -139,12 +139,12 @@
   }
   .btn-secundario:hover { color: var(--branco); border-color: var(--cinza-texto); }
   .btn-perigo {
-    background: transparent; color: #B85A4A;
-    border: 1px solid #4A2218; padding: 8px 16px; border-radius: 6px;
+    background: transparent; color: var(--danger-fg);
+    border: 1px solid var(--danger-border); padding: 8px 16px; border-radius: 6px;
     font-family: 'IBM Plex Mono', monospace; font-size: 11px;
     letter-spacing: 0.06em; cursor: pointer;
   }
-  .btn-perigo:hover { background: rgba(192,39,15,0.08); }
+  .btn-perigo:hover { background: var(--danger-bg); }
 
   /* ── Ciclo Ativo ── */
   .hero-ciclo {
@@ -171,11 +171,11 @@
     font-family: 'Bebas Neue', sans-serif; font-size: 14px;
     letter-spacing: 0.06em; margin-bottom: 2px;
   }
-  .hero-bloco-area.AT1 { color: #E0866E; }
-  .hero-bloco-area.AT2 { color: #D4A24A; }
-  .hero-bloco-area.AT3 { color: #5C9BD9; }
-  .hero-bloco-area.AT4 { color: #7DD99A; }
-  .hero-bloco-area.AT5 { color: #B58AE0; }
+  .hero-bloco-area.AT1 { color: var(--at1-fg); }
+  .hero-bloco-area.AT2 { color: var(--at2-fg); }
+  .hero-bloco-area.AT3 { color: var(--at3-fg); }
+  .hero-bloco-area.AT4 { color: var(--at4-fg); }
+  .hero-bloco-area.AT5 { color: var(--at5-fg); }
   .hero-bloco-nome {
     font-family: 'Bebas Neue', sans-serif; font-size: 30px;
     letter-spacing: 0.02em; line-height: 1.1;
@@ -186,20 +186,20 @@
     margin-bottom: 12px;
   }
   .hero-nota-badge {
-    background: rgba(24,95,165,0.10);
-    border: 1px solid rgba(24,95,165,0.30);
+    background: var(--info-bg);
+    border: 1px solid var(--info-border);
     border-radius: 6px;
     padding: 8px 12px;
     margin-bottom: 14px;
     font-size: 12px;
-    color: #85B7EB;
+    color: var(--info-fg);
     line-height: 1.4;
   }
   .hero-nota-badge strong { color: var(--branco); }
   .hero-nota-badge.concluido {
-    background: rgba(47,111,68,0.10);
-    border-color: rgba(47,111,68,0.30);
-    color: #7DD99A;
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-fg);
   }
   .hero-actions {
     display: flex; gap: 10px; flex-wrap: wrap;
@@ -253,18 +253,18 @@
   .proximo-item.atual { border-color: var(--vermelho); background: rgba(192,39,15,0.04); }
   .proximo-num {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px; color: #666;
+    font-size: 11px; color: var(--texto-suporte);
   }
   .proximo-area {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10px; padding: 2px 6px; border-radius: 4px;
     display: inline-block; margin-right: 6px;
   }
-  .proximo-area.AT1 { color: #E0866E; background: rgba(192,39,15,0.10); }
-  .proximo-area.AT2 { color: #D4A24A; background: rgba(186,117,23,0.10); }
-  .proximo-area.AT3 { color: #5C9BD9; background: rgba(24,95,165,0.12); }
-  .proximo-area.AT4 { color: #7DD99A; background: rgba(47,111,68,0.15); }
-  .proximo-area.AT5 { color: #B58AE0; background: rgba(127,119,221,0.12); }
+  .proximo-area.AT1 { color: var(--at1-fg); background: var(--at1-bg); }
+  .proximo-area.AT2 { color: var(--at2-fg); background: var(--at2-bg); }
+  .proximo-area.AT3 { color: var(--at3-fg); background: var(--at3-bg); }
+  .proximo-area.AT4 { color: var(--at4-fg); background: var(--at4-bg); }
+  .proximo-area.AT5 { color: var(--at5-fg); background: var(--at5-bg); }
   .proximo-tempo {
     font-family: 'IBM Plex Mono', monospace; font-size: 11px;
     color: var(--cinza-texto); text-align: right;
@@ -273,23 +273,73 @@
   /* ── Pomodoro overlay ── */
   .pomo-overlay {
     position: fixed; inset: 0;
-    background: #000;
+    background: var(--bg-primario);
+    color: var(--texto-principal);
     z-index: 1000;
     display: flex; align-items: center; justify-content: center;
     padding: 20px; overflow-y: auto;
   }
-  /* Modo "Tela preta" — esconde tudo exceto cronômetro e barra de áudio */
+  /* Modo "Tela preta" — força paleta escura em TODO o overlay (e descendentes),
+     independentemente do tema escolhido pelo usuário. Reaplica tokens no escopo
+     pra evitar "barras brancas" da audio bar em light mode. */
+  .pomo-overlay.tela-preta {
+    /* tokens semânticos — escuros forçados */
+    --bg-primario: #0F0F0F;
+    --bg-secundario: #1A1A1A;
+    --bg-hover: #2A2A2A;
+    --border-color: #333333;
+    --texto-principal: #F8F6F2;
+    --texto-suporte: #888888;
+    --texto-suave: #EFEFEA;
+    --brand-primary: #C0270F;
+    --brand-primary-hover: #8B1A08;
+    /* aliases legados (usados pelos componentes filhos) */
+    --carvao: #0F0F0F;
+    --cinza-escuro: #1A1A1A;
+    --cinza-medio: #2A2A2A;
+    --cinza-borda: #333333;
+    --cinza-texto: #888888;
+    --branco: #F8F6F2;
+    --branco-suave: #EFEFEA;
+    --vermelho: #C0270F;
+    --vermelho-escuro: #8B1A08;
+    /* AT — versões claras (light-on-dark) para o cronômetro de pausa */
+    --at3-fg: #5C9BD9;
+    --at5-fg: #B58AE0;
+
+    background: #000;
+    color: #F8F6F2;
+  }
   .pomo-overlay.tela-preta .pomo-area-tag,
   .pomo-overlay.tela-preta #pomo-leg,
   .pomo-overlay.tela-preta .pomo-fase,
   .pomo-overlay.tela-preta .pomo-sug,
   .pomo-overlay.tela-preta .pomo-actions { display: none !important; }
   .pomo-overlay.tela-preta .pomo-clock {
-    color: var(--bg-hover); font-size: 64px;
+    color: #3A3A3A; font-size: 64px;
     margin: 1rem 0;
   }
   .pomo-overlay.tela-preta .pomo-audio-bar { border-top: none; padding-top: 0; }
   .pomo-overlay.tela-preta .pomo-audio-bar-titulo { display: none; }
+  /* Defesa direta: força dark nos 4 botões de áudio e nos toggles,
+     mesmo se a cascata de variáveis falhar em algum browser. */
+  .pomo-overlay.tela-preta .pomo-audio-btn {
+    background: #1A1A1A !important;
+    border-color: #333333 !important;
+    color: #888888 !important;
+  }
+  .pomo-overlay.tela-preta .pomo-audio-btn:hover { color: #F8F6F2 !important; }
+  .pomo-overlay.tela-preta .pomo-audio-btn.ativo {
+    background: rgba(192,39,15,0.15) !important;
+    color: #F8F6F2 !important;
+    border-color: #C0270F !important;
+  }
+  .pomo-overlay.tela-preta .pomo-audio-toggles { color: #888888 !important; }
+  .pomo-overlay.tela-preta .pomo-audio-toggles label { color: #888888 !important; }
+  .pomo-overlay.tela-preta .pomo-audio-toggles label:hover { color: #F8F6F2 !important; }
+  .pomo-overlay.tela-preta .pomo-audio-frame iframe {
+    background: #000 !important;
+  }
   .pomo-box {
     text-align: center;
     max-width: 540px; width: 100%;
@@ -310,18 +360,20 @@
     padding: 3px 8px; border-radius: 4px; margin-bottom: 0.5rem;
     letter-spacing: 0.08em;
   }
-  .pomo-area-tag.AT1 { color: #E0866E; background: rgba(192,39,15,0.10); }
-  .pomo-area-tag.AT2 { color: #D4A24A; background: rgba(186,117,23,0.10); }
-  .pomo-area-tag.AT3 { color: #5C9BD9; background: rgba(24,95,165,0.12); }
-  .pomo-area-tag.AT4 { color: #7DD99A; background: rgba(47,111,68,0.15); }
-  .pomo-area-tag.AT5 { color: #B58AE0; background: rgba(127,119,221,0.12); }
+  .pomo-area-tag.AT1 { color: var(--at1-fg); background: var(--at1-bg); }
+  .pomo-area-tag.AT2 { color: var(--at2-fg); background: var(--at2-bg); }
+  .pomo-area-tag.AT3 { color: var(--at3-fg); background: var(--at3-bg); }
+  .pomo-area-tag.AT4 { color: var(--at4-fg); background: var(--at4-bg); }
+  .pomo-area-tag.AT5 { color: var(--at5-fg); background: var(--at5-bg); }
   .pomo-clock {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 100px; line-height: 1; color: var(--vermelho);
     margin: 1.5rem 0;
   }
+  .pomo-clock.fase-pausa-curta { color: var(--at3-fg); }
+  .pomo-clock.fase-pausa-longa { color: var(--at5-fg); }
   .pomo-sug {
-    font-size: 12px; color: #666; margin-bottom: 1.5rem;
+    font-size: 12px; color: var(--texto-suporte); margin-bottom: 1.5rem;
     font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em;
   }
   .pomo-actions {
@@ -330,19 +382,19 @@
 
   /* Mini hint de "onde parou" exibida diretamente */
   .pomo-nota-mini {
-    font-size: 12px; color: #85B7EB;
+    font-size: 12px; color: var(--info-fg);
     margin-bottom: 1.2rem;
     line-height: 1.4;
   }
-  .pomo-nota-mini.concluido { color: #7DD99A; }
+  .pomo-nota-mini.concluido { color: var(--success-fg); }
   .pomo-nota-mini:empty { display: none; }
 
   /* Bloco de nota dentro do <details> */
   .pomo-nota-anterior {
-    font-size: 12px; color: #85B7EB;
+    font-size: 12px; color: var(--info-fg);
     margin-bottom: 8px; line-height: 1.5;
   }
-  .pomo-nota-anterior.concluido { color: #7DD99A; }
+  .pomo-nota-anterior.concluido { color: var(--success-fg); }
   .pomo-nota-input {
     width: 100%; box-sizing: border-box;
     background: var(--cinza-escuro); color: var(--branco);
@@ -359,9 +411,9 @@
     display: flex; align-items: center; gap: 6px;
     font-size: 12px; color: var(--cinza-texto); cursor: pointer;
   }
-  .pomo-nota-actions input[type="checkbox"] { accent-color: #7DD99A; }
+  .pomo-nota-actions input[type="checkbox"] { accent-color: var(--success-fg); }
   .pomo-nota-salvo {
-    color: #7DD99A; font-size: 11px;
+    color: var(--success-fg); font-size: 11px;
     font-family: 'IBM Plex Mono', monospace; opacity: 0;
     transition: opacity 0.3s;
   }
@@ -400,17 +452,17 @@
   .pomo-actions-sec {
     margin-top: 1.5rem;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: #555;
+    font-size: 10px; color: var(--texto-suporte);
     letter-spacing: 0.06em;
   }
   .pomo-actions-sec button {
     background: none; border: none; padding: 0;
-    color: #777; cursor: pointer;
+    color: var(--texto-suporte); cursor: pointer;
     font-family: inherit; font-size: inherit;
     letter-spacing: inherit;
   }
   .pomo-actions-sec button:hover { color: var(--branco); text-decoration: underline; }
-  .pomo-actions-sec span { margin: 0 8px; color: #333; }
+  .pomo-actions-sec span { margin: 0 8px; color: var(--border-color); }
 
   /* Setup fase */
   .pomo-setup-input {
@@ -491,7 +543,7 @@
   .pomo-cfg-label {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
-    color: #666;
+    color: var(--texto-suporte);
   }
   .pomo-cfg-valor {
     display: inline-flex; align-items: baseline; gap: 4px;
@@ -679,7 +731,7 @@
       </div>
 
       <!-- Loading -->
-      <div id="loading" class="card" style="text-align:center;padding:2rem;color:#666;">Carregando ciclo…</div>
+      <div id="loading" class="card" style="text-align:center;padding:2rem;color:var(--texto-suporte);">Carregando ciclo…</div>
 
       <!-- Empty / Configurar -->
       <div id="view-configurar" style="display:none;">
@@ -706,9 +758,9 @@
           </div>
           <div class="hint" style="background:rgba(192,39,15,0.04);border-left:2px solid var(--vermelho);padding:8px 12px;border-radius:0 4px 4px 0;font-size:12px;color:var(--cinza-texto);font-family:'Inter',sans-serif;line-height:1.5;margin-top:0.8rem;">
             <strong style="color:var(--branco);">Com este ritmo, o ciclo completa em ≈ <span id="dias-estimados">7</span> dias.</strong>
-            <span id="ritmo-aviso" style="display:block;color:#666;margin-top:4px;"></span>
+            <span id="ritmo-aviso" style="display:block;color:var(--texto-suporte);margin-top:4px;"></span>
           </div>
-          <div class="hint" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-top:0.5rem;">
+          <div class="hint" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--texto-suporte);margin-top:0.5rem;">
             "Horas totais" = soma de TODAS as legislações no ciclo. "Horas/dia" só serve pra estimar quantos dias leva — você estuda quando quiser.
           </div>
         </div>
@@ -716,7 +768,7 @@
         <div class="card">
           <div class="card-titulo">Sua dificuldade por área</div>
           <div class="at-grid" id="at-grid"></div>
-          <div class="hint" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-top:0.8rem;">
+          <div class="hint" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--texto-suporte);margin-top:0.8rem;">
             1 = forte domínio (×0.6) · 2 = algum domínio (×0.8) · 3 = médio (×1.0) · 4 = alguma dificuldade (×1.2) · 5 = muita dificuldade (×1.4)
           </div>
         </div>
@@ -1376,9 +1428,9 @@
   function aplicarTransicao(ev) {
     const clock = document.getElementById('pomo-clock');
     if (!clock) return;
-    if (ev.para === 'pausa-longa') clock.style.color = '#B58AE0';
-    else if (ev.para === 'pausa-curta') clock.style.color = '#5C9BD9';
-    else clock.style.color = '';
+    clock.classList.remove('fase-pausa-curta', 'fase-pausa-longa');
+    if (ev.para === 'pausa-longa') clock.classList.add('fase-pausa-longa');
+    else if (ev.para === 'pausa-curta') clock.classList.add('fase-pausa-curta');
   }
 
   async function pomoIrParaQuestoes() {
@@ -1539,9 +1591,9 @@
         // Cor do clock conforme a fase atual (transição só dispara em mudança).
         const clock = document.getElementById('pomo-clock');
         if (clock) {
-          if (PBMPomo.getFase() === 'pausa-longa') clock.style.color = '#B58AE0';
-          else if (PBMPomo.getFase() === 'pausa-curta') clock.style.color = '#5C9BD9';
-          else clock.style.color = '';
+          clock.classList.remove('fase-pausa-curta', 'fase-pausa-longa');
+          if (PBMPomo.getFase() === 'pausa-longa') clock.classList.add('fase-pausa-longa');
+          else if (PBMPomo.getFase() === 'pausa-curta') clock.classList.add('fase-pausa-curta');
         }
         PBMPomo.mountAudioIframe(document.getElementById('pomo-audio-frame'));
         sincronizarAudioUI();

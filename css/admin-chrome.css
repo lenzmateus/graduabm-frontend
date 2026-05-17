@@ -76,7 +76,7 @@ body {
 .chrome-topbar-acao.outline { background: transparent; border-color: var(--cinza-borda); color: var(--cinza-texto); }
 .chrome-topbar-acao.outline:hover { border-color: #555; color: var(--branco); background: var(--cinza-medio); }
 .chrome-btn-topbar-sair { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; }
-.chrome-btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: #F09595; }
+.chrome-btn-topbar-sair:hover { border-color: rgba(192,39,15,0.5); color: var(--danger-fg); }
 .chrome-topbar-mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
 .chrome-topbar-select { background: var(--cinza-escuro); color: var(--branco); border: 1px solid var(--roxo-borda); border-radius: 6px; padding: 7px 10px; font-size: 12px; font-family: 'Inter', sans-serif; cursor: pointer; outline: none; }
 

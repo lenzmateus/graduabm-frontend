@@ -1,74 +1,122 @@
-/* Padronização de Rich Text para Protocolo Bravo Mike */
+/* Rich Text — Protocolo Bravo Mike (Quill 2.x + DOMPurify) */
 
-/* Cores do Quill que precisam de ajuste para Dark Mode */
-.ql-editor {
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    line-height: 1.6;
-    color: #F8F6F2;
-    min-height: 120px;
+/* ───── Host wrapper ───── */
+.rt-host {
+  display: block;
+  width: 100%;
+}
+.rt-host .ql-toolbar.ql-snow {
+  border: 1px solid var(--cinza-borda, #333);
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  background: var(--cinza-medio, #2A2A2A);
+  padding: 6px 8px;
+}
+.rt-host .ql-container.ql-snow {
+  border: 1px solid var(--cinza-borda, #333);
+  border-radius: 0 0 8px 8px;
+  background: var(--cinza-medio, #222);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
+.rt-host .ql-editor {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--branco, #F8F6F2);
+  min-height: 100px;
+  padding: 10px 12px;
+}
+.rt-host .ql-editor.ql-blank::before {
+  color: #555;
+  font-style: normal;
+  left: 12px;
+  right: 12px;
+}
+.rt-host .ql-editor:focus { outline: none; }
+.rt-host .ql-container.ql-snow:focus-within { border-color: var(--roxo, #7F77DD); }
+.rt-host .ql-toolbar.ql-snow:focus-within   { border-color: var(--roxo, #7F77DD); }
+
+/* Ícones / pickers */
+.rt-host .ql-snow .ql-stroke { stroke: #aaa; }
+.rt-host .ql-snow .ql-fill   { fill: #aaa; }
+.rt-host .ql-snow .ql-picker { color: #aaa; }
+.rt-host .ql-snow .ql-picker-options {
+  background: var(--cinza-medio, #2A2A2A);
+  border-color: var(--cinza-borda, #333);
+}
+.rt-host .ql-snow .ql-picker-item:hover  { color: #fff; }
+.rt-host .ql-snow .ql-toolbar button:hover .ql-stroke,
+.rt-host .ql-snow .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--roxo, #7F77DD);
+}
+.rt-host .ql-snow .ql-toolbar button:hover .ql-fill,
+.rt-host .ql-snow .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--roxo, #7F77DD);
 }
 
-.ql-container.ql-snow {
-    border-color: #333 !important;
-    border-radius: 0 0 8px 8px;
-    background: #222;
+/* Conteúdo formatado */
+.rt-host .ql-editor strong, .rt-host .ql-editor b { font-weight: 600; color: #fff; }
+.rt-host .ql-editor em, .rt-host .ql-editor i     { font-style: italic; }
+.rt-host .ql-editor u                              { text-decoration: underline; }
+.rt-host .ql-editor sup                            { font-size: 0.75em; vertical-align: super; line-height: 0; }
+.rt-host .ql-editor sub                            { font-size: 0.75em; vertical-align: sub;   line-height: 0; }
+.rt-host .ql-editor ol, .rt-host .ql-editor ul     { padding-left: 1.4em; }
+
+/* ───── Variante one-line (alternativas) ───── */
+.rt-host.rt-oneline .ql-toolbar.ql-snow {
+  padding: 3px 6px;
+  border-radius: 6px 6px 0 0;
 }
-
-.ql-toolbar.ql-snow {
-    border-color: #333 !important;
-    border-radius: 8px 8px 0 0;
-    background: #2A2A2A;
+.rt-host.rt-oneline .ql-container.ql-snow {
+  border-radius: 0 0 6px 6px;
 }
-
-.ql-snow .ql-stroke {
-    stroke: #888 !important;
+.rt-host.rt-oneline .ql-editor {
+  min-height: 36px;
+  padding: 7px 10px;
+  white-space: nowrap;
+  overflow-x: auto;
 }
+.rt-host.rt-oneline .ql-editor p { margin: 0; }
 
-.ql-snow .ql-fill {
-    fill: #888 !important;
+/* ───── Light mode (override leve) ───── */
+:root.light-mode .rt-host .ql-toolbar.ql-snow {
+  background: var(--bg-secundario, #F4F2EE);
+  border-color: var(--border-color, #D9D6CF);
 }
-
-.ql-snow .ql-picker {
-    color: #888 !important;
+:root.light-mode .rt-host .ql-container.ql-snow {
+  background: var(--bg-secundario, #FFFFFF);
+  border-color: var(--border-color, #D9D6CF);
 }
-
-.ql-snow .ql-picker-options {
-    background-color: #2A2A2A !important;
-    border-color: #333 !important;
+:root.light-mode .rt-host .ql-editor {
+  color: var(--texto-principal, #1F1F1F);
 }
+:root.light-mode .rt-host .ql-editor strong,
+:root.light-mode .rt-host .ql-editor b { color: #000; }
+:root.light-mode .rt-host .ql-editor.ql-blank::before { color: #999; }
+:root.light-mode .rt-host .ql-snow .ql-stroke { stroke: #555; }
+:root.light-mode .rt-host .ql-snow .ql-fill   { fill: #555; }
+:root.light-mode .rt-host .ql-snow .ql-picker { color: #555; }
 
-.ql-snow .ql-picker-item:hover {
-    color: #fff !important;
-}
+/* ───── Renderização no aluno / preview ───── */
+/* Aplica em qualquer container que mostre conteúdo de questão */
+.rt-render p              { margin: 0 0 0.5em 0; }
+.rt-render p:last-child   { margin-bottom: 0; }
+.rt-render strong, .rt-render b { font-weight: 600; }
+.rt-render em, .rt-render i     { font-style: italic; }
+.rt-render u                    { text-decoration: underline; }
+.rt-render sup { font-size: 0.75em; vertical-align: super; line-height: 0; }
+.rt-render sub { font-size: 0.75em; vertical-align: sub;   line-height: 0; }
+.rt-render ol, .rt-render ul    { padding-left: 1.4em; margin: 0.25em 0; }
+.rt-render li                   { margin: 0.15em 0; }
 
-.ql-editor.ql-blank::before {
-    color: #555 !important;
-    font-style: normal;
-}
-
-/* Ajustes de cores para os textos formatados */
-.ql-editor strong {
-    font-weight: 600;
-    color: #fff;
-}
-
-.ql-editor em {
-    font-style: italic;
-}
-
-/* Classes de utilidade para cores se necessário */
-.text-red { color: var(--brand-primary); }
-.text-green { color: #27A05A; }
-.text-blue { color: #185FA5; }
-.text-yellow { color: #BA7517; }
-
-/* Renderização no Frontend (Questões) */
-.questao-enunciado, .feedback-txt {
-    word-break: break-word;
-}
-
+/* Mantém compat com classes antigas usadas em pbm-questoes / feedback */
+.questao-enunciado, .feedback-txt { word-break: break-word; }
 .questao-enunciado b, .questao-enunciado strong,
-.feedback-txt b, .feedback-txt strong {
-    font-weight: 600;
-}
+.feedback-txt b, .feedback-txt strong { font-weight: 600; }
+
+/* Classes utilitárias herdadas */
+.text-red    { color: var(--brand-primary, #C0270F); }
+.text-green  { color: #27A05A; }
+.text-blue   { color: #185FA5; }
+.text-yellow { color: #BA7517; }

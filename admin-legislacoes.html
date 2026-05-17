@@ -27,7 +27,7 @@
   .filtros { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
   .filtro-btn { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .filtro-btn:hover { border-color: #555; color: var(--branco); }
-  .filtro-btn.ativo { border-color: var(--vermelho-borda); color: #F09595; background: var(--vermelho-bg); }
+  .filtro-btn.ativo { border-color: var(--vermelho-borda); color: var(--danger-fg); background: var(--vermelho-bg); }
   .filtro-busca { flex: 1; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 6px; padding: 6px 12px; font-size: 12px; outline: none; min-width: 200px; max-width: 320px; }
   .filtro-busca:focus { border-color: var(--vermelho); }
   .stat-tag { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-left: auto; }
@@ -39,15 +39,15 @@
   .leg-row.tem-override { background: rgba(127,119,221,0.04); }
   .leg-row.destaque-relato { background: rgba(192,39,15,0.10); box-shadow: inset 3px 0 0 var(--vermelho); animation: pulseRelato 1.4s ease-out 2; }
   @keyframes pulseRelato { 0%, 100% { background: rgba(192,39,15,0.10); } 50% { background: rgba(192,39,15,0.22); } }
-  .banner-relato { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); border-left: 3px solid var(--vermelho); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 13px; color: #F09595; }
+  .banner-relato { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); border-left: 3px solid var(--vermelho); border-radius: 8px; padding: 0.85rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: 13px; color: var(--danger-fg); }
   .banner-relato .banner-leg-id { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--branco); }
-  .banner-relato button { background: transparent; border: 1px solid var(--vermelho-borda); color: #F09595; border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .banner-relato button { background: transparent; border: 1px solid var(--vermelho-borda); color: var(--danger-fg); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; }
   .banner-relato button:hover { background: rgba(192,39,15,0.2); }
   .leg-at { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.04em; }
-  .leg-at[data-at="AT1"] { color: #F09595; }
+  .leg-at[data-at="AT1"] { color: var(--danger-fg); }
   .leg-at[data-at="AT2"] { color: #E0A858; }
   .leg-at[data-at="AT3"] { color: #7AB6E0; }
-  .leg-at[data-at="AT4"] { color: #7DD99A; }
+  .leg-at[data-at="AT4"] { color: var(--success-fg); }
   .leg-at[data-at="AT5"] { color: #AFA9EC; }
   .leg-nome { font-size: 13px; line-height: 1.4; }
   .leg-nome-manifest { font-size: 11px; color: #555; font-family: 'IBM Plex Mono', monospace; margin-top: 3px; word-break: break-word; }
@@ -97,7 +97,7 @@
   .btn-salvar { background: var(--vermelho); border: 1px solid var(--vermelho); color: #fff; border-radius: 6px; padding: 8px 18px; font-size: 12px; font-weight: 500; cursor: pointer; }
   .btn-salvar:hover { opacity: 0.9; }
   .btn-reset { background: transparent; border: 1px solid rgba(226,75,74,0.3); color: #888; border-radius: 6px; padding: 6px 12px; font-size: 10px; cursor: pointer; font-family: 'IBM Plex Mono', monospace; }
-  .btn-reset:hover { border-color: var(--erro); color: #F09595; }
+  .btn-reset:hover { border-color: var(--erro); color: var(--danger-fg); }
 
   @media (max-width: 900px) {
     .leg-row { grid-template-columns: 1fr; gap: 0.5rem; }
@@ -192,7 +192,7 @@
 </div>
 
 <script src="/js/api.js?v=3"></script>
-<script src="/js/admin-chrome.js"></script>
+<script src="/js/admin-chrome.js?v=2"></script>
 <script>
   AdminChrome.init({ pagina: 'legislacoes', titulo: 'Gestão de Legislações' });
   const toast = AdminChrome.toast;
@@ -293,7 +293,7 @@
       if (destaqueId) focarDestaque();
     } catch (e) {
       document.getElementById('lista').innerHTML =
-        '<div class="empty" style="color:#F09595;">Erro ao carregar legislações.</div>';
+        '<div class="empty" style="color:var(--danger-fg);">Erro ao carregar legislações.</div>';
     }
   }
 

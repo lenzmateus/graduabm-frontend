@@ -62,20 +62,45 @@ async function request(path, options = {}) {
   if (res.status === 401 && !options.silenciar401) {
     const payload = _decodeJwtPayload(headers['Authorization']);
     const isAdminReq = payload?.tipo === 'admin';
-    const ehSessaoEncerrada = data?.erro && String(data.erro).includes('Sessão encerrada');
-    const toastMsg = ehSessaoEncerrada
-      ? 'Sua sessão foi encerrada porque você fez login em outro dispositivo.'
-      : 'Sessão expirada. Faça login novamente.';
-    sessionStorage.setItem('pbm_session_msg', toastMsg);
+    // Detecção de admin no sessionStorage (caso o request tenha ido sem header
+    // de admin, ex: sidebar de aluno chamando endpoint de aluno enquanto o admin
+    // está no /ranking em modo preview).
+    let temSessaoAdmin = false;
+    try {
+      temSessaoAdmin = sessionStorage.getItem('pbm_admin') === '1'
+        && !!sessionStorage.getItem('pbm_admin_jwt');
+    } catch {}
 
+    const ehEndpointAdmin = path.startsWith('/api/admin/');
+    // Fazemos logout só quando o 401 representa uma sessão real do tipo correto
+    // expirando: aluno chamando endpoint de aluno OU admin chamando endpoint admin.
+    // 401 de admin chamando endpoint de aluno, ou de admin com sessão admin ativa
+    // chamando endpoints de aluno sem header, NÃO é sessão expirada.
+    let ehLogoutSessao;
     if (isAdminReq) {
-      ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email']
-        .forEach(k => sessionStorage.removeItem(k));
+      ehLogoutSessao = ehEndpointAdmin;
+    } else if (temSessaoAdmin) {
+      ehLogoutSessao = false;
+    } else {
+      ehLogoutSessao = true;
     }
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('usuario');
 
-    window.location.href = isAdminReq ? '/admin-login' : '/login';
+    if (ehLogoutSessao) {
+      const ehSessaoEncerrada = data?.erro && String(data.erro).includes('Sessão encerrada');
+      const toastMsg = ehSessaoEncerrada
+        ? 'Sua sessão foi encerrada porque você fez login em outro dispositivo.'
+        : 'Sessão expirada. Faça login novamente.';
+      sessionStorage.setItem('pbm_session_msg', toastMsg);
+
+      if (isAdminReq) {
+        ['pbm_admin', 'pbm_admin_ts', 'pbm_admin_jwt', 'pbm_admin_role', 'pbm_admin_nome', 'pbm_admin_email']
+          .forEach(k => sessionStorage.removeItem(k));
+      }
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('usuario');
+
+      window.location.href = isAdminReq ? '/admin-login' : '/login';
+    }
     throw { status: 401, ...data };
   }
 
@@ -355,11 +380,20 @@ const PBM = {
   },
 
   Ranking: {
+    // Em modo admin (sessionStorage 'pbm_admin' === '1'), envia o JWT de admin
+    // para que o backend devolva nome_real + email de cada aluno.
+    _isAdmin() {
+      try { return sessionStorage.getItem('pbm_admin') === '1' && !!sessionStorage.getItem('pbm_admin_jwt'); }
+      catch { return false; }
+    },
+    _req(path) {
+      return PBM.Ranking._isAdmin() ? PBM.Admin.req(path) : request(path);
+    },
     listar(curso = '') {
-      return request('/api/ranking' + (curso ? `?curso=${curso}` : ''));
+      return PBM.Ranking._req('/api/ranking' + (curso ? `?curso=${curso}` : ''));
     },
     simulados(curso = '') {
-      return request('/api/ranking/simulados' + (curso ? `?curso=${curso}` : ''));
+      return PBM.Ranking._req('/api/ranking/simulados' + (curso ? `?curso=${curso}` : ''));
     },
   },
 

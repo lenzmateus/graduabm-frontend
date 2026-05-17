@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
+<link rel="stylesheet" href="/css/rich-text.css?v=2">
 <style>
 
 /* ── LOADING ── */
@@ -65,7 +66,7 @@
     letter-spacing: 0.12em; text-transform: uppercase;
     padding: 3px 7px; border-radius: 4px;
     background: rgba(192,39,15,0.18);
-    color: #E0866E;
+    color: var(--at1-fg);
     border: 1px solid rgba(192,39,15,0.4);
     margin-right: 6px;
   }
@@ -73,7 +74,7 @@
 
   /* RELATÓRIO DE BLOCO (tela de resultados) */
   .bloco-relatorio {
-    background: linear-gradient(135deg, rgba(192,39,15,0.08) 0%, #161616 60%);
+    background: linear-gradient(135deg, rgba(192,39,15,0.08) 0%, var(--bg-primario) 60%);
     border: 1px solid rgba(192,39,15,0.35);
     border-left: 3px solid var(--vermelho);
     border-radius: 10px; padding: 1.1rem 1.25rem;
@@ -148,7 +149,7 @@
     font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
     padding: 3px 8px; border-radius: 4px;
     background: rgba(125,217,154,0.12);
-    color: #7DD99A;
+    color: var(--success-fg);
     border: 1px solid rgba(125,217,154,0.3);
     margin-left: 8px;
   }
@@ -222,7 +223,7 @@
     letter-spacing: 0.06em;
     background: rgba(192,39,15,0.12);
     border: 1px solid rgba(192,39,15,0.3);
-    color: #E0866E;
+    color: var(--at1-fg);
   }
   .badge-leg {
     font-size: 11px; color: var(--cinza-texto);
@@ -266,12 +267,12 @@
   .alt.correta {
     border-color: var(--verde-borda);
     background: var(--verde-bg);
-    color: #7DD99A;
+    color: var(--success-fg);
   }
   .alt.errada {
     border-color: var(--erro-borda);
     background: var(--erro-bg);
-    color: #F09595;
+    color: var(--danger-fg);
   }
   .alt.bloqueada { cursor: default; }
   .alt-letra {
@@ -303,8 +304,8 @@
   .feedback-titulo {
     font-weight: 600; margin-bottom: 6px; font-size: 14px;
   }
-  .feedback-acerto .feedback-titulo { color: #7DD99A; }
-  .feedback-erro .feedback-titulo { color: #F09595; }
+  .feedback-acerto .feedback-titulo { color: var(--success-fg); }
+  .feedback-erro .feedback-titulo { color: var(--danger-fg); }
   .feedback-txt { color: var(--cinza-texto); line-height: 1.7; }
   :root.light-mode .feedback-txt { color: var(--texto-principal); }
   :root.light-mode .feedback-acerto .feedback-titulo { color: #1F6135; }
@@ -391,8 +392,8 @@
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; font-size: 11px; font-weight: 600; margin-top: 2px;
   }
-  .res-ok { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
-  .res-err { background: var(--erro-bg); border: 1px solid var(--erro-borda); color: #F09595; }
+  .res-ok { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .res-err { background: var(--erro-bg); border: 1px solid var(--erro-borda); color: var(--danger-fg); }
   .res-texto { flex: 1; color: var(--texto-principal); line-height: 1.5; }
   .res-gabarito {
     font-family: 'IBM Plex Mono', monospace;
@@ -551,8 +552,8 @@
   }
   .nav-q-btn:hover { border-color: #555; color: var(--branco); }
   .nav-q-btn.atual { border-color: var(--cor-area); color: var(--branco); box-shadow: 0 0 0 1px var(--cor-area); }
-  .nav-q-btn.correta { background: rgba(39,160,90,0.15); border-color: rgba(39,160,90,0.4); color: #7DD99A; }
-  .nav-q-btn.errada  { background: rgba(226,75,74,0.12);  border-color: rgba(226,75,74,0.35);  color: #F09595; }
+  .nav-q-btn.correta { background: rgba(39,160,90,0.15); border-color: rgba(39,160,90,0.4); color: var(--success-fg); }
+  .nav-q-btn.errada  { background: rgba(226,75,74,0.12);  border-color: rgba(226,75,74,0.35);  color: var(--danger-fg); }
   .header-center { cursor: pointer; }
   .header-center:hover .prog-info { color: var(--branco); }
   #nav-chevron { font-size: 9px; color: #444; margin-left: 3px; transition: transform 0.15s; display: inline-block; }
@@ -689,7 +690,7 @@
       <div class="score-label">Aproveitamento</div>
     </div>
     <div class="score-card">
-      <div class="score-num" id="res-erros" style="color:#E24B4A">0</div>
+      <div class="score-num" id="res-erros" style="color:var(--danger)">0</div>
       <div class="score-label">Erros</div>
     </div>
   </div>
@@ -743,7 +744,7 @@
 <!-- ERRO -->
 <div id="tela-erro">
   <div class="erro-icone">
-    <svg width="24" height="24" fill="none" stroke="#F09595" stroke-width="1.5" viewBox="0 0 24 24">
+    <svg width="24" height="24" fill="none" stroke="var(--danger-fg)" stroke-width="1.5" viewBox="0 0 24 24">
       <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
     </svg>
   </div>
@@ -784,7 +785,9 @@
 <script src="/js/api.js?v=3"></script>
 <script src="/js/tour.js"></script>
 <script src="/js/pbm-components.js?v=3"></script>
-<script>PBM.Layout.mount({active:'estudar'});</script>
+<script src="/js/rich-text.js?v=1"></script>
+<script>PBM.Layout.mount({active:'estudar'});
+RichText.ensurePurify().catch(() => {});</script>
 <button class="seta-nav seta-esq" id="seta-esq" onclick="voltarQuestao()" title="Questão anterior" disabled>
   <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
 </button>
@@ -1024,7 +1027,8 @@ function mostrarQuestao() {
   if (modoAtualTipo === 'erros') setCor(q.area_tematica || area);
   document.getElementById('badge-area').textContent = displayArea;
   document.getElementById('badge-leg').textContent  = leg || '—';
-  document.getElementById('enunciado').textContent  = getEnunciado(q);
+  RichText.renderInto(document.getElementById('enunciado'), getEnunciado(q));
+  document.getElementById('enunciado').classList.add('rt-render');
   const imgEl = document.getElementById('q-imagem');
   if (q.imagem_url) { imgEl.src = q.imagem_url; imgEl.style.display = 'block'; }
   else { imgEl.src = ''; imgEl.style.display = 'none'; }
@@ -1043,7 +1047,8 @@ function mostrarQuestao() {
     dLetra.className = 'alt-letra';
     dLetra.textContent = alt.displayLetra;
     const sTexto = document.createElement('span');
-    sTexto.textContent = alt.texto;
+    sTexto.classList.add('rt-render');
+    RichText.renderInlineInto(sTexto, alt.texto);
     div.appendChild(dLetra);
     div.appendChild(sTexto);
     container.appendChild(div);
@@ -1075,7 +1080,7 @@ function mostrarQuestao() {
     fb.className = 'feedback ' + (estado.acertou ? 'feedback-acerto' : 'feedback-erro');
     fb.innerHTML =
       `<div class="feedback-titulo">${estado.acertou ? '✓ Correto!' : '✗ Incorreto — Gabarito: alternativa ' + corretaDisplay}</div>` +
-      (just ? `<div class="feedback-txt">${just}</div>` : '') +
+      (just ? `<div class="feedback-txt rt-render">${RichText.render(just)}</div>` : '') +
       (q.codigo ? `<div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;opacity:0.45">Cód. ${q.codigo}</div>` : '') +
       btnReportarHtml(idxAtual);
 
@@ -1259,7 +1264,7 @@ function mostrarResultados() {
   const total  = questoes.length;
   const pct    = Math.round(acertos / total * 100);
   const tempo  = formatarTempo(timerSeg);
-  const corPct = pct >= 70 ? '#27A05A' : pct >= 50 ? '#BA7517' : '#E24B4A';
+  const corPct = pct >= 70 ? '#27A05A' : pct >= 50 ? '#BA7517' : 'var(--danger)';
 
   document.getElementById('res-titulo').textContent =
     pct >= 70 ? 'Muito bem!' : pct >= 50 ? 'Bom desempenho' : 'Continue praticando';
@@ -1276,16 +1281,17 @@ function mostrarResultados() {
   historicoRespostas.forEach((h, i) => {
     const div = document.createElement('div');
     div.className = 'resultado-item';
-    const enunciado = getEnunciado(h.q);
-    const trecho    = enunciado.length > 100 ? enunciado.slice(0, 100) + '…' : enunciado;
+    const enunciadoPlain = RichText.normalizeForCompare(getEnunciado(h.q));
+    const trecho    = enunciadoPlain.length > 100 ? enunciadoPlain.slice(0, 100) + '…' : enunciadoPlain;
+    const trechoEsc = RichText.escapeHtml(trecho);
     div.innerHTML = `
       <div class="res-icone ${h.acertou ? 'res-ok' : 'res-err'}">${h.acertou ? '✓' : '✗'}</div>
       <div class="res-texto">
         <span style="color:#666;font-family:'IBM Plex Mono',monospace;font-size:10px;">Q${(h.idx !== undefined ? h.idx + 1 : i + 1)}</span>
-        <span style="margin-left:6px;">${trecho}</span>
+        <span style="margin-left:6px;">${trechoEsc}</span>
       </div>
       <div class="res-gabarito">
-        ${h.acertou ? h.correta : `<span style="color:#F09595">${h.escolhida}</span> → <span style="color:#7DD99A">${h.correta}</span>`}
+        ${h.acertou ? h.correta : `<span style="color:var(--danger-fg)">${h.escolhida}</span> → <span style="color:var(--success-fg)">${h.correta}</span>`}
       </div>
     `;
     lista.appendChild(div);
@@ -1325,7 +1331,7 @@ function mostrarResultados() {
 const CICLO_STATUS_LABEL = {
   pendente:     { txt: 'Pendente',     cor: '#888',   bg: 'rgba(136,136,136,0.12)', border: 'rgba(136,136,136,0.3)' },
   em_andamento: { txt: 'Em andamento', cor: '#EBC57D', bg: 'rgba(211,139,45,0.12)', border: 'rgba(211,139,45,0.3)' },
-  concluido:    { txt: 'Concluído',    cor: '#7DD99A', bg: 'rgba(125,217,154,0.12)', border: 'rgba(125,217,154,0.3)' },
+  concluido:    { txt: 'Concluído',    cor: 'var(--success-fg)', bg: 'rgba(125,217,154,0.12)', border: 'rgba(125,217,154,0.3)' },
 };
 
 async function renderRelatorioBloco(durSessao, pctAcerto) {

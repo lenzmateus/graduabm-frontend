@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/admin-chrome.css">
+<link rel="stylesheet" href="/css/rich-text.css?v=2">
 <style>
   :root {
     --amarelo: #D4A017;
@@ -263,7 +264,8 @@
 </div>
 
 <script src="/js/api.js?v=3"></script>
-<script src="/js/admin-chrome.js"></script>
+<script src="/js/admin-chrome.js?v=2"></script>
+<script src="/js/rich-text.js?v=1"></script>
 <script>
 (async () => {
   AdminChrome.init({ pagina: 'aprovacoes', titulo: 'Aprovações IA' });
@@ -414,10 +416,52 @@
     if (!form) return;
     if (abrir) {
       form.classList.add('visivel');
+      // Lazy mount de editores Rich Text (idempotente).
+      const itemId = card.dataset.id;
+      if (itemId) ApRichText.montar(form, itemId).catch(() => {});
     } else {
       form.classList.remove('visivel');
     }
   }
+
+  // Helper compartilhado: monta editores Quill dentro de um form-edit a partir
+  // de atributos data-rt-block (uso normal) / data-rt-inline (alternativas).
+  const ApRichText = {
+    async montar(form, itemId) {
+      if (!form || form.dataset.rtMontado === '1') return;
+      await RichText.ensureLoaded();
+      form.querySelectorAll('[data-rt-block]').forEach(el => {
+        const localId = el.dataset.rtBlock;
+        const fullId = `rt-${itemId}-${localId}`;
+        el.id = fullId;
+        RichText.mountField(fullId, { placeholder: el.placeholder || '' });
+      });
+      form.querySelectorAll('[data-rt-inline]').forEach(el => {
+        const localId = el.dataset.rtInline;
+        const fullId = `rt-${itemId}-${localId}`;
+        el.id = fullId;
+        RichText.mountField(fullId, { oneLine: true, placeholder: el.placeholder || '' });
+      });
+      form.dataset.rtMontado = '1';
+    },
+    ler(form, localName, itemId, inline = false) {
+      const fullId = `rt-${itemId}-${localName}`;
+      if (window.RichText && RichText.get(fullId)) {
+        return inline ? RichText.getInline(fullId) : RichText.getHTML(fullId);
+      }
+      const el = form.querySelector(`[data-rt-${inline ? 'inline' : 'block'}="${localName}"]`);
+      return el ? el.value : '';
+    },
+    destruir(card) {
+      if (!window.RichText) return;
+      const form = card.querySelector('.edit-form');
+      if (!form) return;
+      const itemId = card.dataset.id;
+      form.querySelectorAll('[data-rt-block],[data-rt-inline]').forEach(el => {
+        if (el.id) RichText.destroy(el.id);
+      });
+    },
+  };
 
   /* ════════════════════════════════════════════════════════════════
      FILA DE APROVAÇÃO — runtime único + adapters por tipo de item.
@@ -587,17 +631,18 @@
       const alts = (q.alternativas || []).map((txt, i) => {
         const letra = ALT_LETRAS[i] || String(i + 1);
         const classe = q.gabarito === i ? 'correta' : '';
-        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(txt)}</span></div>`;
+        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span class="rt-render">${RichText.renderInline(txt)}</span></div>`;
       }).join('');
       const assertivasHtml = (q.assertivas && q.assertivas.length > 0)
         ? `<div class="assertivas-list">${q.assertivas.map((a, i) => `<div class="assertiva-item"><strong>${NUMERAIS[i] || (i+1)+'.'}</strong>${esc(a)}</div>`).join('')}</div>` : '';
       const topicosHtml = (q.topicos_cobertos && q.topicos_cobertos.length > 0)
         ? `<div class="topicos">${q.topicos_cobertos.map(t => `<span class="topico-chip">${esc(t)}</span>`).join('')}</div>` : '';
-      return `<p class="enunciado">${esc(q.enunciado)}</p>${assertivasHtml}<div class="alternativas">${alts}</div>${renderJuizFeedback(q.revisao_notas)}${topicosHtml}${q.comentario ? `<div class="justificativa"><strong>Comentário:</strong> ${esc(q.comentario)}</div>` : ''}`;
+      const commHtml = q.comentario ? `<div class="justificativa"><strong>Comentario:</strong> <span class="rt-render">${RichText.render(q.comentario)}</span></div>` : '';
+      return `<div class="enunciado rt-render">${RichText.render(q.enunciado)}</div>${assertivasHtml}<div class="alternativas">${alts}</div>${renderJuizFeedback(q.revisao_notas)}${topicosHtml}${commHtml}`;
     },
     renderEditForm(q) {
-      return `<div class="campo"><label>Enunciado</label><textarea name="enunciado" rows="4">${esc(q.enunciado)}</textarea></div>
-        ${(q.alternativas || []).map((txt, i) => `<div class="campo"><label>Alternativa ${ALT_LETRAS[i] || i+1}</label><input name="alt_${i}" value="${esc(txt)}"></div>`).join('')}
+      return `<div class="campo"><label>Enunciado</label><textarea data-rt-block="enunciado" name="enunciado" rows="4">${esc(q.enunciado)}</textarea></div>
+        ${(q.alternativas || []).map((txt, i) => `<div class="campo"><label>Alternativa ${ALT_LETRAS[i] || i+1}</label><input data-rt-inline="alt_${i}" name="alt_${i}" value="${esc(txt)}"></div>`).join('')}
         <div class="form-row">
           <div class="campo"><label>Gabarito (índice 0=A, 1=B…)</label><select name="gabarito">${(q.alternativas || []).map((_, i) => `<option value="${i}" ${q.gabarito === i ? 'selected' : ''}>${ALT_LETRAS[i] || i}</option>`).join('')}</select></div>
           <div class="campo"><label>Área Temática</label><select name="area_tematica">${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${q.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}</select></div>
@@ -606,7 +651,7 @@
           <div class="campo"><label>Curso</label><select name="curso">${['ctsp','cba','ambos'].map(c => `<option value="${c}" ${q.curso === c ? 'selected' : ''}>${c}</option>`).join('')}</select></div>
           <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(q.legislacao_nome || '')}"></div>
         </div>
-        <div class="campo"><label>Comentário</label><textarea name="comentario" rows="3">${esc(q.comentario || '')}</textarea></div>
+        <div class="campo"><label>Comentario</label><textarea data-rt-block="comentario" name="comentario" rows="3">${esc(q.comentario || '')}</textarea></div>
         <div class="form-row">
           <div class="campo"><label>Tipo de Questão</label><select name="tipo_questao">${['direta','assercoes','verdadeiro_falso','lacunas'].map(t => `<option value="${t}" ${(q.tipo_questao||'direta') === t ? 'selected' : ''}>${t}</option>`).join('')}</select></div>
           <div class="campo"><label>Tópicos Cobertos (um por linha)</label><textarea name="topicos_cobertos" rows="3">${esc((q.topicos_cobertos || []).join('\n'))}</textarea></div>
@@ -614,18 +659,22 @@
         <div class="campo"><label>Assertivas (uma por linha — para tipo asserções/V/F)</label><textarea name="assertivas" rows="4">${esc((q.assertivas || []).join('\n'))}</textarea></div>
         <div class="campo"><label>Feedback do Juiz IA</label><textarea name="revisao_notas" rows="2">${esc(q.revisao_notas || '')}</textarea></div>`;
     },
-    coletarEdit(f) {
-      const alternativas = Array.from(f.querySelectorAll('[name^=alt_]')).map(el => el.value);
+    coletarEdit(f, item) {
+      const itemId = item && item.id;
+      // ordena alternativas pela ordem original do form
+      const altEls = Array.from(f.querySelectorAll('[data-rt-inline^="alt_"]'))
+        .sort((a, b) => Number(a.dataset.rtInline.replace('alt_','')) - Number(b.dataset.rtInline.replace('alt_','')));
+      const alternativas = altEls.map(el => ApRichText.ler(f, el.dataset.rtInline, itemId, true));
       const assertivasRaw = f.querySelector('[name=assertivas]').value.trim();
       const topicosRaw = f.querySelector('[name=topicos_cobertos]').value.trim();
       return {
-        enunciado: f.querySelector('[name=enunciado]').value,
+        enunciado: ApRichText.ler(f, 'enunciado', itemId, false),
         alternativas,
         gabarito: parseInt(f.querySelector('[name=gabarito]').value, 10),
         area_tematica: f.querySelector('[name=area_tematica]').value,
         curso: f.querySelector('[name=curso]').value,
         legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
-        comentario: f.querySelector('[name=comentario]').value,
+        comentario: ApRichText.ler(f, 'comentario', itemId, false),
         tipo_questao: f.querySelector('[name=tipo_questao]').value,
         assertivas: assertivasRaw ? assertivasRaw.split('\n').map(s => s.trim()).filter(Boolean) : [],
         topicos_cobertos: topicosRaw ? topicosRaw.split('\n').map(s => s.trim()).filter(Boolean) : [],
@@ -636,14 +685,16 @@
       const altsHtml = body.alternativas.map((txt, i) => {
         const letra = ALT_LETRAS[i] || String(i + 1);
         const classe = body.gabarito === i ? 'correta' : '';
-        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(txt)}</span></div>`;
+        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span class="rt-render">${RichText.renderInline(txt)}</span></div>`;
       }).join('');
-      card.querySelector('.enunciado').textContent = body.enunciado;
+      const enunEl = card.querySelector('.enunciado');
+      if (enunEl) { enunEl.classList.add('rt-render'); enunEl.innerHTML = RichText.render(body.enunciado); }
       card.querySelector('.alternativas').innerHTML = altsHtml;
       const justEl = card.querySelector('.justificativa');
       if (body.comentario) {
-        if (justEl) justEl.innerHTML = `<strong>Comentário:</strong> ${esc(body.comentario)}`;
-        else card.querySelector('.card-body').insertAdjacentHTML('beforeend', `<div class="justificativa"><strong>Comentário:</strong> ${esc(body.comentario)}</div>`);
+        const inner = `<strong>Comentario:</strong> <span class="rt-render">${RichText.render(body.comentario)}</span>`;
+        if (justEl) justEl.innerHTML = inner;
+        else card.querySelector('.card-body').insertAdjacentHTML('beforeend', `<div class="justificativa">${inner}</div>`);
       } else if (justEl) {
         justEl.remove();
       }

@@ -27,8 +27,8 @@
     --cinza-texto: #888;
     --branco: var(--texto-principal);
     --branco-suave: var(--texto-suave);
-    --erro: #E24B4A;
-    --sucesso: #2D7D46;
+    --erro: var(--danger);
+    --sucesso: var(--success);
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -241,8 +241,8 @@
     border-radius: 6px; margin-bottom: 1rem;
     display: none;
   }
-  .msg.erro { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.3); color: #F09595; display: block; }
-  .msg.sucesso { background: rgba(45,125,70,0.12); border: 1px solid rgba(45,125,70,0.3); color: #7DD99A; display: block; }
+  .msg.erro { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.3); color: var(--danger-fg); display: block; }
+  .msg.sucesso { background: rgba(45,125,70,0.12); border: 1px solid rgba(45,125,70,0.3); color: var(--success-fg); display: block; }
 
   /* Esqueci senha */
   .esqueci {
@@ -387,8 +387,8 @@
     padding: 4px 10px; border-radius: 20px;
     letter-spacing: 0.04em;
   }
-  .status-ativo { background: rgba(45,125,70,0.15); border: 1px solid rgba(45,125,70,0.3); color: #7DD99A; }
-  .status-inativo { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.3); color: #F09595; }
+  .status-ativo { background: rgba(45,125,70,0.15); border: 1px solid rgba(45,125,70,0.3); color: var(--success-fg); }
+  .status-inativo { background: rgba(226,75,74,0.12); border: 1px solid rgba(226,75,74,0.3); color: var(--danger-fg); }
   .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 
   .btn-logout {
@@ -521,8 +521,8 @@
     margin-top: 6px;
     display: none;
   }
-  .cupom-msg.erro { color: #F09595; display: block; }
-  .cupom-msg.sucesso { color: #7DD99A; display: block; }
+  .cupom-msg.erro { color: var(--danger-fg); display: block; }
+  .cupom-msg.sucesso { color: var(--success-fg); display: block; }
 
   @media (max-width: 768px) {
     .main { grid-template-columns: 1fr; }
@@ -617,7 +617,7 @@
         <!-- Assinatura inativa — UI rica (planos+cupom) migrou para /conta -->
         <div class="bloqueado-card" id="bloco-inativo" style="display:none;">
           <div class="bloqueado-icon">
-            <svg width="16" height="16" fill="none" stroke="#F09595" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg width="16" height="16" fill="none" stroke="var(--danger-fg)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
           </div>
           <div class="bloqueado-titulo" id="bloqueado-titulo">Acesso inativo</div>
           <div class="bloqueado-desc" id="bloqueado-desc">Renove ou aplique um cupom em Minha Conta para retomar o acesso.</div>

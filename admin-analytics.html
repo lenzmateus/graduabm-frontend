@@ -63,10 +63,10 @@
 
   /* BADGES AT */
   .badge { display: inline-flex; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
-  .badge-at1 { background: rgba(192,39,15,0.1); border: 1px solid rgba(192,39,15,0.3); color: #F09595; }
+  .badge-at1 { background: rgba(192,39,15,0.1); border: 1px solid rgba(192,39,15,0.3); color: var(--danger-fg); }
   .badge-at2 { background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
   .badge-at3 { background: rgba(24,95,165,0.1); border: 1px solid rgba(24,95,165,0.3); color: #79ABDD; }
-  .badge-at4 { background: rgba(39,160,90,0.08); border: 1px solid rgba(39,160,90,0.3); color: #7DD99A; }
+  .badge-at4 { background: rgba(39,160,90,0.08); border: 1px solid rgba(39,160,90,0.3); color: var(--success-fg); }
   .badge-at5 { background: rgba(127,119,221,0.08); border: 1px solid rgba(127,119,221,0.3); color: #AFA9EC; }
 
   /* FUNIL */
@@ -85,9 +85,9 @@
   .cohorte-table td { padding: 8px 12px; font-size: 12px; text-align: center; border-bottom: 1px solid #222; }
   .cohorte-table tr:last-child td { border-bottom: none; }
   .cohorte-table td:first-child { text-align: left; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
-  .cell-verde { background: rgba(39,160,90,0.15); color: #7DD99A; font-weight: 600; border-radius: 4px; }
+  .cell-verde { background: rgba(39,160,90,0.15); color: var(--success-fg); font-weight: 600; border-radius: 4px; }
   .cell-amarelo { background: rgba(186,117,23,0.15); color: #EF9F27; font-weight: 600; border-radius: 4px; }
-  .cell-vermelho { background: rgba(192,39,15,0.12); color: #F09595; font-weight: 600; border-radius: 4px; }
+  .cell-vermelho { background: rgba(192,39,15,0.12); color: var(--danger-fg); font-weight: 600; border-radius: 4px; }
   .cell-cinza { color: #444; }
 
   /* DIST FREQ */
@@ -351,7 +351,7 @@
 </div>
 
 <script src="/js/api.js?v=3"></script>
-<script src="/js/admin-chrome.js"></script>
+<script src="/js/admin-chrome.js?v=2"></script>
 <script>
 AdminChrome.init({
   pagina: 'analytics',
@@ -530,8 +530,10 @@ async function carregarQuestoes() {
         '<tr><td colspan="6" style="text-align:center;color:#555;padding:2rem;">Sem questões com dados suficientes (mín. 20 respostas).</td></tr>';
     } else {
       document.getElementById('tbody-questoes').innerHTML = d.top_questoes.map(q => {
-        const corErro = q.taxa_erro >= 80 ? '#F09595' : q.taxa_erro >= 60 ? '#EF9F27' : '#7DD99A';
-        const enunciado = q.trecho.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const corErro = q.taxa_erro >= 80 ? 'var(--danger-fg)' : q.taxa_erro >= 60 ? '#EF9F27' : 'var(--success-fg)';
+        // Strip de tags HTML do rich-text antes de escapar (evita "<p>" literal)
+        const trechoPlain = String(q.trecho || '').replace(/<[^>]+>/g, '');
+        const enunciado = trechoPlain.replace(/</g, '&lt;').replace(/>/g, '&gt;');
         return `<tr>
           <td style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${enunciado}">${enunciado}...</td>
           <td>${badgeAt(q.area_tematica)}</td>
@@ -603,7 +605,7 @@ async function carregarRisco() {
     }
 
     document.getElementById('tbody-risco').innerHTML = d.alunos.map(u => {
-      const diasCor = (u.dias_sem_estudar || 0) > 20 ? '#F09595' : '#EF9F27';
+      const diasCor = (u.dias_sem_estudar || 0) > 20 ? 'var(--danger-fg)' : '#EF9F27';
       return `<tr>
         <td>
           <div style="font-weight:500;font-size:13px;">${u.nome}</div>
@@ -718,14 +720,14 @@ async function carregarIaCustos() {
     document.getElementById('tbody-ia-log').innerHTML = d.log_recente.length === 0
       ? '<tr><td colspan="6" style="text-align:center;color:#555;padding:2rem;">Nenhuma chamada registrada no período.</td></tr>'
       : d.log_recente.map(r => {
-          const modeloCor = r.modelo.includes('opus') ? '#F09595' : '#79ABDD';
+          const modeloCor = r.modelo.includes('opus') ? 'var(--danger-fg)' : '#79ABDD';
           const ts = new Date(r.criado_em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
           return `<tr>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;">${TIPO_LABELS[r.tipo] || r.tipo}</td>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:${modeloCor};">${r.modelo}</td>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;">${r.input_tokens.toLocaleString('pt-BR')}</td>
             <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;">${r.output_tokens.toLocaleString('pt-BR')}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#7DD99A;">$${r.custo_usd.toFixed(6)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--success-fg);">$${r.custo_usd.toFixed(6)}</td>
             <td style="font-size:11px;color:#555;">${ts}</td>
           </tr>`;
         }).join('');

@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
+<link rel="stylesheet" href="/css/rich-text.css?v=2">
 <style>
 
   html, body { height: 100%; background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; }
@@ -27,7 +28,7 @@
     display: flex; align-items: center; gap: 10px; background: var(--cinza-medio); border: 1px solid var(--cinza-borda);
     padding: 6px 16px; border-radius: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600;
   }
-  .timer-box.alerta { color: #F09595; border-color: #F09595; animation: pisca 1s infinite; }
+  .timer-box.alerta { color: var(--danger-fg); border-color: var(--danger-fg); animation: pisca 1s infinite; }
   @keyframes pisca { 50% { opacity: 0.5; } }
 
   .btn-finalizar {
@@ -213,10 +214,10 @@
   .res-gab-item .num { color: var(--cinza-texto); min-width: 22px; }
   .res-gab-item .marcou { font-weight: 600; }
   .res-gab-item.ok { border-color: rgba(125,217,154,0.3); }
-  .res-gab-item.ok .marcou { color: #7DD99A; }
+  .res-gab-item.ok .marcou { color: var(--success-fg); }
   .res-gab-item.err { border-color: rgba(240,149,149,0.2); }
-  .res-gab-item.err .marcou { color: #F09595; }
-  .res-gab-item .corr { color: #7DD99A; font-size: 10px; }
+  .res-gab-item.err .marcou { color: var(--danger-fg); }
+  .res-gab-item .corr { color: var(--success-fg); font-size: 10px; }
 
   .res-acoes {
     display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
@@ -574,7 +575,9 @@
 <script src="/js/api.js?v=3"></script>
 <script src="/js/tour.js"></script>
 <script src="/js/pbm-components.js?v=3"></script>
-<script>PBM.Layout.mount({active:'simulados'});</script>
+<script src="/js/rich-text.js?v=1"></script>
+<script>PBM.Layout.mount({active:'simulados'});
+RichText.ensurePurify().catch(() => {});</script>
 
 <script>
 // Proteção Anti-Cópia
@@ -772,7 +775,9 @@ function carregarQuestao(index) {
   const atCor = CORES_AT[atKey] || '#888';
   const areaEl = document.getElementById('q-area');
   areaEl.innerHTML = `<span class="q-area-badge" style="color:${atCor};border-color:${atCor}33">${atKey} — ${NOMES_AT[atKey] || atKey}</span>`;
-  document.getElementById('q-enunciado').textContent = q.enunciado || q.texto || q.questao || '';
+  const enunEl = document.getElementById('q-enunciado');
+  RichText.renderInto(enunEl, q.enunciado || q.texto || q.questao || '');
+  enunEl.classList.add('rt-render');
   const imgElProva = document.getElementById('q-imagem');
   if (q.imagem_url) { imgElProva.src = q.imagem_url; imgElProva.style.display = 'block'; }
   else { imgElProva.src = ''; imgElProva.style.display = 'none'; }
@@ -800,8 +805,8 @@ function carregarQuestao(index) {
     dLetra.className = 'alt-letra';
     dLetra.textContent = a.letra;
     const dTexto = document.createElement('div');
-    dTexto.className = 'alt-texto';
-    dTexto.textContent = a.texto;
+    dTexto.className = 'alt-texto rt-render';
+    RichText.renderInlineInto(dTexto, a.texto);
     div.appendChild(dLetra);
     div.appendChild(dTexto);
     lista.appendChild(div);
@@ -999,7 +1004,7 @@ function mostrarResultado() {
 
   // Titulo dinâmico
   const titulo = pct >= 70 ? 'Excelente!' : pct >= 50 ? 'Bom desempenho!' : 'Continue praticando!';
-  const corTitulo = pct >= 70 ? '#7DD99A' : pct >= 50 ? '#EF9F27' : '#F09595';
+  const corTitulo = pct >= 70 ? 'var(--success-fg)' : pct >= 50 ? 'var(--warning-fg)' : 'var(--danger-fg)';
   document.getElementById('res-titulo').textContent = titulo;
   document.getElementById('res-titulo').style.color = corTitulo;
 
@@ -1008,18 +1013,18 @@ function mostrarResultado() {
 
   // Score cards
   const scoreGrid = document.getElementById('res-score-grid');
-  const corPct = pct >= 70 ? '#7DD99A' : pct >= 50 ? '#EF9F27' : '#F09595';
+  const corPct = pct >= 70 ? 'var(--success-fg)' : pct >= 50 ? 'var(--warning-fg)' : 'var(--danger-fg)';
   scoreGrid.innerHTML = `
     <div class="res-score-card">
       <div class="val" style="color:${corPct}">${pct}%</div>
       <div class="label">Aproveitamento</div>
     </div>
     <div class="res-score-card">
-      <div class="val" style="color:#7DD99A">${acertos}</div>
+      <div class="val" style="color:var(--success-fg)">${acertos}</div>
       <div class="label">Acertos</div>
     </div>
     <div class="res-score-card">
-      <div class="val" style="color:#F09595">${erros}</div>
+      <div class="val" style="color:var(--danger-fg)">${erros}</div>
       <div class="label">Erros</div>
     </div>
     <div class="res-score-card">
@@ -1045,7 +1050,7 @@ function mostrarResultado() {
     const d = porArea[at];
     const atPct = d.total > 0 ? Math.round((d.acertos / d.total) * 100) : 0;
     const cor = coresAT[at] || '#888';
-    const corVal = atPct >= 70 ? '#7DD99A' : atPct >= 50 ? '#EF9F27' : '#F09595';
+    const corVal = atPct >= 70 ? 'var(--success-fg)' : atPct >= 50 ? 'var(--warning-fg)' : 'var(--danger-fg)';
     areaGrid.innerHTML += `
       <div class="res-area-card">
         <div class="at-num" style="color:${cor}">${at}</div>
@@ -1084,8 +1089,8 @@ function mostrarResultado() {
       row.appendChild(hint);
 
       const justifEl = document.createElement('div');
-      justifEl.className = 'gab-justif';
-      justifEl.textContent = justif;
+      justifEl.className = 'gab-justif rt-render';
+      RichText.renderInto(justifEl, justif);
       item.appendChild(justifEl);
 
       item.addEventListener('click', () => {

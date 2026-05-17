@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
+<link rel="stylesheet" href="/css/rich-text.css?v=2">
 <style>
   html, body { height: 100%; background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; }
 
@@ -29,7 +30,7 @@
     border: 1px solid var(--cinza-borda); padding: 6px 16px; border-radius: 8px;
     font-family: 'IBM Plex Mono', monospace; font-size: 20px; font-weight: 600;
   }
-  .timer-box.alerta { color: #F09595; border-color: #F09595; animation: pisca 1s infinite; }
+  .timer-box.alerta { color: var(--danger-fg); border-color: var(--danger-fg); animation: pisca 1s infinite; }
   @keyframes pisca { 50% { opacity: 0.5; } }
 
   .btn-finalizar {
@@ -180,10 +181,10 @@
   .res-gab-item .num { color: var(--cinza-texto); min-width: 22px; }
   .res-gab-item .marcou { font-weight: 600; }
   .res-gab-item.ok { border-color: rgba(125,217,154,0.3); }
-  .res-gab-item.ok .marcou { color: #7DD99A; }
+  .res-gab-item.ok .marcou { color: var(--success-fg); }
   .res-gab-item.err { border-color: rgba(240,149,149,0.2); }
-  .res-gab-item.err .marcou { color: #F09595; }
-  .res-gab-item .corr { color: #7DD99A; font-size: 10px; }
+  .res-gab-item.err .marcou { color: var(--danger-fg); }
+  .res-gab-item .corr { color: var(--success-fg); font-size: 10px; }
   .res-acoes {
     display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
     width: 100%; animation: fadeUp 0.4s ease 0.4s both;
@@ -402,7 +403,9 @@
 <script src="/js/api.js?v=3"></script>
 <script src="/js/tour.js"></script>
 <script src="/js/pbm-components.js?v=3"></script>
-<script>PBM.Layout.mount({active:'qap'});</script>
+<script src="/js/rich-text.js?v=1"></script>
+<script>PBM.Layout.mount({active:'qap'});
+RichText.ensurePurify().catch(() => {});</script>
 <script>
 document.addEventListener('contextmenu', e => e.preventDefault());
 document.addEventListener('cut', e => e.preventDefault());
@@ -454,14 +457,14 @@ function renderLobbyStatus(status) {
 
   if (status.estado === 'active') {
     const cursoBadgeStyle = (status.simulado?.curso || '') === 'cba'
-      ? 'background:rgba(24,95,165,0.1);color:#85B7EB;border:1px solid rgba(24,95,165,0.3);'
-      : 'background:rgba(192,39,15,0.1);color:#E8866E;border:1px solid rgba(192,39,15,0.3);';
+      ? 'background:var(--cba-bg);color:var(--info-fg);border:1px solid var(--cba-borda);'
+      : 'background:var(--ctsp-bg);color:var(--at1-fg);border:1px solid var(--ctsp-borda);';
     sub.textContent = 'SIMULADO EM ANDAMENTO';
     card.innerHTML = `
       <div style="background:var(--bg-secundario);border:1px solid var(--bg-hover);border-radius:12px;padding:1.5rem;text-align:center;">
         <div style="font-size:11px;color:var(--verde);font-family:'IBM Plex Mono',monospace;letter-spacing:.1em;margin-bottom:.75rem;">● ABERTA AGORA</div>
         <div style="display:inline-flex;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;padding:2px 10px;border-radius:20px;margin-bottom:.75rem;${cursoBadgeStyle}">${(status.simulado?.curso || 'ctsp').toUpperCase()}</div>
-        <div style="font-size:14px;color:#CCC;margin-bottom:1.25rem;">${status.simulado?.titulo || 'Protocolo QAP'}</div>
+        <div style="font-size:14px;color:var(--texto-suave);margin-bottom:1.25rem;">${status.simulado?.titulo || 'Protocolo QAP'}</div>
         <button onclick="entrarSimulado('${status.simulado.id}')"
           style="width:100%;background:var(--verde);color:var(--bg-primario);border:none;padding:14px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;">
           ENTRAR NA MISSÃO
@@ -471,8 +474,8 @@ function renderLobbyStatus(status) {
   } else if (status.estado === 'locked') {
     const abertura = new Date(status.proximo.abertura);
     const cursoBadgeStyleL = (status.proximo?.curso || '') === 'cba'
-      ? 'background:rgba(24,95,165,0.1);color:#85B7EB;border:1px solid rgba(24,95,165,0.3);'
-      : 'background:rgba(192,39,15,0.1);color:#E8866E;border:1px solid rgba(192,39,15,0.3);';
+      ? 'background:var(--cba-bg);color:var(--info-fg);border:1px solid var(--cba-borda);'
+      : 'background:var(--ctsp-bg);color:var(--at1-fg);border:1px solid var(--ctsp-borda);';
     sub.textContent = 'PRÓXIMA MISSÃO AGENDADA';
     card.innerHTML = `
       <div style="background:var(--bg-secundario);border:1px solid var(--bg-hover);border-radius:12px;padding:1.5rem;">
@@ -482,11 +485,11 @@ function renderLobbyStatus(status) {
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
           <div>
             <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;">Abertura</div>
-            <div style="font-size:12px;color:#AAA;">${fmtDataBRT(status.proximo.abertura)} BRT</div>
+            <div style="font-size:12px;color:var(--texto-suporte);">${fmtDataBRT(status.proximo.abertura)} BRT</div>
           </div>
           <div>
             <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:#444;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.35rem;">Encerramento</div>
-            <div style="font-size:12px;color:#AAA;">${fmtDataBRT(status.proximo.encerramento)} BRT</div>
+            <div style="font-size:12px;color:var(--texto-suporte);">${fmtDataBRT(status.proximo.encerramento)} BRT</div>
           </div>
         </div>
       </div>`;
@@ -684,7 +687,9 @@ function carregarQuestao(index) {
   const q = questoes[index];
   document.getElementById('q-num').textContent = `Q. ${String(index + 1).padStart(2, '0')}`;
   document.getElementById('q-area').textContent = (q.area_tematica || 'GERAL').toUpperCase();
-  document.getElementById('q-enunciado').textContent = q.enunciado || '';
+  const enunEl = document.getElementById('q-enunciado');
+  RichText.renderInto(enunEl, q.enunciado || '');
+  enunEl.classList.add('rt-render');
   const imgElMensal = document.getElementById('q-imagem');
   if (q.imagem_url) { imgElMensal.src = q.imagem_url; imgElMensal.style.display = 'block'; }
   else { imgElMensal.src = ''; imgElMensal.style.display = 'none'; }
@@ -703,8 +708,8 @@ function carregarQuestao(index) {
     dLetra.className = 'alt-letra';
     dLetra.textContent = letra;
     const dTexto = document.createElement('div');
-    dTexto.className = 'alt-texto';
-    dTexto.textContent = texto;
+    dTexto.className = 'alt-texto rt-render';
+    RichText.renderInlineInto(dTexto, texto);
     div.appendChild(dLetra);
     div.appendChild(dTexto);
     lista.appendChild(div);
@@ -841,11 +846,11 @@ function mostrarResultado(resultado) {
   }
 
   // Score cards
-  const cor = percentual >= 70 ? '#7DD99A' : percentual >= 50 ? '#F0C050' : '#F09595';
+  const cor = percentual >= 70 ? 'var(--success-fg)' : percentual >= 50 ? '#F0C050' : 'var(--danger-fg)';
   document.getElementById('res-score-grid').innerHTML = `
     <div class="res-score-card"><div class="val" style="color:${cor}">${percentual.toFixed(1)}%</div><div class="label">Aproveitamento</div></div>
-    <div class="res-score-card"><div class="val" style="color:#7DD99A">${acertos}</div><div class="label">Acertos</div></div>
-    <div class="res-score-card"><div class="val" style="color:#F09595">${erros}</div><div class="label">Erros</div></div>
+    <div class="res-score-card"><div class="val" style="color:var(--success-fg)">${acertos}</div><div class="label">Acertos</div></div>
+    <div class="res-score-card"><div class="val" style="color:var(--danger-fg)">${erros}</div><div class="label">Erros</div></div>
     <div class="res-score-card"><div class="val" style="color:var(--cinza-texto)">${emBranco}</div><div class="label">Em Branco</div></div>`;
 
   // Desempenho por área

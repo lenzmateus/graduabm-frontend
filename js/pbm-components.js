@@ -243,6 +243,9 @@
     const el = document.getElementById('nav-missao-fds');
     if (!el) return;
     if (!(window.PBM && PBM.MissaoFDS && PBM.MissaoFDS.status)) return;
+    // Admin acessando página de aluno (ex: /ranking em modo admin) não tem
+    // sessão de aluno — não chamar endpoints que exigem JWT de aluno.
+    if (PBM.isAdmin && PBM.isAdmin()) return;
     let status;
     try { status = await PBM.MissaoFDS.status(); } catch (_) { return; }
     if (!status || !status.estado) return;

@@ -90,8 +90,8 @@
     padding: 2px 8px; border-radius: 20px;
     letter-spacing: 0.04em;
   }
-  .ctsp .curso-pill { background: var(--ctsp-bg); color: #E0866E; border: 1px solid var(--ctsp-borda); }
-  .cba .curso-pill { background: var(--cba-bg); color: #85B7EB; border: 1px solid var(--cba-borda); }
+  .ctsp .curso-pill { background: var(--ctsp-bg); color: var(--at1-fg); border: 1px solid var(--ctsp-borda); }
+  .cba .curso-pill { background: var(--cba-bg); color: var(--info-fg); border: 1px solid var(--cba-borda); }
 
   .curso-check {
     margin-left: auto; width: 18px; height: 18px;
@@ -198,11 +198,11 @@
     font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
     padding: 3px 10px; border-radius: 20px; margin-bottom: 10px;
   }
-  .badge-aberto { background: rgba(192,39,15,0.15); color: #E8866E; border: 1px solid rgba(192,39,15,0.4); }
+  .badge-aberto { background: var(--at1-bg); color: var(--at1-fg); border: 1px solid var(--at1-border); }
   .badge-aberto .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: #E8866E; animation: pisca 1.2s infinite; }
   @keyframes pisca { 50% { opacity: 0.3; } }
   .badge-aguardando { background: rgba(255,200,50,0.1); color: #F0C050; border: 1px solid rgba(255,200,50,0.3); }
-  .badge-encerrado { background: rgba(125,217,154,0.1); color: #7DD99A; border: 1px solid rgba(125,217,154,0.3); }
+  .badge-encerrado { background: rgba(125,217,154,0.1); color: var(--success-fg); border: 1px solid rgba(125,217,154,0.3); }
 
   .mensal-titulo {
     font-family: 'Bebas Neue', sans-serif; font-size: 26px;
@@ -263,7 +263,7 @@
     background: rgba(125,217,154,0.08);
     border: 1px solid rgba(125,217,154,0.2);
     border-radius: 8px; padding: 10px 16px;
-    font-size: 13px; color: #7DD99A;
+    font-size: 13px; color: var(--success-fg);
     margin-top: 1rem;
   }
 
@@ -496,7 +496,7 @@ async function carregarSimuladoMensal() {
             <div class="mensal-participou">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
               Você já entregou este simulado.
-              <a href="/simulado-mensal-ranking?id=${ativo.id}" style="color:#7DD99A;margin-left:8px;font-weight:600;">Ver Resultado →</a>
+              <a href="/simulado-mensal-ranking?id=${ativo.id}" style="color:var(--success-fg);margin-left:8px;font-weight:600;">Ver Resultado →</a>
             </div>` : `
             <div class="mensal-acoes">
               <button class="btn-mensal-primary" onclick="irParaSimuladoMensal('${ativo.id}')">

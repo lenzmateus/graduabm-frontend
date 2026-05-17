@@ -38,11 +38,11 @@
   .at-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1rem; }
   .at-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid var(--cinza-medio); }
   .at-codigo { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 0.06em; }
-  .at-codigo[data-at="AT1"] { color: #F09595; }
-  .at-codigo[data-at="AT2"] { color: #E0A858; }
-  .at-codigo[data-at="AT3"] { color: #7AB6E0; }
-  .at-codigo[data-at="AT4"] { color: #7DD99A; }
-  .at-codigo[data-at="AT5"] { color: #AFA9EC; }
+  .at-codigo[data-at="AT1"] { color: var(--at1-fg); }
+  .at-codigo[data-at="AT2"] { color: var(--at2-fg); }
+  .at-codigo[data-at="AT3"] { color: var(--at3-fg); }
+  .at-codigo[data-at="AT4"] { color: var(--at4-fg); }
+  .at-codigo[data-at="AT5"] { color: var(--at5-fg); }
   .at-label { font-size: 13px; color: var(--cinza-texto); font-family: 'Inter', sans-serif; }
   .at-contagem { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #555; }
 
@@ -53,10 +53,10 @@
   .leg-nome { font-size: 13px; color: var(--branco); line-height: 1.4; word-break: break-word; }
   .leg-meta { display: flex; gap: 8px; align-items: center; margin-top: 3px; flex-wrap: wrap; }
   .leg-grupo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; letter-spacing: 0.04em; }
-  .badge-atualizada { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; background: var(--amarelo-bg); border: 1px solid var(--amarelo-borda); color: #E0A858; letter-spacing: 0.04em; text-transform: uppercase; }
+  .badge-atualizada { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning-fg); letter-spacing: 0.04em; text-transform: uppercase; }
   .badge-atualizada svg { width: 9px; height: 9px; }
   .btn-reportar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 11px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
-  .btn-reportar:hover { border-color: var(--vermelho); color: #F09595; }
+  .btn-reportar:hover { border-color: var(--vermelho); color: var(--danger-fg); }
 
   /* Coluna lateral: atualizações */
   .side-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.25rem; position: sticky; top: 1rem; }
@@ -96,8 +96,8 @@
   /* TOAST */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
   .toast.visivel { transform: translateX(-50%) translateY(0); }
-  .toast.verde { border-color: rgba(39,160,90,0.4); color: #7DD99A; }
-  .toast.erro { border-color: rgba(226,75,74,0.4); color: #F09595; }
+  .toast.verde { border-color: rgba(39,160,90,0.4); color: var(--success-fg); }
+  .toast.erro { border-color: rgba(226,75,74,0.4); color: var(--danger-fg); }
 
   /* MOBILE */
 
@@ -305,8 +305,8 @@
       renderAreas(data);
       renderAtualizacoes(data);
     } catch (e) {
-      areasEl.innerHTML = '<div class="estado-vazio" style="color:#F09595;">Erro ao carregar edital. Tente recarregar a página.</div>';
-      ladoEl.innerHTML = '<div class="side-vazio" style="color:#F09595;">Erro.</div>';
+      areasEl.innerHTML = '<div class="estado-vazio" style="color:var(--danger-fg);">Erro ao carregar edital. Tente recarregar a página.</div>';
+      ladoEl.innerHTML = '<div class="side-vazio" style="color:var(--danger-fg);">Erro.</div>';
     }
   }
 

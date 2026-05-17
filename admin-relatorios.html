@@ -59,8 +59,8 @@
   /* BADGES */
   .badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500; padding: 2px 7px; border-radius: 20px; letter-spacing: 0.04em; }
   .badge-dot { width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
-  .badge-ativo { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
-  .badge-inativo { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); color: #F09595; }
+  .badge-ativo { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .badge-inativo { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); color: var(--danger-fg); }
 
   /* HORÁRIO BAR */
   .hora-bar-wrap { display: flex; gap: 2px; align-items: flex-end; height: 32px; }
@@ -82,7 +82,7 @@
   /* TOAST */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
   .toast.visivel { transform: translateX(-50%) translateY(0); }
-  .toast.verde { border-color: var(--verde-borda); color: #7DD99A; }
+  .toast.verde { border-color: var(--verde-borda); color: var(--success-fg); }
 
   @media (max-width: 768px) {
     .grid-cards { grid-template-columns: repeat(2, 1fr); }
@@ -196,7 +196,7 @@
 </div>
 
 <script src="/js/api.js?v=3"></script>
-<script src="/js/admin-chrome.js"></script>
+<script src="/js/admin-chrome.js?v=2"></script>
 <script>
   AdminChrome.init({
     pagina: 'relatorios',

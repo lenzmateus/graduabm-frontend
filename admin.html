@@ -44,8 +44,8 @@
   .api-status-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--cinza-borda); font-size: 13px; }
   .api-status-row:last-child { border-bottom: none; }
   .status-pill { display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.04em; flex-shrink: 0; }
-  .pill-ok { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: #7DD99A; }
-  .pill-erro { background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.3); color: #F09595; }
+  .pill-ok { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .pill-erro { background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.3); color: var(--danger-fg); }
   .pill-check { background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
   .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 
@@ -53,7 +53,7 @@
   .chave-box { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #AFA9EC; letter-spacing: 0.06em; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .chave-copy { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
   .chave-copy:hover { border-color: var(--roxo); color: #AFA9EC; }
-  .chave-copy.copiado { border-color: var(--verde); color: #7DD99A; }
+  .chave-copy.copiado { border-color: var(--verde); color: var(--success-fg); }
   .instrucoes-claude { background: var(--roxo-bg); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #AFA9EC; line-height: 1.7; }
   .instrucoes-claude strong { color: var(--branco); font-weight: 500; }
 
@@ -189,7 +189,7 @@
                 <button onclick="migrarCurso()" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Salvar curso</button>
               </div>
               <button id="btn-toggle-ativo" onclick="toggleAtivo()" style="border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;width:100%;"></button>
-              <button onclick="zerarProgressoConfirm()" style="background:transparent;border:1px solid #4A2020;color:#A05050;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;width:100%;transition:all 0.15s;" onmouseover="this.style.borderColor='#7A3030';this.style.color='#E24B4A'" onmouseout="this.style.borderColor='#4A2020';this.style.color='#A05050'">Zerar progresso do aluno</button>
+              <button onclick="zerarProgressoConfirm()" style="background:transparent;border:1px solid #4A2020;color:#A05050;border-radius:6px;padding:7px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;width:100%;transition:all 0.15s;" onmouseover="this.style.borderColor='#7A3030';this.style.color='var(--danger)'" onmouseout="this.style.borderColor='#4A2020';this.style.color='#A05050'">Zerar progresso do aluno</button>
             </div>
           </div>
         </div>
@@ -199,10 +199,10 @@
 <div id="modal-zerar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;">
   <div style="background:var(--bg-secundario);border:1px solid #4A2020;border-radius:12px;padding:2rem;max-width:380px;width:90%;text-align:center;">
     <div style="width:48px;height:48px;border-radius:50%;background:rgba(226,75,74,0.12);border:1px solid rgba(226,75,74,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
-      <svg width="20" height="20" fill="none" stroke="#F09595" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
+      <svg width="20" height="20" fill="none" stroke="var(--danger-fg)" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>
     </div>
     <div style="font-size:16px;font-weight:600;color:var(--branco);margin-bottom:8px;">Zerar progresso?</div>
-    <div style="font-size:13px;color:#888;line-height:1.6;margin-bottom:1.5rem;">Esta ação vai apagar <strong style="color:#F09595;">todas as sessões e respostas</strong> de <span id="modal-zerar-nome" style="color:var(--branco);font-weight:600;"></span>. Não pode ser desfeita.</div>
+    <div style="font-size:13px;color:#888;line-height:1.6;margin-bottom:1.5rem;">Esta ação vai apagar <strong style="color:var(--danger-fg);">todas as sessões e respostas</strong> de <span id="modal-zerar-nome" style="color:var(--branco);font-weight:600;"></span>. Não pode ser desfeita.</div>
     <div style="display:flex;gap:10px;justify-content:center;">
       <button onclick="document.getElementById('modal-zerar').style.display='none'" style="flex:1;background:var(--bg-hover);border:1px solid #333;color:#888;border-radius:7px;padding:10px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;">Cancelar</button>
       <button onclick="zerarProgresso()" style="flex:1;background:#8B1A08;border:none;color:#fff;border-radius:7px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Zerar agora</button>
@@ -226,7 +226,7 @@
         <div id="admin-convite-resultado" style="display:none;background:var(--cinza-medio);border:1px solid var(--verde-borda);border-radius:8px;padding:12px;margin-bottom:8px;">
           <div style="font-size:11px;color:#555;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;">Link de convite (copie e envie)</div>
           <div style="display:flex;gap:8px;align-items:center;">
-            <input id="admin-convite-link" type="text" readonly style="flex:1;background:var(--cinza-escuro);border:1px solid var(--cinza-borda);color:#F09595;border-radius:6px;padding:8px 10px;font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none;">
+            <input id="admin-convite-link" type="text" readonly style="flex:1;background:var(--cinza-escuro);border:1px solid var(--cinza-borda);color:var(--danger-fg);border-radius:6px;padding:8px 10px;font-size:12px;font-family:'IBM Plex Mono',monospace;outline:none;">
             <button id="btn-copiar-convite-admin" style="background:var(--verde);color:#fff;border:none;border-radius:6px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Copiar</button>
           </div>
         </div>
@@ -258,7 +258,7 @@
 </div>
 
 <script src="/js/api.js?v=3"></script>
-<script src="/js/admin-chrome.js"></script>
+<script src="/js/admin-chrome.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -339,7 +339,7 @@
       btnToggle.style.color = '#fff';
     } else {
       ativoRes.textContent = 'Inativo';
-      ativoRes.style.color = '#E24B4A';
+      ativoRes.style.color = 'var(--danger)';
       btnToggle.textContent = 'Ativar acesso';
       btnToggle.style.background = '#27A05A';
       btnToggle.style.color = '#fff';
@@ -387,7 +387,7 @@
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:10px;font-weight:600;color:#AFA9EC;">${(a.curso || '—').toUpperCase()}</span>
-          <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;${a.ativo ? 'background:#1A3D27;color:#27A05A;' : 'background:#3D1A1A;color:#E24B4A;'}">${a.ativo ? 'ATIVO' : 'INATIVO'}</span>
+          <span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;${a.ativo ? 'background:#1A3D27;color:#27A05A;' : 'background:#3D1A1A;color:var(--danger);'}">${a.ativo ? 'ATIVO' : 'INATIVO'}</span>
         </div>
       </div>
     `).join('');
@@ -417,7 +417,7 @@
       { curso: cursoValor }
     );
     if (!r.ok) {
-      msg.textContent = 'Erro ao salvar.'; msg.style.color = '#E24B4A'; return;
+      msg.textContent = 'Erro ao salvar.'; msg.style.color = 'var(--danger)'; return;
     }
     alunoAtual.curso = cursoValor;
     document.getElementById('aluno-curso-res').textContent = cursoValor ? cursoValor.toUpperCase() : 'Sem restrição';
@@ -438,12 +438,12 @@
       { ativo: novoAtivo }
     );
     if (!r.ok) {
-      msg.textContent = 'Erro ao atualizar acesso.'; msg.style.color = '#E24B4A'; return;
+      msg.textContent = 'Erro ao atualizar acesso.'; msg.style.color = 'var(--danger)'; return;
     }
     alunoAtual.ativo = novoAtivo;
     renderizarAlunoSelecionado(alunoAtual);
     msg.textContent = novoAtivo ? 'Acesso ativado com sucesso.' : 'Acesso desativado.';
-    msg.style.color = novoAtivo ? '#27A05A' : '#E24B4A';
+    msg.style.color = novoAtivo ? '#27A05A' : 'var(--danger)';
     toast(novoAtivo ? 'Aluno ativado.' : 'Aluno desativado.', novoAtivo ? 'sucesso' : 'erro');
   };
 
@@ -464,7 +464,7 @@
 
     if (data && data.erro) {
       msg.textContent = data.erro || 'Erro ao zerar progresso.';
-      msg.style.color = '#E24B4A';
+      msg.style.color = 'var(--danger)';
       return;
     }
 
@@ -597,7 +597,7 @@
         <span style="color:var(--cinza-texto);font-size:12px;font-family:'IBM Plex Mono',monospace;">Backend Railway (API)</span>
       </div>`;
     statEl.textContent  = todosOk ? 'Online' : 'Com erros';
-    statEl.style.color  = todosOk ? '#7DD99A' : '#F09595';
+    statEl.style.color  = todosOk ? 'var(--success-fg)' : 'var(--danger-fg)';
     statEl.style.fontSize = '22px';
   }
 
@@ -626,15 +626,15 @@
             <div style="font-size:11px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">${escHtml(a.email)}${ehSuperAdmin ? ' · <span style="color:var(--brand-primary)">SUPER ADMIN</span>' : ''}</div>
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
-            <span style="font-size:11px;color:${a.ativo ? '#27A05A' : '#E24B4A'};font-weight:600;">${a.ativo ? 'Ativo' : 'Inativo'}</span>
+            <span style="font-size:11px;color:${a.ativo ? '#27A05A' : 'var(--danger)'};font-weight:600;">${a.ativo ? 'Ativo' : 'Inativo'}</span>
             ${podeDeletar
-              ? `<button onclick="excluirAdmin('${escHtml(a.id)}', '${escHtml(a.nome)}')" style="background:transparent;border:1px solid #7A1A10;color:#E24B4A;border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Excluir</button>`
+              ? `<button onclick="excluirAdmin('${escHtml(a.id)}', '${escHtml(a.nome)}')" style="background:transparent;border:1px solid #7A1A10;color:var(--danger);border-radius:6px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;">Excluir</button>`
               : ''}
           </div>
         </div>`;
       }).join('');
     } catch {
-      lista.innerHTML = '<div style="color:#E24B4A;font-size:13px;">Erro ao carregar administradores.</div>';
+      lista.innerHTML = '<div style="color:var(--danger);font-size:13px;">Erro ao carregar administradores.</div>';
     }
   }
 
@@ -650,7 +650,7 @@
   document.getElementById('btn-gerar-convite-admin').addEventListener('click', async function() {
     const email = document.getElementById('admin-convite-email').value.trim();
     const msg = document.getElementById('admin-convite-msg');
-    if (!email) { msg.textContent = 'Digite o e-mail do novo administrador.'; msg.style.color = '#E24B4A'; return; }
+    if (!email) { msg.textContent = 'Digite o e-mail do novo administrador.'; msg.style.color = 'var(--danger)'; return; }
     msg.textContent = 'Gerando…'; msg.style.color = '#888';
     document.getElementById('admin-convite-resultado').style.display = 'none';
     try {
@@ -659,7 +659,7 @@
       document.getElementById('admin-convite-resultado').style.display = 'block';
       msg.textContent = 'Convite gerado! Copie e envie o link para o novo administrador.'; msg.style.color = '#27A05A';
     } catch {
-      msg.textContent = 'Erro de conexão.'; msg.style.color = '#E24B4A';
+      msg.textContent = 'Erro de conexão.'; msg.style.color = 'var(--danger)';
     }
   });
 

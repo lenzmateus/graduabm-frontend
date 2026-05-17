@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
+<link rel="stylesheet" href="/css/rich-text.css?v=2">
 <style>
 
 /* Loading */
@@ -43,8 +44,8 @@
   .hero-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.04em; color: var(--branco); margin-bottom: 4px; }
   .hero-sub { font-size: 13px; color: var(--cinza-texto); }
   .hero-curso { display: inline-flex; align-items: center; gap: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; padding: 3px 10px; border-radius: 20px; margin-bottom: 8px; }
-  .hero-curso.ctsp { background: rgba(192,39,15,0.1); color: #E8866E; border: 1px solid rgba(192,39,15,0.3); }
-  .hero-curso.cba { background: rgba(24,95,165,0.1); color: #85B7EB; border: 1px solid rgba(24,95,165,0.3); }
+  .hero-curso.ctsp { background: var(--ctsp-bg); color: var(--at1-fg); border: 1px solid var(--ctsp-borda); }
+  .hero-curso.cba { background: var(--cba-bg); color: var(--info-fg); border: 1px solid var(--cba-borda); }
 
   /* Minha posição */
   .minha-posicao {
@@ -103,8 +104,8 @@
   .gab-q-num { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); }
   .gab-q-area { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); padding: 2px 8px; border: 1px solid var(--cinza-borda); border-radius: 20px; }
   .gab-q-status { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 10px; border-radius: 20px; }
-  .gab-q-status.ok { background: rgba(125,217,154,0.1); color: #7DD99A; }
-  .gab-q-status.err { background: rgba(240,149,149,0.1); color: #F09595; }
+  .gab-q-status.ok { background: rgba(125,217,154,0.1); color: var(--success-fg); }
+  .gab-q-status.err { background: rgba(240,149,149,0.1); color: var(--danger-fg); }
   .gab-q-status.blank { background: rgba(255,255,255,0.05); color: var(--cinza-texto); }
   .gab-enunciado { font-size: 14px; color: var(--branco); line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
   .gab-alts { display: flex; flex-direction: column; gap: 6px; }
@@ -113,8 +114,8 @@
   .gab-alt.errada { background: rgba(240,149,149,0.05); border: 1px solid rgba(240,149,149,0.15); }
   .gab-alt.neutra { border: 1px solid rgba(255,255,255,0.05); }
   .gab-alt-letra { font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 20px; }
-  .gab-alt-letra.verde { color: #7DD99A; }
-  .gab-alt-letra.vermelho { color: #F09595; }
+  .gab-alt-letra.verde { color: var(--success-fg); }
+  .gab-alt-letra.vermelho { color: var(--danger-fg); }
   .gab-justificativa { margin-top: 10px; padding: 10px 12px; background: rgba(125,217,154,0.05); border-left: 2px solid rgba(125,217,154,0.4); font-size: 13px; color: var(--cinza-texto); line-height: 1.6; border-radius: 0 6px 6px 0; }
 
   /* Estatísticas */
@@ -180,7 +181,9 @@
 
 <script src="/js/api.js?v=3"></script>
 <script src="/js/pbm-components.js?v=3"></script>
-<script>PBM.Layout.mount({active:'qap'});</script>
+<script src="/js/rich-text.js?v=1"></script>
+<script>PBM.Layout.mount({active:'qap'});
+RichText.ensurePurify().catch(() => {});</script>
 <script>
 let simuladoId = null;
 let dadosRanking = null;
@@ -292,7 +295,7 @@ function renderizarPagina() {
     </div>`;
 
   if (eu) {
-    const cor = eu.percentual >= 70 ? '#7DD99A' : eu.percentual >= 50 ? '#F0C050' : '#F09595';
+    const cor = eu.percentual >= 70 ? 'var(--success-fg)' : eu.percentual >= 50 ? '#F0C050' : 'var(--danger-fg)';
     const posLabel = minhaPos === 1 ? '🥇 1º' : minhaPos === 2 ? '🥈 2º' : minhaPos === 3 ? '🥉 3º' : `#${minhaPos}`;
     html += `
       <div class="minha-posicao">
@@ -301,7 +304,7 @@ function renderizarPagina() {
           <div class="pos-info-titulo">Sua posição no ranking</div>
           <div class="pos-stats">
             <div class="pos-stat">
-              <span class="val" style="color:#7DD99A">${eu.acertos}</span>
+              <span class="val" style="color:var(--success-fg)">${eu.acertos}</span>
               <span class="lbl">Acertos</span>
             </div>
             <div class="pos-stat">
@@ -352,7 +355,7 @@ function renderRanking() {
   if (ranking.length === 0) return `<div style="text-align:center;color:var(--cinza-texto);padding:2rem;">Nenhum participante registrado ainda.</div>`;
 
   return `<div class="ranking-lista">${ranking.map(p => {
-    const cor = p.percentual >= 70 ? '#7DD99A' : p.percentual >= 50 ? '#F0C050' : '#F09595';
+    const cor = p.percentual >= 70 ? 'var(--success-fg)' : p.percentual >= 50 ? '#F0C050' : 'var(--danger-fg)';
     const posClass = p.posicao === 1 ? 'ouro' : p.posicao === 2 ? 'prata' : p.posicao === 3 ? 'bronze' : '';
     return `
       <div class="ranking-item ${p.sou_eu ? 'eu' : ''} ${p.posicao <= 3 ? 'top3' : ''}">
@@ -400,9 +403,9 @@ function renderGabarito() {
       const letraStyle = isCorreta ? 'verde' : (isMinha && !isCorreta) ? 'vermelho' : '';
       return `<div class="gab-alt ${cls}">
         <span class="gab-alt-letra ${letraStyle}">${letra}</span>
-        <span style="font-size:13px;color:var(--branco);">${q['alternativa_' + l]}</span>
-        ${isCorreta ? '<span style="margin-left:auto;font-size:10px;color:#7DD99A;font-family:\'IBM Plex Mono\',monospace;">✓ CORRETA</span>' : ''}
-        ${isMinha && !isCorreta ? '<span style="margin-left:auto;font-size:10px;color:#F09595;font-family:\'IBM Plex Mono\',monospace;">← SUA RESPOSTA</span>' : ''}
+        <span class="rt-render" style="font-size:13px;color:var(--branco);">${RichText.renderInline(q['alternativa_' + l] || '')}</span>
+        ${isCorreta ? '<span style="margin-left:auto;font-size:10px;color:var(--success-fg);font-family:\'IBM Plex Mono\',monospace;">✓ CORRETA</span>' : ''}
+        ${isMinha && !isCorreta ? '<span style="margin-left:auto;font-size:10px;color:var(--danger-fg);font-family:\'IBM Plex Mono\',monospace;">← SUA RESPOSTA</span>' : ''}
       </div>`;
     }).join('');
 
@@ -413,9 +416,9 @@ function renderGabarito() {
           <span class="gab-q-area">${(q.area_tematica || '').toUpperCase()}</span>
           <span class="gab-q-status ${statusClass}">${statusLabel}</span>
         </div>
-        <div class="gab-enunciado">${q.enunciado || ''}</div>
+        <div class="gab-enunciado rt-render">${RichText.render(q.enunciado || '')}</div>
         <div class="gab-alts">${altCards}</div>
-        ${q.justificativa ? `<div class="gab-justificativa">${q.justificativa}</div>` : ''}
+        ${q.justificativa ? `<div class="gab-justificativa rt-render">${RichText.render(q.justificativa)}</div>` : ''}
       </div>`;
   }).join('');
 
@@ -460,12 +463,12 @@ function renderEstatisticas() {
     <div class="stat-destaque-grid">
       <div class="stat-destaque">
         <div class="stat-destaque-label">Questão mais difícil</div>
-        <div class="stat-destaque-pct" style="color:#F09595">${mais_dificil ? mais_dificil.percentual + '%' : '—'}</div>
+        <div class="stat-destaque-pct" style="color:var(--danger-fg)">${mais_dificil ? mais_dificil.percentual + '%' : '—'}</div>
         <div class="stat-destaque-desc">${destaqueDificil}</div>
       </div>
       <div class="stat-destaque">
         <div class="stat-destaque-label">Questão mais fácil</div>
-        <div class="stat-destaque-pct" style="color:#7DD99A">${mais_facil ? mais_facil.percentual + '%' : '—'}</div>
+        <div class="stat-destaque-pct" style="color:var(--success-fg)">${mais_facil ? mais_facil.percentual + '%' : '—'}</div>
         <div class="stat-destaque-desc">${destaqueFacil}</div>
       </div>
     </div>

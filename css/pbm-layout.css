@@ -120,8 +120,8 @@ body {
 }
 .nav-missao.locked:hover .nav-missao-tooltip { display: block; }
 .nav-missao.active {
-  color: #7DD99A;
-  border-left-color: #7DD99A;
+  color: var(--success-fg);
+  border-left-color: var(--success-fg);
   background: rgba(125,217,154,.06);
   text-decoration: none;
   animation: pulse-missao 2s ease-in-out infinite;
@@ -130,7 +130,7 @@ body {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 8px;
   background: rgba(125,217,154,.12);
-  color: #7DD99A;
+  color: var(--success-fg);
   border-radius: 4px;
   padding: 1px 6px;
   letter-spacing: 0.08em;

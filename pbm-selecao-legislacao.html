@@ -246,10 +246,10 @@
     padding: 2px 7px; border-radius: 20px;
     white-space: nowrap;
   }
-  .tag-exclusivo { background: rgba(192,39,15,0.1); color: #E0866E; border: 1px solid rgba(192,39,15,0.3); }
-  .tag-exclusivo-cba { background: rgba(24,95,165,0.1); color: #85B7EB; border: 1px solid rgba(24,95,165,0.3); }
-  .tag-comum { background: rgba(255,255,255,0.04); color: #666; border: 1px solid #333; }
-  .leg-qcount { font-size: 10px; color: #555; }
+  .tag-exclusivo { background: var(--ctsp-bg); color: var(--at1-fg); border: 1px solid var(--ctsp-borda); }
+  .tag-exclusivo-cba { background: var(--cba-bg); color: var(--info-fg); border: 1px solid var(--cba-borda); }
+  .tag-comum { background: var(--bg-hover); color: var(--texto-suporte); border: 1px solid var(--border-color); }
+  .leg-qcount { font-size: 10px; color: var(--texto-suporte); }
 
   /* ── SUBGRUPOS (capítulos, módulos) ── */
   .subgrupo { margin-bottom: 1.5rem; }
@@ -542,7 +542,7 @@
           <div class="qtd-opts" id="filtro-opts">
             <button class="qtd-btn ativo" onclick="setFiltro('todas', this)">Todas</button>
             <button class="qtd-btn" onclick="setFiltro('ineditas', this)">Inéditas</button>
-            <button class="qtd-btn" style="color: #F09595;" onclick="setFiltro('erradas', this)">Caderno de Erros</button>
+            <button class="qtd-btn" style="color: var(--danger-fg);" onclick="setFiltro('erradas', this)">Caderno de Erros</button>
           </div>
           <div style="font-size:11px;color:var(--cinza-texto);margin-top:8px;">
             Filtre as questões com base no seu histórico de respostas.
@@ -587,24 +587,24 @@ const EDITAL = {
 // ── CONFIG VISUAL POR AT (cores/títulos) — dados de legislações vêm do manifesto via API ──
 const AREAS_VISUAL = {
   at1: {
-    ctsp: { titulo: 'Segurança contra incêndios',                       cor: '#C0270F', corRgb: '192,39,15',   badgeStyle: 'background:rgba(192,39,15,0.15);color:#E0866E;' },
-    cba:  { titulo: 'Segurança contra incêndios',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;' },
+    ctsp: { titulo: 'Segurança contra incêndios',                       cor: '#C0270F', corRgb: '192,39,15',   badgeStyle: 'background:var(--at1-bg);color:var(--at1-fg);' },
+    cba:  { titulo: 'Segurança contra incêndios',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:var(--cba-bg);color:var(--info-fg);' },
   },
   at2: {
-    ctsp: { titulo: 'Combate a incêndios',                              cor: '#BA7517', corRgb: '186,117,23',  badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;' },
-    cba:  { titulo: 'Combate a incêndios',                              cor: '#BA7517', corRgb: '186,117,23',  badgeStyle: 'background:rgba(186,117,23,0.15);color:#EF9F27;' },
+    ctsp: { titulo: 'Combate a incêndios',                              cor: '#BA7517', corRgb: '186,117,23',  badgeStyle: 'background:var(--at2-bg);color:var(--at2-fg);' },
+    cba:  { titulo: 'Combate a incêndios',                              cor: '#BA7517', corRgb: '186,117,23',  badgeStyle: 'background:var(--at2-bg);color:var(--at2-fg);' },
   },
   at3: {
-    ctsp: { titulo: 'Buscas e salvamentos / APH',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;' },
-    cba:  { titulo: 'Buscas e salvamentos / APH',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:rgba(24,95,165,0.15);color:#85B7EB;' },
+    ctsp: { titulo: 'Buscas e salvamentos / APH',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:var(--at3-bg);color:var(--at3-fg);' },
+    cba:  { titulo: 'Buscas e salvamentos / APH',                       cor: '#185FA5', corRgb: '24,95,165',   badgeStyle: 'background:var(--at3-bg);color:var(--at3-fg);' },
   },
   at4: {
-    ctsp: { titulo: 'Direito institucional, constitucional e militar',  cor: '#27A05A', corRgb: '39,160,90',   badgeStyle: 'background:rgba(39,160,90,0.15);color:#7DD99A;' },
-    cba:  { titulo: 'Direito institucional, constitucional e militar',  cor: '#27A05A', corRgb: '39,160,90',   badgeStyle: 'background:rgba(39,160,90,0.15);color:#7DD99A;' },
+    ctsp: { titulo: 'Direito institucional, constitucional e militar',  cor: '#27A05A', corRgb: '39,160,90',   badgeStyle: 'background:var(--at4-bg);color:var(--at4-fg);' },
+    cba:  { titulo: 'Direito institucional, constitucional e militar',  cor: '#27A05A', corRgb: '39,160,90',   badgeStyle: 'background:var(--at4-bg);color:var(--at4-fg);' },
   },
   at5: {
-    ctsp: { titulo: 'Normas administrativas e documentação técnica',    cor: '#7F77DD', corRgb: '127,119,221', badgeStyle: 'background:rgba(127,119,221,0.15);color:#AFA9EC;' },
-    cba:  { titulo: 'Normas institucionais e documentação técnica',     cor: '#7F77DD', corRgb: '127,119,221', badgeStyle: 'background:rgba(127,119,221,0.15);color:#AFA9EC;' },
+    ctsp: { titulo: 'Normas administrativas e documentação técnica',    cor: '#7F77DD', corRgb: '127,119,221', badgeStyle: 'background:var(--at5-bg);color:var(--at5-fg);' },
+    cba:  { titulo: 'Normas institucionais e documentação técnica',     cor: '#7F77DD', corRgb: '127,119,221', badgeStyle: 'background:var(--at5-bg);color:var(--at5-fg);' },
   },
 };
 

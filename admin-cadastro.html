@@ -31,7 +31,7 @@
     --vermelho-bg: rgba(192,39,15,0.08);
     --vermelho-borda: rgba(192,39,15,0.3);
     --verde: #27A05A;
-    --erro: #E24B4A;
+    --erro: var(--danger);
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--carvao); color: var(--branco); font-family: 'Inter', sans-serif; font-size: 15px; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem; }
@@ -39,9 +39,9 @@
   .card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 14px; padding: 2.5rem; width: 100%; max-width: 420px; }
 
   .logo { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.06em; color: var(--branco); text-align: center; margin-bottom: 4px; }
-  .subtitulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #F09595; letter-spacing: 0.08em; text-align: center; margin-bottom: 2.5rem; text-transform: uppercase; }
+  .subtitulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--danger-fg); letter-spacing: 0.08em; text-align: center; margin-bottom: 2.5rem; text-transform: uppercase; }
 
-  .aviso-convite { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #F09595; margin-bottom: 1.5rem; line-height: 1.5; }
+  .aviso-convite { background: var(--vermelho-bg); border: 1px solid var(--vermelho-borda); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: var(--danger-fg); margin-bottom: 1.5rem; line-height: 1.5; }
   .aviso-convite strong { color: var(--branco); }
 
   .campo { margin-bottom: 1.25rem; }
@@ -55,11 +55,11 @@
   .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .msg { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 13px; display: none; }
-  .msg.erro { background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.3); color: #F09595; display: block; }
-  .msg.sucesso { background: rgba(39,160,90,0.1); border: 1px solid rgba(39,160,90,0.3); color: #7DD99A; display: block; }
+  .msg.erro { background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.3); color: var(--danger-fg); display: block; }
+  .msg.sucesso { background: rgba(39,160,90,0.1); border: 1px solid rgba(39,160,90,0.3); color: var(--success-fg); display: block; }
 
   .convite-invalido { text-align: center; padding: 2rem 0; }
-  .convite-invalido h2 { font-size: 18px; margin-bottom: 8px; color: #E24B4A; }
+  .convite-invalido h2 { font-size: 18px; margin-bottom: 8px; color: var(--danger); }
   .convite-invalido p { font-size: 13px; color: var(--cinza-texto); }
 
   .rodape { text-align: center; margin-top: 1.5rem; font-size: 12px; color: #555; }

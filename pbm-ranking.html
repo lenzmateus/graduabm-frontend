@@ -262,7 +262,7 @@
   .rank-fds-badge {
     font-size: 9px; font-weight: 500; letter-spacing: 0.05em;
     padding: 1px 5px; border-radius: 3px;
-    background: rgba(125,217,154,0.1); color: #7DD99A;
+    background: rgba(125,217,154,0.1); color: var(--success-fg);
     border: 1px solid rgba(125,217,154,0.25);
     font-family: 'IBM Plex Mono', monospace;
     white-space: nowrap; cursor: default;
@@ -563,9 +563,9 @@
   </div>
 </div>
 
-<script src="/js/api.js?v=3"></script>
+<script src="/js/api.js?v=4"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script>PBM.Layout.mount({active:'ranking'});</script>
 <script>
   const usuario = PBM.getUsuario();
@@ -576,6 +576,24 @@
   let filtroCurso = '';
   let sortCampo = 'score';
   let modo = 'estudos';
+  let modoAdmin = false; // true quando o backend confirmou que o request veio com JWT admin
+
+  // ── Faixa de modo admin ──────────────────────────────────────
+  function aplicarFaixaAdmin() {
+    if (!modoAdmin) return;
+    if (document.getElementById('faixa-admin-ranking')) return;
+    const faixa = document.createElement('div');
+    faixa.id = 'faixa-admin-ranking';
+    faixa.style.cssText = 'background:rgba(192,39,15,0.12);border:1px solid rgba(192,39,15,0.35);border-radius:8px;padding:10px 16px;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;';
+    faixa.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--branco);">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.08em;background:var(--vermelho);color:#fff;padding:3px 8px;border-radius:4px;">MODO ADMIN</span>
+        <span>Você está visualizando o ranking com <strong>nomes reais e e-mails</strong> dos alunos.</span>
+      </div>
+      <a href="/admin" style="font-size:12px;color:var(--vermelho);text-decoration:none;border:1px solid rgba(192,39,15,0.4);border-radius:6px;padding:5px 12px;font-family:'Inter',sans-serif;">← Voltar ao painel admin</a>`;
+    const hero = document.querySelector('.hero');
+    if (hero && hero.parentNode) hero.parentNode.insertBefore(faixa, hero);
+  }
 
   // ── Score ────────────────────────────────────────────────────
   function calcScore(r) {
@@ -598,9 +616,25 @@
     return entry.nome || null;
   }
 
+  function escapeHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+  }
+
   function renderNome(entry, grande) {
+    // Modo admin: prioriza nome_real + email; mantém nickname entre parênteses se houver
+    if (modoAdmin && (entry.nome_real || entry.email)) {
+      const principal = entry.nome_real || entry.nome || 'Sem nome';
+      const nickSuffix = entry.nome && entry.nome !== entry.nome_real
+        ? ` <span style="color:var(--cinza-texto);font-size:11px;">(${escapeHtml(entry.nome)})</span>`
+        : '';
+      const email = entry.email
+        ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--cinza-texto);margin-top:2px;">${escapeHtml(entry.email)}</div>`
+        : '';
+      const euBadge = entry.sou_eu ? ' <span class="rank-eu-badge">você</span>' : '';
+      return `<div><span class="rank-nome">${escapeHtml(principal)}</span>${nickSuffix}${euBadge}${email}</div>`;
+    }
     if (entry.nome) {
-      const base = `<span class="rank-nome${entry.sou_eu ? '' : ''}">${entry.nome}</span>`;
+      const base = `<span class="rank-nome${entry.sou_eu ? '' : ''}">${escapeHtml(entry.nome)}</span>`;
       return entry.sou_eu ? base + ' <span class="rank-eu-badge">você</span>' : base;
     }
     const anon = `<span class="rank-nome rank-anonimo">Anônimo</span>`;
@@ -663,11 +697,16 @@
 
       const cursoClass = r.curso === 'ctsp' ? 'curso-ctsp' : 'curso-cba';
 
+      const nomeExibido = modoAdmin && r.nome_real ? r.nome_real : (r.nome || 'Anônimo');
+      const emailLinha = modoAdmin && r.email
+        ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--cinza-texto);margin-bottom:8px;text-align:center;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(r.email)}">${escapeHtml(r.email)}</div>`
+        : '';
       cards[visual] = `
         <div class="podio-card ${classes[visual]}">
           ${r.sou_eu ? '<span class="podio-sou-eu">VOCÊ</span>' : ''}
           <div class="podio-medal">${labels[visual]}</div>
-          <div class="podio-nome ${r.nome ? '' : 'podio-anonimo'}">${r.nome || 'Anônimo'}</div>
+          <div class="podio-nome ${(modoAdmin ? r.nome_real : r.nome) ? '' : 'podio-anonimo'}">${escapeHtml(nomeExibido)}</div>
+          ${emailLinha}
           <div class="curso-badge ${cursoClass}">${r.curso?.toUpperCase()}</div>
           <div class="podio-metric-val">${metricVal}</div>
           <div class="podio-metric-label">${metricLabel}</div>
@@ -773,11 +812,16 @@
       if (!r) { cards[visual] = ''; return; }
       const cursoClass = r.curso === 'ctsp' ? 'curso-ctsp' : 'curso-cba';
       const totalLabel = r.curso === 'ctsp' ? '60' : r.curso === 'cba' ? '40' : r.total;
+      const nomeExibidoS = modoAdmin && r.nome_real ? r.nome_real : (r.nome || 'Anônimo');
+      const emailLinhaS = modoAdmin && r.email
+        ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--cinza-texto);margin-bottom:8px;text-align:center;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(r.email)}">${escapeHtml(r.email)}</div>`
+        : '';
       cards[visual] = `
         <div class="podio-card ${classes[visual]}">
           ${r.sou_eu ? '<span class="podio-sou-eu">VOCÊ</span>' : ''}
           <div class="podio-medal">${labels[visual]}</div>
-          <div class="podio-nome ${r.nome ? '' : 'podio-anonimo'}">${r.nome || 'Anônimo'}</div>
+          <div class="podio-nome ${(modoAdmin ? r.nome_real : r.nome) ? '' : 'podio-anonimo'}">${escapeHtml(nomeExibidoS)}</div>
+          ${emailLinhaS}
           <div class="curso-badge ${cursoClass}">${r.curso?.toUpperCase()}</div>
           <div class="podio-metric-val">${r.percentual}%</div>
           <div class="podio-metric-label">aproveitamento</div>
@@ -919,8 +963,10 @@
   // ── Carregar dados ────────────────────────────────────────────
   async function carregar() {
     try {
-      const { ranking } = await PBM.Ranking.listar();
-      rankingOriginal = ranking || [];
+      const resp = await PBM.Ranking.listar();
+      rankingOriginal = resp.ranking || [];
+      modoAdmin = !!resp.admin;
+      aplicarFaixaAdmin();
 
       const agora = new Date();
       document.getElementById('topbar-atualizado').textContent =
@@ -942,8 +988,10 @@
     document.getElementById('podio').innerHTML =
       '<div class="skeleton" style="height:200px;border-radius:10px;"></div><div class="skeleton" style="height:220px;border-radius:10px;"></div><div class="skeleton" style="height:200px;border-radius:10px;"></div>';
     try {
-      const { ranking } = await PBM.Ranking.simulados();
-      simRankingOriginal = ranking || [];
+      const resp = await PBM.Ranking.simulados();
+      simRankingOriginal = resp.ranking || [];
+      modoAdmin = !!resp.admin;
+      aplicarFaixaAdmin();
       renderAllSim();
     } catch (err) {
       document.getElementById('ranking-body').innerHTML =

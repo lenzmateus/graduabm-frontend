@@ -71,11 +71,11 @@
   .at-secao-head .tag {
     padding: 3px 8px; border-radius: 4px;
   }
-  .at-secao-head .tag.AT1 { background: rgba(192,39,15,0.10); color: #E0866E; }
-  .at-secao-head .tag.AT2 { background: rgba(186,117,23,0.10); color: #D4A24A; }
-  .at-secao-head .tag.AT3 { background: rgba(24,95,165,0.12); color: #5C9BD9; }
-  .at-secao-head .tag.AT4 { background: rgba(47,111,68,0.15); color: #7DD99A; }
-  .at-secao-head .tag.AT5 { background: rgba(127,119,221,0.12); color: #B58AE0; }
+  .at-secao-head .tag.AT1 { background: var(--at1-bg); color: var(--at1-fg); }
+  .at-secao-head .tag.AT2 { background: var(--at2-bg); color: var(--at2-fg); }
+  .at-secao-head .tag.AT3 { background: var(--at3-bg); color: var(--at3-fg); }
+  .at-secao-head .tag.AT4 { background: var(--at4-bg); color: var(--at4-fg); }
+  .at-secao-head .tag.AT5 { background: var(--at5-bg); color: var(--at5-fg); }
   .at-secao-head::after {
     content: ''; flex: 1; height: 1px; background: var(--cinza-borda);
   }
@@ -90,15 +90,15 @@
     border: 1px solid var(--cinza-borda);
     border-radius: 6px;
   }
-  .leg-item.alta { border-left: 3px solid #E0866E; }
-  .leg-item.baixa { border-left: 3px solid #7DD99A; }
+  .leg-item.alta { border-left: 3px solid var(--at1-fg); }
+  .leg-item.baixa { border-left: 3px solid var(--success-fg); }
   .leg-nome {
     font-size: 13px; color: var(--branco);
     line-height: 1.3;
   }
   .leg-info {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: #666;
+    font-size: 10px; color: var(--texto-suporte);
     margin-top: 2px;
   }
 
@@ -117,9 +117,9 @@
     border-right: 1px solid var(--cinza-borda);
   }
   .toggle-btn:last-child { border-right: none; }
-  .toggle-btn.ativo.alta { background: #4A2218; color: #E0866E; }
+  .toggle-btn.ativo.alta { background: var(--at1-bg); color: var(--at1-fg); }
   .toggle-btn.ativo.media { background: var(--bg-hover); color: var(--branco); }
-  .toggle-btn.ativo.baixa { background: #1F3D2A; color: #7DD99A; }
+  .toggle-btn.ativo.baixa { background: var(--at4-bg); color: var(--success-fg); }
   .toggle-btn:hover { color: var(--branco); }
 
   .stats-bar {
@@ -147,8 +147,8 @@
     letter-spacing: 0.08em; margin-top: 2px;
     text-transform: uppercase;
   }
-  .stat-pill.alta .num { color: #E0866E; }
-  .stat-pill.baixa .num { color: #7DD99A; }
+  .stat-pill.alta .num { color: var(--at1-fg); }
+  .stat-pill.baixa .num { color: var(--success-fg); }
 
   /* ── Mobile estreito (≤420px) ── */
   @media (max-width: 420px) {
@@ -201,8 +201,8 @@
       <div class="page-header">
         <div class="page-titulo">Minhas Dificuldades</div>
         <div class="page-sub">
-          Marque legislações como <strong style="color:#E0866E;">alta</strong> dificuldade para que apareçam mais cedo no seu próximo ciclo,
-          ou <strong style="color:#7DD99A;">baixa</strong> para que sejam relegadas para o fim. As marcações entram em vigor quando você
+          Marque legislações como <strong style="color:var(--at1-fg);">alta</strong> dificuldade para que apareçam mais cedo no seu próximo ciclo,
+          ou <strong style="color:var(--success-fg);">baixa</strong> para que sejam relegadas para o fim. As marcações entram em vigor quando você
           gerar o próximo ciclo.
         </div>
       </div>
@@ -351,7 +351,7 @@
         const m = estado.marcacoes[l.id] || null;
         const h = estado.historico[l.id];
         const histLinha = h
-          ? `<span style="color:#7DD99A;">⏱ ${fmtTempo(h.total_minutos)}</span> · ${h.sessoes_total} sessã${h.sessoes_total === 1 ? 'o' : 'es'}`
+          ? `<span style="color:var(--success-fg);">⏱ ${fmtTempo(h.total_minutos)}</span> · ${h.sessoes_total} sessã${h.sessoes_total === 1 ? 'o' : 'es'}`
           : `<span style="color:#666;">Nunca estudada</span>`;
         const item = document.createElement('div');
         item.className = 'leg-item' + (m === 'alta' ? ' alta' : '') + (m === 'baixa' ? ' baixa' : '');

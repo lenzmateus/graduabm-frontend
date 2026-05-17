@@ -271,28 +271,86 @@
     color: var(--branco);
   }
 
-  .cupom-row {
-    display: flex; gap: 8px; margin-top: 0.75rem;
-  }
-  .cupom-row input { flex: 1; }
-  .cupom-row button {
-    /* Ghost button alinhado a .btn-ghost — aplicar cupom não é primary */
-    background: transparent;
+  /* ── Bloco do cupom ──
+     Painel coeso (mesma família visual de .info-linha/.plano-btn),
+     com label uppercase mono, input full-width e CTA outline. */
+  .cupom-box {
+    margin-top: 1.5rem;
+    padding: 1rem 1.1rem;
+    background: var(--carvao);
     border: 1px solid var(--cinza-borda);
+    border-radius: 8px;
+  }
+  .cupom-box-titulo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--cinza-texto);
+    margin-bottom: 4px;
+  }
+  .cupom-box-titulo svg {
+    color: var(--vermelho);
+    flex-shrink: 0;
+  }
+  .cupom-box-sub {
+    font-size: 12px;
+    color: var(--cinza-texto);
+    line-height: 1.45;
+    margin: 0 0 12px 0;
+  }
+  .cupom-row {
+    display: flex; gap: 8px;
+  }
+  .cupom-row input {
+    flex: 1;
+    padding: 11px 14px;
+    background: var(--bg-primario);
+    border: 1px solid var(--cinza-borda);
+    border-radius: 6px;
     color: var(--branco);
-    padding: 0 18px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .cupom-row input:focus { border-color: var(--vermelho); }
+  .cupom-row input::placeholder {
+    color: #555;
+    letter-spacing: normal;
+    text-transform: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .cupom-row button {
+    background: transparent;
+    border: 1px solid var(--vermelho);
+    color: var(--vermelho);
+    padding: 0 22px;
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
     font-size: 13px;
     font-family: 'Inter', sans-serif;
-    transition: border-color 0.15s, color 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
   }
-  .cupom-row button:hover { border-color: var(--vermelho); color: var(--vermelho); }
-  .cupom-row button:disabled { opacity: 0.5; cursor: not-allowed; }
-  .cupom-msg { font-size: 12px; margin-top: 6px; display: none; }
-  .cupom-msg.sucesso { display: block; color: var(--sucesso-fg); }
-  .cupom-msg.erro    { display: block; color: var(--erro-fg); }
+  .cupom-row button:hover { background: var(--vermelho); color: #fff; }
+  .cupom-row button:disabled { opacity: 0.5; cursor: not-allowed; background: transparent; color: var(--vermelho); }
+  .cupom-msg {
+    font-size: 12px;
+    margin-top: 8px;
+    display: none;
+    font-family: 'Inter', sans-serif;
+  }
+  .cupom-msg.sucesso { display: flex; align-items: center; gap: 6px; color: var(--sucesso-fg); }
+  .cupom-msg.erro    { display: flex; align-items: center; gap: 6px; color: var(--erro-fg); }
 
   /* ── Card 4 — indicação ── */
   .ref-link-box {
@@ -309,7 +367,7 @@
     flex: 1;
     font-family: 'IBM Plex Mono', monospace;
     font-size: 12px;
-    color: #DDD;
+    color: var(--texto-principal);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -550,7 +608,7 @@
 
         <!-- ─── CARD 5 — Excluir conta ─── -->
         <section class="conta-card zona-perigo" id="card-excluir">
-          <div class="card-titulo" style="color:#F09595;">
+          <div class="card-titulo" style="color:var(--danger-fg);">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             Excluir minha conta
           </div>
@@ -583,7 +641,7 @@
       <li>Respostas individuais a questões (sem vínculo com você)</li>
     </ul>
 
-    <p id="aviso-cobranca" style="color:#F6D67B;font-size:12px;display:none;">
+    <p id="aviso-cobranca" style="color:var(--warning-fg);font-size:12px;display:none;">
       ⚠ Sua assinatura externa (Kiwify) <strong>não é cancelada automaticamente</strong>. Gerencie diretamente no Kiwify para evitar novas cobranças.
     </p>
 
@@ -611,7 +669,7 @@
 <!-- ─── Modal: e-mail pendente ─── -->
 <div class="modal-overlay" id="modal-email-pendente">
   <div class="modal">
-    <h2 style="color:#F6D67B;">Confirme no seu novo e-mail</h2>
+    <h2 style="color:var(--warning-fg);">Confirme no seu novo e-mail</h2>
     <p>Enviamos um link de confirmação para <strong id="modal-email-destino"></strong>.</p>
     <p>O link expira em <strong>1 hora</strong>. Sua sessão atual foi encerrada — após confirmar, faça login com o novo e-mail.</p>
     <p style="font-size:12px;color:var(--cinza-texto);">Também avisamos seu e-mail antigo. Se a troca não foi solicitada por você, redefina sua senha imediatamente.</p>
@@ -842,10 +900,19 @@ function renderPlanos() {
 
 function renderCupom() {
   return `
-    <div style="margin-top:1.25rem;border-top:1px solid #222;padding-top:1rem;">
-      <label style="display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;margin-bottom:6px;">Tem um cupom de acesso?</label>
+    <div class="cupom-box">
+      <div class="cupom-box-titulo">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 12V8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v4a2 2 0 0 1 0 4v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4a2 2 0 0 1 0-4z"/>
+          <line x1="9" y1="9" x2="9.01" y2="9"/>
+          <line x1="15" y1="15" x2="15.01" y2="15"/>
+          <line x1="9" y1="15" x2="15" y2="9"/>
+        </svg>
+        Cupom de acesso
+      </div>
+      <p class="cupom-box-sub">Tem um cupom? Aplique aqui para liberar o acesso imediatamente.</p>
       <div class="cupom-row">
-        <input type="text" id="cupom-codigo-conta" placeholder="Digite o código" maxlength="30" oninput="this.value=this.value.toUpperCase().replace(/\\s+/g,'')">
+        <input type="text" id="cupom-codigo-conta" placeholder="Digite o código" maxlength="30" autocomplete="off" oninput="this.value=this.value.toUpperCase().replace(/\\s+/g,'')">
         <button id="btn-cupom-conta">Aplicar</button>
       </div>
       <div class="cupom-msg" id="cupom-msg-conta"></div>
