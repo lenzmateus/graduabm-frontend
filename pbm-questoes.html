@@ -1047,8 +1047,8 @@ function mostrarQuestao() {
     dLetra.className = 'alt-letra';
     dLetra.textContent = alt.displayLetra;
     const sTexto = document.createElement('span');
-    sTexto.classList.add('rt-render');
-    RichText.renderInlineInto(sTexto, alt.texto);
+    sTexto.style.whiteSpace = 'pre-wrap';
+    sTexto.textContent = RichText.toPlainText(alt.texto);
     div.appendChild(dLetra);
     div.appendChild(sTexto);
     container.appendChild(div);

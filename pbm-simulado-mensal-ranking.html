@@ -403,7 +403,7 @@ function renderGabarito() {
       const letraStyle = isCorreta ? 'verde' : (isMinha && !isCorreta) ? 'vermelho' : '';
       return `<div class="gab-alt ${cls}">
         <span class="gab-alt-letra ${letraStyle}">${letra}</span>
-        <span class="rt-render" style="font-size:13px;color:var(--branco);">${RichText.renderInline(q['alternativa_' + l] || '')}</span>
+        <span style="font-size:13px;color:var(--branco);white-space:pre-wrap;">${RichText.escapeHtml(RichText.toPlainText(q['alternativa_' + l] || ''))}</span>
         ${isCorreta ? '<span style="margin-left:auto;font-size:10px;color:var(--success-fg);font-family:\'IBM Plex Mono\',monospace;">✓ CORRETA</span>' : ''}
         ${isMinha && !isCorreta ? '<span style="margin-left:auto;font-size:10px;color:var(--danger-fg);font-family:\'IBM Plex Mono\',monospace;">← SUA RESPOSTA</span>' : ''}
       </div>`;

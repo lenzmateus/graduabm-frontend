@@ -379,11 +379,11 @@
       </div>
       <div style="min-width:0;">
         <div class="form-label" style="margin-bottom:8px;">Alternativas</div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">A.</span><input id="qm-alt-A" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">B.</span><input id="qm-alt-B" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">C.</span><input id="qm-alt-C" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">D.</span><input id="qm-alt-D" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">E.</span><input id="qm-alt-E" type="text" class="form-input" style="flex:1;min-width:0;width:100%;"></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;padding-top:11px;">A.</span><textarea id="qm-alt-A" rows="1" class="form-input" style="flex:1;min-width:0;width:100%;resize:vertical;min-height:38px;line-height:1.5;overflow-y:auto;"></textarea></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;padding-top:11px;">B.</span><textarea id="qm-alt-B" rows="1" class="form-input" style="flex:1;min-width:0;width:100%;resize:vertical;min-height:38px;line-height:1.5;overflow-y:auto;"></textarea></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;padding-top:11px;">C.</span><textarea id="qm-alt-C" rows="1" class="form-input" style="flex:1;min-width:0;width:100%;resize:vertical;min-height:38px;line-height:1.5;overflow-y:auto;"></textarea></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;padding-top:11px;">D.</span><textarea id="qm-alt-D" rows="1" class="form-input" style="flex:1;min-width:0;width:100%;resize:vertical;min-height:38px;line-height:1.5;overflow-y:auto;"></textarea></div>
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;min-width:0;"><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;padding-top:11px;">E.</span><textarea id="qm-alt-E" rows="1" class="form-input" style="flex:1;min-width:0;width:100%;resize:vertical;min-height:38px;line-height:1.5;overflow-y:auto;"></textarea></div>
       </div>
       <div class="form-group">
         <div class="form-label">Gabarito</div>
@@ -566,7 +566,7 @@ function renderizarQuestoesDo(id) {
         return `<div class="q-detalhe" id="qd-${q.id}" style="display:none;">
         <div class="q-detalhe-enun rt-render">${window.RichText ? RichText.render(q.enunciado || '') : (q.enunciado || '')}</div>
         <div class="q-detalhe-alts">
-          ${letras.map((l, i) => `<div class="q-alt"><strong>${l}.</strong> <span class="rt-render">${window.RichText ? RichText.renderInline(norm.alts[i] || '') : (norm.alts[i] || '-')}</span></div>`).join('')}
+          ${letras.map((l, i) => `<div class="q-alt"><strong>${l}.</strong> <span style="white-space:pre-wrap;">${window.RichText ? RichText.escapeHtml(RichText.toPlainText(norm.alts[i] || '')) : (norm.alts[i] || '-')}</span></div>`).join('')}
         </div>
         <div class="q-gabarito">Gabarito: <strong>${letras[norm.gabarito] || '-'}</strong></div>
         ${norm.comentario ? `<div class="q-justificativa rt-render">${window.RichText ? RichText.render(norm.comentario) : norm.comentario}</div>` : ''}
@@ -738,9 +738,9 @@ async function abrirModalEditar(simId, questaoId) {
       <div style="margin-bottom:1rem;">
         <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Alternativas</div>
         ${['a','b','c','d','e'].map(l => `
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">${l.toUpperCase()}.</span>
-          <input id="eq-alt-${l}" type="text" style="flex:1;background:var(--bg-hover);border:1px solid #333;color:var(--branco);padding:7px 10px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;">
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;padding-top:9px;">${l.toUpperCase()}.</span>
+          <textarea id="eq-alt-${l}" rows="1" style="flex:1;background:var(--bg-hover);border:1px solid #333;color:var(--branco);padding:7px 10px;border-radius:6px;font-size:12px;font-family:'Inter',sans-serif;resize:vertical;min-height:36px;line-height:1.5;overflow-y:auto;"></textarea>
         </div>`).join('')}
       </div>
       <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:1rem;">
@@ -763,17 +763,17 @@ async function abrirModalEditar(simId, questaoId) {
   document.body.appendChild(ov);
 
   const _norm = AdminChrome.normalizarQuestao(q);
-  // Monta editores Rich Text nos campos
+  // Enunciado e justificativa usam Rich Text; alternativas sao textarea simples
   RichText.mountField('eq-enunciado', { initial: q.enunciado || '' });
   ['a','b','c','d','e'].forEach((l, i) => {
-    RichText.mountField('eq-alt-' + l, { oneLine: true, initial: _norm.alts[i] || '' });
+    const el = document.getElementById('eq-alt-' + l);
+    if (el) el.value = RichText.toPlainText(_norm.alts[i] || '');
   });
   document.getElementById('eq-gabarito').value = ['A','B','C','D','E'][_norm.gabarito] || 'A';
   RichText.mountField('eq-justificativa', { initial: _norm.comentario || '' });
 
   const fechar = () => {
     RichText.destroy('eq-enunciado');
-    ['a','b','c','d','e'].forEach(l => RichText.destroy('eq-alt-' + l));
     RichText.destroy('eq-justificativa');
     ov.remove();
   };
@@ -785,7 +785,7 @@ async function abrirModalEditar(simId, questaoId) {
     const enunciado = RichText.getHTML('eq-enunciado');
     if (!enunciado) { toast('O enunciado nao pode estar vazio.', 'err'); return; }
 
-    const alts = ['a','b','c','d','e'].map(l => RichText.getInline('eq-alt-' + l));
+    const alts = ['a','b','c','d','e'].map(l => (document.getElementById('eq-alt-' + l)?.value || '').trim());
     const letraGab = document.getElementById('eq-gabarito').value;
     const body = {
       enunciado,
@@ -1212,7 +1212,7 @@ function renderQuestaoDoBloco(q, blocoId) {
     </div>
     <div class="bq-detalhe" id="bqdet-${q.id}">
       <div class="bq-detalhe-enun rt-render">${window.RichText ? RichText.render(enun) : enun}</div>
-      ${alts.map((a, i) => `<div class="bq-alt ${i === norm.gabarito ? 'correta' : ''}">${LETRA[i]}. <span class="rt-render">${window.RichText ? RichText.renderInline(a || '') : (a || '-')}</span></div>`).join('')}
+      ${alts.map((a, i) => `<div class="bq-alt ${i === norm.gabarito ? 'correta' : ''}">${LETRA[i]}. <span style="white-space:pre-wrap;">${window.RichText ? RichText.escapeHtml(RichText.toPlainText(a || '')) : (a || '-')}</span></div>`).join('')}
       <div style="margin-top:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--verde);">Gabarito: ${gabLetra}</div>
       ${q.legislacao_nome ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#555;margin-top:4px;">Legislacao: ${q.legislacao_nome}</div>` : ''}
       ${norm.comentario ? `<div class="bq-coment rt-render">${window.RichText ? RichText.render(norm.comentario) : norm.comentario}</div>` : ''}
@@ -1393,9 +1393,9 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
       <div style="margin-bottom:1rem;">
         <div class="form-label" style="margin-bottom:8px;">Alternativas</div>
         ${['A','B','C','D','E'].map(l => `
-        <div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;">${l}.</span>
-          <input id="beq-alt-${l}" type="text" class="form-input" style="flex:1;">
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888;min-width:16px;font-weight:600;padding-top:11px;">${l}.</span>
+          <textarea id="beq-alt-${l}" rows="1" class="form-input" style="flex:1;resize:vertical;min-height:38px;line-height:1.5;overflow-y:auto;"></textarea>
         </div>`).join('')}
       </div>
       <div style="display:flex;gap:16px;align-items:flex-end;margin-bottom:1rem;flex-wrap:wrap;">
@@ -1423,12 +1423,12 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
     </div>`;
   document.body.appendChild(ov);
 
-  // Monta editores Rich Text
+  // Enunciado e comentario usam Rich Text; alternativas sao textarea simples
   await RichText.ensureLoaded();
   RichText.mountField('beq-enunciado', { initial: q.enunciado || '' });
   alts.forEach((a,i) => {
-    const id = `beq-alt-${LETRA[i]}`;
-    if (document.getElementById(id)) RichText.mountField(id, { oneLine: true, initial: a || '' });
+    const el = document.getElementById(`beq-alt-${LETRA[i]}`);
+    if (el) el.value = RichText.toPlainText(a || '');
   });
   document.getElementById('beq-gabarito').value = String(gabIdx);
   RichText.mountField('beq-comentario', { initial: AdminChrome.normalizarQuestao(q).comentario });
@@ -1447,7 +1447,6 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
 
   const fechar = () => {
     RichText.destroy('beq-enunciado');
-    LETRA.forEach(l => RichText.destroy('beq-alt-' + l));
     RichText.destroy('beq-comentario');
     ov.remove();
   };
@@ -1458,7 +1457,7 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
   document.getElementById('beq-salvar').addEventListener('click', async () => {
     const enunciado = RichText.getHTML('beq-enunciado');
     if (!enunciado) { toast('O enunciado nao pode estar vazio.', 'err'); return; }
-    const altsNew = LETRA.map(l => RichText.getInline('beq-alt-' + l));
+    const altsNew = LETRA.map(l => (document.getElementById('beq-alt-' + l)?.value || '').trim());
     const gabNew  = parseInt(document.getElementById('beq-gabarito').value, 10);
     const coment  = RichText.getHTML('beq-comentario') || null;
 
@@ -1904,13 +1903,14 @@ async function garantirManifesto(curso) {
   manifestoCache[curso] = m;
 }
 
-const QM_IDS = ['qm-enunciado','qm-alt-A','qm-alt-B','qm-alt-C','qm-alt-D','qm-alt-E','qm-comentario'];
-const QM_INLINE = new Set(['qm-alt-A','qm-alt-B','qm-alt-C','qm-alt-D','qm-alt-E']);
+// Apenas enunciado e comentario usam rich-text; alternativas sao textarea.
+const QM_RT_IDS = ['qm-enunciado','qm-comentario'];
+const QM_ALT_IDS = ['qm-alt-A','qm-alt-B','qm-alt-C','qm-alt-D','qm-alt-E'];
 async function montarEditoresQM() {
   await RichText.ensureLoaded();
-  for (const id of QM_IDS) {
+  for (const id of QM_RT_IDS) {
     if (RichText.get(id)) continue;
-    if (document.getElementById(id)) RichText.mountField(id, { oneLine: QM_INLINE.has(id) });
+    if (document.getElementById(id)) RichText.mountField(id);
   }
 }
 async function abrirModalQuestaoManual(blocoId, cursoPadrao) {
@@ -1918,7 +1918,8 @@ async function abrirModalQuestaoManual(blocoId, cursoPadrao) {
   document.getElementById('qm-bloco-id').value = blocoId;
   const cursoEl = document.getElementById('qm-curso');
   if (cursoEl) cursoEl.value = cursoPadrao || 'ctsp';
-  QM_IDS.forEach(id => RichText.setHTML(id, ''));
+  QM_RT_IDS.forEach(id => RichText.setHTML(id, ''));
+  QM_ALT_IDS.forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
   document.getElementById('qm-gabarito').value = '0';
   const areaEl = document.getElementById('qm-area');
   if (areaEl) areaEl.onchange = () => preencherSelectLegislacoes(blocoId);
@@ -1932,7 +1933,7 @@ async function salvarQuestaoManual(salvarEAprovar) {
   const blocoId = document.getElementById('qm-bloco-id').value;
   const enunciado = RichText.getHTML('qm-enunciado');
   if (!enunciado) { toast('Informe o enunciado.', 'err'); return; }
-  const alternativas = ['A','B','C','D','E'].map(l => RichText.getInline('qm-alt-' + l));
+  const alternativas = ['A','B','C','D','E'].map(l => (document.getElementById('qm-alt-' + l)?.value || '').trim());
   if (alternativas.some(a => !a)) { toast('Preencha todas as alternativas.', 'err'); return; }
   const gabarito      = parseInt(document.getElementById('qm-gabarito').value, 10);
   const comentario    = RichText.getHTML('qm-comentario') || null;

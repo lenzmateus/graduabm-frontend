@@ -104,6 +104,15 @@
   .alts-edit input[type="text"].alt-edit-input::placeholder { color: #5a5a5a; font-style: italic; }
   .alts-edit input[type="text"].alt-edit-input.vazia { border-color: rgba(186,117,23,0.45); background: rgba(186,117,23,0.05); }
   .alts-edit input[type="text"].alt-edit-input.vazia::placeholder { color: #BA7517; }
+  /* Alternativas como textarea redimensionável vertical com scroll */
+  .alts-edit textarea.alt-edit-input { flex: 1 1 0; min-width: 0; width: auto; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 6px; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.2s, background 0.2s; resize: vertical; min-height: 38px; line-height: 1.5; overflow-y: auto; }
+  .alts-edit textarea.alt-edit-input:focus { border-color: var(--roxo); }
+  .alts-edit textarea.alt-edit-input::placeholder { color: #5a5a5a; font-style: italic; }
+  .alts-edit textarea.alt-edit-input.vazia { border-color: rgba(186,117,23,0.45); background: rgba(186,117,23,0.05); }
+  .alts-edit textarea.alt-edit-input.vazia::placeholder { color: #BA7517; }
+  .alt-edit-row { align-items: flex-start !important; }
+  .alt-edit-letra { padding-top: 9px; }
+  .alt-edit-radio { margin-top: 11px !important; }
   .alt-edit-row.gabarito-marcado .alt-edit-letra { color: var(--verde); }
   .alt-edit-row.gabarito-marcado .alt-edit-input { border-color: var(--verde-borda); background: rgba(39,160,90,0.05); }
   .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -748,7 +757,7 @@
     if (!window.RichText) return;
     RichText.destroy(RT_ENU_ID);
     RichText.destroy(RT_COM_ID);
-    RT_ALT_IDS.forEach(id => RichText.destroy(id));
+    // Alternativas agora sao textareas simples - sem destroy necessario
   }
 
   async function montarEditoresEditPrincipais() {
@@ -764,11 +773,12 @@
       const valor = valorPuro.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
       const vazia = !alts[i];
       const obrig = i < 2;
+      const phl = vazia && obrig ? '⚠ Alternativa ' + letra + ' está vazia no banco' : 'Alternativa ' + letra + (obrig ? '' : ' (opcional)');
       return `
       <div class="alt-edit-row ${i === gabarito ? 'gabarito-marcado' : ''}">
         <input type="radio" name="edit-gab" class="alt-edit-radio" value="${i}" ${i === gabarito ? 'checked' : ''} title="Marcar como gabarito">
         <span class="alt-edit-letra">${letra}</span>
-        <input type="text" id="edit-alt-${letra.toLowerCase()}" class="alt-edit-input ${vazia && obrig ? 'vazia' : ''}" data-letra="${letra.toLowerCase()}" value="${valor}" placeholder="${vazia && obrig ? '⚠ Alternativa ' + letra + ' está vazia no banco' : 'Alternativa ' + letra + (obrig ? '' : ' (opcional)')}">
+        <textarea id="edit-alt-${letra.toLowerCase()}" rows="1" class="alt-edit-input alt-edit-textarea ${vazia && obrig ? 'vazia' : ''}" data-letra="${letra.toLowerCase()}" placeholder="${phl}">${valor}</textarea>
       </div>`;
     }).join('');
     document.querySelectorAll('input[name="edit-gab"]').forEach(r => {
@@ -777,14 +787,9 @@
         document.querySelectorAll('.alt-edit-row').forEach((row, i) => row.classList.toggle('gabarito-marcado', i === idx));
       });
     });
-    // Monta editores Quill nas alternativas (substitui os <input> por hosts).
-    if (window.RichText) {
-      RT_ALT_IDS.forEach((id, i) => {
-        if (document.getElementById(id)) {
-          RichText.mountField(id, { oneLine: true, initial: alts[i] || '' });
-        }
-      });
-    }
+    document.querySelectorAll('.alt-edit-textarea').forEach(t => {
+      t.addEventListener('input', () => { if (t.value.trim()) t.classList.remove('vazia'); });
+    });
   }
 
   window.abrirEditarQuestao = async function(questaoId) {
@@ -796,8 +801,7 @@
     await montarEditoresEditPrincipais();
     RichText.setHTML(RT_ENU_ID, '');
     RichText.setHTML(RT_COM_ID, '');
-    // destroi alternativas; serão recriadas em renderAltsEdit
-    RT_ALT_IDS.forEach(id => RichText.destroy(id));
+    // alternativas serao recriadas como <textarea> em renderAltsEdit
     document.getElementById('edit-alts').innerHTML = '';
     document.getElementById('edit-upload-status').textContent = '';
     setPreviewImagem(null);
@@ -888,7 +892,7 @@
     erroEl.style.display = 'none';
 
     const enunciado = RichText.getHTML(RT_ENU_ID);
-    const alts = RT_ALT_IDS.map(id => RichText.getInline(id));
+    const alts = RT_ALT_IDS.map(id => (document.getElementById(id)?.value || '').trim());
     const gabEl = document.querySelector('input[name="edit-gab"]:checked');
     const gabarito = gabEl ? Number(gabEl.value) : 0;
 

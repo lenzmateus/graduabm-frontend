@@ -1,25 +1,26 @@
 /*
- * PBM Rich Text — módulo compartilhado (v2)
+ * PBM Rich Text - modulo compartilhado (v2)
  * --------------------------------------------------------------
  * Editor: Quill 2.x (CDN)
- * Sanitização: DOMPurify 3.x (CDN)
- * Toolbar (essencial): B I U | • 1. | x² x₂ | limpar
+ * Sanitizacao: DOMPurify 3.x (CDN)
+ * Toolbar: B I U | listas | sub/sup | cor texto | cor fundo | limpar
  *
- * API pública (window.RichText):
- *   - ensureLoaded()                Promise — carrega Quill+DOMPurify
+ * API publica (window.RichText):
+ *   - ensureLoaded()                Promise - carrega Quill+DOMPurify
+ *   - ensurePurify()                Promise - so DOMPurify (telas read-only)
  *   - mountField(id, opts)          monta editor no lugar de um input/textarea
  *                                   por id; IDEMPOTENTE; remove o input do DOM
  *   - get(id)                       Quill editor associado a um id
  *   - getHTML(idOrEditor)           HTML sanitizado, '' se vazio
- *   - setHTML(idOrEditor, html)     seta conteúdo
+ *   - setHTML(idOrEditor, html)     seta conteudo
  *   - getInline(idOrEditor)         como getHTML, mas tira <p> externo
- *                                   (uso em alternativas / one-line)
  *   - destroy(id)                   limpa editor e libera id
  *   - sanitize(html)                DOMPurify com allowlist PBM
  *   - render(html)                  HTML pronto p/ innerHTML em bloco
  *   - renderInline(html)            idem mas remove <p> wrapper externo
  *   - renderInto(el, html)          atalho block
  *   - renderInlineInto(el, html)    atalho inline
+ *   - toPlainText(html)             extrai texto puro preservando quebras
  *   - normalizeForCompare(html)     plain text colapsado p/ diff
  */
 (function () {
@@ -50,11 +51,10 @@
     [{ script: 'super' }, { script: 'sub' }],
   ];
 
-  const _editors = new Map(); // id -> { quill, host, oneLine }
+  const _editors = new Map();
   let _loadingPromise = null;
   let _purifyPromise  = null;
 
-  // ── Loader de CDN ─────────────────────────────────────────────
   function loadCss(href) {
     return new Promise((resolve, reject) => {
       if (document.querySelector(`link[href="${href}"]`)) return resolve();
@@ -93,23 +93,21 @@
       loadScript(QUILL_JS),
       loadScript(PURIFY_JS),
     ]).then(() => {
-      if (!window.Quill)     throw new Error('Quill não carregou.');
-      if (!window.DOMPurify) throw new Error('DOMPurify não carregou.');
+      if (!window.Quill)     throw new Error('Quill nao carregou.');
+      if (!window.DOMPurify) throw new Error('DOMPurify nao carregou.');
     });
     return _loadingPromise;
   }
 
-  // Versão leve para telas read-only (aluno): carrega só DOMPurify.
   function ensurePurify() {
     if (window.DOMPurify) return Promise.resolve();
     if (_purifyPromise) return _purifyPromise;
     _purifyPromise = loadScript(PURIFY_JS).then(() => {
-      if (!window.DOMPurify) throw new Error('DOMPurify não carregou.');
+      if (!window.DOMPurify) throw new Error('DOMPurify nao carregou.');
     });
     return _purifyPromise;
   }
 
-  // ── Helpers de texto ──────────────────────────────────────────
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -123,9 +121,9 @@
     if (html == null) return '';
     const s = String(html);
     if (!s.trim()) return '';
-    // Fallback se DOMPurify ainda nao carregou: como o conteudo so e produzido
-    // por admin (fonte confiada), retornamos o HTML cru em vez de escapa-lo.
-    // Isso evita que o aluno veja "<p>" literal num race-condition de cold start.
+    // Fallback se DOMPurify nao carregou: conteudo vem de admin (trusted),
+    // entao retorna HTML cru em vez de escapar - evita "<p>" literal num
+    // race condition de cold start.
     if (!window.DOMPurify) return s;
     return window.DOMPurify.sanitize(s, PURIFY_CFG);
   }
@@ -140,7 +138,6 @@
     return norm === '' || norm === '<p><br></p>' || norm === '<p></p>' || norm === '<br>';
   }
 
-  // Remove um único par <p>...</p> externo (uso em alternativas)
   function stripOuterP(html) {
     if (!html) return '';
     const m = String(html).match(/^\s*<p>([\s\S]*)<\/p>\s*$/i);
@@ -167,9 +164,9 @@
   function renderInto(el, html)        { if (el) el.innerHTML = render(html); }
   function renderInlineInto(el, html)  { if (el) el.innerHTML = renderInline(html); }
 
-  // Converte HTML para texto puro preservando quebras de linha de bloco/<br>.
-  // Usado pra carregar valor de alternativa (textarea simples) que possa ter
-  // sido salva como HTML antes desta refatoracao.
+  // Converte HTML em texto puro preservando quebras de bloco/<br>.
+  // Usado pra carregar alternativa (textarea simples) que possa ter sido
+  // salva como HTML antes desta refatoracao.
   function toPlainText(html) {
     if (!html) return '';
     const s = String(html);
@@ -177,7 +174,7 @@
     return s
       .replace(/<\/(p|li|div|h[1-6])>\s*/gi, '\n')
       .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<li[^>]*>/gi, '• ')
+      .replace(/<li[^>]*>/gi, '* ')
       .replace(/<[^>]+>/g, '')
       .replace(/&nbsp;/gi, ' ')
       .replace(/&amp;/gi, '&')
@@ -193,30 +190,25 @@
     if (!html) return '';
     const s = String(html);
     if (!pareceHTML(s)) return s.replace(/\s+/g, ' ').trim();
-    // Se DOMPurify carregou, sanitiza antes de extrair texto. SenÃ£o, injeta direto.
     const cleaned = window.DOMPurify ? sanitize(s) : s;
     const tmp = document.createElement('div');
     tmp.innerHTML = cleaned;
     return (tmp.textContent || '').replace(/\s+/g, ' ').trim();
   }
 
-  // ── Resolver id|editor ────────────────────────────────────────
   function _resolve(idOrEditor) {
     if (!idOrEditor) return null;
     if (typeof idOrEditor === 'string') {
       const rec = _editors.get(idOrEditor);
       return rec ? rec.quill : null;
     }
-    // assume editor instance
     return idOrEditor;
   }
 
-  // ── Mount ─────────────────────────────────────────────────────
   function mountField(id, opts = {}) {
     if (!window.Quill) {
-      throw new Error('Quill não carregado. Chame await RichText.ensureLoaded() antes.');
+      throw new Error('Quill nao carregado. Chame await RichText.ensureLoaded() antes.');
     }
-    // idempotente: se já montado, opcionalmente seta valor inicial
     if (_editors.has(id)) {
       const rec = _editors.get(id);
       if (opts.initial != null) setHTML(rec.quill, opts.initial);
@@ -224,7 +216,7 @@
     }
 
     const input = document.getElementById(id);
-    if (!input) throw new Error('RichText.mountField: elemento #' + id + ' não encontrado');
+    if (!input) throw new Error('RichText.mountField: elemento #' + id + ' nao encontrado');
 
     const oneLine = !!opts.oneLine;
     const placeholder = opts.placeholder || input.placeholder || '';
@@ -235,7 +227,6 @@
     if (oneLine) host.classList.add('rt-oneline');
     host.dataset.rtId = id;
 
-    // herda atributos data-* úteis pra navegação por seletor
     for (const attr of input.attributes) {
       if (attr.name.startsWith('data-') && attr.name !== 'data-rt-id') {
         host.setAttribute(attr.name, attr.value);
@@ -328,8 +319,8 @@
     renderInline,
     renderInto,
     renderInlineInto,
-    normalizeForCompare,
     toPlainText,
+    normalizeForCompare,
     escapeHtml,
     pareceHTML,
     stripOuterP,

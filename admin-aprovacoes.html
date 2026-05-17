@@ -631,7 +631,7 @@
       const alts = (q.alternativas || []).map((txt, i) => {
         const letra = ALT_LETRAS[i] || String(i + 1);
         const classe = q.gabarito === i ? 'correta' : '';
-        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span class="rt-render">${RichText.renderInline(txt)}</span></div>`;
+        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(RichText.toPlainText(txt)).replace(/\n/g,'<br>')}</span></div>`;
       }).join('');
       const assertivasHtml = (q.assertivas && q.assertivas.length > 0)
         ? `<div class="assertivas-list">${q.assertivas.map((a, i) => `<div class="assertiva-item"><strong>${NUMERAIS[i] || (i+1)+'.'}</strong>${esc(a)}</div>`).join('')}</div>` : '';
@@ -642,7 +642,7 @@
     },
     renderEditForm(q) {
       return `<div class="campo"><label>Enunciado</label><textarea data-rt-block="enunciado" name="enunciado" rows="4">${esc(q.enunciado)}</textarea></div>
-        ${(q.alternativas || []).map((txt, i) => `<div class="campo"><label>Alternativa ${ALT_LETRAS[i] || i+1}</label><input data-rt-inline="alt_${i}" name="alt_${i}" value="${esc(txt)}"></div>`).join('')}
+        ${(q.alternativas || []).map((txt, i) => `<div class="campo"><label>Alternativa ${ALT_LETRAS[i] || i+1}</label><textarea name="alt_${i}" rows="1" style="resize:vertical;min-height:38px;line-height:1.5;overflow-y:auto;">${esc(RichText.toPlainText(txt))}</textarea></div>`).join('')}
         <div class="form-row">
           <div class="campo"><label>Gabarito (índice 0=A, 1=B…)</label><select name="gabarito">${(q.alternativas || []).map((_, i) => `<option value="${i}" ${q.gabarito === i ? 'selected' : ''}>${ALT_LETRAS[i] || i}</option>`).join('')}</select></div>
           <div class="campo"><label>Área Temática</label><select name="area_tematica">${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${q.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}</select></div>
@@ -661,10 +661,10 @@
     },
     coletarEdit(f, item) {
       const itemId = item && item.id;
-      // ordena alternativas pela ordem original do form
-      const altEls = Array.from(f.querySelectorAll('[data-rt-inline^="alt_"]'))
-        .sort((a, b) => Number(a.dataset.rtInline.replace('alt_','')) - Number(b.dataset.rtInline.replace('alt_','')));
-      const alternativas = altEls.map(el => ApRichText.ler(f, el.dataset.rtInline, itemId, true));
+      // Alternativas sao <textarea> simples - le direto via .value, ordenadas
+      const altEls = Array.from(f.querySelectorAll('[name^=alt_]'))
+        .sort((a, b) => Number(a.name.replace('alt_','')) - Number(b.name.replace('alt_','')));
+      const alternativas = altEls.map(el => (el.value || '').trim());
       const assertivasRaw = f.querySelector('[name=assertivas]').value.trim();
       const topicosRaw = f.querySelector('[name=topicos_cobertos]').value.trim();
       return {
@@ -685,7 +685,7 @@
       const altsHtml = body.alternativas.map((txt, i) => {
         const letra = ALT_LETRAS[i] || String(i + 1);
         const classe = body.gabarito === i ? 'correta' : '';
-        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span class="rt-render">${RichText.renderInline(txt)}</span></div>`;
+        return `<div class="alternativa"><span class="alt-letra ${classe}">${letra})</span><span>${esc(RichText.toPlainText(txt)).replace(/\n/g,'<br>')}</span></div>`;
       }).join('');
       const enunEl = card.querySelector('.enunciado');
       if (enunEl) { enunEl.classList.add('rt-render'); enunEl.innerHTML = RichText.render(body.enunciado); }

@@ -805,8 +805,9 @@ function carregarQuestao(index) {
     dLetra.className = 'alt-letra';
     dLetra.textContent = a.letra;
     const dTexto = document.createElement('div');
-    dTexto.className = 'alt-texto rt-render';
-    RichText.renderInlineInto(dTexto, a.texto);
+    dTexto.className = 'alt-texto';
+    dTexto.style.whiteSpace = 'pre-wrap';
+    dTexto.textContent = RichText.toPlainText(a.texto);
     div.appendChild(dLetra);
     div.appendChild(dTexto);
     lista.appendChild(div);
