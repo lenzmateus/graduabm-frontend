@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/pbm-layout.css">
+<link rel="stylesheet" href="/css/admin-chrome.css">
 <style>
 
 /* ── HERO ── */
@@ -566,7 +567,17 @@
 <script src="/js/api.js?v=4"></script>
 <script src="/js/tour.js"></script>
 <script src="/js/pbm-components.js?v=4"></script>
-<script>PBM.Layout.mount({active:'ranking'});</script>
+<script src="/js/admin-chrome.js?v=2"></script>
+<script>
+  // Admin acessando /ranking ganha a sidebar admin no lugar da sidebar de aluno
+  if (PBM.isAdmin && PBM.isAdmin()) {
+    const aside = document.getElementById('pbm-sidebar');
+    if (aside) aside.id = 'admin-chrome';
+    AdminChrome.init({ pagina: 'ranking', titulo: 'Ranking Geral' });
+  } else {
+    PBM.Layout.mount({ active: 'ranking' });
+  }
+</script>
 <script>
   const usuario = PBM.getUsuario();
 

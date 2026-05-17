@@ -73,7 +73,11 @@
         cursor: text !important;
       }
       body.pbm-tool-marca .alt-tesoura,
-      body.pbm-tool-marca .alt-tesoura * { cursor: pointer !important; }
+      body.pbm-tool-marca .alt-tesoura *,
+      body.pbm-tool-lapis .alt-tesoura,
+      body.pbm-tool-lapis .alt-tesoura *,
+      body.pbm-tool-borracha .alt-tesoura,
+      body.pbm-tool-borracha .alt-tesoura * { cursor: pointer !important; }
       body.pbm-tool-borracha [data-pbm-zone],
       body.pbm-tool-borracha [data-pbm-zone] * {
         cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='22' height='16'><rect x='1' y='1' width='20' height='14' rx='2' fill='%23F4A6A6' stroke='%23111' stroke-width='1.2'/><rect x='1' y='1' width='7' height='14' rx='2' fill='%23FFFFFF' stroke='%23111' stroke-width='1.2'/></svg>") 4 8, cell !important;
@@ -99,7 +103,7 @@
         color: #c9c9c9; cursor: pointer;
         opacity: 0.75;
         transition: opacity 0.12s, background 0.12s, color 0.12s, border-color 0.12s;
-        z-index: 6;
+        z-index: 60;
       }
       .alt:hover .alt-tesoura { opacity: 1; }
       .alt-tesoura:hover { background: rgba(192,39,15,0.22); color: #fff; border-color: rgba(192,39,15,0.5); }
@@ -310,9 +314,28 @@
     state.canvas.classList.toggle('eraser-active', false);
   }
 
+  // Hit-test ignorando o canvas: temporariamente desliga seus pointer-events
+  // para que elementFromPoint enxergue o que está por baixo (tesouras, etc.).
+  function elementBelowCanvas(clientX, clientY) {
+    if (!state.canvas) return null;
+    const prev = state.canvas.style.pointerEvents;
+    state.canvas.style.pointerEvents = 'none';
+    const el = document.elementFromPoint(clientX, clientY);
+    state.canvas.style.pointerEvents = prev;
+    return el;
+  }
+
   function bindCanvasEvents(c) {
     c.addEventListener('pointerdown', e => {
       if (state.mode !== MODES.LAPIS) return;
+      // Tesoura por baixo do canvas: repassa o clique e NÃO desenha.
+      const below = elementBelowCanvas(e.clientX, e.clientY);
+      const tes = below && below.closest && below.closest('.alt-tesoura');
+      if (tes) {
+        e.preventDefault();
+        tes.click();
+        return;
+      }
       // Zoom da fonte pode ter mudado desde o último resize; idempotente.
       resizeCanvas(false);
       pushHistory();

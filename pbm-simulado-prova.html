@@ -611,6 +611,7 @@ function persistirEstado() {
   if (!key || !iniciadoEm) return;
   try {
     sessionStorage.setItem(key, JSON.stringify({ questoes, respostas, iniciadoEm }));
+    provaEmAndamento = true;
   } catch (e) { /* storage cheio — ignora */ }
 }
 
@@ -619,7 +620,17 @@ function limparEstado() {
   if (key) sessionStorage.removeItem(key);
   const curso = sessionStorage.getItem('pbm_simulado_curso');
   if (curso) sessionStorage.removeItem('pbm_timer_' + curso);
+  provaEmAndamento = false;
 }
+
+let provaEmAndamento = false;
+window.addEventListener('beforeunload', (e) => {
+  if (provaEmAndamento) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
 
 async function init() {
   await PBM.protegerRota();

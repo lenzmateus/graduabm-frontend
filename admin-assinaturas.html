@@ -379,6 +379,22 @@
 </div>
 
 <!-- Modal: Excluir Usuário -->
+<div class="modal-overlay" id="modal-zerar" style="display:none;">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-titulo" style="color:var(--erro);">Zerar Progresso</div>
+    <div class="modal-sub" id="modal-zerar-sub"></div>
+    <div style="background:rgba(226,75,74,0.08);border:1px solid rgba(226,75,74,0.3);border-radius:8px;padding:12px 14px;margin-bottom:1.25rem;font-size:12px;color:var(--danger-fg);line-height:1.6;">
+      Esta ação vai apagar <strong>todas as sessões e respostas</strong> deste aluno.
+      O cadastro, assinatura e participações em Protocolos QAP <strong>não</strong> são afetados.
+      A ação <strong>não pode ser desfeita</strong>.
+    </div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="fecharModalZerar()">Cancelar</button>
+      <button class="btn-modal-ok vermelho" id="btn-confirmar-zerar" onclick="confirmarZerar()">Zerar agora</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-excluir" style="display:none;">
   <div class="modal" style="max-width:460px;">
     <div class="modal-titulo" style="color:var(--erro);">Excluir Usuário</div>
@@ -524,6 +540,7 @@
             <button class="btn-acao" onclick="abrirAcao('${a.id}','trial','${esc(a.nome)}')">Trial</button>
             <button class="btn-acao" onclick="abrirModalCurso('${a.id}','${esc(a.nome)}','${(a.curso||'ctsp')}')">Curso</button>
             <button class="btn-acao" onclick="verLogs('${a.id}','${esc(a.email)}')">Logs</button>
+            <button class="btn-acao vermelho" onclick="abrirModalZerar('${a.id}','${esc(a.nome)}')">Zerar</button>
             <button class="btn-acao vermelho" onclick="abrirModalExcluir('${a.id}','${esc(a.nome)}','${esc(a.email)}')">Excluir</button>
           </div>
         </td>
@@ -877,6 +894,42 @@
   // ── Utilitários ────────────────────────────────────────────
   function esc(str) {
     return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ── Modal Zerar Progresso ──────────────────────────────────
+  let zerarAtual = { userId: null, nome: null };
+
+  function abrirModalZerar(userId, nome) {
+    zerarAtual = { userId, nome };
+    document.getElementById('modal-zerar-sub').textContent = nome;
+    const btn = document.getElementById('btn-confirmar-zerar');
+    btn.disabled = false;
+    btn.textContent = 'Zerar agora';
+    document.getElementById('modal-zerar').style.display = 'flex';
+  }
+
+  function fecharModalZerar() {
+    document.getElementById('modal-zerar').style.display = 'none';
+    zerarAtual = { userId: null, nome: null };
+  }
+
+  async function confirmarZerar() {
+    const { userId } = zerarAtual;
+    if (!userId) return;
+    const btn = document.getElementById('btn-confirmar-zerar');
+    btn.disabled = true;
+    btn.textContent = 'Zerando…';
+    try {
+      const r = await PBM.Admin.usuarios.zerarProgresso(userId);
+      fecharModalZerar();
+      const sess = r?.sessoes_apagadas ?? 0;
+      const resp = r?.respostas_apagadas ?? 0;
+      toast(`Progresso zerado: ${sess} sessão(ões), ${resp} resposta(s).`, 'sucesso');
+    } catch (err) {
+      toast(err?.erro || 'Erro ao zerar progresso.', 'erro');
+      btn.disabled = false;
+      btn.textContent = 'Zerar agora';
+    }
   }
 
   // ── Modal Excluir Usuário ──────────────────────────────────

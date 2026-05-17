@@ -37,17 +37,21 @@
     ALLOWED_ATTR: ['class', 'style'],
   };
 
+  // Sem destaque alem do vermelho vivo do brand. Texto padrao herda do tema
+  // (preto no light, branco no dark) automaticamente.
+  const PALETA_TEXTO = ['#C0270F'];
+
   const TOOLBAR_FULL = [
     ['bold', 'italic', 'underline'],
     [{ list: 'ordered' }, { list: 'bullet' }],
     [{ script: 'super' }, { script: 'sub' }],
-    [{ color: [] }, { background: [] }],
+    [{ color: PALETA_TEXTO }],
     ['clean'],
   ];
 
   const TOOLBAR_INLINE = [
     ['bold', 'italic', 'underline'],
-    [{ color: [] }, { background: [] }],
+    [{ color: PALETA_TEXTO }],
     [{ script: 'super' }, { script: 'sub' }],
   ];
 
@@ -247,7 +251,7 @@
         toolbar: oneLine ? TOOLBAR_INLINE : TOOLBAR_FULL,
         clipboard: { matchVisual: false },
       },
-      formats: ['bold', 'italic', 'underline', 'list', 'script', 'color', 'background'],
+      formats: ['bold', 'italic', 'underline', 'list', 'script', 'color'],
     });
 
     if (oneLine) {

@@ -814,6 +814,34 @@ let timerInterval = null;
 let timerSeg  = 0;
 let estadoQuestoes = {}; // persiste shuffle e respostas por índice
 
+// ── PROTEÇÃO CONTRA REFRESH ────────────────────────────────────────────────
+const PBM_QUESTOES_ESTADO_KEY = 'pbm_questoes_estado_v1';
+let sessaoQuestoesEmAndamento = false;
+function persistirEstadoQuestoes() {
+  if (!questoes.length) return;
+  try {
+    sessionStorage.setItem(PBM_QUESTOES_ESTADO_KEY, JSON.stringify({
+      v: 1,
+      modoAtualTipo, cicloBloco, cicloSessaoIniciada,
+      questoes, idxAtual, sessaoId, acertos, erros, historicoRespostas,
+      timerSeg, estadoQuestoes,
+      curso, area
+    }));
+    sessaoQuestoesEmAndamento = true;
+  } catch (_) { /* storage cheio — ignora */ }
+}
+function limparEstadoQuestoes() {
+  sessionStorage.removeItem(PBM_QUESTOES_ESTADO_KEY);
+  sessaoQuestoesEmAndamento = false;
+}
+window.addEventListener('beforeunload', (e) => {
+  if (sessaoQuestoesEmAndamento) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
+
 // ── PARAMS (vindos da tela anterior) ──
 const curso      = sessionStorage.getItem('pbm_curso') || 'ctsp';
 const area       = sessionStorage.getItem('pbm_at')    || 'AT1';
@@ -900,6 +928,60 @@ async function init() {
       await PBM.protegerRota();
     }
 
+    // Restaura estado de sessão se houver F5/refresh
+    const estadoSalvoRaw = sessionStorage.getItem(PBM_QUESTOES_ESTADO_KEY);
+    if (estadoSalvoRaw) {
+      try {
+        const s = JSON.parse(estadoSalvoRaw);
+        if (s && s.v === 1 && Array.isArray(s.questoes) && s.questoes.length) {
+          modoAtualTipo = s.modoAtualTipo || 'estudo';
+          cicloBloco = s.cicloBloco || null;
+          cicloSessaoIniciada = s.cicloSessaoIniciada || null;
+          questoes = s.questoes;
+          idxAtual = Math.min(s.idxAtual || 0, questoes.length - 1);
+          // Reset sessaoId: o pagehide do refresh anterior já encerrou a sessão no backend.
+          // Novas respostas criarão uma nova sessão via lazy-create em confirmarResposta().
+          sessaoId = null;
+          acertos = s.acertos || 0;
+          erros = s.erros || 0;
+          historicoRespostas = Array.isArray(s.historicoRespostas) ? s.historicoRespostas : [];
+          timerSeg = s.timerSeg || 0;
+          estadoQuestoes = s.estadoQuestoes || {};
+          sessaoQuestoesEmAndamento = true;
+
+          // Consome flags ainda pendentes do sessionStorage (caso o usuário deu F5 antes de tudo iniciar)
+          sessionStorage.removeItem('pbm_revisao_erros');
+
+          await hidratarDenuncias();
+          setCor(modoAtualTipo === 'erros' ? (questoes[idxAtual]?.area_tematica || area) : area);
+          iniciarTimer();
+          document.getElementById('hdr-total').textContent = questoes.length;
+          if (modoAtualTipo === 'erros') {
+            document.getElementById('hdr-contexto').textContent = 'CADERNO DE ERROS';
+          } else if (cicloBloco) {
+            const nomeCurto = (cicloBloco.legislacao_nome || '').length > 38
+              ? cicloBloco.legislacao_nome.slice(0, 38) + '…'
+              : cicloBloco.legislacao_nome;
+            document.getElementById('hdr-contexto').innerHTML =
+              `<span class="badge-ciclo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                CICLO
+              </span>${cicloBloco.area} · ${nomeCurto.replace(/</g, '&lt;')}`;
+          } else {
+            document.getElementById('hdr-contexto').textContent = (s.curso || curso).toUpperCase() + ' — ' + (modoAtualTipo === 'erros' ? '' : area);
+          }
+          mostrarQuestao();
+          document.getElementById('tela-loading').style.display = 'none';
+          document.getElementById('tela-questao').style.display = 'flex';
+          document.getElementById('seta-esq').style.display = 'flex';
+          document.getElementById('seta-dir').style.display = 'flex';
+          if (window.PBMTour) PBMTour.init();
+          return;
+        }
+      } catch (_) { /* JSON inválido — descarta e segue fluxo normal */ }
+      sessionStorage.removeItem(PBM_QUESTOES_ESTADO_KEY);
+    }
+
     const filtro = sessionStorage.getItem('pbm_filtro');
     const revisaoErros = sessionStorage.getItem('pbm_revisao_erros') === '1';
 
@@ -927,6 +1009,7 @@ async function init() {
       document.getElementById('seta-esq').style.display = 'flex';
       document.getElementById('seta-dir').style.display = 'flex';
       if (window.PBMTour) PBMTour.init();
+      persistirEstadoQuestoes();
       return;
     }
 
@@ -986,6 +1069,7 @@ async function init() {
     document.getElementById('seta-esq').style.display = 'flex';
     document.getElementById('seta-dir').style.display = 'flex';
     if (window.PBMTour) PBMTour.init();
+    persistirEstadoQuestoes();
 
   } catch (err) {
     const detalhe = err.erro || err.message || (err.status ? 'HTTP ' + err.status : '');
@@ -1174,6 +1258,7 @@ async function confirmarResposta() {
       console.error('[Protocolo Bravo Mike] Falha ao criar sessão:', err);
     }
   }
+  persistirEstadoQuestoes();
   if (sessaoId) {
     PBM.api.sessoes.responder(sessaoId, { questao_id: q.id, resposta_escolhida: selecionada, correta: acertou })
       .catch(err => {
@@ -1212,12 +1297,12 @@ function atualizarSetas() {
 }
 
 function voltarQuestao() {
-  if (idxAtual > 0) { idxAtual--; mostrarQuestao(); }
+  if (idxAtual > 0) { idxAtual--; mostrarQuestao(); persistirEstadoQuestoes(); }
 }
 
 function pularQuestao() {
   if (respondida) { proximaQuestao(); return; }
-  if (idxAtual < questoes.length - 1) { idxAtual++; mostrarQuestao(); }
+  if (idxAtual < questoes.length - 1) { idxAtual++; mostrarQuestao(); persistirEstadoQuestoes(); }
 }
 
 // ── PRÓXIMA / ENCERRAR ──
@@ -1225,6 +1310,7 @@ async function proximaQuestao() {
   if (idxAtual < questoes.length - 1) {
     idxAtual++;
     mostrarQuestao();
+    persistirEstadoQuestoes();
   } else {
     await encerrarSessao();
   }
@@ -1252,6 +1338,7 @@ async function encerrarSessao() {
   }
   pararTimer();
   if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
+  limparEstadoQuestoes();
   mostrarResultados();
 }
 
@@ -1558,7 +1645,7 @@ function atualizarNav() {
     const est = estadoQuestoes[i];
     if (est?.respondida) btn.classList.add(est.acertou ? 'correta' : 'errada');
     if (i === idxAtual) btn.classList.add('atual');
-    btn.onclick = () => { idxAtual = i; mostrarQuestao(); fecharNav(); };
+    btn.onclick = () => { idxAtual = i; mostrarQuestao(); fecharNav(); persistirEstadoQuestoes(); };
     grid.appendChild(btn);
   });
 }
@@ -1581,6 +1668,7 @@ async function sairSessao() {
   }
   pararTimer();
   if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
+  limparEstadoQuestoes();
   window.location.href = modoAtualTipo === 'erros' ? '/dashboard' : '/selecao-legislacao';
 }
 

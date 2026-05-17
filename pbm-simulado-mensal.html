@@ -564,6 +564,32 @@ async function lobbyHabilitar(id) {
 
 // ── EXAM ─────────────────────────────────────────────────────────────────────
 
+// ── PROTEÇÃO CONTRA REFRESH ────────────────────────────────────────────────
+let provaQAPEmAndamento = false;
+function estadoQAPKey() {
+  return simuladoId ? 'pbm_qap_estado_' + simuladoId : null;
+}
+function persistirEstadoQAP() {
+  const key = estadoQAPKey();
+  if (!key) return;
+  try {
+    sessionStorage.setItem(key, JSON.stringify({ respostas, currentIndex }));
+    provaQAPEmAndamento = true;
+  } catch (e) { /* storage cheio — ignora */ }
+}
+function limparEstadoQAP() {
+  const key = estadoQAPKey();
+  if (key) sessionStorage.removeItem(key);
+  provaQAPEmAndamento = false;
+}
+window.addEventListener('beforeunload', (e) => {
+  if (provaQAPEmAndamento) {
+    e.preventDefault();
+    e.returnValue = '';
+    return '';
+  }
+});
+
 async function init() {
   await PBM.protegerRota();
 
@@ -606,6 +632,26 @@ async function init() {
     }
 
     respostas = questoes.map(q => ({ questao_id: q.id, rascunho: null, oficial: null }));
+
+    // Restaura cartão/índice local se houver F5
+    try {
+      const salvoRaw = sessionStorage.getItem(estadoQAPKey());
+      if (salvoRaw) {
+        const salvo = JSON.parse(salvoRaw);
+        if (Array.isArray(salvo.respostas) && salvo.respostas.length === respostas.length) {
+          salvo.respostas.forEach((r, i) => {
+            if (r && respostas[i] && r.questao_id === respostas[i].questao_id) {
+              respostas[i].rascunho = r.rascunho || null;
+              respostas[i].oficial  = r.oficial  || null;
+            }
+          });
+        }
+        if (typeof salvo.currentIndex === 'number' && salvo.currentIndex >= 0 && salvo.currentIndex < questoes.length) {
+          currentIndex = salvo.currentIndex;
+        }
+      }
+    } catch (_) { /* JSON inválido — ignora */ }
+    provaQAPEmAndamento = true;
 
     // Calcula tempo restante com base no iniciado_em do servidor (fonte da verdade)
     if (iniciadoEm) {
@@ -683,6 +729,7 @@ function renderizarNav() {
 
 function carregarQuestao(index) {
   currentIndex = index;
+  persistirEstadoQAP();
   renderizarNav();
   const q = questoes[index];
   document.getElementById('q-num').textContent = `Q. ${String(index + 1).padStart(2, '0')}`;
@@ -724,6 +771,7 @@ function carregarQuestao(index) {
 
 function marcarRascunho(index, letra) {
   respostas[index].rascunho = respostas[index].rascunho === letra ? null : letra;
+  persistirEstadoQAP();
   carregarQuestao(index);
 }
 
@@ -762,6 +810,7 @@ function abrirGabarito() {
 
 function marcarOficial(index, letra) {
   respostas[index].oficial = respostas[index].oficial === letra ? null : letra;
+  persistirEstadoQAP();
   // Atualiza bolinhas sem reabrir tudo
   const oficGEl = document.getElementById('gab-oficial-list');
   const items = oficGEl.querySelectorAll('.gab-item');
@@ -816,6 +865,7 @@ async function entregarProva(porTempo) {
     const resultado = await PBM.SimuladoMensal.entregar(simuladoId, respostas_cartao);
     document.getElementById('tela-loading').style.display = 'none';
     if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
+    limparEstadoQAP();
     mostrarResultado(resultado);
   } catch (err) {
     console.error(err);
