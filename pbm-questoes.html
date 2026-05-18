@@ -241,7 +241,10 @@
     margin-bottom: 1.1rem;
     padding-bottom: 1.1rem;
     border-bottom: 1px solid var(--cinza-borda);
+    text-align: justify;
+    hyphens: auto;
   }
+  .alt > span { text-align: justify; hyphens: auto; flex: 1; }
 
   /* ── ALTERNATIVAS ── */
   .alternativas {
@@ -306,7 +309,7 @@
   }
   .feedback-acerto .feedback-titulo { color: var(--success-fg); }
   .feedback-erro .feedback-titulo { color: var(--danger-fg); }
-  .feedback-txt { color: var(--cinza-texto); line-height: 1.7; }
+  .feedback-txt { color: var(--cinza-texto); line-height: 1.7; text-align: justify; hyphens: auto; }
   :root.light-mode .feedback-txt { color: var(--texto-principal); }
   :root.light-mode .feedback-acerto .feedback-titulo { color: #1F6135; }
   :root.light-mode .feedback-erro   .feedback-titulo { color: #8B1A08; }
@@ -1078,6 +1081,14 @@ async function init() {
   }
 }
 
+// ── PROGRESSO (% de respondidas) ──
+function atualizarProgresso() {
+  const total = questoes.length;
+  if (!total) { document.getElementById('prog-fill').style.width = '0%'; return; }
+  const respondidas = Object.values(estadoQuestoes).filter(e => e && e.respondida).length;
+  document.getElementById('prog-fill').style.width = (respondidas / total * 100) + '%';
+}
+
 // ── COR POR ÁREA ──
 function setCor(at) {
   const cores = { AT1:'#C0270F', AT2:'#BA7517', AT3:'#185FA5', AT4:'#27A05A', AT5:'#7F77DD' };
@@ -1106,7 +1117,7 @@ function mostrarQuestao() {
   const shuffledAlts = estado.shuffledAlts;
 
   document.getElementById('hdr-atual').textContent  = idxAtual + 1;
-  document.getElementById('prog-fill').style.width  = (idxAtual / questoes.length * 100) + '%';
+  atualizarProgresso();
   const displayArea = modoAtualTipo === 'erros' ? (q.area_tematica || area) : area;
   if (modoAtualTipo === 'erros') setCor(q.area_tematica || area);
   document.getElementById('badge-area').textContent = displayArea;
@@ -1218,6 +1229,7 @@ async function confirmarResposta() {
   // Persiste estado para navegação retroativa
   if (!estadoQuestoes[idxAtual]) estadoQuestoes[idxAtual] = {};
   Object.assign(estadoQuestoes[idxAtual], { respondida: true, selecionada, correta, acertou });
+  atualizarProgresso();
 
   // visual + mapa orig→display para remapear justificativa
   let corretaDisplay = correta;

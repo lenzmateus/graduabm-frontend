@@ -57,12 +57,13 @@
   .btn-publicar { background: var(--vermelho); color: #fff; }
   .btn-publicar:hover:not(:disabled) { background: #a3200c; }
   .card-body { padding: 1.25rem; }
-  .enunciado { font-size: 14px; color: var(--branco); margin-bottom: 1rem; line-height: 1.7; }
+  .enunciado { font-size: 14px; color: var(--branco); margin-bottom: 1rem; line-height: 1.7; text-align: justify; hyphens: auto; }
   .alternativas { display: flex; flex-direction: column; gap: 6px; }
   .alternativa { display: flex; gap: 8px; font-size: 13px; color: var(--cinza-texto); }
+  .alternativa > span:last-child { text-align: justify; hyphens: auto; flex: 1; }
   .alt-letra { font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 20px; }
   .alt-letra.correta { color: var(--verde); }
-  .justificativa { margin-top: 1rem; padding: 10px 14px; background: var(--cinza-medio); border-radius: 6px; font-size: 12px; color: var(--cinza-texto); border-left: 2px solid var(--cinza-borda); }
+  .justificativa { margin-top: 1rem; padding: 10px 14px; background: var(--cinza-medio); border-radius: 6px; font-size: 12px; color: var(--cinza-texto); border-left: 2px solid var(--cinza-borda); text-align: justify; hyphens: auto; }
 
   /* ── Flashcard ── */
   .flashcard-frente { font-size: 14px; color: var(--branco); font-weight: 500; margin-bottom: 8px; }

@@ -107,7 +107,8 @@
   .gab-q-status.ok { background: rgba(125,217,154,0.1); color: var(--success-fg); }
   .gab-q-status.err { background: rgba(240,149,149,0.1); color: var(--danger-fg); }
   .gab-q-status.blank { background: rgba(255,255,255,0.05); color: var(--cinza-texto); }
-  .gab-enunciado { font-size: 14px; color: var(--branco); line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
+  .gab-enunciado { font-size: 14px; color: var(--branco); line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; text-align: justify; hyphens: auto; }
+  .gab-alt > span:last-child { text-align: justify; hyphens: auto; flex: 1; }
   .gab-alts { display: flex; flex-direction: column; gap: 6px; }
   .gab-alt { display: flex; gap: 10px; padding: 6px 10px; border-radius: 6px; font-size: 13px; }
   .gab-alt.correta { background: rgba(125,217,154,0.08); border: 1px solid rgba(125,217,154,0.3); }
@@ -116,7 +117,7 @@
   .gab-alt-letra { font-family: 'IBM Plex Mono', monospace; font-weight: 600; min-width: 20px; }
   .gab-alt-letra.verde { color: var(--success-fg); }
   .gab-alt-letra.vermelho { color: var(--danger-fg); }
-  .gab-justificativa { margin-top: 10px; padding: 10px 12px; background: rgba(125,217,154,0.05); border-left: 2px solid rgba(125,217,154,0.4); font-size: 13px; color: var(--cinza-texto); line-height: 1.6; border-radius: 0 6px 6px 0; }
+  .gab-justificativa { margin-top: 10px; padding: 10px 12px; background: rgba(125,217,154,0.05); border-left: 2px solid rgba(125,217,154,0.4); font-size: 13px; color: var(--cinza-texto); line-height: 1.6; border-radius: 0 6px 6px 0; text-align: justify; hyphens: auto; }
 
   /* Estatísticas */
   .stats-wrap { animation: fadeUp 0.4s ease 0.25s both; }
