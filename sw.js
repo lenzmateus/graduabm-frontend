@@ -1,4 +1,4 @@
-const CACHE = 'pbm-v6';
+const CACHE = 'pbm-v7';
 const CACHE_ASSETS = [
   '/images/emblem-pbm.png',
   '/images/pwa-192.png',
