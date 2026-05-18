@@ -17,7 +17,11 @@
   } catch (e) { /* localStorage indisponível: assume escuro */ }
 })();
 
-const API_URL = 'https://graduabm-backend-production.up.railway.app';
+// Vazio → fetch usa caminhos relativos e cai no rewrite `/api/*` do vercel.json,
+// que proxia para o Railway. Mantém o tráfego same-origin (sem preflight CORS) e
+// transforma cold-starts do Railway em 504 honestos do Vercel, em vez de erros
+// CORS sem headers vindos do edge.
+const API_URL = '';
 
 // Decide admin-vs-aluno a partir do JWT efetivamente enviado, não de string-match com sessionStorage.
 // Decisão e racional em docs/adr/0002-handler-401-redireciona-com-opt-out.md.

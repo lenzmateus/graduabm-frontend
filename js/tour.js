@@ -385,7 +385,7 @@
   };
 
   /* ── PERSISTÊNCIA (backend + cache local) ── */
-  const API_URL = 'https://graduabm-backend-production.up.railway.app';
+  const API_URL = ''; // proxy via vercel rewrite /api/* — ver comentário em js/api.js
 
   function getUser() {
     try { return JSON.parse(sessionStorage.getItem('usuario')); }
