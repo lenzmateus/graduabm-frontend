@@ -430,14 +430,18 @@ function atualizarNomeLegislacao() {
   travarCursoSeLegExclusiva();
 }
 
-// Se a legislação selecionada é exclusiva de um curso (tag != 'comum'), desabilita
-// a opção "ambos" no select de curso e força para o curso compatível.
-// Defesa em UI; o backend (rota + trigger SQL) é a defesa real.
+// Invariante: questao.curso === legislacao.curso (igualdade).
+// - leg compartilhada (tag='comum')      → força 'ambos', desabilita ctsp/cba
+// - leg exclusiva CTSP (tag='exclusivo') → força 'ctsp',  desabilita ambos/cba
+// - leg exclusiva CBA  (tag='exclusivo-cba') → força 'cba', desabilita ambos/ctsp
+// Defesa em UI; o backend (validator + trigger SQL) é a defesa real.
 function travarCursoSeLegExclusiva() {
   const legId = document.getElementById('m-leg-id').value;
-  const optAmbos = document.querySelector('#m-curso option[value="ambos"]');
   const elCurso  = document.getElementById('m-curso');
-  if (!optAmbos || !legId) return;
+  const optAmbos = document.querySelector('#m-curso option[value="ambos"]');
+  const optCtsp  = document.querySelector('#m-curso option[value="ctsp"]');
+  const optCba   = document.querySelector('#m-curso option[value="cba"]');
+  if (!elCurso || !legId) return;
 
   // Procura o item nas estruturas em AREAS
   let item = null;
@@ -454,13 +458,24 @@ function travarCursoSeLegExclusiva() {
   }
   if (!item) return;
 
-  const exclusivoCtsp = item.tag === 'exclusivo';
-  const exclusivoCba  = item.tag === 'exclusivo-cba';
-  if (exclusivoCtsp || exclusivoCba) {
-    optAmbos.disabled = true;
-    const cursoForcado = exclusivoCtsp ? 'ctsp' : 'cba';
-    optAmbos.textContent = `Ambos — indisponível (legislação é exclusiva ${cursoForcado.toUpperCase()})`;
-    if (elCurso.value === 'ambos') elCurso.value = cursoForcado;
+  // Reset
+  if (optAmbos) { optAmbos.disabled = false; optAmbos.textContent = 'Ambos (CTSP e CBA)'; }
+  if (optCtsp)  { optCtsp.disabled  = false; }
+  if (optCba)   { optCba.disabled   = false; }
+
+  if (item.tag === 'comum') {
+    // Leg compartilhada → questão obrigatoriamente 'ambos'
+    if (optCtsp) { optCtsp.disabled = true; }
+    if (optCba)  { optCba.disabled  = true; }
+    elCurso.value = 'ambos';
+  } else if (item.tag === 'exclusivo') {
+    if (optAmbos) { optAmbos.disabled = true; optAmbos.textContent = 'Ambos — indisponível (legislação é exclusiva CTSP)'; }
+    if (optCba)   { optCba.disabled   = true; }
+    elCurso.value = 'ctsp';
+  } else if (item.tag === 'exclusivo-cba') {
+    if (optAmbos) { optAmbos.disabled = true; optAmbos.textContent = 'Ambos — indisponível (legislação é exclusiva CBA)'; }
+    if (optCtsp)  { optCtsp.disabled  = true; }
+    elCurso.value = 'cba';
   }
 }
 

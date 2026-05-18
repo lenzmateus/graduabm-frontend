@@ -1204,7 +1204,6 @@ function renderQuestaoDoBloco(q, blocoId) {
       <div class="bq-acoes">
         ${q.revisao_status === 'pendente_ia' ? `<button class="btn-sm" style="color:var(--verde);border-color:rgba(125,217,154,.3);" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Aprovar</button>` : ''}
         ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" style="color:var(--danger-fg);border-color:rgba(240,149,149,.3);" onclick="rejeitarQuestaoBloco('${q.id}','${blocoId}')">Rejeitar</button>` : ''}
-        ${q.revisao_status === 'aprovado'    ? `<button class="btn-sm" id="btn-ambos-${q.id}" style="${q.curso==='ambos'?'color:#A78BFA;border-color:rgba(124,58,237,.4);background:rgba(124,58,237,.08);':''}" onclick="toggleCursoAmbos('${q.id}','${blocoId}')" title="Marcar como válida para CTSP e CBA">${q.curso==='ambos'?'✓ Ambos':'Para Ambos'}</button>` : ''}
         <button class="btn-sm" style="color:var(--dourado);border-color:rgba(240,192,80,.3);" onclick="abrirEditarQuestaoBloco('${blocoId}','${q.id}')">Editar</button>
         ${q.revisao_status === 'rejeitado'   ? `<button class="btn-sm" onclick="aprovarQuestaoBloco('${q.id}','${blocoId}')">Restaurar</button>` : ''}
         <button class="btn-sm" onclick="removerQuestaoDoBloco('${blocoId}','${q.id}')">Remover</button>
@@ -1481,17 +1480,6 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
       btn.disabled = false; btn.textContent = 'Salvar Alterações';
     }
   });
-}
-
-// ── Toggle curso=ambos ───────────────────────────────────────────────────────
-
-async function toggleCursoAmbos(questaoId, blocoId) {
-  try {
-    const data = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/questoes/${questaoId}/curso-toggle`, { method: 'PATCH' });
-    toast(data.curso === 'ambos' ? '✓ Questão marcada como válida para Ambos os cursos.' : 'Questão revertida para o curso do bloco.');
-    delete questoesPorBloco[blocoId];
-    await recarregarBlocoCard(blocoId);
-  } catch(err) { toast(err.erro || 'Erro ao alterar curso.', 'err'); }
 }
 
 // ── Reaproveitamento CTSP→CBA ────────────────────────────────────────────────
