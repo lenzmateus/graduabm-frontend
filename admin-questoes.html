@@ -173,6 +173,7 @@ const _isAdmin = PBM.isAdmin();
             <option value="cba">CBA</option>
             <option value="ambos">Ambos (CTSP e CBA)</option>
           </select>
+          <div id="m-curso-hint" style="display:none;margin-top:4px;font-size:10px;color:#888;font-family:'IBM Plex Mono',monospace;"></div>
         </div>
         <div class="campo">
           <label>Área Temática</label>
@@ -355,22 +356,44 @@ async function carregarManifesto() {
 // === fim MANIFEST-BACKED ===
 
 
-function atualizarOpcaoCursoAmbos() {
+// Disponibilidade de cada curso depende da AT: precisa existir pelo menos
+// uma legislação compatível (comum para "ambos", exclusiva para ctsp/cba).
+function atualizarOpcoesCurso() {
   const areaNum = document.getElementById('m-area').value.toLowerCase();
   const areaData = AREAS[areaNum];
+  const elCurso  = document.getElementById('m-curso');
   const optAmbos = document.querySelector('#m-curso option[value="ambos"]');
-  if (!optAmbos) return;
+  const optCtsp  = document.querySelector('#m-curso option[value="ctsp"]');
+  const optCba   = document.querySelector('#m-curso option[value="cba"]');
+  if (!areaData) return;
 
-  // Verifica se a área tem ao menos uma legislação comum nos dois cursos
-  const temComum = areaData && areaData['ctsp'] &&
-    areaData['ctsp'].grupos.some(g => g.items.some(item => item.tag === 'comum'));
+  const temComum = areaData['ctsp'] && areaData['ctsp'].grupos.some(g => g.items.some(i => i.tag === 'comum'));
+  const temCtsp  = areaData['ctsp'] && areaData['ctsp'].grupos.some(g => g.items.some(i => i.tag === 'exclusivo'));
+  const temCba   = areaData['cba']  && areaData['cba'].grupos.some(g => g.items.some(i => i.tag === 'exclusivo-cba'));
 
-  optAmbos.disabled = !temComum;
-  optAmbos.textContent = temComum ? 'Ambos (CTSP e CBA)' : 'Ambos (CTSP e CBA) — indisponível para esta área';
+  // Cada curso ↔ um tipo de legislação (invariante). Se a AT não tem legislação
+  // daquele tipo, esse curso fica indisponível.
+  if (optAmbos) {
+    optAmbos.disabled = !temComum;
+    optAmbos.textContent = temComum ? 'Ambos (CTSP e CBA)' : 'Ambos — sem legislação comum nesta área';
+  }
+  if (optCtsp) {
+    optCtsp.disabled = !temCtsp;
+    optCtsp.textContent = temCtsp ? 'CTSP' : 'CTSP — sem legislação exclusiva nesta área';
+  }
+  if (optCba) {
+    optCba.disabled = !temCba;
+    optCba.textContent = temCba ? 'CBA' : 'CBA — sem legislação exclusiva nesta área';
+  }
 
-  // Se "ambos" estava selecionado e não tem mais itens comuns, volta para ctsp
-  if (!temComum && document.getElementById('m-curso').value === 'ambos') {
-    document.getElementById('m-curso').value = 'ctsp';
+  // Se o curso atualmente escolhido ficou indisponível para esta AT, escolhe um fallback válido.
+  const cur = elCurso.value;
+  const indisponivel =
+    (cur === 'ambos' && !temComum) ||
+    (cur === 'ctsp'  && !temCtsp) ||
+    (cur === 'cba'   && !temCba);
+  if (indisponivel) {
+    elCurso.value = temComum ? 'ambos' : (temCtsp ? 'ctsp' : (temCba ? 'cba' : 'ctsp'));
   }
 }
 
@@ -383,20 +406,26 @@ function atualizarSelectLegislacoes() {
   const areaData = AREAS[areaNum];
   if (!areaData) return;
 
-  atualizarOpcaoCursoAmbos();
+  atualizarOpcoesCurso();
+
+  // Invariante: questao.curso === legislacao.curso.
+  // Por isso o dropdown de legislações é filtrado estritamente:
+  //   ambos → tag 'comum'  (legislação compartilhada)
+  //   ctsp  → tag 'exclusivo' (CTSP-only) + 'comum' como alternativa válida via curso=ambos
+  //   cba   → tag 'exclusivo-cba'
+  // Comum só aparece quando curso='ambos' — é a única combinação válida.
+  const cursoAtual = document.getElementById('m-curso').value; // pode ter mudado em atualizarOpcoesCurso()
+  const slot = cursoAtual === 'cba' ? 'cba' : 'ctsp';
+  const tagAlvo = cursoAtual === 'ambos' ? 'comum'
+                : cursoAtual === 'ctsp'  ? 'exclusivo'
+                : 'exclusivo-cba';
 
   let gruposParaMostrar = [];
-
-  if (curso === 'ambos') {
-    if (areaData['ctsp']) {
-      gruposParaMostrar = areaData['ctsp'].grupos.map(g => ({
-        titulo: g.titulo,
-        items: g.items.filter(item => item.tag === 'comum')
-      })).filter(g => g.items.length > 0);
-    }
-  } else {
-    if (!areaData[curso]) return;
-    gruposParaMostrar = areaData[curso].grupos;
+  if (areaData[slot]) {
+    gruposParaMostrar = areaData[slot].grupos.map(g => ({
+      titulo: g.titulo,
+      items: g.items.filter(item => item.tag === tagAlvo)
+    })).filter(g => g.items.length > 0);
   }
 
   gruposParaMostrar.forEach(g => {
@@ -406,11 +435,6 @@ function atualizarSelectLegislacoes() {
       const opt = document.createElement('option');
       opt.value = item.id;
       opt.textContent = item.nome;
-      // Indica visualmente itens exclusivos (quando não estiver em modo 'ambos')
-      if (curso !== 'ambos' && item.tag !== 'comum') {
-        opt.textContent = item.nome + ' ★';
-        opt.title = item.tagTxt;
-      }
       optgroup.appendChild(opt);
     });
     sel.appendChild(optgroup);
@@ -431,19 +455,24 @@ function atualizarNomeLegislacao() {
 }
 
 // Invariante: questao.curso === legislacao.curso (igualdade).
-// - leg compartilhada (tag='comum')      → força 'ambos', desabilita ctsp/cba
-// - leg exclusiva CTSP (tag='exclusivo') → força 'ctsp',  desabilita ambos/cba
-// - leg exclusiva CBA  (tag='exclusivo-cba') → força 'cba', desabilita ambos/ctsp
+// Mostra apenas um hint informativo; quem garante a invariante é o filtro
+// estrito do dropdown de legislações em atualizarSelectLegislacoes().
 // Defesa em UI; o backend (validator + trigger SQL) é a defesa real.
 function travarCursoSeLegExclusiva() {
-  const legId = document.getElementById('m-leg-id').value;
-  const elCurso  = document.getElementById('m-curso');
-  const optAmbos = document.querySelector('#m-curso option[value="ambos"]');
-  const optCtsp  = document.querySelector('#m-curso option[value="ctsp"]');
-  const optCba   = document.querySelector('#m-curso option[value="cba"]');
-  if (!elCurso || !legId) return;
+  const sel = document.getElementById('m-leg-id');
+  const legId = sel?.value;
+  const elHint = document.getElementById('m-curso-hint');
+  if (!sel || !legId || !elHint) return;
 
-  // Procura o item nas estruturas em AREAS
+  // Edição legada: legislação não está mais no filtro atual.
+  // Não sobrescreve o curso — preserva o que o usuário tem na tela.
+  const selectedOpt = sel.options[sel.selectedIndex];
+  if (selectedOpt && selectedOpt.dataset.foraFiltro === '1') {
+    elHint.style.display = 'block';
+    elHint.textContent = 'Atenção: legislação fora do filtro atual (dado legado). Ajuste curso/área se preciso.';
+    return;
+  }
+
   let item = null;
   for (const at of Object.keys(AREAS || {})) {
     for (const cursoSlot of ['ctsp', 'cba']) {
@@ -456,27 +485,16 @@ function travarCursoSeLegExclusiva() {
     }
     if (item) break;
   }
-  if (!item) return;
-
-  // Reset
-  if (optAmbos) { optAmbos.disabled = false; optAmbos.textContent = 'Ambos (CTSP e CBA)'; }
-  if (optCtsp)  { optCtsp.disabled  = false; }
-  if (optCba)   { optCba.disabled   = false; }
+  if (!item) { elHint.style.display = 'none'; elHint.textContent = ''; return; }
 
   if (item.tag === 'comum') {
-    // Leg compartilhada → questão obrigatoriamente 'ambos'
-    if (optCtsp) { optCtsp.disabled = true; }
-    if (optCba)  { optCba.disabled  = true; }
-    elCurso.value = 'ambos';
+    elHint.textContent = 'Legislação compartilhada — questão cai nos dois cursos.';
   } else if (item.tag === 'exclusivo') {
-    if (optAmbos) { optAmbos.disabled = true; optAmbos.textContent = 'Ambos — indisponível (legislação é exclusiva CTSP)'; }
-    if (optCba)   { optCba.disabled   = true; }
-    elCurso.value = 'ctsp';
+    elHint.textContent = 'Legislação exclusiva CTSP.';
   } else if (item.tag === 'exclusivo-cba') {
-    if (optAmbos) { optAmbos.disabled = true; optAmbos.textContent = 'Ambos — indisponível (legislação é exclusiva CBA)'; }
-    if (optCtsp)  { optCtsp.disabled  = true; }
-    elCurso.value = 'cba';
+    elHint.textContent = 'Legislação exclusiva CBA.';
   }
+  elHint.style.display = 'block';
 }
 
 let todasQuestoes = [];
