@@ -79,6 +79,27 @@
   .pendentes-tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #EF9F27; background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.3); padding: 2px 6px; border-radius: 3px; }
   .pendentes-tag.zero { color: #444; background: transparent; border-color: transparent; }
 
+  /* Botão Gerar IA */
+  .btn-gerar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; white-space: nowrap; display: inline-flex; align-items: center; gap: 5px; }
+  .btn-gerar:hover { border-color: rgba(192,39,15,0.5); color: var(--branco); background: rgba(192,39,15,0.08); }
+  .btn-gerar:disabled { opacity: 0.4; cursor: wait; }
+  .btn-gerar .spark { font-size: 12px; }
+
+  /* Modal */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 999; }
+  .modal-bg.aberto { display: flex; }
+  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.5rem; width: 90%; max-width: 480px; }
+  .modal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.05em; margin: 0 0 4px; color: var(--branco); }
+  .modal .modal-leg { font-size: 12px; color: var(--cinza-texto); margin-bottom: 1.25rem; }
+  .modal label { display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; margin-top: 14px; }
+  .modal input[type=number], .modal select { width: 100%; background: var(--carvao); border: 1px solid var(--cinza-borda); color: var(--branco); padding: 8px 10px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 13px; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 1.5rem; }
+  .modal-actions button { padding: 8px 16px; border-radius: 6px; font-family: 'Inter', sans-serif; font-size: 12px; cursor: pointer; border: 1px solid var(--cinza-borda); background: transparent; color: var(--cinza-texto); transition: all 0.15s; }
+  .modal-actions button:hover { color: var(--branco); }
+  .modal-actions .btn-primary { background: var(--vermelho); border-color: var(--vermelho); color: white; }
+  .modal-actions .btn-primary:hover { background: #d6321a; }
+  .modal-actions button:disabled { opacity: 0.5; cursor: wait; }
+
   .empty { text-align: center; color: #555; padding: 2rem; font-size: 12px; }
 
   /* Skeleton */
@@ -149,6 +170,27 @@
   </div>
 </div>
 
+<!-- Modal Gerar IA -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3>Gerar questões via IA</h3>
+    <div class="modal-leg" id="modal-leg">—</div>
+    <label for="modal-qtd">Quantidade (1 a 5)</label>
+    <input type="number" id="modal-qtd" min="1" max="5" value="2">
+    <label for="modal-dif">Dificuldade</label>
+    <select id="modal-dif">
+      <option value="">Auto (rodízio fácil/média/difícil)</option>
+      <option value="fácil">Fácil</option>
+      <option value="média">Média</option>
+      <option value="difícil">Difícil</option>
+    </select>
+    <div class="modal-actions">
+      <button id="modal-cancelar">Cancelar</button>
+      <button class="btn-primary" id="modal-confirmar">Gerar</button>
+    </div>
+  </div>
+</div>
+
 <script src="/js/api.js?v=2"></script>
 <script src="/js/admin-chrome.js?v=2"></script>
 <script>
@@ -211,6 +253,7 @@ function renderLinha(leg) {
     </td>
     <td>${penTag}</td>
     <td><span class="badge-cob ${leg.badge}">${leg.badge}</span></td>
+    <td><button class="btn-gerar" data-leg-id="${escapeHtml(leg.legislacao_id)}" data-leg-nome="${escapeHtml(leg.legislacao_nome)}"><span class="spark">✨</span>Gerar</button></td>
   </tr>`;
 }
 
@@ -237,6 +280,7 @@ function renderTabelaAT(at, leg) {
             <th>Aprovadas / Meta</th>
             <th>Pendentes IA</th>
             <th>Status</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>${linhas}</tbody>
@@ -299,6 +343,63 @@ function bindFiltros() {
     carregar(btn.dataset.curso);
   });
 }
+
+// --- Modal Gerar IA ---
+let legAtual = null;
+const modalBg = document.getElementById('modal-bg');
+const modalLeg = document.getElementById('modal-leg');
+const modalQtd = document.getElementById('modal-qtd');
+const modalDif = document.getElementById('modal-dif');
+const btnConfirmar = document.getElementById('modal-confirmar');
+const btnCancelar = document.getElementById('modal-cancelar');
+
+function abrirModal(legId, legNome) {
+  legAtual = { id: legId, nome: legNome };
+  modalLeg.textContent = legNome;
+  modalQtd.value = 2;
+  modalDif.value = '';
+  modalBg.classList.add('aberto');
+}
+function fecharModal() {
+  modalBg.classList.remove('aberto');
+  legAtual = null;
+}
+modalBg.addEventListener('click', (ev) => { if (ev.target === modalBg) fecharModal(); });
+btnCancelar.addEventListener('click', fecharModal);
+
+btnConfirmar.addEventListener('click', async () => {
+  if (!legAtual) return;
+  const qtd = Math.max(1, Math.min(5, parseInt(modalQtd.value) || 2));
+  const dif = modalDif.value || null;
+
+  btnConfirmar.disabled = true;
+  btnConfirmar.textContent = 'Gerando…';
+  try {
+    const r = await fetch(`${API}/admin/questoes/gerar-ia-legislacao`, {
+      method: 'POST',
+      headers: adminHeaders(),
+      body: JSON.stringify({ legislacao_id: legAtual.id, quantidade: qtd, dificuldade: dif }),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data?.erro || `HTTP ${r.status}`);
+    AdminChrome.toast(data.mensagem || `${data.geradas} questão(ões) gerada(s).`, 'sucesso');
+    fecharModal();
+    await carregar(cursoAtivo);
+  } catch (e) {
+    console.error('gerar-ia:', e);
+    AdminChrome.toast('Falha ao gerar: ' + e.message, 'erro');
+  } finally {
+    btnConfirmar.disabled = false;
+    btnConfirmar.textContent = 'Gerar';
+  }
+});
+
+// Delegação: cliques em qualquer botão Gerar dentro das tabelas
+document.getElementById('tabelas-por-at').addEventListener('click', (ev) => {
+  const btn = ev.target.closest('.btn-gerar');
+  if (!btn) return;
+  abrirModal(btn.dataset.legId, btn.dataset.legNome);
+});
 
 async function init() {
   adminJwt = sessionStorage.getItem('pbm_admin_jwt');
