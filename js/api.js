@@ -648,13 +648,19 @@ const PBM = {
           : 'Falha de rede: ' + (err?.message || err?.name || 'desconhecido');
         return { ok: false, status: 0, data: { erro }, contentRange: null };
       }
-      if (res.status === 401) { PBM.Admin.logout(); return { ok: false, status: 401, data: null, contentRange: null }; }
       const text = await res.text();
       const contentRange = res.headers.get('Content-Range');
       let data = null;
       if (text) {
         try { data = JSON.parse(text); }
         catch { data = { erro: 'Resposta não-JSON do servidor', raw: text.slice(0, 200) }; }
+      }
+      // 401 só desloga quando vem do nosso auth middleware (formato {erro:"Token..."}).
+      // 401 repassado de upstream (ex: Supabase {message:"Invalid JWT"}) NÃO é sessão expirada
+      // — é falha do proxy, e deve voltar pro caller tratar sem deslogar.
+      if (res.status === 401) {
+        const ehAuthNosso = typeof data?.erro === 'string' && /token/i.test(data.erro);
+        if (ehAuthNosso) { PBM.Admin.logout(); return { ok: false, status: 401, data, contentRange: null }; }
       }
       return { ok: res.ok, status: res.status, data, contentRange };
     },
