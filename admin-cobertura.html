@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Cobertura do Banco</title>
+<script src="/js/pbm-theme-boot.js?v=2"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/admin-chrome.css">
+<style>
+  /* Filtros */
+  .filtros { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .seg { display: inline-flex; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 3px; }
+  .seg button { background: transparent; border: 0; color: var(--cinza-texto); padding: 6px 14px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; border-radius: 5px; cursor: pointer; transition: all 0.15s; }
+  .seg button:hover { color: var(--branco); }
+  .seg button.ativo { background: var(--carvao); color: var(--branco); box-shadow: inset 0 0 0 1px var(--cinza-borda); }
+  .filtros-info { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #666; margin-left: auto; }
+
+  /* KPIs */
+  .grid-kpi { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 2rem; }
+  .kpi-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.25rem; }
+  .kpi-card.critica { border-color: rgba(192,39,15,0.4); }
+  .kpi-card.atencao { border-color: rgba(186,117,23,0.4); }
+  .kpi-card.saudavel { border-color: rgba(39,160,90,0.4); }
+  .kpi-card.excedente { border-color: rgba(24,95,165,0.4); }
+  .kpi-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; font-family: 'IBM Plex Mono', monospace; }
+  .kpi-val { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 0.03em; color: var(--branco); line-height: 1; }
+  .kpi-card.critica .kpi-val { color: var(--danger-fg); }
+  .kpi-card.atencao .kpi-val { color: #EF9F27; }
+  .kpi-card.saudavel .kpi-val { color: var(--success-fg); }
+  .kpi-card.excedente .kpi-val { color: #79ABDD; }
+  .kpi-sub { font-size: 11px; color: var(--cinza-texto); margin-top: 4px; }
+
+  /* Seção AT */
+  .secao-at { margin-bottom: 2rem; }
+  .secao-at-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.75rem; display: flex; align-items: center; gap: 10px; }
+  .secao-at-titulo::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
+  .at-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #666; }
+
+  /* Tabela */
+  .tabela-wrap { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; overflow: hidden; }
+  .tabela { width: 100%; border-collapse: collapse; }
+  .tabela th { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--cinza-borda); background: var(--carvao); font-weight: 500; }
+  .tabela td { padding: 10px 14px; font-size: 12px; border-bottom: 1px solid #222; vertical-align: middle; }
+  .tabela tr:last-child td { border-bottom: none; }
+  .tabela tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .leg-nome { color: var(--branco); font-size: 12px; }
+  .leg-id { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; margin-top: 2px; }
+
+  /* Curso chip */
+  .chip-curso { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 6px; border-radius: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .chip-ctsp { background: rgba(192,39,15,0.1); color: var(--danger-fg); border: 1px solid rgba(192,39,15,0.25); }
+  .chip-cba  { background: rgba(24,95,165,0.1); color: #79ABDD; border: 1px solid rgba(24,95,165,0.25); }
+  .chip-ambos { background: rgba(255,255,255,0.04); color: #999; border: 1px solid rgba(255,255,255,0.1); }
+
+  /* Barra de ratio */
+  .ratio-cell { min-width: 180px; }
+  .ratio-bar-wrap { background: var(--cinza-medio); border-radius: 3px; height: 8px; overflow: hidden; position: relative; }
+  .ratio-bar { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .ratio-bar.critica  { background: #C0270F; }
+  .ratio-bar.atencao  { background: #BA7517; }
+  .ratio-bar.saudavel { background: #27A05A; }
+  .ratio-bar.excedente{ background: #185FA5; }
+  .ratio-info { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #888; margin-top: 4px; }
+
+  /* Badge cobertura */
+  .badge-cob { display: inline-flex; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.05em; }
+  .badge-cob::before { content: '●'; margin-right: 6px; font-size: 8px; }
+  .badge-cob.critica  { background: rgba(192,39,15,0.12); color: var(--danger-fg);  border: 1px solid rgba(192,39,15,0.3); }
+  .badge-cob.atencao  { background: rgba(186,117,23,0.12); color: #EF9F27;          border: 1px solid rgba(186,117,23,0.3); }
+  .badge-cob.saudavel { background: rgba(39,160,90,0.10); color: var(--success-fg); border: 1px solid rgba(39,160,90,0.3); }
+  .badge-cob.excedente{ background: rgba(24,95,165,0.10); color: #79ABDD;           border: 1px solid rgba(24,95,165,0.3); }
+
+  .pendentes-tag { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #EF9F27; background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.3); padding: 2px 6px; border-radius: 3px; }
+  .pendentes-tag.zero { color: #444; background: transparent; border-color: transparent; }
+
+  .empty { text-align: center; color: #555; padding: 2rem; font-size: 12px; }
+
+  /* Skeleton */
+  .skeleton { display: inline-block; background: linear-gradient(90deg, var(--bg-secundario) 25%, #222 50%, var(--bg-secundario) 75%); background-size: 400% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; height: 34px; width: 70px; }
+  @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+
+  @media (max-width: 900px) {
+    .grid-kpi { grid-template-columns: repeat(3, 1fr); }
+    .tabela th:nth-child(2), .tabela td:nth-child(2) { display: none; }
+  }
+  @media (max-width: 600px) {
+    .grid-kpi { grid-template-columns: repeat(2, 1fr); }
+    .tabela th:nth-child(5), .tabela td:nth-child(5) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside id="admin-chrome"></aside>
+
+  <div class="main">
+    <header id="admin-topbar"></header>
+    <div class="conteudo">
+
+      <div class="filtros">
+        <div class="seg" id="seg-curso" role="tablist" aria-label="Filtro de curso">
+          <button data-curso="" class="ativo">Todos</button>
+          <button data-curso="ctsp">CTSP</button>
+          <button data-curso="cba">CBA</button>
+        </div>
+        <div class="filtros-info" id="filtros-info">Carregando...</div>
+      </div>
+
+      <div class="grid-kpi" id="kpi-grid">
+        <div class="kpi-card critica">
+          <div class="kpi-label">Críticas</div>
+          <div class="kpi-val" id="kpi-critica"><span class="skeleton"></span></div>
+          <div class="kpi-sub">ratio &lt; 0.3</div>
+        </div>
+        <div class="kpi-card atencao">
+          <div class="kpi-label">Atenção</div>
+          <div class="kpi-val" id="kpi-atencao"><span class="skeleton"></span></div>
+          <div class="kpi-sub">0.3 ≤ ratio &lt; 0.7</div>
+        </div>
+        <div class="kpi-card saudavel">
+          <div class="kpi-label">Saudáveis</div>
+          <div class="kpi-val" id="kpi-saudavel"><span class="skeleton"></span></div>
+          <div class="kpi-sub">0.7 ≤ ratio &lt; 1.5</div>
+        </div>
+        <div class="kpi-card excedente">
+          <div class="kpi-label">Excedentes</div>
+          <div class="kpi-val" id="kpi-excedente"><span class="skeleton"></span></div>
+          <div class="kpi-sub">ratio ≥ 1.5</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Pendentes IA</div>
+          <div class="kpi-val" id="kpi-pendentes"><span class="skeleton"></span></div>
+          <div class="kpi-sub">bloqueiam geração</div>
+        </div>
+      </div>
+
+      <div id="tabelas-por-at">
+        <div class="empty">Carregando cobertura…</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js?v=2"></script>
+<script src="/js/admin-chrome.js?v=2"></script>
+<script>
+AdminChrome.init({
+  pagina: 'cobertura',
+  titulo: 'Cobertura do Banco de Questões',
+  acoes: [{ html: '<span class="chrome-topbar-mono" id="topbar-ts">—</span>' }],
+});
+
+const API = 'https://graduabm-backend-production.up.railway.app/api';
+let adminJwt = null;
+let cursoAtivo = '';
+
+function adminHeaders() {
+  return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${adminJwt}` };
+}
+
+async function fetchCobertura(curso) {
+  const qs = curso ? `?curso=${curso}` : '';
+  const r = await fetch(`${API}/admin/estatisticas/cobertura${qs}`, { headers: adminHeaders() });
+  if (r.status === 401) { PBM.Admin.logout(); return null; }
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+
+const ORDEM_BADGE = { critica: 0, atencao: 1, saudavel: 2, excedente: 3 };
+const ROTULOS_AT = {
+  AT1: 'AT1 — Segurança contra Incêndios',
+  AT2: 'AT2 — Combate a Incêndios',
+  AT3: 'AT3 — Buscas, Salvamentos e APH',
+  AT4: 'AT4 — Direito Militar e Institucional',
+  AT5: 'AT5 — Normas Administrativas',
+};
+
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+function chipCurso(c) {
+  const cls = c === 'ctsp' ? 'chip-ctsp' : c === 'cba' ? 'chip-cba' : 'chip-ambos';
+  return `<span class="chip-curso ${cls}">${c.toUpperCase()}</span>`;
+}
+
+function renderLinha(leg) {
+  const ratio100 = Math.min(150, Math.round(leg.ratio * 100));
+  const ratioTxt = `${leg.aprovadas}/${leg.meta_questoes}`;
+  const ratioPct = (leg.ratio * 100).toFixed(0) + '%';
+  const penTag = leg.pendentes_ia > 0
+    ? `<span class="pendentes-tag" title="Bloqueiam botão de gerar enquanto não forem revisadas">${leg.pendentes_ia}</span>`
+    : `<span class="pendentes-tag zero">0</span>`;
+  return `<tr>
+    <td>
+      <div class="leg-nome">${escapeHtml(leg.legislacao_nome)}</div>
+      <div class="leg-id">${escapeHtml(leg.legislacao_id)}</div>
+    </td>
+    <td>${chipCurso(leg.curso_manifest)}</td>
+    <td class="ratio-cell">
+      <div class="ratio-bar-wrap"><div class="ratio-bar ${leg.badge}" style="width:${ratio100}%;"></div></div>
+      <div class="ratio-info"><span>${ratioTxt}</span><span>${ratioPct}</span></div>
+    </td>
+    <td>${penTag}</td>
+    <td><span class="badge-cob ${leg.badge}">${leg.badge}</span></td>
+  </tr>`;
+}
+
+function renderTabelaAT(at, leg) {
+  const linhas = leg
+    .slice()
+    .sort((a, b) => (ORDEM_BADGE[a.badge] - ORDEM_BADGE[b.badge]) || a.ratio - b.ratio)
+    .map(renderLinha)
+    .join('');
+  const aprovadasTotal = leg.reduce((s, l) => s + l.aprovadas, 0);
+  const metaTotal = leg.reduce((s, l) => s + l.meta_questoes, 0);
+  const ratioTotal = metaTotal > 0 ? ((aprovadasTotal / metaTotal) * 100).toFixed(0) : '0';
+  return `<div class="secao-at">
+    <div class="secao-at-titulo">
+      <span>${escapeHtml(ROTULOS_AT[at] || at)}</span>
+      <span class="at-meta">${aprovadasTotal}/${metaTotal} (${ratioTotal}%) · ${leg.length} leg</span>
+    </div>
+    <div class="tabela-wrap">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th style="width:38%">Legislação</th>
+            <th>Curso</th>
+            <th>Aprovadas / Meta</th>
+            <th>Pendentes IA</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>${linhas}</tbody>
+      </table>
+    </div>
+  </div>`;
+}
+
+function aplicar(data) {
+  const legs = data.legislacoes || [];
+
+  // KPIs
+  const cont = { critica: 0, atencao: 0, saudavel: 0, excedente: 0 };
+  let totalPendentes = 0;
+  for (const l of legs) {
+    if (cont[l.badge] !== undefined) cont[l.badge]++;
+    totalPendentes += l.pendentes_ia || 0;
+  }
+  document.getElementById('kpi-critica').textContent = cont.critica;
+  document.getElementById('kpi-atencao').textContent = cont.atencao;
+  document.getElementById('kpi-saudavel').textContent = cont.saudavel;
+  document.getElementById('kpi-excedente').textContent = cont.excedente;
+  document.getElementById('kpi-pendentes').textContent = totalPendentes;
+
+  // Filtros info
+  const cursoLabel = data.curso ? data.curso.toUpperCase() : 'TODOS';
+  document.getElementById('filtros-info').textContent = `Curso: ${cursoLabel} · ${legs.length} legislações`;
+
+  // Agrupa por AT
+  const porAT = {};
+  for (const l of legs) {
+    const at = l.area_tematica || 'SEM_AT';
+    if (!porAT[at]) porAT[at] = [];
+    porAT[at].push(l);
+  }
+  const ats = Object.keys(porAT).sort();
+  const html = ats.length === 0
+    ? '<div class="empty">Nenhuma legislação encontrada para esse filtro.</div>'
+    : ats.map(at => renderTabelaAT(at, porAT[at])).join('');
+  document.getElementById('tabelas-por-at').innerHTML = html;
+}
+
+async function carregar(curso) {
+  cursoAtivo = curso;
+  try {
+    const data = await fetchCobertura(curso);
+    if (data) aplicar(data);
+  } catch (e) {
+    console.error('cobertura:', e);
+    AdminChrome.toast('Erro ao carregar cobertura: ' + e.message, 'erro');
+  }
+}
+
+function bindFiltros() {
+  const seg = document.getElementById('seg-curso');
+  seg.addEventListener('click', (ev) => {
+    const btn = ev.target.closest('button[data-curso]');
+    if (!btn) return;
+    for (const b of seg.querySelectorAll('button')) b.classList.toggle('ativo', b === btn);
+    carregar(btn.dataset.curso);
+  });
+}
+
+async function init() {
+  adminJwt = sessionStorage.getItem('pbm_admin_jwt');
+  if (!adminJwt) return PBM.Admin.logout();
+  AdminChrome.setTimestamp();
+  bindFiltros();
+  await carregar('');
+}
+
+init();
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</body>
+</html>

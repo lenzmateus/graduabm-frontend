@@ -28,6 +28,7 @@
     { "source": "/admin-denuncias", "destination": "/admin-denuncias" },
     { "source": "/admin-analytics", "destination": "/admin-analytics" },
     { "source": "/admin-legislacoes", "destination": "/admin-legislacoes" },
+    { "source": "/admin-cobertura", "destination": "/admin-cobertura" },
     { "source": "/conta", "destination": "/pbm-conta" },
     { "source": "/confirmar-email", "destination": "/pbm-confirmar-email" },
     { "source": "/desfazer-exclusao", "destination": "/pbm-desfazer-exclusao" }

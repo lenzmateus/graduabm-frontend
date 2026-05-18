@@ -22,6 +22,7 @@
     denuncia: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
     aprovacao: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
     site: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>',
+    cobertura: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
   };
 
   // ---------- ESTRUTURA DE NAVEGAÇÃO ----------
@@ -35,6 +36,7 @@
     { secao: 'Conteúdo' },
     { key: 'questoes', label: 'Questões', href: '/admin-questoes', icon: ICO.questao },
     { key: 'legislacoes', label: 'Legislações', href: '/admin-legislacoes', icon: ICO.legislacao },
+    { key: 'cobertura', label: 'Cobertura do Banco', href: '/admin-cobertura', icon: ICO.cobertura },
     { key: 'flashcards', label: 'Flashcards', href: '/admin-flashcards', icon: ICO.flashcard },
     { key: 'simulados-mensais', label: 'Protocolos QAP', href: '/admin-simulados-mensais', icon: ICO.simulado },
 
