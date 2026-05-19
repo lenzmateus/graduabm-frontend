@@ -233,7 +233,13 @@
     const busca = (document.getElementById('busca').value || '').toLowerCase();
     return lista.filter(l => {
       if (filtroCurso !== 'todos' && l.curso !== filtroCurso && l.curso !== 'ambos') return false;
-      if (filtroArea !== 'todas' && l.area_tematica !== filtroArea) return false;
+      if (filtroArea !== 'todas') {
+        const a = l.area_tematica;
+        const casa = (typeof a === 'string')
+          ? a === filtroArea
+          : !!(a && (a.ctsp === filtroArea || a.cba === filtroArea));
+        if (!casa) return false;
+      }
       if (busca) {
         const blob = (l.nome_exibicao + ' ' + l.nome_manifest + ' ' + l.id + ' ' + (l.grupo || '')).toLowerCase();
         if (!blob.includes(busca)) return false;
@@ -262,7 +268,7 @@
       if (isDestaque) cssRow += ' destaque-relato';
       return `
         <div class="${cssRow}" id="leg-row-${esc(l.id)}">
-          <div class="leg-at" data-at="${l.area_tematica}">${l.area_tematica}</div>
+          <div class="leg-at" data-at="${esc(typeof l.area_tematica === 'string' ? l.area_tematica : (l.area_tematica?.ctsp || l.area_tematica?.cba || ''))}">${esc(l.area_tematica_label || (typeof l.area_tematica === 'string' ? l.area_tematica : ''))}</div>
           <div class="leg-nome">
             <strong>${esc(l.nome_exibicao)}</strong>
             ${temOverride ? `<div class="leg-nome-manifest">manifest: ${esc(l.nome_manifest)}</div>` : ''}
