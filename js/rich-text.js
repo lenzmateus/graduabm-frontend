@@ -150,7 +150,7 @@
   }
 
   function pareceHTML(s) {
-    return /<\/?(p|br|strong|b|em|i|u|ol|ul|li|sup|sub|span)\b/i.test(s);
+    return /<\/?(p|br|strong|b|em|i|u|ol|ul|li|sup|sub|span|img)\b/i.test(s);
   }
 
   function isEmptyHtml(html) {

@@ -774,7 +774,7 @@
   async function montarEditoresEditPrincipais() {
     await RichText.ensureLoaded();
     if (document.getElementById(RT_ENU_ID)) RichText.mountField(RT_ENU_ID, { placeholder: 'Enunciado da questao' });
-    if (document.getElementById(RT_COM_ID)) RichText.mountField(RT_COM_ID, { placeholder: 'Explicacao da resposta correta' });
+    if (document.getElementById(RT_COM_ID)) RichText.mountField(RT_COM_ID, { placeholder: 'Explicacao da resposta correta', imageUploader: (file) => PBM.Admin.uploadImagemQuestao(file) });
   }
 
   function renderAltsEdit(alts, gabarito) {
