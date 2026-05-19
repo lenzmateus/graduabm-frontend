@@ -616,17 +616,23 @@ async function carregarAreas() {
     if (!resp.ok) throw new Error('HTTP ' + resp.status);
     const { legislacoes } = await resp.json();
 
+    // area_tematica e grupo podem vir como string OU como objeto {ctsp,cba}
+    // quando a legislacao e compartilhada mas cai em ATs/grupos distintos por curso
+    // (ex.: IR 006 — AT4 no CTSP, AT5 no CBA).
+    const _atDe = (a, c) => (a && typeof a === 'object' ? (a[c] || '') : (a || '')).toString().toLowerCase();
+    const _grupoDe = (g, c) => (g && typeof g === 'object' ? (g[c] || 'Geral') : (g || 'Geral'));
+
     for (const [at, cursos] of Object.entries(AREAS_VISUAL)) {
       AREAS[at] = {};
       for (const [curso, visual] of Object.entries(cursos)) {
         const filtradas = legislacoes.filter(l => {
-          if ((l.area_tematica || '').toLowerCase() !== at) return false;
+          if (_atDe(l.area_tematica, curso) !== at) return false;
           return l.curso === 'ambos' || l.curso === curso;
         });
 
         const gruposMap = new Map();
         for (const leg of filtradas) {
-          const g = leg.grupo || 'Geral';
+          const g = _grupoDe(leg.grupo, curso);
           if (!gruposMap.has(g)) gruposMap.set(g, []);
           gruposMap.get(g).push({
             id: leg.id,

@@ -241,6 +241,7 @@
       </div>
       <div class="campo-edit">
         <label>Imagem (opcional)</label>
+        <div style="font-size:11px;color:#BA7517;background:rgba(186,117,23,0.08);border:1px solid rgba(186,117,23,0.3);border-radius:6px;padding:6px 10px;margin-bottom:6px;">⚠ A imagem aparece <strong>acima do enunciado</strong> para o aluno — escreva o texto pensando que ela vem antes.</div>
         <div class="upload-area" id="edit-upload-area">
           <div id="edit-upload-placeholder" class="upload-placeholder-txt">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -375,12 +376,22 @@
         tagTxt: tag === 'comum' ? 'CTSP e CBA' : (cursoSlot === 'ctsp' ? 'Exclusivo CTSP' : 'Exclusivo CBA')
       });
     }
+    // area_tematica pode vir como string OU como objeto {ctsp,cba} quando uma leg
+    // compartilhada cai em ATs distintas por curso (ex.: IR 006).
+    const _atDe = (a, c) => (a && typeof a === 'object' ? (a[c] || '') : (a || '')).toString().toLowerCase();
     for (const leg of legislacoes) {
-      const areaSlot = (leg.area_tematica || '').toLowerCase();
-      if (!tmp[areaSlot]) continue;
-      if (leg.curso === 'ambos') { addItem('ctsp', areaSlot, leg, 'comum'); addItem('cba', areaSlot, leg, 'comum'); }
-      else if (leg.curso === 'ctsp') addItem('ctsp', areaSlot, leg, 'exclusivo');
-      else if (leg.curso === 'cba') addItem('cba', areaSlot, leg, 'exclusivo-cba');
+      if (leg.curso === 'ambos') {
+        const slotCtsp = _atDe(leg.area_tematica, 'ctsp');
+        const slotCba  = _atDe(leg.area_tematica, 'cba');
+        if (tmp[slotCtsp]) addItem('ctsp', slotCtsp, leg, 'comum');
+        if (tmp[slotCba])  addItem('cba',  slotCba,  leg, 'comum');
+      } else if (leg.curso === 'ctsp') {
+        const slot = _atDe(leg.area_tematica, 'ctsp');
+        if (tmp[slot]) addItem('ctsp', slot, leg, 'exclusivo');
+      } else if (leg.curso === 'cba') {
+        const slot = _atDe(leg.area_tematica, 'cba');
+        if (tmp[slot]) addItem('cba', slot, leg, 'exclusivo-cba');
+      }
     }
     AREAS = tmp;
     _manifestoCarregado = true;
@@ -794,33 +805,40 @@
 
   window.abrirEditarQuestao = async function(questaoId) {
     document.getElementById('overlay-editar').classList.add('aberto');
-    document.getElementById('edit-erro').style.display = 'none';
+    const erroEl = document.getElementById('edit-erro');
+    erroEl.style.display = 'none';
     document.getElementById('edit-meta').textContent = 'Carregando...';
     document.getElementById('edit-banner').style.display = 'none';
-    // monta editores principais (idempotente) antes de qualquer setHTML
-    await montarEditoresEditPrincipais();
-    RichText.setHTML(RT_ENU_ID, '');
-    RichText.setHTML(RT_COM_ID, '');
-    // alternativas serao recriadas como <textarea> em renderAltsEdit
-    document.getElementById('edit-alts').innerHTML = '';
-    document.getElementById('edit-upload-status').textContent = '';
-    setPreviewImagem(null);
 
-    // Carrega manifesto sob demanda (primeira abertura).
-    await carregarManifesto();
-
-    let q;
+    // Bloco unico defensivo: qualquer falha (montagem do editor, manifesto, fetch da questao)
+    // tem que aparecer no banner em vez de deixar o modal em branco e o admin sem pista.
     try {
+      // monta editores principais (idempotente) antes de qualquer setHTML
+      await montarEditoresEditPrincipais();
+      RichText.setHTML(RT_ENU_ID, '');
+      RichText.setHTML(RT_COM_ID, '');
+      // alternativas serao recriadas como <textarea> em renderAltsEdit
+      document.getElementById('edit-alts').innerHTML = '';
+      document.getElementById('edit-upload-status').textContent = '';
+      setPreviewImagem(null);
+
+      // Carrega manifesto sob demanda (primeira abertura). Falha aqui nao impede edicao.
+      try { await carregarManifesto(); } catch (e) { console.warn('[abrirEditarQuestao] manifesto:', e); }
+
       const r = await supaQuery(`/rest/v1/questoes?id=eq.${encodeURIComponent(questaoId)}&select=*`);
       if (!r.ok) throw new Error(AdminChrome.extrairErro(r));
       if (!Array.isArray(r.data) || !r.data[0]) throw new Error('Questão não encontrada (id=' + questaoId + ')');
-      q = r.data[0];
+      const q = r.data[0];
+      _preencherEdicao(q);
     } catch (err) {
-      document.getElementById('edit-erro').textContent = 'Erro ao carregar questão: ' + (err.message || err);
-      document.getElementById('edit-erro').style.display = 'block';
+      console.error('[abrirEditarQuestao]', err);
+      erroEl.textContent = 'Erro ao abrir editor: ' + (err && err.message || err);
+      erroEl.style.display = 'block';
       document.getElementById('edit-meta').textContent = '—';
-      return;
     }
+  };
+
+  function _preencherEdicao(q) {
 
     let normalized = AdminChrome.normalizarQuestao(q);
     if (normalized.alts.every(a => !a) && typeof q.alternativas === 'string') {

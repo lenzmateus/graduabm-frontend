@@ -599,6 +599,22 @@ const PBM = {
       const signal = opts.signal || (AbortSignal.timeout ? AbortSignal.timeout(60000) : undefined);
       return request(path, { ...opts, signal, headers: { ...PBM.Admin._authHeader(), ...(opts.headers || {}) } });
     },
+    async uploadImagemQuestao(file) {
+      try {
+        const fd = new FormData();
+        fd.append('imagem', file);
+        const res = await fetch('/api/admin/questoes/upload-imagem', {
+          method: 'POST',
+          headers: PBM.Admin._authHeader(),
+          body: fd,
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.url) return { ok: true, url: data.url };
+        return { ok: false, erro: data.erro || 'Erro no upload.' };
+      } catch {
+        return { ok: false, erro: 'Erro de rede.' };
+      }
+    },
     Auth: {
       async login({ email, senha }) {
         // silenciar401: 401 aqui é credencial inválida, não sessão expirada.

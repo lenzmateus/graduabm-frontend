@@ -435,7 +435,9 @@
         const localId = el.dataset.rtBlock;
         const fullId = `rt-${itemId}-${localId}`;
         el.id = fullId;
-        RichText.mountField(fullId, { placeholder: el.placeholder || '' });
+        const opts = { placeholder: el.placeholder || '' };
+        if (localId === 'comentario') opts.imageUploader = (file) => PBM.Admin.uploadImagemQuestao(file);
+        RichText.mountField(fullId, opts);
       });
       form.querySelectorAll('[data-rt-inline]').forEach(el => {
         const localId = el.dataset.rtInline;

@@ -310,6 +310,8 @@
   .feedback-acerto .feedback-titulo { color: var(--success-fg); }
   .feedback-erro .feedback-titulo { color: var(--danger-fg); }
   .feedback-txt { color: var(--cinza-texto); line-height: 1.7; text-align: justify; hyphens: auto; }
+  .feedback-txt img { display:block; max-width:100%; height:auto; margin:10px auto; border-radius:6px; border:1px solid rgba(255,255,255,0.08); }
+  :root.light-mode .feedback-txt img { border-color: rgba(0,0,0,0.12); }
   :root.light-mode .feedback-txt { color: var(--texto-principal); }
   :root.light-mode .feedback-acerto .feedback-titulo { color: #1F6135; }
   :root.light-mode .feedback-erro   .feedback-titulo { color: #8B1A08; }

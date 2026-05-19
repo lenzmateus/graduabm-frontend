@@ -84,6 +84,7 @@
   #upload-preview { max-width: 100%; max-height: 200px; border-radius: 4px; object-fit: contain; display: none; }
   .btn-remover-img { background: transparent; border: 1px solid rgba(226,75,74,0.3); color: var(--danger-fg); border-radius: 6px; padding: 4px 12px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 6px; display: none; transition: all 0.15s; }
   .btn-remover-img:hover { border-color: var(--erro); background: rgba(226,75,74,0.08); }
+  .rt-editor img { max-width: 100%; height: auto; display: block; margin: 6px 0; border-radius: 6px; }
 
   @media (max-width: 768px) {
     .lista-header { display: none; }
@@ -199,6 +200,7 @@ const _isAdmin = PBM.isAdmin();
       </div>
       <div class="campo">
         <label>Imagem (opcional)</label>
+        <div style="font-size:11px;color:#BA7517;background:rgba(186,117,23,0.08);border:1px solid rgba(186,117,23,0.3);border-radius:6px;padding:6px 10px;margin-bottom:6px;">⚠ A imagem aparece <strong>acima do enunciado</strong> para o aluno — escreva o texto pensando que ela vem antes.</div>
         <div class="upload-area" id="upload-area">
           <div id="upload-placeholder" class="upload-placeholder-txt">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
@@ -337,16 +339,29 @@ async function carregarManifesto() {
     });
   }
 
+  // area_tematica pode vir como string OU como objeto {ctsp,cba} quando a leg
+  // é compartilhada mas cai em ATs distintas entre cursos (ex.: IR 006 — AT4
+  // no CTSP, AT5 no CBA). Resolve por curso antes de inserir.
+  const _areaPara = (areaVal, cursoSlot) => {
+    if (areaVal && typeof areaVal === 'object') return (areaVal[cursoSlot] || '').toLowerCase();
+    return (areaVal || '').toLowerCase();
+  };
+
   for (const leg of legislacoes) {
-    const areaSlot = (leg.area_tematica || '').toLowerCase();
-    if (!tmp[areaSlot]) continue;
     if (leg.curso === 'ambos') {
-      addItem('ctsp', areaSlot, leg, 'comum');
-      addItem('cba',  areaSlot, leg, 'comum');
+      const slotCtsp = _areaPara(leg.area_tematica, 'ctsp');
+      const slotCba  = _areaPara(leg.area_tematica, 'cba');
+      // Para legs com AT por curso, o `grupo` também pode ser objeto.
+      const legCtsp = { ...leg, grupo: (leg.grupo && typeof leg.grupo === 'object') ? leg.grupo.ctsp : leg.grupo };
+      const legCba  = { ...leg, grupo: (leg.grupo && typeof leg.grupo === 'object') ? leg.grupo.cba  : leg.grupo };
+      if (tmp[slotCtsp]) addItem('ctsp', slotCtsp, legCtsp, 'comum');
+      if (tmp[slotCba])  addItem('cba',  slotCba,  legCba,  'comum');
     } else if (leg.curso === 'ctsp') {
-      addItem('ctsp', areaSlot, leg, 'exclusivo');
+      const slot = _areaPara(leg.area_tematica, 'ctsp');
+      if (tmp[slot]) addItem('ctsp', slot, leg, 'exclusivo');
     } else if (leg.curso === 'cba') {
-      addItem('cba',  areaSlot, leg, 'exclusivo-cba');
+      const slot = _areaPara(leg.area_tematica, 'cba');
+      if (tmp[slot]) addItem('cba', slot, leg, 'exclusivo-cba');
     }
   }
 
@@ -656,7 +671,10 @@ async function garantirEditoresModal() {
   await RichText.ensureLoaded();
   for (const id of RT_CAMPOS) {
     if (RichText.get(id)) continue;
-    if (document.getElementById(id)) RichText.mountField(id);
+    if (!document.getElementById(id)) continue;
+    const opts = {};
+    if (id === 'm-comentario') opts.imageUploader = (file) => PBM.Admin.uploadImagemQuestao(file);
+    RichText.mountField(id, opts);
   }
 }
 function limparEditoresModal() {

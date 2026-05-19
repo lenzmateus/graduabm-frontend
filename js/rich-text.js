@@ -33,9 +33,23 @@
   const PURIFY_JS = 'https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js';
 
   const PURIFY_CFG = {
-    ALLOWED_TAGS: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ol', 'ul', 'li', 'sup', 'sub', 'span'],
-    ALLOWED_ATTR: ['class', 'style'],
+    ALLOWED_TAGS: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'ol', 'ul', 'li', 'sup', 'sub', 'span', 'img'],
+    ALLOWED_ATTR: ['class', 'style', 'src', 'alt'],
   };
+
+  // Whitelist de origens permitidas para <img src="..."> dentro do comentario/justificativa.
+  // Aceita apenas URLs do Supabase Storage do projeto (mesmos buckets que ja servem imagens de questao).
+  const IMG_SRC_REGEX = /^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\//i;
+  let _purifyHookInstalado = false;
+  function instalarHookImg() {
+    if (_purifyHookInstalado || !window.DOMPurify) return;
+    window.DOMPurify.addHook('uponSanitizeAttribute', (node, data) => {
+      if (node.nodeName === 'IMG' && data.attrName === 'src') {
+        if (!IMG_SRC_REGEX.test(String(data.attrValue || ''))) data.keepAttr = false;
+      }
+    });
+    _purifyHookInstalado = true;
+  }
 
   // Sem destaque alem do vermelho vivo do brand. Texto padrao herda do tema
   // (preto no light, branco no dark) automaticamente.
@@ -46,6 +60,7 @@
     [{ list: 'ordered' }, { list: 'bullet' }],
     [{ script: 'super' }, { script: 'sub' }],
     [{ color: PALETA_TEXTO }],
+    ['image'],
     ['clean'],
   ];
 
@@ -99,15 +114,17 @@
     ]).then(() => {
       if (!window.Quill)     throw new Error('Quill nao carregou.');
       if (!window.DOMPurify) throw new Error('DOMPurify nao carregou.');
+      instalarHookImg();
     });
     return _loadingPromise;
   }
 
   function ensurePurify() {
-    if (window.DOMPurify) return Promise.resolve();
+    if (window.DOMPurify) { instalarHookImg(); return Promise.resolve(); }
     if (_purifyPromise) return _purifyPromise;
     _purifyPromise = loadScript(PURIFY_JS).then(() => {
       if (!window.DOMPurify) throw new Error('DOMPurify nao carregou.');
+      instalarHookImg();
     });
     return _purifyPromise;
   }
@@ -251,12 +268,40 @@
         toolbar: oneLine ? TOOLBAR_INLINE : TOOLBAR_FULL,
         clipboard: { matchVisual: false },
       },
-      formats: ['bold', 'italic', 'underline', 'list', 'script', 'color'],
+      formats: ['bold', 'italic', 'underline', 'list', 'script', 'color', 'image'],
     });
 
     if (oneLine) {
       quill.keyboard.addBinding({ key: 13 }, () => false);
       quill.keyboard.addBinding({ key: 13, shiftKey: true }, () => false);
+    }
+
+    // Handler customizado de imagem: faz upload via callback (que retorna {ok,url,erro})
+    // antes de inserir o <img> — evita base64 inline gigante no banco.
+    if (!oneLine && typeof opts.imageUploader === 'function') {
+      const tb = quill.getModule('toolbar');
+      tb.addHandler('image', () => {
+        const file = document.createElement('input');
+        file.type = 'file';
+        file.accept = 'image/jpeg,image/png,image/webp';
+        file.onchange = async () => {
+          const f = file.files && file.files[0];
+          if (!f) return;
+          const range = quill.getSelection(true);
+          try {
+            const r = await opts.imageUploader(f);
+            if (!r || !r.ok || !r.url) {
+              alert('Falha ao enviar imagem: ' + ((r && r.erro) || 'erro desconhecido'));
+              return;
+            }
+            quill.insertEmbed(range.index, 'image', r.url, 'user');
+            quill.setSelection(range.index + 1, 0, 'user');
+          } catch (err) {
+            alert('Falha ao enviar imagem: ' + (err && err.message || err));
+          }
+        };
+        file.click();
+      });
     }
 
     if (initialValue) setHTML(quill, initialValue);
