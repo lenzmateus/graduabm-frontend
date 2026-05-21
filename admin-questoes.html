@@ -35,6 +35,7 @@
   .questao-gabarito { font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600; color: var(--roxo); text-align: center; }
   .questao-status { display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 20px; }
   .status-ativa { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .status-aguardando { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.3); color: #F5A623; }
   .status-inativa { background: rgba(226,75,74,0.08); border: 1px solid rgba(226,75,74,0.2); color: var(--danger-fg); }
   .questao-acoes { display: flex; gap: 6px; justify-content: flex-end; }
   .btn-mini { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s; }
@@ -126,8 +127,9 @@ const _isAdmin = PBM.isAdmin();
         </select>
         <select class="filtro-select" id="filtro-status">
           <option value="">Todos</option>
-          <option value="true">Ativas</option>
-          <option value="false">Inativas</option>
+          <option value="ativa">Ativas</option>
+          <option value="aguardando">Aguardando</option>
+          <option value="inativa">Inativas</option>
         </select>
         <select class="filtro-select" id="filtro-auditoria" title="Status de auditoria">
           <option value="">Todas (auditoria)</option>
@@ -560,7 +562,15 @@ async function aplicarFiltros() {
   const params = [`select=*`, `order=criado_em.desc`, `limit=${LIMIT}`];
   if (curso)  params.push(`curso=eq.${encodeURIComponent(curso)}`);
   if (area)   params.push(`area_tematica=eq.${encodeURIComponent(area)}`);
-  if (status) params.push(`ativa=eq.${status}`);
+  if (status === 'ativa') {
+    params.push('ativa=eq.true');
+  } else if (status === 'aguardando') {
+    params.push('ativa=eq.false');
+    params.push('bloco_id=not.is.null');
+  } else if (status === 'inativa') {
+    params.push('ativa=eq.false');
+    params.push('bloco_id=is.null');
+  }
   if (auditoria === 'pendentes') params.push('auditada_em=is.null');
   if (auditoria === 'auditadas') params.push('auditada_em=not.is.null');
   if (busca)  params.push(`or=(enunciado.ilike.*${encodeURIComponent(busca)}*,legislacao_nome.ilike.*${encodeURIComponent(busca)}*,codigo.ilike.*${encodeURIComponent(busca)}*)`);
@@ -605,7 +615,11 @@ function renderLista(questoes) {
       </div>
       <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#AFA9EC;letter-spacing:0.04em">${auditIcon}${q.codigo || '—'}</div>
       <div class="questao-gabarito">${letra}</div>
-      <div><span class="questao-status ${q.ativa ? 'status-ativa' : 'status-inativa'}">${q.ativa ? 'Ativa' : 'Inativa'}</span></div>
+      <div>${(() => {
+        if (q.ativa) return '<span class="questao-status status-ativa">Ativa</span>';
+        if (q.bloco_id) return '<span class="questao-status status-aguardando">Aguardando</span>';
+        return '<span class="questao-status status-inativa">Inativa</span>';
+      })()}</div>
       <div class="questao-acoes">
         <button class="btn-mini edit" data-action="editar" data-id="${q.id}">Editar</button>
         ${_isAdmin ? `<button class="btn-mini danger" data-action="deletar" data-id="${q.id}" data-preview="${enunciadoEsc}">Excluir</button>` : ''}
