@@ -395,7 +395,6 @@
 .progress-bar__fill--saudavel  { background: var(--success); }
 .progress-bar__fill--excedente { background: var(--info-fg); }
 
-/* Progress Ring (Gamificação) */
 .progress-ring {
   position: relative;
   width: 54px;
@@ -406,6 +405,9 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+.progress-ring--success {
+  background: conic-gradient(var(--success) var(--progress, 0%), var(--bg-hover) 0deg);
 }
 .progress-ring::before {
   content: '';

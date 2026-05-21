@@ -444,7 +444,7 @@
         <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
           <h2 style="font-size: 20px; font-weight: 500;">Visão Geral</h2>
           
-          <div style="display:flex;align-items:center;gap:12px;background:var(--bg-secundario);border:1px solid var(--border-color);padding:8px 12px;border-radius:12px;" title="Sua meta diária de resolução de questões">
+          <div style="display:flex;align-items:center;gap:12px;background:var(--bg-secundario);border:1px solid var(--border-color);padding:8px 12px;border-radius:12px;cursor:pointer;transition:border-color 0.15s;" title="Clique para configurar sua meta diária de questões" onclick="configurarMeta()" onmouseover="this.style.borderColor='var(--brand-primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
             <div class="progress-ring" id="daily-goal-ring" style="--progress: 0%; width: 42px; height: 42px;">
               <span class="progress-ring-val" id="daily-goal-val" style="font-size: 14px;">0</span>
             </div>
@@ -1093,29 +1093,8 @@ async function init() {
       </div>`;
     }
 
-    // Calcula meta diária com base nas sessões de hoje
-    const hojeStr = new Date().toLocaleDateString('pt-BR');
-    let questoesHoje = 0;
-    (sessoes || []).forEach(s => {
-      const dStr = new Date(s.encerrada_em || s.criado_em).toLocaleDateString('pt-BR');
-      if (dStr === hojeStr) {
-        questoesHoje += Number(s.total_respondidas) || 0;
-      }
-    });
-    
-    const meta = 30;
-    let pctMeta = Math.round((questoesHoje / meta) * 100);
-    if (pctMeta > 100) pctMeta = 100;
-    
-    document.getElementById('daily-goal-val').textContent = questoesHoje;
-    document.getElementById('daily-goal-sub').textContent = `${questoesHoje}/${meta} questões`;
-    document.getElementById('daily-goal-ring').style.setProperty('--progress', pctMeta + '%');
-    
-    if (pctMeta >= 100) {
-      document.getElementById('daily-goal-ring').style.background = `conic-gradient(var(--success) ${pctMeta}%, var(--bg-hover) 0deg)`;
-      document.getElementById('daily-goal-val').style.color = 'var(--success)';
-      document.getElementById('daily-goal-sub').textContent = `Meta concluída! 🔥`;
-    }
+    // Calcula meta diária
+    calcularMetaDiaria(sessoes || []);
 
   } catch (err) {
     console.error('Erro ao carregar dashboard', err);
@@ -1124,6 +1103,68 @@ async function init() {
     }
   }
 }
+
+// ── META DIÁRIA ──
+function calcularMetaDiaria(sessoes) {
+  const hojeStr = new Date().toLocaleDateString('pt-BR');
+  let questoesHoje = 0;
+  
+  sessoes.forEach(s => {
+    const dStr = new Date(s.encerrada_em || s.criado_em).toLocaleDateString('pt-BR');
+    if (dStr === hojeStr) {
+      questoesHoje += Number(s.total_respondidas) || 0;
+    }
+  });
+  
+  const uid = (PBM.getUsuario() || {}).id || 'anon';
+  const meta = parseInt(localStorage.getItem('pbm_meta_diaria_' + uid) || '30', 10);
+  let pctMeta = Math.round((questoesHoje / meta) * 100);
+  if (pctMeta > 100) pctMeta = 100;
+  
+  const ring = document.getElementById('daily-goal-ring');
+  const val = document.getElementById('daily-goal-val');
+  const sub = document.getElementById('daily-goal-sub');
+
+  val.textContent = questoesHoje;
+  ring.style.setProperty('--progress', pctMeta + '%');
+  
+  // Reseta classes e estilos (para evitar bugs de re-render ou view transitions)
+  ring.classList.remove('progress-ring--success');
+  val.style.color = '';
+  
+  if (pctMeta >= 100) {
+    ring.classList.add('progress-ring--success');
+    val.style.color = 'var(--success)';
+    sub.textContent = `Meta concluída! 🔥`;
+  } else {
+    sub.textContent = `${questoesHoje}/${meta} questões`;
+  }
+}
+
+function configurarMeta() {
+  const uid = (PBM.getUsuario() || {}).id || 'anon';
+  const atual = localStorage.getItem('pbm_meta_diaria_' + uid) || '30';
+  const nova = prompt('Qual a sua meta diária de questões?', atual);
+  if (nova !== null) {
+    const num = parseInt(nova, 10);
+    if (!isNaN(num) && num > 0) {
+      localStorage.setItem('pbm_meta_diaria_' + uid, num);
+      PBM.Progresso.sessoesRecentes().then(sessoes => {
+        calcularMetaDiaria(sessoes || []);
+      });
+      if (window.PBM && PBM.Toast) PBM.Toast.success('Meta diária atualizada e salva!');
+    } else {
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Por favor, digite um número válido maior que zero.');
+    }
+  }
+}
+
+// Para corrigir bugs com bfcache (ex: voltar para o dashboard)
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    window.location.reload();
+  }
+});
 
 // ── CADERNO DE ERROS ──
 function atualizarCadernoErros(totalErros) {

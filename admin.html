@@ -16,59 +16,6 @@
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/admin-chrome.css">
-<style>
-  /* STATS */
-  .grid-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
-  .stat-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 10px; padding: 1.25rem; }
-  .stat-label { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
-  .stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.03em; color: var(--branco); }
-  .stat-sub { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; }
-
-  /* SEÇÕES */
-  .secao-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
-  .secao-titulo::after { content: ''; flex: 1; height: 1px; background: var(--cinza-borda); }
-  .painel-card { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
-  .painel-card-titulo { font-size: 14px; font-weight: 600; color: var(--branco); margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
-  .painel-card-desc { font-size: 13px; color: var(--cinza-texto); line-height: 1.6; margin-bottom: 1.25rem; }
-
-  /* BOTÕES */
-  .btn-acesso { display: inline-flex; align-items: center; gap: 8px; background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 11px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s, transform 0.1s; text-decoration: none; }
-  .btn-acesso:hover { background: #6960C8; transform: translateY(-1px); }
-  .btn-acesso.verde { background: var(--verde); }
-  .btn-acesso.verde:hover { background: #1D6B3E; }
-  .btn-acesso.outline { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); }
-  .btn-acesso.outline:hover { border-color: #555; color: var(--branco); background: var(--cinza-medio); transform: none; }
-  .atalhos { display: flex; gap: 8px; flex-wrap: wrap; }
-
-  /* API STATUS */
-  .api-status-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--cinza-borda); font-size: 13px; }
-  .api-status-row:last-child { border-bottom: none; }
-  .status-pill { display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 20px; letter-spacing: 0.04em; flex-shrink: 0; }
-  .pill-ok { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
-  .pill-erro { background: rgba(226,75,74,0.1); border: 1px solid rgba(226,75,74,0.3); color: var(--danger-fg); }
-  .pill-check { background: rgba(186,117,23,0.1); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
-  .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
-
-  /* CHAVE CLAUDE */
-  .chave-box { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 16px; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #AFA9EC; letter-spacing: 0.06em; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .chave-copy { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 12px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
-  .chave-copy:hover { border-color: var(--roxo); color: #AFA9EC; }
-  .chave-copy.copiado { border-color: var(--verde); color: var(--success-fg); }
-  .instrucoes-claude { background: var(--roxo-bg); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #AFA9EC; line-height: 1.7; }
-  .instrucoes-claude strong { color: var(--branco); font-weight: 500; }
-
-  @media (max-width: 768px) {
-    .grid-cards { grid-template-columns: repeat(2, 1fr); }
-    .atalhos { flex-direction: column; }
-    .btn-acesso { width: 100%; justify-content: center; }
-    .chrome-topbar-mono { display: none; }
-  }
-  @media (max-width: 480px) {
-    .grid-cards { grid-template-columns: 1fr; }
-    .chave-box { flex-direction: column; align-items: flex-start; gap: 8px; }
-    #topbar-data { display: none; }
-  }
-</style>
 </head>
 <body>
 
