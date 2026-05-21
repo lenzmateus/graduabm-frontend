@@ -5,6 +5,7 @@
    Carregar ANTES do <style> inline da página.
    ============================================================ */
 @import url('./pbm-tokens.css');
+@import url('./pbm-components.css');
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }

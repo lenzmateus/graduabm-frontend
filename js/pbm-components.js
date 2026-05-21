@@ -404,4 +404,114 @@
     },
     refreshUsuario: populateUsuario
   };
+
+  /* ── TOAST — Sistema global de feedback ──────────────────────
+     Uso:
+       PBM.Toast.show('Copiado!', 'success')
+       PBM.Toast.show('Erro ao salvar.', 'error')
+       PBM.Toast.show('Processando...', 'info', 5000)
+       PBM.Toast.show('Atenção!', 'warning')
+
+     Tipos: 'success' | 'error' | 'info' | 'warning'
+     Duração padrão: 3000ms. Passa 0 para manter até fechar.
+  ─────────────────────────────────────────────────────────────── */
+  const TOAST_ICONS = {
+    success: '<svg class="pbm-toast__icon" viewBox="0 0 24 24" fill="none" stroke="var(--success-fg)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+    error:   '<svg class="pbm-toast__icon" viewBox="0 0 24 24" fill="none" stroke="var(--danger-fg)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+    info:    '<svg class="pbm-toast__icon" viewBox="0 0 24 24" fill="none" stroke="var(--info-fg)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    warning: '<svg class="pbm-toast__icon" viewBox="0 0 24 24" fill="none" stroke="var(--warning-fg)" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+  };
+
+  function getToastContainer() {
+    let c = document.getElementById('pbm-toast-container');
+    if (!c) {
+      c = document.createElement('div');
+      c.id = 'pbm-toast-container';
+      document.body.appendChild(c);
+    }
+    return c;
+  }
+
+  PBM.Toast = {
+    show(msg, type = 'info', duration = 3000) {
+      const container = getToastContainer();
+      const el = document.createElement('div');
+      el.className = `pbm-toast pbm-toast--${type} pbm-toast--entering`;
+      el.innerHTML = (TOAST_ICONS[type] || TOAST_ICONS.info) +
+        `<span class="pbm-toast__msg">${msg}</span>`;
+      container.appendChild(el);
+
+      // Trigger enter animation
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => el.classList.remove('pbm-toast--entering'));
+      });
+
+      function dismiss() {
+        el.classList.add('pbm-toast--leaving');
+        setTimeout(() => el.remove(), 300);
+      }
+
+      el.addEventListener('click', dismiss);
+      if (duration > 0) setTimeout(dismiss, duration);
+      return dismiss;
+    },
+    success(msg, duration) { return this.show(msg, 'success', duration); },
+    error(msg, duration)   { return this.show(msg, 'error', duration); },
+    info(msg, duration)    { return this.show(msg, 'info', duration); },
+    warning(msg, duration) { return this.show(msg, 'warning', duration); },
+  };
+
+  /* ── SKELETON HELPERS ────────────────────────────────────────
+     Uso:
+       PBM.Skeleton.statGrid('stats-grid', 3)   // renderiza N skeleton cards
+       PBM.Skeleton.sessoes('sessoes-list', 4)   // renderiza N skeleton items
+       PBM.Skeleton.clear('stats-grid')          // remove skeletons do container
+  ─────────────────────────────────────────────────────────────── */
+  PBM.Skeleton = {
+    statCard() {
+      return `<div class="skeleton-stat-card">
+        <div class="skeleton skeleton--stat"></div>
+        <div class="skeleton skeleton--text-sm" style="margin-top:6px;"></div>
+      </div>`;
+    },
+    sessaoItem() {
+      return `<div class="skeleton-sessao">
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+          <div class="skeleton skeleton--text" style="width:55%;"></div>
+          <div class="skeleton skeleton--text-sm" style="width:35%;"></div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div class="skeleton skeleton--text-sm" style="width:52px;border-radius:20px;"></div>
+          <div class="skeleton skeleton--text-sm" style="width:52px;border-radius:20px;"></div>
+        </div>
+      </div>`;
+    },
+    statGrid(containerId, count = 3) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = Array(count).fill(this.statCard()).join('');
+    },
+    sessoes(containerId, count = 4) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = Array(count).fill(this.sessaoItem()).join('');
+    },
+    genericCard() {
+      return `<div class="skeleton-stat-card" style="height:80px;margin-bottom:12px;border-radius:10px;">
+        <div class="skeleton skeleton--text" style="width:40%;margin-bottom:10px;"></div>
+        <div class="skeleton skeleton--text-sm" style="width:70%;"></div>
+      </div>`;
+    },
+    generic(containerId, count = 3) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      el.innerHTML = Array(count).fill(this.genericCard()).join('');
+    },
+    clear(containerId) {
+      const el = document.getElementById(containerId);
+      if (el) el.innerHTML = '';
+    },
+  };
+
 })();
+

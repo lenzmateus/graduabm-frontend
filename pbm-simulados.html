@@ -234,7 +234,7 @@
     font-family: 'IBM Plex Mono', monospace; font-size: 9px;
     color: var(--cinza-texto); text-transform: uppercase;
   }
-  .countdown-sep { font-size: 20px; color: #555; margin-top: -8px; }
+  .countdown-sep { font-size: 20px; color: var(--texto-suporte); margin-top: -8px; }
 
   .mensal-acoes { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1.25rem; }
   .btn-mensal-primary {
@@ -255,7 +255,7 @@
     display: inline-flex; align-items: center; gap: 8px;
     transition: all 0.15s;
   }
-  .btn-mensal-secondary:hover { background: var(--cinza-medio); border-color: #555; }
+  .btn-mensal-secondary:hover { background: var(--cinza-medio); border-color: var(--texto-suporte); }
 
   /* Já participou */
   .mensal-participou {
@@ -405,7 +405,7 @@
 
 <script src="/js/api.js?v=5"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script>PBM.Layout.mount({active:'simulados'});</script>
 <script>
 let cursoSelecionado = 'ctsp';

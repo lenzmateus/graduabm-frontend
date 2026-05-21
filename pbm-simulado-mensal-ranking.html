@@ -37,7 +37,7 @@
   .cd-bloco { text-align: center; min-width: 56px; }
   .cd-num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--branco); line-height: 1; }
   .cd-label { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--cinza-texto); text-transform: uppercase; }
-  .cd-sep { font-size: 28px; color: #555; line-height: 1.4; }
+  .cd-sep { font-size: 28px; color: var(--texto-suporte); line-height: 1.4; }
 
   /* Hero resultado */
   .hero { text-align: center; margin-bottom: 2rem; animation: fadeUp 0.4s ease both; }
@@ -90,8 +90,8 @@
   .gabarito-wrap { animation: fadeUp 0.4s ease 0.25s both; }
   .gab-filtro { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
   .gab-filtro-btn { padding: 4px 12px; border-radius: 20px; font-size: 11px; font-family: 'IBM Plex Mono', monospace; cursor: pointer; border: 1px solid var(--cinza-borda); background: transparent; color: var(--cinza-texto); transition: 0.15s; }
-  .gab-filtro-btn:hover { color: var(--branco); border-color: #555; }
-  .gab-filtro-btn.ativo { background: var(--cinza-medio); color: var(--branco); border-color: #555; }
+  .gab-filtro-btn:hover { color: var(--branco); border-color: var(--texto-suporte); }
+  .gab-filtro-btn.ativo { background: var(--cinza-medio); color: var(--branco); border-color: var(--texto-suporte); }
 
   .gab-questao-card {
     background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
@@ -182,7 +182,7 @@
 </div>
 
 <script src="/js/api.js?v=5"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script src="/js/rich-text.js?v=1"></script>
 <script>PBM.Layout.mount({active:'qap'});
 RichText.ensurePurify().catch(() => {});</script>

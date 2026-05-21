@@ -22,7 +22,7 @@ const AREAS = {
             { id:'rt05p11', nome:'RT CBMRS nº 05 — Parte 1.1/2016', detalhe:'Disposições gerais e definições', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'rt05p02', nome:'RT CBMRS nº 05 — Parte 02/2023', detalhe:'Acesso de viaturas', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'rt05p31', nome:'RT CBMRS nº 05 — Parte 3.1/2016', detalhe:'Instalações prediais de água para combate a incêndios', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
-            { id:'rt05p72', nome:'RT CBMRS nº 05 — Parte 7.2/2021', detalhe:'Proteção por chuveiros automáticos', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p07', nome:'RT CBMRS nº 05 — Parte 07/2025', detalhe:'Edificações e áreas de risco de incêndio existentes', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'rt05p08', nome:'RT CBMRS nº 05 — Parte 08/2016', detalhe:'Símbolos gráficos para projetos de segurança contra incêndio', tag:'exclusivo', tagTxt:'Exclusivo CTSP' },
             { id:'rt05p06', nome:'RT CBMRS nº 05 — Parte 06/2025 (Fiscalização)', detalhe:'Fiscalização de edificações e aplicação de penalidades', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
@@ -61,7 +61,7 @@ const AREAS = {
             { id:'rt05p04a', nome:'RT CBMRS nº 05 — Parte 04A/2017', detalhe:'Extintores de incêndio', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
             { id:'rt05p04b', nome:'RT CBMRS nº 05 — Parte 04B/2017', detalhe:'Sistema de hidrantes e mangotinhos', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
             { id:'rt05p04c', nome:'RT CBMRS nº 05 — Parte 04C/2017', detalhe:'Chuveiros automáticos — complemento', tag:'exclusivo-cba', tagTxt:'Exclusivo CBA' },
-            { id:'rt05p72', nome:'RT CBMRS nº 05 — Parte 7.2/2021', detalhe:'Proteção por chuveiros automáticos', tag:'comum', tagTxt:'CTSP e CBA' },
+            { id:'rt05p07', nome:'RT CBMRS nº 05 — Parte 07/2025', detalhe:'Edificações e áreas de risco de incêndio existentes', tag:'comum', tagTxt:'CTSP e CBA' },
             { id:'rt05p06', nome:'RT CBMRS nº 05 — Parte 06/2025 (Fiscalização)', detalhe:'Fiscalização de edificações e aplicação de penalidades', tag:'comum', tagTxt:'CTSP e CBA' },
           ]
         },

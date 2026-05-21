@@ -79,38 +79,6 @@
     flex-direction: column;
     gap: 10px;
   }
-  .sessao-item {
-    background: var(--cinza-escuro);
-    border: 1px solid var(--cinza-borda);
-    border-radius: 8px;
-    padding: 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .sessao-info {
-    display: flex;
-    flex-direction: column;
-  }
-  .sessao-curso {
-    font-size: 14px; font-weight: 500; color: var(--branco);
-  }
-  .sessao-data {
-    font-size: 11px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace;
-  }
-  .sessao-stats {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-  }
-  .stat-pill {
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-  .stat-ok { background: rgba(125, 217, 154, 0.1); color: var(--success-fg); }
-  .stat-err { background: rgba(240, 149, 149, 0.1); color: var(--danger-fg); }
 
   .header-actions {
     display: flex;
@@ -494,18 +462,18 @@
         <div style="font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:0.06em;color:var(--vermelho);">REVISAR →</div>
       </div>
 
-      <div class="dash-grid" id="stats-grid">
-        <div class="dash-card">
-          <div class="dash-val" id="stat-resolvidas">—</div>
-          <div class="dash-label">Questões Resolvidas</div>
+      <div class="stat-grid" id="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-resolvidas">—</div>
+          <div class="stat-label">Questões Resolvidas</div>
         </div>
-        <div class="dash-card">
-          <div class="dash-val" id="stat-acertos">—</div>
-          <div class="dash-label">Taxa de Acerto Geral</div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-acertos">—</div>
+          <div class="stat-label">Taxa de Acerto Geral</div>
         </div>
-        <div class="dash-card" style="border-top-color: var(--info-fg);">
-          <div class="dash-val" id="stat-sessoes">—</div>
-          <div class="dash-label">Sessões Concluídas</div>
+        <div class="stat-card stat-info">
+          <div class="stat-value" id="stat-sessoes">—</div>
+          <div class="stat-label">Sessões Concluídas</div>
         </div>
       </div>
 
@@ -594,7 +562,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="/js/api.js?v=5"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script>PBM.Layout.mount({active:'dashboard'});</script>
 <script>
 function renderRankBadge(curso) {
@@ -1039,6 +1007,12 @@ async function init() {
   await PBM.protegerRota();
   registrarServiceWorker();
 
+  // Ativa skeletons imediatamente — UX de carregamento suave
+  if (window.PBM && PBM.Skeleton) {
+    PBM.Skeleton.statGrid('stats-grid', 3);
+    PBM.Skeleton.sessoes('sessoes-list', 4);
+  }
+
   const user = PBM.getUsuario();
   if (user) {
     const heroNome = document.getElementById('dash-hero-nome');
@@ -1086,30 +1060,31 @@ async function init() {
       sessoesComRespostas.slice(0, 10).forEach(s => {
         const pct = Math.round((s.total_acertos / s.total_respondidas) * 100) || 0;
         const dataFmt = new Date(s.encerrada_em || s.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-        
         list.innerHTML += `
           <div class="sessao-item">
             <div class="sessao-info">
-              <span class="sessao-curso">${s.curso ? s.curso.toUpperCase() : 'GERAL'} - ${s.area || 'Diversas'}</span>
-              <span class="sessao-data">${dataFmt}</span>
+              <span class="sessao-nome">${s.curso ? s.curso.toUpperCase() : 'GERAL'} &mdash; ${s.area || 'Diversas'}</span>
+              <span class="sessao-meta">${dataFmt} &middot; ${s.total_respondidas} respondidas</span>
             </div>
             <div class="sessao-stats">
-              <span style="font-size: 12px; color: var(--cinza-texto);">${s.total_respondidas} respondidas</span>
-              <span class="stat-pill ${pct >= 70 ? 'stat-ok' : 'stat-err'}">${pct}% Acerto</span>
+              <span class="stat-pill ${pct >= 70 ? 'stat-pill--ok' : 'stat-pill--err'}">${pct}% acerto</span>
             </div>
           </div>
         `;
       });
     } else {
-      list.innerHTML = '<div style="color: var(--cinza-texto); font-size: 13px; padding: 1rem; border: 1px dashed var(--cinza-borda); border-radius: 8px; text-align: center;">Você ainda não completou nenhuma sessão de estudos.</div>';
+      list.innerHTML = `<div class="pbm-empty">
+        <svg class="pbm-empty__icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        <div class="pbm-empty__title">Nenhuma sessão ainda</div>
+        <div class="pbm-empty__desc">Complete sua primeira sessão de estudos para ver o histórico aqui.</div>
+      </div>`;
     }
 
   } catch (err) {
     console.error('Erro ao carregar dashboard', err);
-    const toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-secundario);border:1px solid #C0270F;color:var(--branco);padding:12px 20px;border-radius:8px;font-size:13px;font-family:\'IBM Plex Mono\',monospace;z-index:9999;display:flex;align-items:center;gap:12px;';
-    toast.innerHTML = 'Não foi possível carregar suas estatísticas. <button onclick="location.reload()" style="background:var(--vermelho);color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;">Recarregar</button>';
-    document.body.appendChild(toast);
+    if (window.PBM && PBM.Toast) {
+      PBM.Toast.error('Não foi possível carregar suas estatísticas. Recarregue a página.');
+    }
   }
 }
 

@@ -29,16 +29,12 @@
     max-width: 700px; line-height: 1.5;
   }
 
-  .card {
-    background: var(--cinza-escuro);
-    border: 1px solid var(--cinza-borda);
-    border-radius: 10px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 1.25rem;
-  }
+  /* .card e .card-titulo: definidos em pbm-components.css (importado via pbm-layout.css) */
+  /* Override local: margem específica desta página */
+  .card { margin-bottom: 1.25rem; }
   .card-titulo {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: var(--cinza-texto);
+    font-size: 10px; color: var(--texto-suporte);
     letter-spacing: 0.1em; text-transform: uppercase;
     margin-bottom: 0.75rem;
   }
@@ -637,19 +633,7 @@
   .pomo-audio-toggles label:hover { color: var(--branco); }
   .pomo-audio-toggles input[type="checkbox"] { accent-color: var(--vermelho); }
 
-  .empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-  }
-  .empty-state h2 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 32px; letter-spacing: 0.04em;
-    color: var(--branco); margin-bottom: 0.5rem;
-  }
-  .empty-state p {
-    color: var(--cinza-texto); font-size: 13px;
-    line-height: 1.6; max-width: 540px; margin: 0 auto 1.5rem;
-  }
+  /* .empty-state: migrado para .pbm-empty (pbm-components.css) */
 
   .footer-actions {
     margin-top: 1.5rem; padding-top: 1rem;
@@ -731,17 +715,18 @@
       </div>
 
       <!-- Loading -->
-      <div id="loading" class="card" style="text-align:center;padding:2rem;color:var(--texto-suporte);">Carregando ciclo…</div>
+      <div id="loading" style="display:none;"></div>
 
       <!-- Empty / Configurar -->
       <div id="view-configurar" style="display:none;">
-        <div class="empty-state" id="empty-state" style="display:none;">
-          <h2>Comece seu Ciclo</h2>
-          <p>
+        <div class="pbm-empty" id="empty-state" style="display:none;">
+          <svg class="pbm-empty__icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          <div class="pbm-empty__title">Comece seu Ciclo</div>
+          <div class="pbm-empty__desc">
             Diga ao sistema seu peso desejado para cada Área Temática (AT). Quanto mais difícil
             você acha uma área, mais blocos dela aparecem no seu ciclo. O sistema escolhe automaticamente
             quais legislações estudar e em que ordem.
-          </p>
+          </div>
         </div>
 
         <div class="card">
@@ -945,7 +930,7 @@
 </div>
 
 <script src="/js/api.js?v=5"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script src="/js/services/cicloApi.js"></script>
 <script src="/js/pomodoro-widget.js?v=8"></script>
 <script>
@@ -1038,7 +1023,9 @@
   }
 
   async function carregar() {
-    document.getElementById('loading').style.display = '';
+    const loadingEl = document.getElementById('loading');
+    loadingEl.style.display = '';
+    if (window.PBM && PBM.Skeleton) PBM.Skeleton.generic('loading', 3);
     document.getElementById('view-configurar').style.display = 'none';
     document.getElementById('view-ativo').style.display = 'none';
 
@@ -1063,6 +1050,7 @@
       (prof.proficiencia || []).forEach(p => { profMap[p.area] = p; });
       estado.proficiencia = profMap;
 
+      if (window.PBM && PBM.Skeleton) PBM.Skeleton.clear('loading');
       document.getElementById('loading').style.display = 'none';
 
       if (estado.ciclo && estado.blocos.length) {
@@ -1072,7 +1060,8 @@
       }
     } catch (e) {
       console.error('[ciclo] erro carregar', e);
-      document.getElementById('loading').textContent = 'Erro ao carregar ciclo. Recarregue a página.';
+      document.getElementById('loading').style.display = 'none';
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao carregar o ciclo. Recarregue a página.');
     }
   }
 
@@ -1240,7 +1229,7 @@
       await carregar();
     } catch (e) {
       console.error('[ciclo] gerar', e);
-      alert('Erro ao gerar ciclo. Tente novamente.');
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao gerar ciclo. Tente novamente.');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Gerar Ciclo';
@@ -1368,7 +1357,7 @@
       setTimeout(() => aviso.classList.remove('show'), 1800);
     } catch (e) {
       console.error('[ciclo] salvar nota', e);
-      alert('Erro ao salvar nota: ' + (e?.erro || 'tente novamente'));
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao salvar nota: ' + (e?.erro || 'tente novamente'));
     }
   }
 

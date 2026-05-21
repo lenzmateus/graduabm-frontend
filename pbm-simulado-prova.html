@@ -49,7 +49,7 @@
     color: var(--branco); font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 500; cursor: pointer; transition: 0.2s;
   }
   .nav-btn.ativo { border-color: var(--vermelho); background: rgba(192,39,15,0.1); }
-  .nav-btn.marcada { background: rgba(255,255,255,0.1); border-color: #555; }
+  .nav-btn.marcada { background: rgba(255,255,255,0.1); border-color: var(--texto-suporte); }
 
   /* ── ÁREA DA QUESTÃO ── */
   .questao-container { flex: 1; padding: 2rem 3rem; overflow-y: auto; display: flex; flex-direction: column; position: relative; }
@@ -67,7 +67,7 @@
     background: var(--cinza-escuro);
     border: 1px solid var(--cinza-borda); border-radius: 8px; cursor: pointer; transition: 0.15s;
   }
-  .alt:hover { border-color: #555; background: var(--cinza-medio); }
+  .alt:hover { border-color: var(--texto-suporte); background: var(--cinza-medio); }
   .alt.selecionada { border-color: var(--vermelho); background: rgba(192,39,15,0.05); }
   
   .alt-letra {
@@ -108,7 +108,7 @@
   
   /* Bolinhas rascunho (caderno) */
   .rascunho-val { font-family: 'IBM Plex Mono', monospace; font-weight: 600; color: var(--branco); font-size: 16px; }
-  .rascunho-vazio { color: #555; font-style: italic; font-size: 13px; }
+  .rascunho-vazio { color: var(--texto-suporte); font-style: italic; font-size: 13px; }
 
   /* Bolinhas oficiais */
   .bolinhas-wrap { display: flex; gap: 8px; }
@@ -226,10 +226,10 @@
 
   /* ── GABARITO ACCORDION ── */
   .res-gab-item[data-tem-justif] { cursor: pointer; }
-  .res-gab-item[data-tem-justif]:hover { border-color: #555; }
+  .res-gab-item[data-tem-justif]:hover { border-color: var(--texto-suporte); }
   .res-gab-item.expandida { grid-column: 1 / -1; flex-direction: column; align-items: flex-start; }
   .gab-row { display: flex; align-items: center; gap: 8px; }
-  .gab-hint { font-size: 9px; color: #555; margin-left: auto; letter-spacing: 0.03em; }
+  .gab-hint { font-size: 9px; color: var(--texto-suporte); margin-left: auto; letter-spacing: 0.03em; }
   .res-gab-item.expandida .gab-hint::before { content: '▲ fechar'; }
   .res-gab-item:not(.expandida) .gab-hint::before { content: '▼ justif.'; }
   .gab-justif {
@@ -248,7 +248,7 @@
   .res-btn-primary { background: var(--vermelho); color: #fff; border: none; }
   .res-btn-primary:hover { background: var(--vermelho-escuro); }
   .res-btn-secondary { background: transparent; border: 1px solid var(--cinza-borda); color: var(--branco); }
-  .res-btn-secondary:hover { background: var(--cinza-medio); border-color: #555; }
+  .res-btn-secondary:hover { background: var(--cinza-medio); border-color: var(--texto-suporte); }
 
   /* ── BOTÃO TOGGLE NAV (mobile only) ── */
   .btn-toggle-nav {
@@ -419,7 +419,7 @@
     z-index: 49;
     color: var(--cinza-texto);
   }
-  .seta-sim:hover:not([disabled]) { border-color: #555; color: var(--branco); background: var(--cinza-medio); }
+  .seta-sim:hover:not([disabled]) { border-color: var(--texto-suporte); color: var(--branco); background: var(--cinza-medio); }
   .seta-sim[disabled] { opacity: 0.2; cursor: default; pointer-events: none; }
   .seta-sim-esq { left: 262px; }
   .seta-sim-dir { right: 12px; }
@@ -575,7 +575,7 @@
 <!-- API -->
 <script src="/js/api.js?v=5"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script src="/js/rich-text.js?v=1"></script>
 <script>PBM.Layout.mount({active:'simulados'});
 RichText.ensurePurify().catch(() => {});</script>

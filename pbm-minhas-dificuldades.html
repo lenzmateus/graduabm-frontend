@@ -224,7 +224,7 @@
         </div>
       </div>
 
-      <div id="loading" style="text-align:center;color:#666;padding:2rem;">Carregando...</div>
+      <div id="loading"></div>
       <div id="lista-container"></div>
 
     </div>
@@ -232,7 +232,7 @@
 </div>
 
 <script src="/js/api.js?v=5"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script src="/js/services/cicloApi.js"></script>
 <script>
   PBM.protegerRota();
@@ -274,11 +274,13 @@
       (hist.itens || []).forEach(it => { histMap[it.legislacao_id] = it; });
       estado.historico = histMap;
 
+      if (window.PBM && PBM.Skeleton) PBM.Skeleton.clear('loading');
       document.getElementById('loading').style.display = 'none';
       renderTudo();
     } catch (e) {
       console.error('[dificuldades] erro carregar', e);
-      document.getElementById('loading').textContent = 'Erro ao carregar. Recarregue a página.';
+      document.getElementById('loading').style.display = 'none';
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao carregar. Recarregue a página.');
     }
   }
 
@@ -327,7 +329,7 @@
     c.innerHTML = '';
     const lista = legislacoesFiltradas();
     if (!lista.length) {
-      c.innerHTML = '<div style="text-align:center;color:#666;padding:2rem;font-size:13px;">Nenhuma legislação encontrada com o filtro atual.</div>';
+      c.innerHTML = '<div class="pbm-empty"><div class="pbm-empty__title">Nenhuma legislação encontrada</div><div class="pbm-empty__desc">Tente ajustar o filtro ou a busca.</div></div>';
       return;
     }
 
@@ -341,8 +343,8 @@
         <div class="at-secao-head">
           <span class="tag ${area}">${area}</span>
           <span>${AREA_NOMES[area]}</span>
-          <span style="color:#444;">·</span>
-          <span style="color:#444;">${items.length} legislação(ões)</span>
+          <span style="color:var(--border-color);">·</span>
+          <span style="color:var(--texto-suporte);">${items.length} legislação(ões)</span>
         </div>
         <div class="leg-lista"></div>
       `;
@@ -352,7 +354,7 @@
         const h = estado.historico[l.id];
         const histLinha = h
           ? `<span style="color:var(--success-fg);">⏱ ${fmtTempo(h.total_minutos)}</span> · ${h.sessoes_total} sessã${h.sessoes_total === 1 ? 'o' : 'es'}`
-          : `<span style="color:#666;">Nunca estudada</span>`;
+          : `<span style="color:var(--texto-suporte);">Nunca estudada</span>`;
         const item = document.createElement('div');
         item.className = 'leg-item' + (m === 'alta' ? ' alta' : '') + (m === 'baixa' ? ' baixa' : '');
         item.innerHTML = `
@@ -406,6 +408,9 @@
     });
   });
 
+  const loadingEl = document.getElementById('loading');
+  loadingEl.style.display = '';
+  if (window.PBM && PBM.Skeleton) PBM.Skeleton.generic('loading', 4);
   carregar();
 </script>
 

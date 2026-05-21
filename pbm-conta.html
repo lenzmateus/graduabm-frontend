@@ -66,7 +66,7 @@
     display: block;
     font-size: 11px;
     font-weight: 500;
-    color: #bbb;
+    color: var(--cinza-texto);
     margin-bottom: 6px;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -75,7 +75,7 @@
   .form-row input {
     width: 100%;
     padding: 11px 14px;
-    background: #111;
+    background: var(--bg-hover);
     border: 1px solid var(--cinza-borda);
     border-radius: 6px;
     color: var(--branco);
@@ -136,7 +136,7 @@
     font-size: 13px;
     cursor: pointer;
   }
-  .btn-ghost:hover { color: var(--branco); border-color: #555; }
+  .btn-ghost:hover { color: var(--branco); border-color: var(--texto-suporte); }
   .btn-danger {
     /* DESIGN.md §2 — Erro = vermelho (#C0270F). Variante outline em fundo escuro. */
     background: rgba(192, 39, 15, 0.10);
@@ -168,23 +168,7 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  .toast-wrap {
-    position: fixed; right: 20px; bottom: 20px;
-    display: flex; flex-direction: column; gap: 10px;
-    z-index: 9999;
-  }
-  .toast {
-    padding: 12px 18px;
-    border-radius: 8px;
-    font-size: 13px;
-    line-height: 1.45;
-    max-width: 340px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
-    animation: toast-in 0.2s ease-out;
-  }
-  .toast.sucesso { background: rgba(39,160,96,0.95); color: #fff; border: 1px solid rgba(94,194,136,0.4); }
-  .toast.erro    { background: rgba(192,39,15,0.95); color: #fff; border: 1px solid rgba(226,95,74,0.4); }
-  @keyframes toast-in { from { opacity: 0; transform: translateY(10px); } }
+  /* TOAST: removido — usar PBM.Toast (pbm-components.js) */
 
   /* ── Card 2 — assinatura ── */
   .badge-status {
@@ -321,7 +305,7 @@
   }
   .cupom-row input:focus { border-color: var(--vermelho); }
   .cupom-row input::placeholder {
-    color: #555;
+    color: var(--texto-suporte);
     letter-spacing: normal;
     text-transform: none;
     font-family: 'Inter', sans-serif;
@@ -679,11 +663,10 @@
   </div>
 </div>
 
-<!-- ─── Toasts ─── -->
-<div class="toast-wrap" id="toast-wrap"></div>
+
 
 <script src="/js/api.js?v=5"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script>
 PBM.Layout.mount({active:'conta'});
 
@@ -746,13 +729,13 @@ function atualizarVisibilidadeSenhaEmail() {
 
 function resetarDados() {
   hidratarCardDados(usuarioAtual || {});
-  toast('Alterações descartadas.', 'sucesso');
+  if (window.PBM && PBM.Toast) PBM.Toast.success('Alterações descartadas.');
 }
 
 async function salvarDados() {
   if (!usuarioAtual) return;
   if (assinaturaAtual && assinaturaAtual.deletado_em) {
-    toast('Cancele a exclusão antes de editar dados.', 'erro');
+    if (window.PBM && PBM.Toast) PBM.Toast.error('Cancele a exclusão antes de editar dados.');
     return;
   }
 
@@ -766,12 +749,12 @@ async function salvarDados() {
   if (nickname !== (usuarioAtual.nickname || '')) body.nickname = nickname;
   if (email && email.toLowerCase() !== (usuarioAtual.email || '').toLowerCase()) {
     body.email = email;
-    if (!senhaAtual) { toast('Informe a senha atual para trocar o e-mail.', 'erro'); return; }
+    if (!senhaAtual) { if (window.PBM && PBM.Toast) PBM.Toast.error('Informe a senha atual para trocar o e-mail.'); return; }
     body.senha_atual = senhaAtual;
   }
 
   if (Object.keys(body).length === 0) {
-    toast('Nada para salvar.', 'erro'); return;
+    if (window.PBM && PBM.Toast) PBM.Toast.error('Nada para salvar.'); return;
   }
 
   setLoading('dados', true);
@@ -790,10 +773,10 @@ async function salvarDados() {
       if (data?.dados_atualizados?.nickname !== undefined) usuarioAtual.nickname = data.dados_atualizados.nickname;
       try { sessionStorage.setItem('usuario', JSON.stringify(usuarioAtual)); } catch (_) {}
       PBM.Layout.refreshUsuario && PBM.Layout.refreshUsuario();
-      toast('Dados atualizados!', 'sucesso');
+      if (window.PBM && PBM.Toast) PBM.Toast.success('Dados atualizados!');
     }
   } catch (err) {
-    toast(err?.erro || 'Não foi possível salvar.', 'erro');
+    if (window.PBM && PBM.Toast) PBM.Toast.error(err?.erro || 'Não foi possível salvar.');
   } finally {
     setLoading('dados', false);
   }
@@ -807,7 +790,7 @@ function hidratarCardAssinatura(ass, u) {
   if (ass && ass.deletado_em) {
     body.innerHTML = renderDeletePendente(ass);
     body.querySelector('#btn-cancela-exclusao')?.addEventListener('click', () => {
-      toast('Use o link "Desfazer" enviado por e-mail. Se não encontrar, contate o suporte.', 'erro');
+      if (window.PBM && PBM.Toast) PBM.Toast.info('Use o link "Desfazer" enviado por e-mail. Se não encontrar, contate o suporte.');
     });
     return;
   }
@@ -960,21 +943,21 @@ async function salvarSenha() {
   const nova  = document.getElementById('nova-senha').value;
   const conf  = document.getElementById('confirma-senha').value;
 
-  if (!atual || !nova || !conf) { toast('Preencha todos os campos.', 'erro'); return; }
-  if (nova.length < 8) { toast('A nova senha deve ter pelo menos 8 caracteres.', 'erro'); return; }
-  if (nova !== conf)   { toast('As senhas não coincidem.', 'erro'); return; }
+  if (!atual || !nova || !conf) { if (window.PBM && PBM.Toast) PBM.Toast.error('Preencha todos os campos.'); return; }
+  if (nova.length < 8) { if (window.PBM && PBM.Toast) PBM.Toast.error('A nova senha deve ter pelo menos 8 caracteres.'); return; }
+  if (nova !== conf)   { if (window.PBM && PBM.Toast) PBM.Toast.error('As senhas não coincidem.'); return; }
 
   setLoading('senha', true);
   try {
     await PBM.Auth.alterarSenha({ senha_atual: atual, nova_senha: nova });
-    toast('Senha alterada! Você será deslogado em 2s para refazer login.', 'sucesso');
+    if (window.PBM && PBM.Toast) PBM.Toast.success('Senha alterada! Você será deslogado em 2s para refazer login.');
     document.getElementById('senha-atual').value = '';
     document.getElementById('nova-senha').value = '';
     document.getElementById('confirma-senha').value = '';
     // Backend rotaciona sessao_token; reentrada forçada.
     setTimeout(() => { sessionStorage.clear(); window.location.href = '/login'; }, 2000);
   } catch (err) {
-    toast(err?.erro || 'Não foi possível alterar a senha.', 'erro');
+    if (window.PBM && PBM.Toast) PBM.Toast.error(err?.erro || 'Não foi possível alterar a senha.');
   } finally {
     setLoading('senha', false);
   }
@@ -1023,10 +1006,10 @@ async function carregarIndicacao() {
 function copiarLinkRef() {
   const linkEl = document.getElementById('ref-link');
   const url = linkEl.dataset.url || linkEl.textContent;
-  if (!url || url === '—') { toast('Link indisponível.', 'erro'); return; }
+  if (!url || url === '—') { if (window.PBM && PBM.Toast) PBM.Toast.error('Link indisponível.'); return; }
   navigator.clipboard.writeText(url).then(
-    () => toast('Link copiado!', 'sucesso'),
-    () => toast('Não foi possível copiar.', 'erro')
+    () => { if (window.PBM && PBM.Toast) PBM.Toast.success('Link copiado!'); },
+    () => { if (window.PBM && PBM.Toast) PBM.Toast.error('Não foi possível copiar.'); }
   );
 }
 
@@ -1042,18 +1025,18 @@ function fecharModalExcluir() {
 }
 async function confirmarExclusao() {
   const senha = document.getElementById('senha-excluir').value;
-  if (!senha) { toast('Informe sua senha.', 'erro'); return; }
+  if (!senha) { if (window.PBM && PBM.Toast) PBM.Toast.error('Informe sua senha.'); return; }
   setLoading('excluir', true);
   try {
     await PBM.Auth.excluirConta(senha);
-    toast('Conta marcada para exclusão. Verifique seu e-mail.', 'sucesso');
+    if (window.PBM && PBM.Toast) PBM.Toast.success('Conta marcada para exclusão. Verifique seu e-mail.');
     setTimeout(() => {
       sessionStorage.clear();
       sessionStorage.setItem('pbm_session_msg', 'Sua conta foi marcada para exclusão. Use o link enviado por e-mail para reverter dentro de 30 dias.');
       window.location.href = '/login';
     }, 1800);
   } catch (err) {
-    toast(err?.erro || 'Não foi possível excluir a conta.', 'erro');
+    if (window.PBM && PBM.Toast) PBM.Toast.error(err?.erro || 'Não foi possível excluir a conta.');
   } finally {
     setLoading('excluir', false);
   }
@@ -1069,15 +1052,7 @@ function setLoading(prefixo, on) {
   if (txt)  txt.style.opacity  = on ? '0.6' : '1';
 }
 
-function toast(msg, tipo) {
-  const wrap = document.getElementById('toast-wrap');
-  const el = document.createElement('div');
-  el.className = 'toast ' + (tipo || 'sucesso');
-  el.textContent = msg;
-  wrap.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity .3s'; }, 3200);
-  setTimeout(() => el.remove(), 3600);
-}
+// toast() removido — usar PBM.Toast.success/error/info/warning
 
 function toggleSenha(inputId, btn) {
   const input = document.getElementById(inputId);

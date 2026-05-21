@@ -28,8 +28,8 @@
   }
   .spinner-grande {
     width: 32px; height: 32px;
-    border: 3px solid #333;
-    border-top-color: var(--cor-area);
+    border: 3px solid var(--bg-hover);
+    border-top-color: var(--cor-area, var(--brand-primary));
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -137,13 +137,13 @@
     cursor: pointer; transition: background 0.15s;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   }
-  .bloco-rel-btn:hover { background: #8B1A08; }
+  .bloco-rel-btn:hover { background: var(--brand-primary-hover); }
   .bloco-rel-btn:disabled { opacity: 0.5; cursor: not-allowed; }
   .bloco-rel-btn.secundaria {
-    background: transparent; border: 1px solid var(--cinza-texto);
-    color: var(--branco);
+    background: transparent; border: 1px solid var(--texto-suporte);
+    color: var(--texto-principal);
   }
-  .bloco-rel-btn.secundaria:hover { border-color: var(--branco); background: rgba(255,255,255,0.04); }
+  .bloco-rel-btn.secundaria:hover { border-color: var(--texto-principal); background: rgba(255,255,255,0.04); }
   .bloco-rel-status {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
@@ -418,8 +418,8 @@
   }
   .btn-resultado.primario { background: var(--cor-area); color: #fff; border: none; }
   .btn-resultado.primario:hover { opacity: 0.88; }
-  .btn-resultado.secundario { background: transparent; border: 1px solid var(--cinza-borda); color: var(--branco); }
-  .btn-resultado.secundario:hover { border-color: #555; background: var(--cinza-medio); }
+  .btn-resultado.secundario { background: transparent; border: 1px solid var(--border-color); color: var(--texto-principal); }
+  .btn-resultado.secundario:hover { border-color: var(--texto-suporte); background: var(--bg-hover); }
 
   /* ── ERRO ── */
   #tela-erro {
@@ -616,8 +616,12 @@
 </div>
 
 <!-- BANNER DE ERRO DE SESSÃO -->
-<div id="banner-erro-sessao" style="display:none;background:#C0270F;color:#fff;padding:12px 20px;text-align:center;font-size:14px;position:fixed;top:0;left:0;right:0;z-index:9999;">
-  ⚠ Sessão não sincronizada — seu progresso pode não ser salvo. Verifique sua conexão.
+<div id="banner-erro-sessao" class="pbm-banner" role="alert" style="position:fixed;top:0;left:0;right:0;z-index:9999;border-radius:0;border-left:none;border-top:none;border-x:none;margin:0;">
+  <svg class="pbm-banner__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--danger-fg)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <div class="pbm-banner__body">
+    <div class="pbm-banner__title">Sessão não sincronizada</div>
+    <div class="pbm-banner__desc">Seu progresso pode não ser salvo. Verifique sua conexão.</div>
+  </div>
 </div>
 
 <!-- QUESTÃO -->
@@ -687,7 +691,7 @@
 
   <div class="resultado-score">
     <div class="score-card">
-      <div class="score-num" id="res-acertos" style="color:#27A05A">0</div>
+      <div class="score-num" id="res-acertos" style="color:var(--success-fg)">0</div>
       <div class="score-label">Acertos</div>
     </div>
     <div class="score-card">
@@ -695,7 +699,7 @@
       <div class="score-label">Aproveitamento</div>
     </div>
     <div class="score-card">
-      <div class="score-num" id="res-erros" style="color:var(--danger)">0</div>
+      <div class="score-num" id="res-erros" style="color:var(--danger-fg)">0</div>
       <div class="score-label">Erros</div>
     </div>
   </div>
@@ -789,7 +793,7 @@
 
 <script src="/js/api.js?v=5"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script src="/js/rich-text.js?v=1"></script>
 <script>PBM.Layout.mount({active:'estudar'});
 RichText.ensurePurify().catch(() => {});</script>
@@ -1277,11 +1281,7 @@ async function confirmarResposta() {
     PBM.api.sessoes.responder(sessaoId, { questao_id: q.id, resposta_escolhida: selecionada, correta: acertou })
       .catch(err => {
         console.error('[Protocolo Bravo Mike] Falha ao registrar resposta:', err);
-        const aviso = document.createElement('div');
-        aviso.textContent = '⚠ Progresso não salvo — verifique sua conexão';
-        aviso.style.cssText = 'position:fixed;bottom:1rem;right:1rem;background:#C0270F;color:#fff;padding:.5rem 1rem;border-radius:6px;font-size:12px;z-index:9999';
-        document.body.appendChild(aviso);
-        setTimeout(() => aviso.remove(), 4000);
+        if (window.PBM && PBM.Toast) PBM.Toast.warning('Progresso não salvo — verifique sua conexão.');
       });
   }
 

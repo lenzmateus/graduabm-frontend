@@ -44,7 +44,7 @@
   .at-codigo[data-at="AT4"] { color: var(--at4-fg); }
   .at-codigo[data-at="AT5"] { color: var(--at5-fg); }
   .at-label { font-size: 13px; color: var(--cinza-texto); font-family: 'Inter', sans-serif; }
-  .at-contagem { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #555; }
+  .at-contagem { margin-left: auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--texto-suporte); }
 
   .leg-list { display: flex; flex-direction: column; gap: 6px; }
   .leg-row { display: flex; align-items: center; gap: 12px; padding: 8px 10px; border-radius: 8px; transition: background 0.12s; }
@@ -52,7 +52,7 @@
   .leg-info { flex: 1; min-width: 0; }
   .leg-nome { font-size: 13px; color: var(--branco); line-height: 1.4; word-break: break-word; }
   .leg-meta { display: flex; gap: 8px; align-items: center; margin-top: 3px; flex-wrap: wrap; }
-  .leg-grupo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; letter-spacing: 0.04em; }
+  .leg-grupo { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--texto-suporte); letter-spacing: 0.04em; }
   .badge-atualizada { display: inline-flex; align-items: center; gap: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 9px; padding: 2px 7px; border-radius: 20px; background: var(--warning-bg); border: 1px solid var(--warning-border); color: var(--warning-fg); letter-spacing: 0.04em; text-transform: uppercase; }
   .badge-atualizada svg { width: 9px; height: 9px; }
   .btn-reportar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 5px 11px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; flex-shrink: 0; white-space: nowrap; }
@@ -67,11 +67,11 @@
   .side-item-at { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--cinza-texto); letter-spacing: 0.08em; margin-bottom: 4px; }
   .side-item-nome { font-size: 12px; color: var(--branco); line-height: 1.4; margin-bottom: 6px; }
   .side-item-obs { font-size: 11px; color: var(--cinza-texto); line-height: 1.4; margin-bottom: 6px; font-style: italic; }
-  .side-item-data { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; }
-  .side-vazio { font-size: 12px; color: #555; text-align: center; padding: 1.5rem 0.5rem; line-height: 1.5; }
+  .side-item-data { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--texto-suporte); }
+  .side-vazio { font-size: 12px; color: var(--texto-suporte); text-align: center; padding: 1.5rem 0.5rem; line-height: 1.5; }
 
-  /* ESTADOS */
-  .estado-vazio { text-align: center; padding: 3rem 2rem; color: #555; font-size: 13px; }
+  /* .estado-vazio: migrado para .pbm-empty (pbm-components.css) */
+  .estado-vazio { text-align: center; padding: 3rem 2rem; color: var(--texto-suporte); font-size: 13px; }
   .skeleton { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; height: 120px; margin-bottom: 1rem; animation: pulse 1.4s infinite; }
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
 
@@ -87,17 +87,13 @@
   .modal textarea:focus { border-color: var(--vermelho); }
   .modal-acoes { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
   .btn-cancelar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 8px 16px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
-  .btn-cancelar:hover { border-color: #555; color: var(--branco); }
+  .btn-cancelar:hover { border-color: var(--texto-suporte); color: var(--branco); }
   .btn-enviar { background: var(--vermelho); border: 1px solid var(--vermelho); color: #fff; border-radius: 6px; padding: 8px 18px; font-size: 12px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500; transition: opacity 0.15s; }
   .btn-enviar:hover { opacity: 0.9; }
   .btn-enviar:disabled { opacity: 0.5; cursor: default; }
-  .modal-help { font-size: 11px; color: #555; margin-top: 6px; }
+  .modal-help { font-size: 11px; color: var(--texto-suporte); margin-top: 6px; }
 
-  /* TOAST */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--branco); transition: transform 0.25s ease; z-index: 999; white-space: nowrap; }
-  .toast.visivel { transform: translateX(-50%) translateY(0); }
-  .toast.verde { border-color: rgba(39,160,90,0.4); color: var(--success-fg); }
-  .toast.erro { border-color: rgba(226,75,74,0.4); color: var(--danger-fg); }
+  /* TOAST: removido — usar PBM.Toast (pbm-components.js) */
 
   /* MOBILE */
 
@@ -187,10 +183,9 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
 
 <script src="/js/api.js?v=5"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script>PBM.Layout.mount({active:'editais'});</script>
 <script>
   try {
@@ -203,13 +198,6 @@
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function toast(msg, tipo) {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = 'toast visivel' + (tipo ? ' ' + tipo : '');
-    clearTimeout(el._t);
-    el._t = setTimeout(() => { el.classList.remove('visivel'); }, 3000);
-  }
 
   function formatarData(iso) {
     if (!iso) return '';
@@ -331,11 +319,11 @@
     if (!legAtual) return;
     const comentario = (document.getElementById('modal-comentario').value || '').trim();
     if (!comentario) {
-      toast('Descreva a mudança antes de enviar.', 'erro');
+      if (window.PBM && PBM.Toast) PBM.Toast.warning('Descreva a mudança antes de enviar.');
       return;
     }
     if (comentario.length > 1000) {
-      toast('Comentário muito longo (máx. 1000).', 'erro');
+      if (window.PBM && PBM.Toast) PBM.Toast.warning('Comentário muito longo (máx. 1000).');
       return;
     }
     const btn = document.getElementById('btn-enviar');
@@ -343,10 +331,10 @@
     btn.textContent = 'Enviando…';
     try {
       await PBM.Editais.reportarMudanca(legAtual.id, comentario);
-      toast('Reporte enviado. Obrigado!', 'verde');
+      if (window.PBM && PBM.Toast) PBM.Toast.success('Reporte enviado. Obrigado!');
       fecharModal();
     } catch (e) {
-      toast(e.erro || 'Erro ao enviar reporte.', 'erro');
+      if (window.PBM && PBM.Toast) PBM.Toast.error(e.erro || 'Erro ao enviar reporte.');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Enviar reporte';

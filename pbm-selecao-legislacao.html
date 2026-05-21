@@ -78,7 +78,7 @@
   }
   .cobertura-label {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px; color: #555;
+    font-size: 9px; color: var(--texto-suporte);
     letter-spacing: 0.08em; text-transform: uppercase;
     margin-bottom: 4px;
   }
@@ -100,7 +100,7 @@
     line-height: 1;
   }
   .cobertura-hint {
-    font-size: 10px; color: #444;
+    font-size: 10px; color: var(--border-color);
     margin-top: 1px;
   }
 
@@ -204,12 +204,12 @@
   /* Badge de questões disponíveis */
   .leg-qbadge {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: #4A4A4A;
+    font-size: 10px; color: var(--texto-suporte);
     margin-top: 4px;
     transition: color 0.2s;
   }
-  .selecionado .leg-qbadge { color: #666; }
-  .leg-qbadge-zero { color: #3A2A2A !important; }
+  .selecionado .leg-qbadge { color: var(--cinza-texto); }
+  .leg-qbadge-zero { color: var(--bg-hover) !important; }
 
   /* Legislação sem questões no banco — não clicável */
   .leg-item.sem-questoes {
@@ -235,9 +235,9 @@
     height: 100%;
     transition: width 0.6s ease;
   }
-  .leg-progresso-fill.fraco  { background: #C0270F; }
-  .leg-progresso-fill.medio  { background: #BA7517; }
-  .leg-progresso-fill.forte  { background: #27A05A; }
+  .leg-progresso-fill.fraco  { background: var(--danger-fg); }
+  .leg-progresso-fill.medio  { background: var(--warning-fg); }
+  .leg-progresso-fill.forte  { background: var(--success-fg); }
 
   .leg-meta { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
   .leg-tag {
@@ -271,7 +271,7 @@
   .btn-sel-grupo {
     background: transparent;
     border: 1px solid var(--cinza-borda);
-    color: #555;
+    color: var(--texto-suporte);
     border-radius: 5px;
     padding: 3px 10px;
     font-size: 10px;
@@ -282,9 +282,9 @@
     white-space: nowrap;
     flex-shrink: 0;
   }
-  .btn-sel-grupo:hover { border-color: #555; color: var(--cinza-texto); }
-  .btn-sel-grupo.limpar { color: #444; border-color: var(--bg-hover); }
-  .btn-sel-grupo.limpar:hover { border-color: #555; color: #666; }
+  .btn-sel-grupo:hover { border-color: var(--texto-suporte); color: var(--cinza-texto); }
+  .btn-sel-grupo.limpar { color: var(--border-color); border-color: var(--bg-hover); }
+  .btn-sel-grupo.limpar:hover { border-color: var(--texto-suporte); color: var(--cinza-texto); }
 
   /* ── BOTÃO INICIAR ── */
   .rodape-acao {
@@ -311,10 +311,10 @@
   .btn-iniciar-info { font-size: 12px; color: var(--cinza-texto); }
   .tempo-estimado {
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px; color: #4A4A4A;
+    font-size: 10px; color: var(--texto-suporte);
     display: flex; align-items: center; gap: 4px;
   }
-  .tempo-estimado.visivel { color: #555; }
+  .tempo-estimado.visivel { color: var(--cinza-texto); }
 
   /* Tabs de visualização */
   .view-tabs {
@@ -572,7 +572,7 @@
 
 <script src="/js/api.js?v=5"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script>PBM.Layout.mount({active:'estudar'});</script>
 <script>
 // ── DISTRIBUIÇÃO DO EDITAL (questões esperadas por área/curso) ──
@@ -893,7 +893,7 @@ function atualizarResumo() {
       document.getElementById('cobertura-hint').textContent =
         totalQuestoes + ' de ' + editalQtd + ' qq. esperadas no edital';
       document.getElementById('cobertura-pct').style.color =
-        pct >= 100 ? '#27A05A' : pct >= 70 ? '#BA7517' : 'var(--cor-area)';
+        pct >= 100 ? 'var(--success-fg)' : pct >= 70 ? 'var(--warning-fg)' : 'var(--cor-area)';
     }
   }
 }
@@ -929,6 +929,8 @@ function trocarArea(at, btn) {
 
 // ── CARREGAR CONTAGENS REAIS DO BANCO POR LEGISLAÇÃO ──
 async function carregarContagensReais() {
+  const container = document.getElementById('conteudo-legislacoes');
+  if (container && window.PBM && PBM.Skeleton) PBM.Skeleton.generic('conteudo-legislacoes', 5);
   try {
     const dados = await PBM.api.questoes.legislacoes(cursoAtual, areaAtual.toUpperCase());
     contagensReais = {};

@@ -29,11 +29,11 @@
   .area-dots { display: flex; align-items: center; gap: 5px; }
   .area-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cinza-borda); transition: background 0.2s, transform 0.2s; cursor: pointer; }
   .area-dot.ativo { transform: scale(1.3); }
-  .area-dot[data-area="AT1"].ativo { background: #C0270F; }
-  .area-dot[data-area="AT2"].ativo { background: #BA7517; }
-  .area-dot[data-area="AT3"].ativo { background: #185FA5; }
-  .area-dot[data-area="AT4"].ativo { background: #27A05A; }
-  .area-dot[data-area="AT5"].ativo { background: #7F77DD; }
+  .area-dot[data-area="AT1"].ativo { background: var(--at1-fg); }
+  .area-dot[data-area="AT2"].ativo { background: var(--at2-fg); }
+  .area-dot[data-area="AT3"].ativo { background: var(--at3-fg); }
+  .area-dot[data-area="AT4"].ativo { background: var(--at4-fg); }
+  .area-dot[data-area="AT5"].ativo { background: var(--at5-fg); }
 
   .card-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; min-height: 440px; }
   .card-scene { width: 100%; max-width: 680px; height: 440px; perspective: 1200px; cursor: pointer; }
@@ -43,7 +43,7 @@
   .card-front { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); }
   .card-back { background: var(--cinza-escuro); transform: rotateY(180deg); }
 
-  .card-face-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: #777; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .card-face-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-suporte); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .card-area-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.06em; }
 
   /* Bloco de texto — wrapper aplica scroll/alinhamento, .card-texto-inner segura o conteúdo */
@@ -54,7 +54,7 @@
   .card-back .card-texto { justify-content: flex-start; }
   .card-back .card-texto-inner { font-size: 16px; font-weight: 400; line-height: 1.65; text-align: left; }
   .card-texto::-webkit-scrollbar { width: 6px; }
-  .card-texto::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .card-texto::-webkit-scrollbar-thumb { background: var(--cinza-borda); border-radius: 3px; }
   .card-texto-inner br + br { display: none; }
   .card-texto-inner > *:first-child { margin-top: 0; }
   .card-texto-inner > *:last-child { margin-bottom: 0; }
@@ -181,7 +181,7 @@
     z-index: 49;
     color: var(--cinza-texto);
   }
-  .seta-fc:hover:not([disabled]) { border-color: #555; color: var(--branco); background: var(--cinza-medio); }
+  .seta-fc:hover:not([disabled]) { border-color: var(--texto-suporte); color: var(--branco); background: var(--cinza-medio); }
   .seta-fc[disabled] { opacity: 0.2; cursor: default; pointer-events: none; }
   .seta-fc-esq { left: 232px; }
   .seta-fc-dir { right: 12px; }
@@ -642,14 +642,16 @@ async function carregarFlashcards() {
     virado = false;
     renderEstado();
   } catch (err) {
-    document.getElementById('estado-loading').textContent = 'Erro ao carregar flashcards.';
+    document.getElementById('estado-loading').style.display = 'none';
+    document.getElementById('estado-vazio').style.display = 'flex';
+    if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao carregar flashcards. Recarregue a página.');
     console.error(err);
   }
 }
 </script>
 <script src="/js/tour.js"></script>
 <script src="/js/api.js?v=5"></script>
-<script src="/js/pbm-components.js?v=3"></script>
+<script src="/js/pbm-components.js?v=4"></script>
 <script>PBM.Layout.mount({active:'flashcards'});iniciarApp();</script>
 <style>
 </style>
