@@ -1159,18 +1159,43 @@ function _renderMetaDiaria(questoesHoje, meta) {
 
 async function atualizarMetaDiaria() {
   try {
-    const u = PBM.getUsuario() || {};
-    const meta = parseInt(u.meta_diaria, 10) > 0 ? parseInt(u.meta_diaria, 10) : 30;
-    const resp = await PBM.Progresso.questoesHoje().catch(() => ({ questoes_hoje: 0 }));
-    _renderMetaDiaria(resp?.questoes_hoje ?? 0, meta);
+    const u = window.PBM?.getUsuario?.() || {};
+    const uMeta = parseInt(u.meta_diaria, 10);
+    const savedLocally = localStorage.getItem('pbm_meta_diaria_' + u.id);
+    const meta = (uMeta > 0) ? uMeta : (parseInt(savedLocally, 10) > 0 ? parseInt(savedLocally, 10) : 30);
+    
+    // 1. Tenta pegar a contagem oficial da API
+    let qHoje = 0;
+    try {
+      const resp = await PBM.Progresso.questoesHoje();
+      qHoje = resp?.questoes_hoje ?? 0;
+    } catch(e) {}
+    
+    // 2. Fallback client-side se a API retornar 0 (pode estar desativada ou falhar)
+    if (qHoje === 0 && PBM.Progresso.sessoesRecentes) {
+      try {
+        const sessoes = await PBM.Progresso.sessoesRecentes();
+        const hojeStr = new Date().toLocaleDateString('pt-BR');
+        (sessoes || []).forEach(s => {
+          const dStr = new Date(s.encerrada_em || s.criado_em).toLocaleDateString('pt-BR');
+          if (dStr === hojeStr) {
+            qHoje += Number(s.total_respondidas) || 0;
+          }
+        });
+      } catch(e) {}
+    }
+
+    _renderMetaDiaria(qHoje, meta);
   } catch (e) {
     console.warn('Falha ao atualizar meta diária', e);
   }
 }
 
 function configurarMeta() {
-  const u = PBM.getUsuario() || {};
-  const atual = parseInt(u.meta_diaria, 10) > 0 ? parseInt(u.meta_diaria, 10) : 30;
+  const u = window.PBM?.getUsuario?.() || {};
+  const uMeta = parseInt(u.meta_diaria, 10);
+  const savedLocally = localStorage.getItem('pbm_meta_diaria_' + u.id);
+  const atual = (uMeta > 0) ? uMeta : (parseInt(savedLocally, 10) > 0 ? parseInt(savedLocally, 10) : 30);
   document.getElementById('input-meta-diaria').value = atual;
   document.getElementById('modal-meta-diaria').style.display = 'flex';
   setTimeout(() => {
@@ -1192,8 +1217,19 @@ async function salvarModalMeta() {
     return;
   }
   fecharModalMeta();
+  
+  const u = window.PBM?.getUsuario?.() || {};
   try {
-    await PBM.Auth.atualizarMetaDiaria(num);
+    // 1. Atualiza cache local (resolve delay visual instantaneamente)
+    localStorage.setItem('pbm_meta_diaria_' + u.id, num);
+    u.meta_diaria = num;
+    sessionStorage.setItem('usuario', JSON.stringify(u));
+    
+    // 2. Salva na API em background
+    if (PBM.Auth && PBM.Auth.atualizarMetaDiaria) {
+      PBM.Auth.atualizarMetaDiaria(num).catch(() => {});
+    }
+
     if (window.PBM && PBM.Toast) PBM.Toast.success('Meta diária salva!');
     atualizarMetaDiaria();
   } catch (e) {
