@@ -499,9 +499,21 @@
 
       <!-- PÓDIO -->
       <div class="podio" id="podio">
-        <div class="skeleton" style="height:200px;border-radius:10px;"></div>
-        <div class="skeleton" style="height:220px;border-radius:10px;"></div>
-        <div class="skeleton" style="height:200px;border-radius:10px;"></div>
+        <div class="skeleton-podio-card skeleton">
+          <div class="skeleton skeleton--avatar"></div>
+          <div class="skeleton skeleton--text"></div>
+          <div class="skeleton skeleton--text-sm"></div>
+        </div>
+        <div class="skeleton-podio-card pos-1 skeleton">
+          <div class="skeleton skeleton--avatar" style="width:48px;height:48px;"></div>
+          <div class="skeleton skeleton--text"></div>
+          <div class="skeleton skeleton--text-sm"></div>
+        </div>
+        <div class="skeleton-podio-card skeleton">
+          <div class="skeleton skeleton--avatar"></div>
+          <div class="skeleton skeleton--text"></div>
+          <div class="skeleton skeleton--text-sm"></div>
+        </div>
       </div>
 
       <!-- TABELA -->
@@ -524,11 +536,21 @@
           <div class="ranking-col-header">Data</div>
         </div>
         <div id="ranking-body">
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
-          <div class="skeleton"></div>
+          <div class="skeleton-ranking-row skeleton">
+            <div class="skeleton skeleton--avatar"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--stat"></div>
+          </div>
+          <div class="skeleton-ranking-row skeleton">
+            <div class="skeleton skeleton--avatar"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--stat"></div>
+          </div>
+          <div class="skeleton-ranking-row skeleton">
+            <div class="skeleton skeleton--avatar"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--stat"></div>
+          </div>
         </div>
       </div>
 
@@ -994,10 +1016,14 @@
   }
 
   async function carregarSimulados() {
-    document.getElementById('ranking-body').innerHTML =
-      '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
-    document.getElementById('podio').innerHTML =
-      '<div class="skeleton" style="height:200px;border-radius:10px;"></div><div class="skeleton" style="height:220px;border-radius:10px;"></div><div class="skeleton" style="height:200px;border-radius:10px;"></div>';
+    document.getElementById('ranking-body').innerHTML = `
+      <div class="skeleton-ranking-row skeleton"><div class="skeleton skeleton--avatar"></div><div class="skeleton skeleton--text"></div></div>
+      <div class="skeleton-ranking-row skeleton"><div class="skeleton skeleton--avatar"></div><div class="skeleton skeleton--text"></div></div>
+      <div class="skeleton-ranking-row skeleton"><div class="skeleton skeleton--avatar"></div><div class="skeleton skeleton--text"></div></div>`;
+    document.getElementById('podio').innerHTML = `
+      <div class="skeleton-podio-card skeleton"><div class="skeleton skeleton--avatar"></div><div class="skeleton skeleton--text"></div></div>
+      <div class="skeleton-podio-card pos-1 skeleton"><div class="skeleton skeleton--avatar" style="width:48px;height:48px;"></div><div class="skeleton skeleton--text"></div></div>
+      <div class="skeleton-podio-card skeleton"><div class="skeleton skeleton--avatar"></div><div class="skeleton skeleton--text"></div></div>`;
     try {
       const resp = await PBM.Ranking.simulados();
       simRankingOriginal = resp.ranking || [];

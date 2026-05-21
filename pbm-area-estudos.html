@@ -404,12 +404,16 @@
         </div>
         <div class="stat-card">
           <div class="stat-label">Respondidas</div>
-          <div class="stat-value" id="stat-respondidas">0</div>
+          <div class="stat-value" id="stat-respondidas">
+            <div class="skeleton skeleton--stat" style="height:32px;width:60px;"></div>
+          </div>
           <div class="stat-sublabel">comece por qualquer área</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Taxa de acerto</div>
-          <div class="stat-value" id="stat-taxa" style="font-size:13px;padding-top:6px;color:var(--texto-suporte);">Estude para ver</div>
+          <div class="stat-value" id="stat-taxa" style="font-size:13px;padding-top:6px;color:var(--texto-suporte);">
+            <div class="skeleton skeleton--text" style="width:80px;height:16px;"></div>
+          </div>
         </div>
         <div class="stat-card">
           <div class="stat-label">Próximo passo</div>
@@ -612,7 +616,7 @@ function renderAreas() {
           <button class="${btnClass}" onclick="event.stopPropagation();iniciarEstudo('${area.num}')">Papirar →</button>
           <div class="area-prog">
             <div class="prog-bar"><div class="prog-fill" style="background:${area.cor};width:0%"></div></div>
-            <div class="prog-txt">0 questões respondidas</div>
+            <div class="prog-txt"><div class="skeleton skeleton--text-sm" style="display:inline-block;width:120px;vertical-align:middle;"></div></div>
           </div>
         </div>
       </div>
@@ -724,7 +728,24 @@ async function iniciarApp() {
               if (txt) txt.textContent = area.total_respondidas + ' questões respondidas';
             }
           });
+          // Fix for areas with 0 questions not replacing skeleton
+          document.querySelectorAll('.area-prog .prog-txt').forEach(txt => {
+            if (txt.innerHTML.includes('skeleton')) {
+              txt.textContent = '0 questões respondidas';
+            }
+          });
         }
+      } else {
+        // Sem dados de desempenho, remover os skeletons e colocar estado inicial
+        document.getElementById('stat-respondidas').textContent = '0';
+        const stTaxa = document.getElementById('stat-taxa');
+        if (stTaxa) {
+          stTaxa.textContent = 'Estude para ver';
+          stTaxa.style.color = 'var(--texto-suporte)';
+        }
+        document.querySelectorAll('.area-prog .prog-txt').forEach(txt => {
+          txt.textContent = '0 questões respondidas';
+        });
       }
     } catch (err) {
       console.warn('Desempenho não carregado:', err.message);

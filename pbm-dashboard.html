@@ -441,7 +441,20 @@
       </div>
 
       <div class="header-actions">
-        <h2 style="font-size: 20px; font-weight: 500;">Visão Geral</h2>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+          <h2 style="font-size: 20px; font-weight: 500;">Visão Geral</h2>
+          
+          <div style="display:flex;align-items:center;gap:12px;background:var(--bg-secundario);border:1px solid var(--border-color);padding:8px 12px;border-radius:12px;" title="Sua meta diária de resolução de questões">
+            <div class="progress-ring" id="daily-goal-ring" style="--progress: 0%; width: 42px; height: 42px;">
+              <span class="progress-ring-val" id="daily-goal-val" style="font-size: 14px;">0</span>
+            </div>
+            <div class="progress-ring-label">
+              <span class="pr-title" style="font-size: 14px;">Meta Diária</span>
+              <span class="pr-subtitle" id="daily-goal-sub">0/30 questões</span>
+            </div>
+          </div>
+        </div>
+
         <a href="/area-estudos" class="btn-iniciar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           Iniciar Sessão de Papiro
@@ -452,7 +465,7 @@
       <div id="card-ciclo-wrap" style="margin-bottom:1.25rem;"></div>
 
       <!-- CARD CADERNO DE ERROS (visível só quando o aluno tem erros acumulados) -->
-      <div id="card-erros" style="display:none;margin-bottom:1.25rem;background:var(--bg-secundario);border:1px solid var(--bg-hover);border-left:3px solid var(--vermelho);border-radius:10px;padding:1rem 1.25rem;align-items:center;gap:1rem;cursor:pointer;" onclick="abrirCadernoErros()">
+      <div id="card-erros" class="pulse-cta" style="display:none;margin-bottom:1.25rem;background:var(--bg-secundario);border:1px solid var(--bg-hover);border-left:3px solid var(--vermelho);border-radius:10px;padding:1rem 1.25rem;align-items:center;gap:1rem;cursor:pointer;" onclick="abrirCadernoErros()">
         <div style="background:rgba(192,39,15,0.12);border-radius:8px;padding:9px;flex-shrink:0;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="8" x2="15" y2="14"/><line x1="15" y1="8" x2="9" y2="14"/></svg>
         </div>
@@ -1078,6 +1091,30 @@ async function init() {
         <div class="pbm-empty__title">Nenhuma sessão ainda</div>
         <div class="pbm-empty__desc">Complete sua primeira sessão de estudos para ver o histórico aqui.</div>
       </div>`;
+    }
+
+    // Calcula meta diária com base nas sessões de hoje
+    const hojeStr = new Date().toLocaleDateString('pt-BR');
+    let questoesHoje = 0;
+    (sessoes || []).forEach(s => {
+      const dStr = new Date(s.encerrada_em || s.criado_em).toLocaleDateString('pt-BR');
+      if (dStr === hojeStr) {
+        questoesHoje += Number(s.total_respondidas) || 0;
+      }
+    });
+    
+    const meta = 30;
+    let pctMeta = Math.round((questoesHoje / meta) * 100);
+    if (pctMeta > 100) pctMeta = 100;
+    
+    document.getElementById('daily-goal-val').textContent = questoesHoje;
+    document.getElementById('daily-goal-sub').textContent = `${questoesHoje}/${meta} questões`;
+    document.getElementById('daily-goal-ring').style.setProperty('--progress', pctMeta + '%');
+    
+    if (pctMeta >= 100) {
+      document.getElementById('daily-goal-ring').style.background = `conic-gradient(var(--success) ${pctMeta}%, var(--bg-hover) 0deg)`;
+      document.getElementById('daily-goal-val').style.color = 'var(--success)';
+      document.getElementById('daily-goal-sub').textContent = `Meta concluída! 🔥`;
     }
 
   } catch (err) {

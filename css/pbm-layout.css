@@ -249,6 +249,16 @@ body {
 }
 .btn-ghost:hover { border-color: var(--texto-suporte); color: var(--branco); }
 
+/* ── CTA PULSE ── */
+@keyframes cta-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(192, 39, 15, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(192, 39, 15, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(192, 39, 15, 0); }
+}
+.pulse-cta {
+  animation: cta-pulse 2s infinite;
+}
+
 /* ── WATERMARK ── */
 .pbm-watermark {
   position: fixed;
