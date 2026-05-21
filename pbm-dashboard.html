@@ -16,8 +16,8 @@
 <script src="/js/pbm-theme-boot.js?v=2"></script>
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/pbm-layout.css">
-<link rel="stylesheet" href="/css/pbm-components.css">
+<link rel="stylesheet" href="/css/pbm-layout.css?v=5">
+<link rel="stylesheet" href="/css/pbm-components.css?v=5">
 <style>
 
 /* ── RANK BADGE ── */
@@ -1093,8 +1093,8 @@ async function init() {
       </div>`;
     }
 
-    // Calcula meta diária
-    calcularMetaDiaria(sessoes || []);
+    // Calcula meta diária (busca contagem autoritativa do servidor)
+    atualizarMetaDiaria();
 
   } catch (err) {
     console.error('Erro ao carregar dashboard', err);
@@ -1105,59 +1105,70 @@ async function init() {
 }
 
 // ── META DIÁRIA ──
-function calcularMetaDiaria(sessoes) {
-  const hojeStr = new Date().toLocaleDateString('pt-BR');
-  let questoesHoje = 0;
-  
-  sessoes.forEach(s => {
-    const dStr = new Date(s.encerrada_em || s.criado_em).toLocaleDateString('pt-BR');
-    if (dStr === hojeStr) {
-      questoesHoje += Number(s.total_respondidas) || 0;
-    }
-  });
-  
-  const uid = (PBM.getUsuario() || {}).id || 'anon';
-  const meta = parseInt(localStorage.getItem('pbm_meta_diaria_' + uid) || '30', 10);
-  let pctMeta = Math.round((questoesHoje / meta) * 100);
-  if (pctMeta > 100) pctMeta = 100;
-  
+// Persistência server-side (users.meta_diaria) — sobrevive a refresh, troca de
+// dispositivo e bfcache. Contagem de questões respondidas hoje vem direto da
+// tabela respostas (timezone BRT), então inclui sessões em andamento.
+function _renderMetaDiaria(questoesHoje, meta) {
+  const q = Math.max(0, Number(questoesHoje) || 0);
+  const m = Math.max(1, Number(meta) || 30);
+  const pct = Math.min(100, Math.max(0, (q / m) * 100));
+
   const ring = document.getElementById('daily-goal-ring');
   const val = document.getElementById('daily-goal-val');
   const sub = document.getElementById('daily-goal-sub');
+  if (!ring || !val || !sub) return;
 
-  val.textContent = questoesHoje;
-  ring.style.setProperty('--progress', pctMeta + '%');
-  
-  // Reseta classes e estilos (para evitar bugs de re-render ou view transitions)
+  val.textContent = q;
+  ring.style.setProperty('--progress', pct.toFixed(1) + '%');
+
   ring.classList.remove('progress-ring--success');
   val.style.color = '';
-  
-  if (pctMeta >= 100) {
+
+  if (q >= m) {
     ring.classList.add('progress-ring--success');
     val.style.color = 'var(--success)';
-    sub.textContent = `Meta concluída! 🔥`;
+    const extra = q - m;
+    sub.textContent = extra > 0 ? `Meta batida! +${extra} além 🔥` : `Meta concluída! 🔥`;
   } else {
-    sub.textContent = `${questoesHoje}/${meta} questões`;
+    sub.textContent = `${q}/${m} questões`;
   }
 }
 
-function configurarMeta() {
-  const uid = (PBM.getUsuario() || {}).id || 'anon';
-  const atual = localStorage.getItem('pbm_meta_diaria_' + uid) || '30';
-  const nova = prompt('Qual a sua meta diária de questões?', atual);
-  if (nova !== null) {
-    const num = parseInt(nova, 10);
-    if (!isNaN(num) && num > 0) {
-      localStorage.setItem('pbm_meta_diaria_' + uid, num);
-      PBM.Progresso.sessoesRecentes().then(sessoes => {
-        calcularMetaDiaria(sessoes || []);
-      });
-      if (window.PBM && PBM.Toast) PBM.Toast.success('Meta diária atualizada e salva!');
-    } else {
-      if (window.PBM && PBM.Toast) PBM.Toast.error('Por favor, digite um número válido maior que zero.');
-    }
+async function atualizarMetaDiaria() {
+  try {
+    const u = PBM.getUsuario() || {};
+    const meta = parseInt(u.meta_diaria, 10) > 0 ? parseInt(u.meta_diaria, 10) : 30;
+    const resp = await PBM.Progresso.questoesHoje().catch(() => ({ questoes_hoje: 0 }));
+    _renderMetaDiaria(resp?.questoes_hoje ?? 0, meta);
+  } catch (e) {
+    console.warn('Falha ao atualizar meta diária', e);
   }
 }
+
+async function configurarMeta() {
+  const u = PBM.getUsuario() || {};
+  const atual = parseInt(u.meta_diaria, 10) > 0 ? parseInt(u.meta_diaria, 10) : 30;
+  const nova = prompt('Qual a sua meta diária de questões? (1 a 1000)', String(atual));
+  if (nova === null) return;
+  const num = parseInt(nova, 10);
+  if (!Number.isFinite(num) || num <= 0 || num > 1000) {
+    if (window.PBM && PBM.Toast) PBM.Toast.error('Digite um número entre 1 e 1000.');
+    return;
+  }
+  try {
+    await PBM.Auth.atualizarMetaDiaria(num);
+    if (window.PBM && PBM.Toast) PBM.Toast.success('Meta diária salva!');
+    atualizarMetaDiaria();
+  } catch (e) {
+    if (window.PBM && PBM.Toast) PBM.Toast.error('Não foi possível salvar a meta. Tente de novo.');
+  }
+}
+
+// Recalcula ao voltar para a aba (sessão em outro device ou em outra aba pode
+// ter respondido questões).
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') atualizarMetaDiaria();
+});
 
 // Para corrigir bugs com bfcache (ex: voltar para o dashboard)
 window.addEventListener('pageshow', function(event) {
