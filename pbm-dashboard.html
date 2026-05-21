@@ -573,6 +573,19 @@
   </div>
 </div>
 
+<!-- MODAL META DIÁRIA -->
+<div id="modal-meta-diaria" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(3px); align-items:center; justify-content:center; z-index:9999; padding:1rem;">
+  <div class="modal" style="background:var(--cinza-escuro); border:1px solid var(--cinza-borda); border-radius:12px; max-width:400px; width:100%; padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+    <h2 style="font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.04em; margin-bottom:10px;">Definir Meta Diária</h2>
+    <p style="font-size:13px; color:var(--cinza-texto); margin-bottom:15px;">Quantas questões você quer resolver por dia?</p>
+    <input type="number" id="input-meta-diaria" style="width:100%; background:var(--bg-secundario); border:1px solid var(--border-color); color:var(--branco); border-radius:6px; padding:10px; font-size:16px; margin-bottom:20px; outline:none;" min="1" max="1000">
+    <div style="display:flex; justify-content:flex-end; gap:10px;">
+      <button type="button" onclick="fecharModalMeta()" style="background:transparent; border:1px solid var(--border-color); color:var(--cinza-texto); border-radius:6px; padding:8px 16px; cursor:pointer;">Cancelar</button>
+      <button type="button" onclick="salvarModalMeta()" style="background:var(--brand-primary); border:none; color:#fff; border-radius:6px; padding:8px 16px; cursor:pointer; font-weight:500;">Salvar</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <script src="/js/api.js?v=5"></script>
 <script src="/js/tour.js"></script>
@@ -1145,16 +1158,30 @@ async function atualizarMetaDiaria() {
   }
 }
 
-async function configurarMeta() {
+function configurarMeta() {
   const u = PBM.getUsuario() || {};
   const atual = parseInt(u.meta_diaria, 10) > 0 ? parseInt(u.meta_diaria, 10) : 30;
-  const nova = prompt('Qual a sua meta diária de questões? (1 a 1000)', String(atual));
-  if (nova === null) return;
-  const num = parseInt(nova, 10);
+  document.getElementById('input-meta-diaria').value = atual;
+  document.getElementById('modal-meta-diaria').style.display = 'flex';
+  setTimeout(() => {
+    const input = document.getElementById('input-meta-diaria');
+    input.focus();
+    input.select();
+  }, 100);
+}
+
+function fecharModalMeta() {
+  document.getElementById('modal-meta-diaria').style.display = 'none';
+}
+
+async function salvarModalMeta() {
+  const val = document.getElementById('input-meta-diaria').value;
+  const num = parseInt(val, 10);
   if (!Number.isFinite(num) || num <= 0 || num > 1000) {
     if (window.PBM && PBM.Toast) PBM.Toast.error('Digite um número entre 1 e 1000.');
     return;
   }
+  fecharModalMeta();
   try {
     await PBM.Auth.atualizarMetaDiaria(num);
     if (window.PBM && PBM.Toast) PBM.Toast.success('Meta diária salva!');
