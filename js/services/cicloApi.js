@@ -12,6 +12,7 @@
     gerar:               (...a) => window.PBM.Ciclo.gerar(...a),
     atualizar:           (...a) => window.PBM.Ciclo.atualizar(...a),
     excluir:             (...a) => window.PBM.Ciclo.excluir(...a),
+    resetTudo:           (...a) => window.PBM.Ciclo.resetTudo(...a),
     iniciarBloco:        (...a) => window.PBM.Ciclo.iniciarBloco(...a),
     concluirBloco:       (...a) => window.PBM.Ciclo.concluirBloco(...a),
     pularBloco:          (...a) => window.PBM.Ciclo.pularBloco(...a),

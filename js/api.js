@@ -489,6 +489,9 @@ const PBM = {
     excluir() {
       return request('/api/ciclo', { method: 'DELETE' });
     },
+    resetTudo() {
+      return request('/api/ciclo/tudo', { method: 'DELETE' });
+    },
     // Bloco lifecycle (substitui atualizarStatus do modelo antigo)
     iniciarBloco(blocoId) {
       return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/iniciar', {
