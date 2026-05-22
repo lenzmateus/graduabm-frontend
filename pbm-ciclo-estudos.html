@@ -934,7 +934,7 @@
         <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:1.5rem;">
           <button class="btn-primario" id="btn-gerar">Gerar Ciclo</button>
           <a href="/minhas-dificuldades" class="btn-secundario" style="text-decoration:none;display:inline-block;">Marcar dificuldade por legislação</a>
-          <button class="btn-perigo" id="btn-excluir" style="display:none;margin-left:auto;">Excluir ciclo</button>
+          <button class="btn-perigo" id="btn-excluir" style="display:none;margin-left:auto;">Excluir tudo (zerar progresso)</button>
         </div>
       </div>
 
@@ -971,9 +971,9 @@
         <div id="nudges-container-ativo"></div>
 
         <div class="footer-actions">
-          <button class="btn-secundario" id="btn-reconfigurar">Reconfigurar ciclo</button>
+          <button class="btn-secundario" id="btn-reconfigurar">Reconfigurar (preserva progresso)</button>
           <a href="/minhas-dificuldades">Marcar dificuldade por legislação →</a>
-          <button class="btn-perigo" id="btn-excluir-ativo" style="margin-left:auto;">Excluir ciclo</button>
+          <button class="btn-perigo" id="btn-excluir-ativo" style="margin-left:auto;">Excluir tudo (zerar progresso)</button>
         </div>
       </div>
 
@@ -1915,12 +1915,21 @@
   }
 
   async function excluirCiclo() {
-    if (!confirm('Excluir o ciclo atual? O histórico de tempo das legislações é preservado.')) return;
+    const msg = 'EXCLUIR TUDO e recomeçar do zero?\n\n' +
+                'Esta ação vai apagar PERMANENTEMENTE:\n' +
+                '• O ciclo atual e todos os blocos\n' +
+                '• Todo o histórico de tempo estudado por legislação\n' +
+                '• Todas as suas anotações de legislação\n' +
+                '• Todas as marcações de dificuldade\n' +
+                '• Todos os níveis de proficiência por AT\n\n' +
+                'Não pode ser desfeito. Continuar?';
+    if (!confirm(msg)) return;
     try {
-      await PBM.CicloApi.excluir();
+      await PBM.CicloApi.resetTudo();
       await carregar();
     } catch (e) {
-      console.error('[ciclo] excluir', e);
+      console.error('[ciclo] excluir tudo', e);
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao excluir. Tente novamente.');
     }
   }
 

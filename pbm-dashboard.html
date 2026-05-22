@@ -395,26 +395,28 @@
 
     <div class="conteudo">
       <div style="width:100%;border-radius:12px;margin-bottom:1.5rem;overflow:hidden;position:relative;background:var(--bg-primario);border:1px solid #222;display:flex;align-items:center;min-height:160px;">
-        <img src="/images/emblem-pbm.png" alt="" style="position:absolute;right:-20px;bottom:-30px;height:220px;width:auto;opacity:0.04;pointer-events:none;z-index:0;">
-        <div style="position:relative;z-index:1;width:100%;background:linear-gradient(90deg,var(--banner-fade-strong) 0%,var(--banner-fade-medium) 65%,transparent 100%);display:flex;align-items:center;justify-content:space-between;padding:2rem;flex-wrap:wrap;gap:20px;">
-          <div style="display:flex;flex-direction:column;justify-content:center;">
+        
+        <!-- Símbolo Maior na Direita (Sem Marca d'água Atrás) -->
+        <img src="/images/emblem-pbm.png" alt="Símbolo" style="position:absolute;right:0;top:50%;transform:translateY(-50%);height:150px;width:auto;opacity:0.95;z-index:1;">
+
+        <div style="position:relative;z-index:2;width:100%;background:linear-gradient(90deg,var(--banner-fade-strong) 0%,var(--banner-fade-medium) 65%,transparent 100%);display:flex;align-items:center;padding:2rem;min-height:160px;">
+          
+          <!-- Texto da Esquerda -->
+          <div style="display:flex;flex-direction:column;justify-content:center;position:relative;z-index:3;">
             <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brand-primary);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Protocolo Bravo Mike</div>
             <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--branco);line-height:1.1;">Bem-vindo, <span id="dash-hero-nome" style="color:var(--brand-primary);">Combatente</span></div>
             <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.08em;color:var(--brand-primary);margin-top:5px;opacity:0.7;">Você não estuda. Você Treina.</div>
           </div>
           
-          <div style="display:flex;align-items:center;gap:32px;">
-            <div style="display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);padding:10px 16px;border-radius:12px;cursor:pointer;transition:border-color 0.15s;" title="Clique para configurar sua meta diária de questões" onclick="configurarMeta()" onmouseover="this.style.borderColor='var(--brand-primary)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
-              <div class="progress-ring" id="daily-goal-ring" style="--progress: 0%; width: 44px; height: 44px;">
-                <span class="progress-ring-val" id="daily-goal-val" style="font-size: 15px;">0</span>
-              </div>
-              <div style="display:flex;flex-direction:column;text-align:left;">
-                <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.05em;color:var(--branco);line-height:1;margin-bottom:2px;">Meta Diária</span>
-                <span id="daily-goal-sub" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--texto-suporte);text-transform:uppercase;letter-spacing:0.05em;">0/30 questões</span>
-              </div>
+          <!-- Meta Diária Centralizada -->
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;align-items:center;gap:12px;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.08);padding:10px 16px;border-radius:12px;cursor:pointer;transition:border-color 0.15s;z-index:3;" title="Clique para configurar sua meta diária de questões" onclick="configurarMeta()" onmouseover="this.style.borderColor='var(--brand-primary)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'">
+            <div class="progress-ring" id="daily-goal-ring" style="--progress: 0%; width: 44px; height: 44px;">
+              <span class="progress-ring-val" id="daily-goal-val" style="font-size: 15px;">0</span>
             </div>
-            
-            <img src="/images/emblem-pbm.png" alt="Símbolo" style="height:85px;width:auto;opacity:0.9;">
+            <div style="display:flex;flex-direction:column;text-align:left;">
+              <span style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.05em;color:var(--branco);line-height:1;margin-bottom:2px;">Meta Diária</span>
+              <span id="daily-goal-sub" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--texto-suporte);text-transform:uppercase;letter-spacing:0.05em;">0/30 questões</span>
+            </div>
           </div>
         </div>
       </div>
