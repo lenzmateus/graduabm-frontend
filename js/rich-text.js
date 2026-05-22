@@ -51,9 +51,18 @@
     _purifyHookInstalado = true;
   }
 
-  // Sem destaque alem do vermelho vivo do brand. Texto padrao herda do tema
-  // (preto no light, branco no dark) automaticamente.
-  const PALETA_TEXTO = ['#C0270F'];
+  // Paleta com 7 cores distintas e de médio-contraste para serem
+  // legíveis tanto no tema light (fundo branco) quanto dark (fundo escuro).
+  // Texto padrão sem cor herda do tema automaticamente.
+  const PALETA_TEXTO = [
+    '#C0270F', // Vermelho (Brand)
+    '#1976D2', // Azul
+    '#388E3C', // Verde
+    '#F57C00', // Laranja
+    '#9C27B0', // Roxo
+    '#00796B', // Teal (Verde-azulado)
+    '#C2185B'  // Rosa
+  ];
 
   const TOOLBAR_FULL = [
     ['bold', 'italic', 'underline'],
