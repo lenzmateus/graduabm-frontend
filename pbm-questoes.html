@@ -517,17 +517,18 @@
   .btn-reportar {
     background: transparent;
     border: none;
-    color: #555;
+    color: var(--vermelho, #C0270F);
+    padding: 0;
     font-size: 11px;
-    font-family: 'Inter', sans-serif;
     cursor: pointer;
-    display: inline-flex; align-items: center; gap: 5px;
-    padding: 4px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     margin-top: 6px;
-    transition: color 0.15s;
+    transition: opacity 0.15s;
   }
-  .btn-reportar:hover { color: #888; }
-  .btn-reportar.enviado { color: #27A05A; cursor: default; }
+  .btn-reportar:hover { opacity: 0.7; }
+  .btn-reportar.enviado { color: #27A05A; cursor: default; opacity: 1; }
   .modal-denuncia-textarea {
     width: 100%; min-height: 90px;
     background: var(--cinza-medio); border: 1px solid var(--cinza-borda);
@@ -675,7 +676,7 @@
 
 <!-- LOADING -->
 <div id="tela-loading">
-  <a href="/" class="logo-text">Protocolo Bravo Mike</a>
+  <a href="/dashboard" class="logo-text">Protocolo Bravo Mike</a>
   <div class="spinner-grande" id="spinner"></div>
   <div class="loading-txt" id="loading-txt">Preparando questões…</div>
 </div>
@@ -693,7 +694,7 @@
 <div id="tela-questao">
   <header class="quiz-header">
     <div class="header-left">
-      <a href="/" class="logo-text">Protocolo Bravo Mike</a>
+      <a href="/dashboard" class="logo-text">Protocolo Bravo Mike</a>
       <span class="header-sep">·</span>
       <span class="header-contexto" id="hdr-contexto">—</span>
     </div>
@@ -830,7 +831,7 @@
 <!-- MODAL DENÚNCIA -->
 <div class="modal-overlay" id="modal-denuncia">
   <div class="modal-card" style="max-width:440px;">
-    <div class="modal-titulo">Reportar um problema</div>
+    <div class="modal-titulo">Reportar questão</div>
     <div class="modal-desc">Descreva o problema encontrado (erro no enunciado, gabarito incorreto, alternativas duplicadas, etc.).</div>
     <textarea class="modal-denuncia-textarea" id="denuncia-comentario" placeholder="Descreva o problema…" maxlength="1000"></textarea>
     <div class="modal-char"><span id="denuncia-char">0</span>/1000</div>
@@ -980,7 +981,7 @@ function btnReportarHtml(idx) {
   }
   return `<button class="btn-reportar" id="btn-reportar" onclick="abrirModalDenuncia()">
     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-    Reportar um problema
+    Reportar questão
   </button>`;
 }
 function remapearLetrasJustificativa(texto, mapa) {
