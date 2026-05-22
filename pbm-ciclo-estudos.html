@@ -916,7 +916,7 @@
         </div>
 
         <div class="card">
-          <div class="card-titulo" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+          <div class="card-titulo" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:16px;">
             <span>Sua dificuldade por área</span>
             <div style="font-family:'Inter', sans-serif; font-size:11px; text-transform:none; letter-spacing:0; color:var(--texto-suporte); display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.03); padding:4px 10px; border-radius:6px; border:1px solid var(--cinza-borda);">
               <span style="color:#6FCF97; font-weight:600;">1</span>
@@ -1225,6 +1225,14 @@
     return estado.curso === 'cba' ? PESO_CBA : PESO_CTSP;
   }
 
+  function getSliderColor(val) {
+    if (val <= 1) return '#6FCF97';
+    if (val == 2) return '#A8D08D';
+    if (val == 3) return '#FFC107';
+    if (val == 4) return '#F2994A';
+    return '#E26B6B';
+  }
+
   async function carregar() {
     const loadingEl = document.getElementById('loading');
     loadingEl.style.display = '';
@@ -1300,7 +1308,7 @@
         </div>
         <div class="at-card-nome">${AREA_NOMES[area]}</div>
         <div class="at-nivel">
-          <input type="range" min="1" max="5" step="1" value="${p.nivel_proficiencia}" data-area="${area}" class="at-slider">
+          <input type="range" min="1" max="5" step="1" value="${p.nivel_proficiencia}" data-area="${area}" class="at-slider" style="accent-color: ${getSliderColor(p.nivel_proficiencia)};">
           <span class="at-nivel-val" data-area="${area}">${p.nivel_proficiencia}</span>
         </div>
         <div class="at-nivel-hint">
@@ -1313,7 +1321,9 @@
     grid.querySelectorAll('.at-slider').forEach(s => {
       s.addEventListener('input', e => {
         const area = e.target.dataset.area;
-        document.querySelector(`.at-nivel-val[data-area="${area}"]`).textContent = e.target.value;
+        const val = Number(e.target.value);
+        document.querySelector(`.at-nivel-val[data-area="${area}"]`).textContent = val;
+        e.target.style.accentColor = getSliderColor(val);
       });
       s.addEventListener('change', e => salvarProficiencia(e.target.dataset.area, Number(e.target.value)));
     });
