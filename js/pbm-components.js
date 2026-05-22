@@ -127,7 +127,7 @@
     let user = null;
     try { user = (PBM.getUsuario && PBM.getUsuario()) || null; } catch (_) {}
     if (user) {
-      nomeEl.textContent = user.nickname || user.nome || user.email || 'Aluno';
+      nomeEl.textContent = user.nome || user.email || 'Aluno';
       if (statusEl) {
         const curso = (user.curso || '').toUpperCase();
         statusEl.textContent = curso ? `ALUNO PRO · ${curso}` : 'ALUNO PRO';

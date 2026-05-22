@@ -104,6 +104,30 @@
   }
   .btn-iniciar:hover { background: var(--vermelho-escuro); }
 
+  /* ── META DIÁRIA DESTAQUE ── */
+  .meta-diaria-destaque {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 30px auto;
+    max-width: 320px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .meta-diaria-destaque:hover {
+    border-color: var(--brand-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(192,39,15,0.12);
+  }
+  .meta-diaria-destaque:active { transform: translateY(0); }
+
   /* ── GRÁFICO ── */
   /* ── CARD INDICAÇÃO ── */
   .card-indicacao {
@@ -440,21 +464,19 @@
         </div>
       </div>
 
-      <div class="header-actions">
-        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
-          <h2 style="font-size: 20px; font-weight: 500;">Visão Geral</h2>
-          
-          <div style="display:flex;align-items:center;gap:12px;background:var(--bg-secundario);border:1px solid var(--border-color);padding:8px 12px;border-radius:12px;cursor:pointer;transition:border-color 0.15s;" title="Clique para configurar sua meta diária de questões" onclick="configurarMeta()" onmouseover="this.style.borderColor='var(--brand-primary)'" onmouseout="this.style.borderColor='var(--border-color)'">
-            <div class="progress-ring" id="daily-goal-ring" style="--progress: 0%; width: 42px; height: 42px;">
-              <span class="progress-ring-val" id="daily-goal-val" style="font-size: 14px;">0</span>
-            </div>
-            <div class="progress-ring-label">
-              <span class="pr-title" style="font-size: 14px;">Meta Diária</span>
-              <span class="pr-subtitle" id="daily-goal-sub">0/30 questões</span>
-            </div>
-          </div>
+      <!-- META DIÁRIA CENTRALIZADA -->
+      <div class="meta-diaria-destaque" onclick="configurarMeta()" title="Clique para configurar sua meta diária de questões">
+        <div class="progress-ring" id="daily-goal-ring" style="--progress: 0%; width: 80px; height: 80px; margin-bottom: 12px;">
+          <span class="progress-ring-val" id="daily-goal-val" style="font-size: 26px;">0</span>
         </div>
+        <div class="progress-ring-label" style="text-align: center;">
+          <span class="pr-title" style="font-family:'Bebas Neue',sans-serif; font-size:24px; letter-spacing:0.04em; color:var(--branco); display:block; margin-bottom:4px; line-height:1;">Meta Diária</span>
+          <span class="pr-subtitle" id="daily-goal-sub" style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--texto-suporte); text-transform:uppercase; letter-spacing:0.05em;">0/30 questões</span>
+        </div>
+      </div>
 
+      <div class="header-actions">
+        <h2 style="font-size: 20px; font-weight: 500;">Visão Geral</h2>
         <a href="/area-estudos" class="btn-iniciar">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           Iniciar Sessão de Papiro
