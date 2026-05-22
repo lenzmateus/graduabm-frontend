@@ -919,10 +919,10 @@
           <div class="card-titulo" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:16px;">
             <span>Sua dificuldade por área</span>
             <div style="font-family:'Inter', sans-serif; font-size:11px; text-transform:none; letter-spacing:0; color:var(--texto-suporte); display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.03); padding:4px 10px; border-radius:6px; border:1px solid var(--cinza-borda);">
-              <span style="color:#6FCF97; font-weight:600;">1</span>
+              <span style="color:#27A060; font-weight:600;">1</span>
               <span>Forte domínio</span>
               <span style="opacity:0.4; margin:0 6px;">➔</span>
-              <span style="color:#E26B6B; font-weight:600;">5</span>
+              <span style="color:#C0270F; font-weight:600;">5</span>
               <span>Muita dificuldade</span>
             </div>
           </div>
@@ -1226,11 +1226,11 @@
   }
 
   function getSliderColor(val) {
-    if (val <= 1) return '#6FCF97';
-    if (val == 2) return '#A8D08D';
-    if (val == 3) return '#FFC107';
-    if (val == 4) return '#F2994A';
-    return '#E26B6B';
+    if (val <= 1) return '#27A060'; // Verde forte do site
+    if (val == 2) return '#2ECC71'; // Verde vivo brilhante
+    if (val == 3) return '#FFD700'; // Amarelo vivo
+    if (val == 4) return '#FF8C00'; // Laranja vivo
+    return '#C0270F';               // Vermelho do site
   }
 
   async function carregar() {
