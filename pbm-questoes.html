@@ -404,6 +404,71 @@
     font-family: 'IBM Plex Mono', monospace;
     font-size: 10px; color: var(--cinza-texto); flex-shrink: 0;
   }
+  .resultado-item.clicavel { cursor: pointer; transition: background 0.15s; }
+  .resultado-item.clicavel:hover { background: var(--bg-hover); }
+  .res-chevron {
+    font-size: 10px; color: var(--cinza-texto); flex-shrink: 0;
+    transition: transform 0.2s; margin-top: 4px;
+  }
+  .resultado-item.aberto .res-chevron { transform: rotate(90deg); }
+  .res-detalhe {
+    grid-column: 1 / -1;
+    display: none;
+    padding: 12px 14px 14px 44px;
+    background: var(--bg-hover);
+    border-bottom: 1px solid var(--cinza-borda);
+    font-size: 13px; line-height: 1.6;
+  }
+  .resultado-item.aberto + .res-detalhe { display: block; }
+  .res-detalhe-linha { display: flex; gap: 10px; align-items: flex-start; padding: 4px 0; }
+  .res-detalhe-letra {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    font-weight: 700; flex-shrink: 0; padding: 2px 8px; border-radius: 4px;
+    line-height: 1.4; min-width: 22px; text-align: center;
+  }
+  .res-detalhe-letra.errada { background: var(--erro-bg); border: 1px solid var(--erro-borda); color: var(--danger-fg); }
+  .res-detalhe-letra.certa  { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .res-detalhe-rotulo {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+  .res-detalhe-texto { color: var(--texto-principal); }
+  .res-detalhe-enunciado {
+    margin-bottom: 12px; padding: 10px 12px;
+    background: var(--bg-principal); border: 1px solid var(--cinza-borda);
+    border-radius: 8px; color: var(--texto-principal);
+    font-size: 13px; line-height: 1.6;
+  }
+  .res-detalhe-enunciado .res-detalhe-rotulo { margin-bottom: 6px; }
+  .res-just-toggle {
+    margin-top: 12px; padding: 8px 12px;
+    background: transparent; border: 1px solid var(--cinza-borda);
+    border-radius: 6px; color: var(--texto-suporte);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .res-just-toggle:hover { background: var(--bg-hover); border-color: var(--texto-suporte); color: var(--texto-principal); }
+  .res-just-toggle .res-just-chevron { font-size: 9px; transition: transform 0.2s; }
+  .res-just-toggle.aberto .res-just-chevron { transform: rotate(90deg); }
+  .res-just-corpo {
+    display: none; margin-top: 10px; padding: 10px 12px;
+    background: var(--bg-principal); border-left: 3px solid var(--cor-area);
+    border-radius: 6px; color: var(--texto-principal);
+    font-size: 13px; line-height: 1.6;
+  }
+  .res-just-toggle.aberto + .res-just-corpo { display: block; }
+  .res-tudocerto {
+    padding: 36px 24px; text-align: center;
+    border: 1px dashed var(--verde-borda);
+    background: var(--verde-bg); border-radius: 12px;
+    color: var(--success-fg);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px; letter-spacing: 0.12em;
+    line-height: 1;
+  }
 
   .resultado-acoes {
     display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
@@ -737,7 +802,7 @@
   </div>
 
   <div class="resultado-lista">
-    <div class="resultado-secao">Gabarito</div>
+    <div class="resultado-secao" id="res-secao-titulo">Questões erradas</div>
     <div id="res-lista"></div>
   </div>
 
@@ -1378,25 +1443,88 @@ function mostrarResultados() {
   document.getElementById('res-pct').style.color     = corPct;
 
   const lista = document.getElementById('res-lista');
+  const secaoTitulo = document.getElementById('res-secao-titulo');
   lista.innerHTML = '';
-  historicoRespostas.forEach((h, i) => {
-    const div = document.createElement('div');
-    div.className = 'resultado-item';
-    const enunciadoPlain = RichText.normalizeForCompare(getEnunciado(h.q));
-    const trecho    = enunciadoPlain.length > 100 ? enunciadoPlain.slice(0, 100) + '…' : enunciadoPlain;
-    const trechoEsc = RichText.escapeHtml(trecho);
-    div.innerHTML = `
-      <div class="res-icone ${h.acertou ? 'res-ok' : 'res-err'}">${h.acertou ? '✓' : '✗'}</div>
-      <div class="res-texto">
-        <span style="color:#666;font-family:'IBM Plex Mono',monospace;font-size:10px;">Q${(h.idx !== undefined ? h.idx + 1 : i + 1)}</span>
-        <span style="margin-left:6px;">${trechoEsc}</span>
-      </div>
-      <div class="res-gabarito">
-        ${h.acertou ? h.correta : `<span style="color:var(--danger-fg)">${h.escolhida}</span> → <span style="color:var(--success-fg)">${h.correta}</span>`}
-      </div>
-    `;
-    lista.appendChild(div);
-  });
+  const erradas = historicoRespostas.filter(h => !h.acertou);
+
+  if (erradas.length === 0) {
+    secaoTitulo.style.display = 'none';
+    const ok = document.createElement('div');
+    ok.className = 'res-tudocerto';
+    ok.textContent = 'GABARITOU!';
+    lista.appendChild(ok);
+  } else {
+    secaoTitulo.style.display = '';
+    secaoTitulo.textContent = `Questões erradas (${erradas.length})`;
+    erradas.forEach((h, i) => {
+      const enunciadoPlain = RichText.normalizeForCompare(getEnunciado(h.q));
+      const trecho    = enunciadoPlain.length > 100 ? enunciadoPlain.slice(0, 100) + '…' : enunciadoPlain;
+      const trechoEsc = RichText.escapeHtml(trecho);
+
+      const alts = getAlternativas(h.q);
+      const textoEscolhida = (alts.find(a => a.letra === h.escolhida) || {}).texto || '';
+      const textoCorreta   = (alts.find(a => a.letra === h.correta)   || {}).texto || '';
+      const escEsc = RichText.escapeHtml(RichText.normalizeForCompare(textoEscolhida));
+      const corEsc = RichText.escapeHtml(RichText.normalizeForCompare(textoCorreta));
+
+      const item = document.createElement('div');
+      item.className = 'resultado-item clicavel';
+      item.innerHTML = `
+        <div class="res-icone res-err">✗</div>
+        <div class="res-texto">
+          <span style="color:#666;font-family:'IBM Plex Mono',monospace;font-size:10px;">Q${(h.idx !== undefined ? h.idx + 1 : i + 1)}</span>
+          <span style="margin-left:6px;">${trechoEsc}</span>
+        </div>
+        <div class="res-gabarito">
+          <span style="color:var(--danger-fg)">${h.escolhida}</span> → <span style="color:var(--success-fg)">${h.correta}</span>
+        </div>
+        <div class="res-chevron">▶</div>
+      `;
+      const detalhe = document.createElement('div');
+      detalhe.className = 'res-detalhe';
+      const justificativa = getJustificativa(h.q);
+      const justHtml = justificativa
+        ? `<button type="button" class="res-just-toggle">
+             <span class="res-just-chevron">▶</span>
+             <span class="res-just-label">Ver justificativa</span>
+           </button>
+           <div class="res-just-corpo rt-render">${RichText.render(justificativa)}</div>`
+        : '';
+      detalhe.innerHTML = `
+        <div class="res-detalhe-enunciado rt-render">
+          <div class="res-detalhe-rotulo">Enunciado</div>
+          ${RichText.render(getEnunciado(h.q))}
+        </div>
+        <div class="res-detalhe-linha">
+          <div class="res-detalhe-letra errada">${h.escolhida}</div>
+          <div>
+            <div class="res-detalhe-rotulo">Você marcou</div>
+            <div class="res-detalhe-texto">${escEsc || '<em style="color:var(--cinza-texto)">(sem texto)</em>'}</div>
+          </div>
+        </div>
+        <div class="res-detalhe-linha">
+          <div class="res-detalhe-letra certa">${h.correta}</div>
+          <div>
+            <div class="res-detalhe-rotulo">Resposta correta</div>
+            <div class="res-detalhe-texto">${corEsc || '<em style="color:var(--cinza-texto)">(sem texto)</em>'}</div>
+          </div>
+        </div>
+        ${justHtml}
+      `;
+      item.addEventListener('click', () => item.classList.toggle('aberto'));
+      const btnJust = detalhe.querySelector('.res-just-toggle');
+      if (btnJust) {
+        btnJust.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          btnJust.classList.toggle('aberto');
+          const lbl = btnJust.querySelector('.res-just-label');
+          if (lbl) lbl.textContent = btnJust.classList.contains('aberto') ? 'Ocultar justificativa' : 'Ver justificativa';
+        });
+      }
+      lista.appendChild(item);
+      lista.appendChild(detalhe);
+    });
+  }
 
   if (modoAtualTipo === 'erros') {
     document.getElementById('btn-resultado-primario').href = '/dashboard';

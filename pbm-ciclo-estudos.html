@@ -266,6 +266,171 @@
     color: var(--cinza-texto); text-align: right;
   }
 
+  /* ── Saldo / Por que / Toast pós-bloco (Ciclo v2) ── */
+  .hero-saldo-badge {
+    display: inline-block;
+    background: rgba(192,39,15,0.10);
+    border: 1px solid var(--vermelho);
+    color: var(--branco);
+    padding: 6px 12px; border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.06em;
+  }
+  .hero-saldo-badge.cheio {
+    background: var(--success-bg);
+    border-color: var(--success-border);
+    color: var(--success-fg);
+  }
+  .porque-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto);
+    padding: 6px 10px; border-radius: 999px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.06em; cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .porque-chip:hover { color: var(--branco); border-color: var(--cinza-texto); }
+  .porque-popover {
+    margin-top: 8px;
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-left: 3px solid var(--vermelho);
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--cinza-texto);
+    line-height: 1.5;
+    max-width: 540px;
+  }
+  .porque-popover ul { margin: 4px 0 0 16px; padding: 0; }
+  .porque-popover li { margin-bottom: 4px; }
+  .porque-popover li strong { color: var(--branco); }
+
+  .toast-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.78);
+    z-index: 1100;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    animation: toast-fade 0.2s ease;
+  }
+  @keyframes toast-fade { from { opacity: 0; } to { opacity: 1; } }
+  .toast-box {
+    background: var(--bg-secundario, var(--cinza-escuro));
+    border: 1px solid var(--cinza-borda);
+    border-radius: 12px;
+    padding: 1.8rem 1.6rem;
+    max-width: 460px; width: 100%;
+    text-align: center;
+  }
+  .toast-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 0.04em;
+    color: var(--branco); margin-bottom: 0.4rem;
+  }
+  .toast-sub {
+    font-size: 13px; color: var(--cinza-texto);
+    line-height: 1.5; margin-bottom: 1.4rem;
+  }
+  .toast-sub strong { color: var(--branco); }
+  .toast-actions {
+    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  }
+  .toast-btn {
+    flex: 1; min-width: 110px;
+    background: var(--cinza-medio, var(--cinza-escuro));
+    border: 1px solid var(--cinza-borda);
+    color: var(--branco);
+    padding: 12px 14px; border-radius: 8px;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.15s;
+  }
+  .toast-btn:hover { transform: translateY(-1px); }
+  .toast-btn.dom { border-color: #4CAF50; }
+  .toast-btn.med { border-color: #FFB300; }
+  .toast-btn.travei { border-color: var(--vermelho); }
+  .toast-btn:disabled { opacity: 0.5; cursor: wait; }
+  .toast-fechar {
+    margin-top: 1rem;
+    background: none; border: none;
+    color: var(--texto-suporte);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.06em; cursor: pointer;
+  }
+  .toast-fechar:hover { color: var(--branco); text-decoration: underline; }
+
+  /* Relatório de Bloco (Sprint 3) — mini-diff intra-ciclo */
+  .relatorio-box {
+    background: var(--carvao);
+    border: 1px solid var(--borda-divisor);
+    padding: 1.75rem 2rem;
+    max-width: 460px; width: 92%;
+    border-radius: 4px;
+    text-align: left;
+  }
+  .relatorio-titulo {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem;
+    letter-spacing: 0.04em; color: var(--branco);
+    margin-bottom: 0.25rem;
+  }
+  .relatorio-sub {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--texto-suporte); margin-bottom: 1.25rem;
+  }
+  .relatorio-leg {
+    font-family: 'Inter', sans-serif; font-weight: 600;
+    color: var(--branco); margin-bottom: 0.75rem;
+  }
+  .relatorio-linha {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed var(--borda-divisor);
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: var(--texto-corpo);
+  }
+  .relatorio-linha:last-child { border-bottom: none; }
+  .relatorio-linha .val {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem;
+    letter-spacing: 0.04em; color: var(--branco);
+  }
+  .relatorio-diff {
+    margin-top: 0.5rem; padding: 0.6rem 0.9rem;
+    background: rgba(255,255,255,0.04);
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px;
+    color: var(--texto-corpo);
+  }
+  .relatorio-diff.pos { color: #6FCF97; }
+  .relatorio-diff.neg { color: #E26B6B; }
+  .relatorio-fallback {
+    font-family: 'Inter', sans-serif; font-size: 14px;
+    color: var(--texto-corpo); padding: 0.8rem 0;
+  }
+  .relatorio-actions {
+    margin-top: 1.25rem; display: flex; justify-content: flex-end; gap: 0.5rem;
+  }
+
+  .badge-reforco {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 6px; border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    letter-spacing: 0.04em;
+    background: var(--warning-bg);
+    color: var(--at2-fg);
+    border: 1px solid var(--at2-fg);
+  }
+
+  /* Nudges v2 (passivos, sem botão "Aceitar") */
+  .nudge-item .nudge-tipo {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    letter-spacing: 0.08em; color: var(--texto-suporte);
+    margin-right: 6px;
+  }
+
   /* ── Pomodoro overlay ── */
   .pomo-overlay {
     position: fixed; inset: 0;
@@ -730,32 +895,38 @@
         </div>
 
         <div class="card">
-          <div class="card-titulo">Tamanho do ciclo</div>
+          <div class="card-titulo">Configuração de ritmo de estudos</div>
           <div class="slider-row">
-            <label>Horas totais</label>
-            <input type="range" id="horas-totais" min="1" max="50" step="1" value="14">
-            <div class="slider-val"><span id="horas-totais-val">14</span>h</div>
+            <label>Dias / semana</label>
+            <input type="range" id="dias-semana" min="1" max="7" step="1" value="5">
+            <div class="slider-val"><span id="dias-semana-val">5</span> dias</div>
           </div>
           <div class="slider-row" style="margin-top:1rem;">
-            <label>Horas/dia</label>
+            <label>Horas / dia</label>
             <input type="range" id="horas-dia" min="0.5" max="8" step="0.5" value="2">
             <div class="slider-val"><span id="horas-dia-val">2</span>h</div>
           </div>
           <div class="hint" style="background:rgba(192,39,15,0.04);border-left:2px solid var(--vermelho);padding:8px 12px;border-radius:0 4px 4px 0;font-size:12px;color:var(--cinza-texto);font-family:'Inter',sans-serif;line-height:1.5;margin-top:0.8rem;">
-            <strong style="color:var(--branco);">Com este ritmo, o ciclo completa em ≈ <span id="dias-estimados">7</span> dias.</strong>
-            <span id="ritmo-aviso" style="display:block;color:var(--texto-suporte);margin-top:4px;"></span>
+            <strong style="color:var(--branco);">Seu ciclo terá <span id="horas-totais-derivado">10</span>h totais · <span id="blocos-estimados">10</span> blocos de 60 min.</strong>
+            <span style="display:block;color:var(--texto-suporte);margin-top:4px;">Avance no seu ritmo de plantões — sem prazo de calendário.</span>
           </div>
-          <div class="hint" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--texto-suporte);margin-top:0.5rem;">
-            "Horas totais" = soma de TODAS as legislações no ciclo. "Horas/dia" só serve pra estimar quantos dias leva — você estuda quando quiser.
+          <div id="alerta-curto" class="hint" style="display:none;background:var(--warning-bg);border-left:2px solid var(--at2-fg);padding:8px 12px;border-radius:0 4px 4px 0;font-size:12px;color:var(--at2-fg);font-family:'Inter',sans-serif;line-height:1.5;margin-top:0.6rem;">
+            ⚠️ Ciclos curtos podem não cobrir todas as 5 áreas. Recomendamos ≥ 5h para diversidade temática completa.
           </div>
         </div>
 
         <div class="card">
-          <div class="card-titulo">Sua dificuldade por área</div>
-          <div class="at-grid" id="at-grid"></div>
-          <div class="hint" style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--texto-suporte);margin-top:0.8rem;">
-            1 = forte domínio (×0.6) · 2 = algum domínio (×0.8) · 3 = médio (×1.0) · 4 = alguma dificuldade (×1.2) · 5 = muita dificuldade (×1.4)
+          <div class="card-titulo" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px;">
+            <span>Sua dificuldade por área</span>
+            <div style="font-family:'Inter', sans-serif; font-size:11px; text-transform:none; letter-spacing:0; color:var(--texto-suporte); display:flex; align-items:center; gap:4px; background:rgba(255,255,255,0.03); padding:4px 10px; border-radius:6px; border:1px solid var(--cinza-borda);">
+              <span style="color:#6FCF97; font-weight:600;">1</span>
+              <span>Forte domínio</span>
+              <span style="opacity:0.4; margin:0 6px;">➔</span>
+              <span style="color:#E26B6B; font-weight:600;">5</span>
+              <span>Muita dificuldade</span>
+            </div>
           </div>
+          <div class="at-grid" id="at-grid"></div>
         </div>
 
         <div id="nudges-container"></div>
@@ -774,11 +945,14 @@
             <div class="hero-info-tag">Próximo bloco · Ciclo <span id="rodada-num">1</span></div>
             <div class="hero-bloco-area" id="hero-area">AT1</div>
             <div class="hero-bloco-nome" id="hero-nome">—</div>
-            <div class="hero-bloco-meta" id="hero-meta">— min sugeridos</div>
+            <div class="hero-bloco-meta" id="hero-meta">— min</div>
+            <div id="hero-saldo-wrap" style="margin-bottom:10px;"></div>
+            <div id="hero-porque-wrap" style="margin-bottom:10px;"></div>
             <div id="hero-nota-wrap"></div>
             <div class="hero-actions">
               <button class="btn-primario" id="btn-iniciar">Iniciar Bloco</button>
               <button class="btn-secundario" id="btn-pular">Pular para o próximo</button>
+              <button class="btn-secundario" id="btn-forcar" style="display:none;">Marcar concluído</button>
             </div>
           </div>
           <div class="anel-progresso">
@@ -915,7 +1089,6 @@
         <div class="pomo-audio-bar-titulo">🎧 Som de fundo (opcional)</div>
         <div class="pomo-audio-opcoes">
           <button class="pomo-audio-btn ativo" data-audio="off">Silêncio</button>
-          <button class="pomo-audio-btn" data-audio="lofi">Lo-fi Girl</button>
           <button class="pomo-audio-btn" data-audio="ruido">Ruído Branco</button>
           <button class="pomo-audio-btn" data-audio="jazz">Jazz Café</button>
         </div>
@@ -925,6 +1098,36 @@
         </div>
         <div class="pomo-audio-frame" id="pomo-audio-frame"></div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast pós-conclusão de bloco (Ciclo v2) -->
+<div id="toast-overlay" class="toast-overlay" style="display:none;">
+  <div class="toast-box">
+    <div class="toast-titulo">🏅 Bloco concluído!</div>
+    <div class="toast-sub">
+      Como foi seu rendimento em <strong id="toast-leg-nome">—</strong>?
+      <br><span style="font-size:11px;color:var(--texto-suporte);">A escolha vale a partir da próxima rodada.</span>
+    </div>
+    <div class="toast-actions">
+      <button class="toast-btn dom" data-nivel="baixa">🟢 Já domino</button>
+      <button class="toast-btn med" data-nivel="media">🟡 Na média</button>
+      <button class="toast-btn travei" data-nivel="alta">🔴 Travei</button>
+    </div>
+    <button class="toast-fechar" id="toast-fechar">Fechar sem responder</button>
+  </div>
+</div>
+
+<!-- Relatório de Bloco — mini-diff intra-ciclo (Sprint 3) -->
+<div id="relatorio-overlay" class="toast-overlay" style="display:none;">
+  <div class="relatorio-box">
+    <div class="relatorio-titulo">Relatório de Bloco</div>
+    <div class="relatorio-sub">Evolução neste ciclo</div>
+    <div class="relatorio-leg" id="relatorio-leg-nome">—</div>
+    <div id="relatorio-body"></div>
+    <div class="relatorio-actions">
+      <button class="btn-secundario" id="relatorio-fechar">Próximo bloco</button>
     </div>
   </div>
 </div>
@@ -1055,6 +1258,8 @@
 
       if (estado.ciclo && estado.blocos.length) {
         renderAtivo();
+        const concluido = detectarBlocoRecemConcluido();
+        if (concluido) abrirToast(concluido);
       } else {
         renderConfigurar(!estado.ciclo);
       }
@@ -1069,10 +1274,15 @@
     document.getElementById('view-configurar').style.display = '';
     document.getElementById('empty-state').style.display = primeiraVez ? '' : 'none';
 
-    const horas = estado.ciclo?.horas_totais_ciclo || 14;
-    document.getElementById('horas-totais').value = horas;
-    document.getElementById('horas-totais-val').textContent = horas;
-    atualizarEstimativaDias();
+    const diasSalvos = estado.ciclo?.dias_semana_meta || 5;
+    const horasSalvas = estado.ciclo?.horas_dia_meta != null ? Number(estado.ciclo.horas_dia_meta) : 2;
+    const diasEl = document.getElementById('dias-semana');
+    const horasEl = document.getElementById('horas-dia');
+    diasEl.value = diasSalvos;
+    horasEl.value = horasSalvas;
+    document.getElementById('dias-semana-val').textContent = String(diasSalvos);
+    document.getElementById('horas-dia-val').textContent = formatarHoras(horasSalvas);
+    atualizarHorasTotais();
 
     const grid = document.getElementById('at-grid');
     grid.innerHTML = '';
@@ -1108,13 +1318,13 @@
       s.addEventListener('change', e => salvarProficiencia(e.target.dataset.area, Number(e.target.value)));
     });
 
-    document.getElementById('horas-totais').addEventListener('input', e => {
-      document.getElementById('horas-totais-val').textContent = e.target.value;
-      atualizarEstimativaDias();
+    document.getElementById('dias-semana').addEventListener('input', e => {
+      document.getElementById('dias-semana-val').textContent = e.target.value;
+      atualizarHorasTotais();
     });
     document.getElementById('horas-dia').addEventListener('input', e => {
-      document.getElementById('horas-dia-val').textContent = e.target.value;
-      atualizarEstimativaDias();
+      document.getElementById('horas-dia-val').textContent = formatarHoras(Number(e.target.value));
+      atualizarHorasTotais();
     });
 
     renderNudges('nudges-container');
@@ -1130,16 +1340,28 @@
       document.getElementById('hero-area').textContent = bloco.area;
       document.getElementById('hero-area').className = 'hero-bloco-area ' + bloco.area;
       document.getElementById('hero-nome').textContent = bloco.legislacao_nome;
-      document.getElementById('hero-meta').textContent = `${bloco.meta_minutos} min sugeridos · ${AREA_NOMES[bloco.area]}`;
+      document.getElementById('hero-meta').textContent = `${bloco.meta_minutos} min · ${AREA_NOMES[bloco.area]}`;
+      renderSaldoHero(bloco);
+      renderPorQueHero(bloco);
       renderNotaHero(bloco);
       document.getElementById('btn-iniciar').disabled = false;
       document.getElementById('btn-pular').disabled = false;
+      // Botão "Marcar concluído" só aparece com bloco em_andamento + saldo > 0 (offline)
+      const btnForcar = document.getElementById('btn-forcar');
+      if (bloco.status === 'em_andamento') {
+        btnForcar.style.display = '';
+      } else {
+        btnForcar.style.display = 'none';
+      }
     } else {
       document.getElementById('hero-area').textContent = '';
       document.getElementById('hero-nome').textContent = 'Rodada concluída — gere a próxima';
       document.getElementById('hero-meta').textContent = '';
+      document.getElementById('hero-saldo-wrap').innerHTML = '';
+      document.getElementById('hero-porque-wrap').innerHTML = '';
       document.getElementById('btn-iniciar').disabled = true;
       document.getElementById('btn-pular').disabled = true;
+      document.getElementById('btn-forcar').style.display = 'none';
     }
 
     const pct = estado.progresso ? estado.progresso.pct : 0;
@@ -1149,18 +1371,23 @@
 
     const lista = document.getElementById('proximos-lista');
     lista.innerHTML = '';
-    const proxItem = estado.blocos.slice(0, 8);
+    const proxItem = estado.blocos.filter(b => b.status !== 'concluido').slice(0, 8);
+    const reforcoMap = window._pbmReforcoRecente || {};
     proxItem.forEach(b => {
       const div = document.createElement('div');
       const tempoLog = estado.tempoPorBloco[b.id] || 0;
       const isAtual = bloco && b.id === bloco.id;
-      const ehConcluido = b.status === 'concluido';
-      div.className = 'proximo-item' + (isAtual ? ' atual' : '') + (ehConcluido ? ' concluido' : '');
+      div.className = 'proximo-item' + (isAtual ? ' atual' : '');
+      const niv = reforcoMap[b.legislacao_id];
+      const badgeReforco = niv
+        ? `<span class="badge-reforco">${niv === 'alta' ? '🔴 reforço' : niv === 'media' ? '🟡 média' : '🟢 ok'} · próx. rodada</span>`
+        : '';
       div.innerHTML = `
         <div class="proximo-num">#${b.ordem_execucao + 1}</div>
         <div>
           <span class="proximo-area ${b.area}">${b.area}</span>
-          <span style="color:var(--branco);font-size:13px;">${b.legislacao_nome}</span>
+          <span style="color:var(--branco);font-size:13px;">${escapeHtml(b.legislacao_nome)}</span>
+          ${badgeReforco}
         </div>
         <div class="proximo-tempo">${tempoLog > 0 ? tempoLog + ' min' : '—'}</div>
       `;
@@ -1170,30 +1397,33 @@
     renderNudges('nudges-container-ativo');
   }
 
+  const NUDGE_LABELS = {
+    PROFICIENCIA_AT_OVER_PERFORMANCE: 'Acima do esperado',
+    PROFICIENCIA_AT_UNDER_PERFORMANCE: 'Abaixo do esperado',
+    LEG_TRAVAMENTO_RECENTE: 'Travamento',
+    CICLO_PARADO: 'Ciclo parado',
+  };
+
   function renderNudges(containerId) {
     const c = document.getElementById(containerId);
+    if (!c) return;
     c.innerHTML = '';
     if (!estado.nudges.length) return;
     const card = document.createElement('div');
     card.className = 'card nudges-card';
     card.innerHTML = `
       <div class="card-titulo">Sugestões do sistema</div>
-      ${estado.nudges.map(n => `
+      ${estado.nudges.map(n => {
+        const label = n.tipo ? (NUDGE_LABELS[n.tipo] || n.tipo) : '';
+        return `
         <div class="nudge-item">
-          <strong>${n.area}:</strong> ${n.mensagem}
-          <button class="btn-secundario" style="font-size:10px;padding:4px 10px;margin-left:8px;"
-            onclick="aceitarNudge('${n.area}', ${n.nivel_sugerido})">Aceitar</button>
+          ${label ? `<span class="nudge-tipo">${escapeHtml(label)}</span>` : ''}
+          ${n.area ? `<strong>${escapeHtml(n.area)}:</strong> ` : ''}${escapeHtml(n.mensagem || '')}
         </div>
-      `).join('')}
+      `;
+      }).join('')}
     `;
     c.appendChild(card);
-  }
-
-  async function aceitarNudge(area, nivelSugerido) {
-    await salvarProficiencia(area, nivelSugerido);
-    estado.nudges = estado.nudges.filter(n => n.area !== area);
-    if (estado.ciclo && estado.blocos.length) renderAtivo();
-    else renderConfigurar(false);
   }
 
   async function salvarProficiencia(area, nivel) {
@@ -1217,14 +1447,19 @@
     btn.disabled = true;
     btn.textContent = 'Gerando…';
     try {
-      const horas = Number(document.getElementById('horas-totais').value);
+      const dias = Number(document.getElementById('dias-semana').value);
+      const horas = Number(document.getElementById('horas-dia').value);
+      const proficiencias = AREAS.map(area => ({
+        area,
+        nivel: Number((estado.proficiencia[area] || {}).nivel_proficiencia || 3),
+      }));
       await fetch('/api/ciclo/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + (sessionStorage.getItem('token') || ''),
         },
-        body: JSON.stringify({ horas_totais_ciclo: horas }),
+        body: JSON.stringify({ dias_semana: dias, horas_dia: horas, proficiencias }),
       });
       await carregar();
     } catch (e) {
@@ -1254,16 +1489,180 @@
     }
   }
 
-  function atualizarEstimativaDias() {
-    const total = Number(document.getElementById('horas-totais').value);
+  function formatarHoras(h) {
+    if (!Number.isFinite(h)) return '—';
+    return Number.isInteger(h) ? String(h) : h.toFixed(1);
+  }
+
+  function atualizarHorasTotais() {
+    const dias = Number(document.getElementById('dias-semana').value);
     const porDia = Number(document.getElementById('horas-dia').value);
-    if (!total || !porDia) return;
-    const dias = Math.ceil(total / porDia);
-    document.getElementById('dias-estimados').textContent = dias;
-    const aviso = document.getElementById('ritmo-aviso');
-    if (porDia <= 1) aviso.textContent = 'Ritmo leve — bom para começar sem se sobrecarregar.';
-    else if (porDia >= 5) aviso.textContent = 'Ritmo intenso — cuidado com fadiga. Considere reduzir se sentir queda de rendimento.';
-    else aviso.textContent = 'Ritmo equilibrado para preparação consistente.';
+    if (!dias || !porDia) return;
+    const total = dias * porDia;
+    const blocos = Math.floor(total); // blocos de 60 min ≈ horas inteiras
+    document.getElementById('horas-totais-derivado').textContent = formatarHoras(total);
+    document.getElementById('blocos-estimados').textContent = String(blocos);
+    document.getElementById('alerta-curto').style.display = total < 5 ? '' : 'none';
+  }
+
+  // === Hero — saldo + por_que ===
+  function renderSaldoHero(bloco) {
+    const wrap = document.getElementById('hero-saldo-wrap');
+    if (!wrap) return;
+    if (bloco.saldo_minutos == null) { wrap.innerHTML = ''; return; }
+    const saldo = Math.max(0, Number(bloco.saldo_minutos));
+    const acumulado = Math.max(0, Number(bloco.acumulado_minutos || 0));
+    if (bloco.status !== 'em_andamento' && acumulado === 0) {
+      // Bloco pendente / ainda não iniciado — só meta
+      wrap.innerHTML = `<span class="hero-saldo-badge">Meta · ${bloco.meta_minutos} min</span>`;
+      return;
+    }
+    if (saldo <= 0) {
+      wrap.innerHTML = `<span class="hero-saldo-badge cheio">Balde cheio — pronto pra concluir</span>`;
+    } else {
+      wrap.innerHTML = `<span class="hero-saldo-badge">Faltam ${saldo} min · acumulado ${acumulado}/${bloco.meta_minutos}</span>`;
+    }
+  }
+
+  function renderPorQueHero(bloco) {
+    const wrap = document.getElementById('hero-porque-wrap');
+    if (!wrap) return;
+    const itens = Array.isArray(bloco.por_que) ? bloco.por_que : [];
+    if (!itens.length) { wrap.innerHTML = ''; return; }
+    wrap.innerHTML = `
+      <button type="button" class="porque-chip" id="btn-porque" aria-expanded="false">
+        🎯 Por que esse bloco?
+      </button>
+      <div class="porque-popover" id="porque-popover" style="display:none;">
+        <strong style="color:var(--branco);">Fatores principais:</strong>
+        <ul>
+          ${itens.map(it => `<li>${escapeHtml(it.label || '')}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+    const btn = document.getElementById('btn-porque');
+    const pop = document.getElementById('porque-popover');
+    btn.addEventListener('click', () => {
+      const aberto = pop.style.display !== 'none';
+      pop.style.display = aberto ? 'none' : '';
+      btn.setAttribute('aria-expanded', String(!aberto));
+    });
+  }
+
+  // === Toast pós-conclusão ===
+  const TOAST_STORAGE_KEY = 'pbm_ciclo_em_andamento_id';
+
+  function lembrarBlocoEmAndamento(blocoId) {
+    if (!blocoId) sessionStorage.removeItem(TOAST_STORAGE_KEY);
+    else sessionStorage.setItem(TOAST_STORAGE_KEY, blocoId);
+  }
+
+  function detectarBlocoRecemConcluido() {
+    const lastId = sessionStorage.getItem(TOAST_STORAGE_KEY);
+    if (!lastId) return null;
+    const bloco = (estado.blocos || []).find(b => b.id === lastId);
+    if (bloco && bloco.status === 'concluido') {
+      sessionStorage.removeItem(TOAST_STORAGE_KEY);
+      return bloco;
+    }
+    return null;
+  }
+
+  function abrirToast(bloco) {
+    const overlay = document.getElementById('toast-overlay');
+    if (!overlay) return;
+    document.getElementById('toast-leg-nome').textContent = bloco.legislacao_nome || '—';
+    overlay.dataset.legId = bloco.legislacao_id || '';
+    overlay.dataset.blocoId = bloco.id || '';
+    overlay.dataset.legNome = bloco.legislacao_nome || '';
+    overlay.style.display = '';
+  }
+
+  function fecharToast() {
+    const overlay = document.getElementById('toast-overlay');
+    if (!overlay) return;
+    overlay.style.display = 'none';
+    document.querySelectorAll('.toast-btn').forEach(b => { b.disabled = false; });
+  }
+
+  async function escolherNivelToast(nivel) {
+    const overlay = document.getElementById('toast-overlay');
+    const legId = overlay?.dataset?.legId;
+    const blocoId = overlay?.dataset?.blocoId;
+    const legNome = overlay?.dataset?.legNome;
+    if (!legId) { fecharToast(); return; }
+    document.querySelectorAll('.toast-btn').forEach(b => { b.disabled = true; });
+    try {
+      await PBM.Ciclo.salvarDificuldade(legId, nivel);
+      if (!window._pbmReforcoRecente) window._pbmReforcoRecente = {};
+      window._pbmReforcoRecente[legId] = nivel;
+    } catch (e) {
+      console.error('[ciclo] salvar dificuldade', e);
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao registrar. Tente novamente.');
+    } finally {
+      fecharToast();
+      if (estado.ciclo && estado.blocos.length) renderAtivo();
+      // Encadeia Relatório de Bloco (Sprint 3, SPEC §5.3)
+      if (blocoId) await abrirRelatorioBloco(blocoId, legNome);
+    }
+  }
+
+  // ====== Relatório de Bloco (mini-diff intra-ciclo) ======
+  async function abrirRelatorioBloco(blocoId, legNome) {
+    const overlay = document.getElementById('relatorio-overlay');
+    const body = document.getElementById('relatorio-body');
+    const legEl = document.getElementById('relatorio-leg-nome');
+    if (!overlay || !body) return;
+    legEl.textContent = legNome || '—';
+    body.innerHTML = '<div class="relatorio-fallback" style="color:var(--texto-suporte);">Calculando…</div>';
+    overlay.style.display = '';
+    try {
+      const r = await PBM.Ciclo.relatorioBloco(blocoId);
+      if (legEl && r.legislacao_nome) legEl.textContent = r.legislacao_nome;
+      if (r.fallback) {
+        body.innerHTML = `<div class="relatorio-fallback">${escapeHtml(r.mensagem || '+ questões respondidas neste bloco')}</div>`;
+        return;
+      }
+      const antes = r.antes || {}; const depois = r.depois || {};
+      const diff = r.diff_pp;
+      const sinal = diff > 0 ? `+${diff}pp` : (diff < 0 ? `${diff}pp` : '0pp');
+      const cls = diff > 0 ? 'pos' : (diff < 0 ? 'neg' : '');
+      body.innerHTML = `
+        <div class="relatorio-linha">
+          <span>Antes deste bloco</span>
+          <span class="val">${antes.pct == null ? '—' : antes.pct + '%'} <span style="font-size:11px;color:var(--texto-suporte);">(${antes.total || 0})</span></span>
+        </div>
+        <div class="relatorio-linha">
+          <span>Depois deste bloco</span>
+          <span class="val">${depois.pct == null ? '—' : depois.pct + '%'} <span style="font-size:11px;color:var(--texto-suporte);">(${depois.total || 0})</span></span>
+        </div>
+        ${diff == null ? '' : `<div class="relatorio-diff ${cls}">Variação no ciclo: ${sinal}</div>`}
+      `;
+    } catch (e) {
+      console.error('[ciclo] relatório bloco', e);
+      body.innerHTML = '<div class="relatorio-fallback">Não foi possível carregar o relatório agora.</div>';
+    }
+  }
+
+  function fecharRelatorio() {
+    const overlay = document.getElementById('relatorio-overlay');
+    if (!overlay) return;
+    overlay.style.display = 'none';
+    carregar();
+  }
+
+  async function forcarConclusao() {
+    if (!estado.proximoBloco) return;
+    const bloco = estado.proximoBloco;
+    if (!confirm('Marcar este bloco como concluído manualmente? Use para estudo offline.')) return;
+    try {
+      await PBM.Ciclo.concluirBloco(bloco.id, {}, { forcar: true });
+      lembrarBlocoEmAndamento(bloco.id);
+      await carregar();
+    } catch (e) {
+      console.error('[ciclo] forçar conclusão', e);
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao concluir. Tente novamente.');
+    }
   }
 
   function renderNotaHero(bloco) {
@@ -1370,6 +1769,7 @@
 
     try {
       await PBM.Ciclo.iniciarBloco(pomoBlocoAtual.id);
+      lembrarBlocoEmAndamento(pomoBlocoAtual.id);
     } catch (_) { /* não crítico */ }
 
     document.getElementById('pomo-setup').style.display = 'none';
@@ -1524,6 +1924,26 @@
   });
   document.getElementById('btn-excluir').addEventListener('click', excluirCiclo);
   document.getElementById('btn-excluir-ativo').addEventListener('click', excluirCiclo);
+  document.getElementById('btn-forcar').addEventListener('click', forcarConclusao);
+
+  // Toast pós-conclusão
+  document.querySelectorAll('.toast-btn').forEach(btn => {
+    btn.addEventListener('click', () => escolherNivelToast(btn.dataset.nivel));
+  });
+  document.getElementById('toast-fechar').addEventListener('click', () => {
+    const overlay = document.getElementById('toast-overlay');
+    const blocoId = overlay?.dataset?.blocoId;
+    const legNome = overlay?.dataset?.legNome;
+    fecharToast();
+    if (blocoId) abrirRelatorioBloco(blocoId, legNome);
+  });
+  document.getElementById('toast-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('toast-overlay')) fecharToast();
+  });
+  document.getElementById('relatorio-fechar').addEventListener('click', fecharRelatorio);
+  document.getElementById('relatorio-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('relatorio-overlay')) fecharRelatorio();
+  });
 
   // Pomodoro — setup
   document.getElementById('pomo-iniciar').addEventListener('click', iniciarTimer);
@@ -1598,8 +2018,6 @@
       document.getElementById('pomo-overlay').classList.remove('tela-preta');
     }
   });
-
-  window.aceitarNudge = aceitarNudge;
 
   ['pomo-cfg-foco', 'pomo-cfg-pausa-curta', 'pomo-cfg-pausa-longa', 'pomo-cfg-ciclos']
     .forEach(wireSliderDisplay);

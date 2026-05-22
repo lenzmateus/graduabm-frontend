@@ -321,6 +321,20 @@ const PBM = {
     async me() {
       return request('/api/auth/me');
     },
+    async atualizarMetaDiaria(meta_diaria) {
+      const data = await request('/api/auth/meta-diaria', {
+        method: 'PATCH',
+        body: JSON.stringify({ meta_diaria }),
+      });
+      if (data?.ok) {
+        try {
+          const u = PBM.getUsuario() || {};
+          u.meta_diaria = data.meta_diaria;
+          sessionStorage.setItem('usuario', JSON.stringify(u));
+        } catch (_) {}
+      }
+      return data;
+    },
 
     /* ── Gerenciamento de conta (PRD docs/prd/gerenciamento-conta-aluno.md) ── */
     assinatura() {
@@ -380,6 +394,9 @@ const PBM = {
     },
     evolucaoSemanal() {
       return request('/api/progresso/evolucao-semanal');
+    },
+    questoesHoje() {
+      return request('/api/progresso/questoes-hoje');
     }
   },
 
@@ -478,11 +495,18 @@ const PBM = {
         method: 'POST',
       });
     },
-    concluirBloco(blocoId, body) {
-      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/concluir', {
+    concluirBloco(blocoId, body, opts) {
+      const qs = (opts && opts.forcar) ? '?forcar=true' : '';
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/concluir' + qs, {
         method: 'POST',
         body: JSON.stringify(body || {}),
       });
+    },
+    pausar() {
+      return request('/api/ciclo/pausar', { method: 'POST' });
+    },
+    despausar() {
+      return request('/api/ciclo/despausar', { method: 'POST' });
     },
     pularBloco(blocoId, body) {
       return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/pular', {
@@ -495,6 +519,9 @@ const PBM = {
         method: 'POST',
         body: JSON.stringify(body),
       });
+    },
+    relatorioBloco(blocoId) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/relatorio');
     },
     // Proficiência por AT
     proficiencia() {

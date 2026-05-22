@@ -1161,11 +1161,10 @@ async function atualizarMetaDiaria() {
   try {
     const u = window.PBM?.getUsuario?.() || {};
     const uMeta = parseInt(u.meta_diaria, 10);
-    const savedLocally = localStorage.getItem('pbm_meta_diaria_' + u.id);
-    // 1. Prioriza o que foi salvo no localStorage deste dispositivo (o usuário definiu aqui)
-    // 2. Se não houver, tenta pegar do backend (uMeta)
-    // 3. Fallback final para 30
-    const meta = (parseInt(savedLocally, 10) > 0) ? parseInt(savedLocally, 10) : ((uMeta > 0) ? uMeta : 30);
+    const savedLocally = parseInt(localStorage.getItem('pbm_meta_diaria_' + u.id), 10);
+    // Servidor é a fonte da verdade (sincroniza entre dispositivos).
+    // LocalStorage só serve de fallback quando o /me ainda não chegou.
+    const meta = (uMeta > 0) ? uMeta : ((savedLocally > 0) ? savedLocally : 30);
     
     // 1. Tenta pegar a contagem oficial da API
     let qHoje = 0;
@@ -1197,8 +1196,8 @@ async function atualizarMetaDiaria() {
 function configurarMeta() {
   const u = window.PBM?.getUsuario?.() || {};
   const uMeta = parseInt(u.meta_diaria, 10);
-  const savedLocally = localStorage.getItem('pbm_meta_diaria_' + u.id);
-  const atual = (parseInt(savedLocally, 10) > 0) ? parseInt(savedLocally, 10) : ((uMeta > 0) ? uMeta : 30);
+  const savedLocally = parseInt(localStorage.getItem('pbm_meta_diaria_' + u.id), 10);
+  const atual = (uMeta > 0) ? uMeta : ((savedLocally > 0) ? savedLocally : 30);
   document.getElementById('input-meta-diaria').value = atual;
   document.getElementById('modal-meta-diaria').style.display = 'flex';
   setTimeout(() => {

@@ -92,7 +92,7 @@
           <div class="nav-missao-tooltip" id="missao-tooltip"></div>
         </div>
         ${item('ranking', '/ranking', 'Ranking')}
-        ${item('flashcards', '/flashcards', 'Flashcards')}
+        ${ /* item('flashcards', '/flashcards', 'Flashcards') */ '' }
         ${item('conta', '/conta', 'Minha Conta')}
       </nav>
 
@@ -115,7 +115,7 @@
       ${link('estudar', '/area-estudos', 'Estudar')}
       ${link('simulados', '/simulados', 'Simulados')}
       ${link('qap', '/simulado-mensal', 'QAP')}
-      ${link('flashcards', '/flashcards', 'Cards')}
+      ${ /* link('flashcards', '/flashcards', 'Cards') */ '' }
       ${link('ranking', '/ranking', 'Ranking')}
     `;
   }

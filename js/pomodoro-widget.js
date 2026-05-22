@@ -13,7 +13,6 @@
   var CFG_KEY = 'pbm_pomo_cfg';
 
   var AUDIO_FONTES = {
-    lofi: 'https://www.youtube-nocookie.com/embed/jfKfPfyJRdk?autoplay=1&modestbranding=1&rel=0',
     ruido: 'https://www.youtube-nocookie.com/embed/nMfPqeZjc2c?autoplay=1&modestbranding=1&rel=0',
     jazz: 'https://www.youtube-nocookie.com/embed/Dx5qFachd3A?autoplay=1&modestbranding=1&rel=0',
   };
@@ -41,7 +40,7 @@
       estudoMsAcumulado: 0,
       bloco: null,                  // contexto do ciclo (id, area, legislacao_*)
       // ÁUDIO
-      audioEscolha: 'off',          // 'off' | 'lofi' | 'ruido' | 'jazz'
+      audioEscolha: 'off',          // 'off' | 'ruido' | 'jazz'
       soAudio: false,
       // UI
       uiFechado: false,
@@ -104,6 +103,7 @@
       if (cfgRaw) {
         state.cfg = Object.assign(state.cfg, JSON.parse(cfgRaw));
       }
+      if (['off', 'ruido', 'jazz'].indexOf(state.audioEscolha) < 0) state.audioEscolha = 'off';
       var hoje = hojeStr();
       if (state.sessoesData !== hoje) {
         state.sessoesHoje = 0;
@@ -401,7 +401,7 @@
   // API: ÁUDIO
   // ────────────────────────────────────────────────────────────────
   function setAudio(escolha) {
-    if (['off', 'lofi', 'ruido', 'jazz'].indexOf(escolha) < 0) return;
+    if (['off', 'ruido', 'jazz'].indexOf(escolha) < 0) return;
     state.audioEscolha = escolha;
     salvar();
     if (audioContainer) {
@@ -732,7 +732,6 @@
       + '    <div class="pbm-pomo-audio-row">'
       + '      <span class="pbm-pomo-audio-label">🎧</span>'
       + '      <button class="pbm-pomo-audio-btn" data-audio="off">Silêncio</button>'
-      + '      <button class="pbm-pomo-audio-btn" data-audio="lofi">Lo-fi</button>'
       + '      <button class="pbm-pomo-audio-btn" data-audio="ruido">Ruído</button>'
       + '      <button class="pbm-pomo-audio-btn" data-audio="jazz">Jazz</button>'
       + '    </div>'
