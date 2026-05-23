@@ -267,8 +267,17 @@
   }
   function bipFim() {
     try {
-      var audio = new Audio('/audio/sirene.mp3');
+      var hadAudio = (audioContainer && state.audioEscolha && state.audioEscolha !== 'off');
+      if (hadAudio) {
+        unmountIframeOnly();
+      }
+      var audio = new Audio('audio/sirene.mp3');
       audio.volume = 1.0;
+      audio.onended = function() {
+        if (hadAudio && audioContainer) {
+          mountIframeOnly(state.audioEscolha);
+        }
+      };
       audio.play();
     } catch (_) {}
   }
