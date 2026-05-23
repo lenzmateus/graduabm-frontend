@@ -1883,6 +1883,9 @@ init();
   // Sempre monta minimizado para o aluno poder iniciar o timer durante a resolução.
   // Se já estiver rodando (vindo de /ciclo), o widget retoma o estado automaticamente.
   if (window.PBMPomo) {
+    if (typeof modoAtualTipo !== 'undefined' && modoAtualTipo !== 'ciclo' && window.PBMPomo.getModo() === 'classico') {
+      window.PBMPomo.cancelar();
+    }
     window.PBMPomo.mountFloating({ minimizado: true });
   }
 </script>
