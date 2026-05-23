@@ -271,7 +271,7 @@
       if (hadAudio) {
         unmountIframeOnly();
       }
-      var audio = new Audio('audio/sirene.mp3');
+      var audio = new Audio('audio/sirene.mp3?v=' + Date.now());
       audio.volume = 1.0;
       audio.onended = function() {
         if (hadAudio && audioContainer) {
