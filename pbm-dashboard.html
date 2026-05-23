@@ -955,9 +955,23 @@ async function assinarPush() {
     const { publicKey } = await PBM.Notificacoes.vapidPublicKey();
     if (!publicKey) return;
 
+    const appKey = urlBase64ToUint8Array(publicKey);
+
+    const existente = await _swRegistration.pushManager.getSubscription();
+    if (existente) {
+      const atual = existente.options?.applicationServerKey
+        ? new Uint8Array(existente.options.applicationServerKey)
+        : null;
+      const igual = atual && atual.length === appKey.length && atual.every((b, i) => b === appKey[i]);
+      if (!igual) {
+        try { await PBM.Notificacoes.unsubscribe(); } catch (_) {}
+        await existente.unsubscribe();
+      }
+    }
+
     const sub = await _swRegistration.pushManager.subscribe({
       userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(publicKey),
+      applicationServerKey: appKey,
     });
 
     await PBM.Notificacoes.subscribe(sub);

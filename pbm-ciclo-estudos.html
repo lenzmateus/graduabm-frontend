@@ -475,13 +475,9 @@
   .pomo-overlay.tela-preta #pomo-leg,
   .pomo-overlay.tela-preta .pomo-fase,
   .pomo-overlay.tela-preta .pomo-sug,
-  .pomo-overlay.tela-preta .pomo-actions { display: none !important; }
-  .pomo-overlay.tela-preta .pomo-clock {
-    color: #3A3A3A; font-size: 64px;
-    margin: 1rem 0;
-  }
-  .pomo-overlay.tela-preta .pomo-audio-bar { border-top: none; padding-top: 0; }
-  .pomo-overlay.tela-preta .pomo-audio-bar-titulo { display: none; }
+  .pomo-overlay.tela-preta .pomo-actions,
+  .pomo-overlay.tela-preta .pomo-clock,
+  .pomo-overlay.tela-preta .pomo-audio-bar { display: none !important; }
   /* Defesa direta: força dark nos 4 botões de áudio e nos toggles,
      mesmo se a cascata de variáveis falhar em algum browser. */
   .pomo-overlay.tela-preta .pomo-audio-btn {
@@ -832,7 +828,6 @@
     .pomo-overlay { padding: 12px; }
     .pomo-clock { font-size: 64px; margin: 1rem 0; }
     .pomo-leg { font-size: 22px; }
-    .pomo-overlay.tela-preta .pomo-clock { font-size: 48px; }
     .pomo-actions { flex-direction: column; }
     .pomo-actions .btn-primario,
     .pomo-actions .btn-secundario { width: 100%; }
@@ -983,6 +978,9 @@
 
 <!-- Pomodoro -->
 <div id="pomo-overlay" class="pomo-overlay" style="display:none;">
+  <div id="tela-preta-aviso" style="display:none; color:#555; font-family:'IBM Plex Mono', monospace; font-size:12px; position:absolute; bottom:20px; right:20px;">
+    Para sair da tela toda preta é necessário apertar <strong>ESC</strong>
+  </div>
   <div class="pomo-box">
 
     <!-- FASE 1: SETUP — minimalista -->
@@ -1990,6 +1988,7 @@
   });
   document.getElementById('pomo-tela-preta').addEventListener('change', e => {
     document.getElementById('pomo-overlay').classList.toggle('tela-preta', e.target.checked);
+    document.getElementById('tela-preta-aviso').style.display = e.target.checked ? 'block' : 'none';
     // Tela preta total também esconde o vídeo (força só áudio)
     if (e.target.checked) {
       document.getElementById('pomo-so-audio').checked = true;
@@ -2035,6 +2034,18 @@
     if (e.target === document.getElementById('pomo-overlay')) {
       document.getElementById('pomo-tela-preta').checked = false;
       document.getElementById('pomo-overlay').classList.remove('tela-preta');
+      document.getElementById('tela-preta-aviso').style.display = 'none';
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      const overlay = document.getElementById('pomo-overlay');
+      if (overlay && overlay.classList.contains('tela-preta')) {
+        document.getElementById('pomo-tela-preta').checked = false;
+        overlay.classList.remove('tela-preta');
+        document.getElementById('tela-preta-aviso').style.display = 'none';
+      }
     }
   });
 
