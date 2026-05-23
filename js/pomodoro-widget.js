@@ -267,19 +267,9 @@
   }
   function bipFim() {
     try {
-      var Ctx = window.AudioContext || window.webkitAudioContext;
-      if (!Ctx) return;
-      var ctx = new Ctx();
-      [[0, 880, 0.18], [0.25, 880, 0.18], [0.5, 1100, 0.35]].forEach(function (t) {
-        var osc = ctx.createOscillator();
-        var gain = ctx.createGain();
-        osc.connect(gain); gain.connect(ctx.destination);
-        osc.frequency.value = t[1];
-        gain.gain.setValueAtTime(0.35, ctx.currentTime + t[0]);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t[0] + t[2]);
-        osc.start(ctx.currentTime + t[0]);
-        osc.stop(ctx.currentTime + t[0] + t[2]);
-      });
+      var audio = new Audio('/audio/sirene.mp3');
+      audio.volume = 1.0;
+      audio.play();
     } catch (_) {}
   }
 
