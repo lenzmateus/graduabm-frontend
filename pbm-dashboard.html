@@ -425,10 +425,10 @@
       <div id="card-carreira-dashboard" class="dash-card" style="margin-bottom:1.5rem; border:1px solid var(--cinza-borda); background:var(--cinza-escuro); cursor:pointer; display:none; padding:1.25rem 1.5rem; transition: border-color 0.15s, background 0.15s;" onclick="window.location.href='/pbm-patentes.html'" onmouseover="this.style.borderColor='var(--brand-primary)'" onmouseout="this.style.borderColor='var(--cinza-borda)'">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap: 12px; flex-wrap: wrap;">
           <div style="display:flex; align-items:center; gap:12px;">
-            <div id="dash-patente-insignia" style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:rgba(255,255,255,0.03); border:1px solid var(--cinza-borda); border-radius:8px; overflow:visible;"></div>
+            <div id="dash-patente-insignia" style="width:44px; height:44px; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:visible;"></div>
             <div>
               <span id="dash-patente-nome" style="font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.04em; color:var(--branco); display:block; line-height:1;">Recruta</span>
-              <span id="dash-prontidao-txt" style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.05em; color:var(--sucesso);">PRONTIDÃO: PRONTO PARA O SERVIÇO</span>
+              <span id="dash-prontidao-txt" style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.05em; color:var(--sucesso);">PRONTIDÃO: QAP</span>
             </div>
           </div>
           <div style="text-align:right;">
@@ -1215,9 +1215,8 @@ function obterInsigniaSVG(nivel, curso) {
     return `<svg width="34" height="34" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
       ${defs}
       <g filter="url(#premiumGlow)">
-        <rect x="12" y="12" width="40" height="40" rx="6" stroke="${corTema}" stroke-width="1.5" stroke-dasharray="4 2" fill="none" opacity="0.45"/>
-        <polyline points="20,24 32,34 44,24" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="32" cy="32" r="3" fill="${corTema}"/>
+        <polyline points="14,26 32,38 50,26" stroke="url(#themeGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="32" cy="20" r="3.5" fill="${corTema}"/>
       </g>
     </svg>`;
   }
@@ -1226,9 +1225,8 @@ function obterInsigniaSVG(nivel, curso) {
     return `<svg width="34" height="34" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
       ${defs}
       <g filter="url(#premiumGlow)">
-        <path d="M12,16 L6,28 L12,40 M52,16 L58,28 L52,40" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
-        <polyline points="18,22 32,32 46,22" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="18,29 32,39 46,29" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="14,22 32,34 50,22" stroke="url(#themeGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="14,30 32,42 50,30" stroke="url(#themeGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
     </svg>`;
   }
@@ -1237,10 +1235,9 @@ function obterInsigniaSVG(nivel, curso) {
     return `<svg width="34" height="34" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
       ${defs}
       <g filter="url(#premiumGlow)">
-        <path d="M10,14 L4,26 L10,38 M54,14 L60,26 L54,38" stroke="url(#silverGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="16,20 32,30 48,20" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="16,26 32,36 48,26" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-        <polyline points="16,32 32,42 48,32" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="14,18 32,30 50,18" stroke="url(#themeGrad)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="14,25 32,37 50,25" stroke="url(#themeGrad)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="14,32 32,44 50,32" stroke="url(#themeGrad)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
       </g>
     </svg>`;
   }
@@ -1398,7 +1395,9 @@ async function atualizarCarreiraDashboard() {
     document.getElementById('dash-patente-nome').textContent = response.patente || 'Recruta';
     
     const pTxt = document.getElementById('dash-prontidao-txt');
-    pTxt.textContent = 'PRONTIDÃO: ' + response.prontidao.toUpperCase();
+    let prontidaoExibir = response.prontidao.toUpperCase();
+    if (prontidaoExibir === 'PRONTO') prontidaoExibir = 'QAP';
+    pTxt.textContent = 'PRONTIDÃO: ' + prontidaoExibir;
     pTxt.style.color = response.prontidao_cor === 'verde' ? 'var(--sucesso)' : (response.prontidao_cor === 'amarelo' ? 'var(--atencao)' : 'var(--vermelho)');
 
     document.getElementById('dash-streak-txt').textContent = `🔥 ${response.streak_atual} DIAS`;

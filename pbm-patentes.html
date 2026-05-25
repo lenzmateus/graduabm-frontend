@@ -45,24 +45,16 @@
 }
 
 .insignia-box {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--cinza-borda);
-  width: 96px;
-  height: 96px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 20px rgba(192, 39, 15, 0.08);
   transition: all 0.25s ease;
   overflow: visible;
 }
 
 .insignia-box:hover {
-  border-color: var(--brand-primary);
-  box-shadow: 0 0 25px rgba(192, 39, 15, 0.25);
-  transform: scale(1.05);
+  transform: scale(1.12);
 }
 
 .carreira-tag {
@@ -371,21 +363,22 @@
     <div class="conteudo">
 
       <!-- HERO: POSTO + XP PROGRESS -->
-      <div class="carreira-hero">
-        <div class="carreira-hero-watermark">
-          <img src="/images/emblem-pbm.png" alt="" style="width:100%;filter:brightness(0) invert(1);">
-        </div>
+      <div class="carreira-hero" style="position:relative; overflow:hidden;">
+        <!-- Símbolo Maior Vivo na Direita (Reposicionado acima da linha divisória) -->
+        <img src="/images/emblem-pbm.png" alt="Símbolo" style="position:absolute;right:28px;top:24px;height:84px;width:auto;opacity:0.95;z-index:1;pointer-events:none;user-select:none;">
 
-        <div class="carreira-hero-header">
+        <div class="carreira-hero-header" style="position:relative; z-index:2; display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:24px;">
           <div>
             <div class="carreira-tag">REGISTRO DE SERVIÇO ATIVO</div>
-            <h1 class="carreira-posto" id="posto-txt">Carregando…</h1>
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:4px;">
+              <h1 class="carreira-posto" id="posto-txt" style="margin:0; line-height:1.1;">Carregando…</h1>
+              <div class="insignia-box" id="insignia-box" style="display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; overflow:visible; width:44px; height:44px;"></div>
+            </div>
             <div class="carreira-nivel" id="patente-nivel-txt">NÍVEL 00</div>
           </div>
-          <div class="insignia-box" id="insignia-box">—</div>
         </div>
 
-        <div class="xp-section">
+        <div class="xp-section" style="position:relative; z-index:2;">
           <div class="xp-header">
             <span class="xp-label">PROGRESSÃO DE XP</span>
             <span class="xp-numeros" id="xp-numeros-txt"><span class="xp-atual">—</span> / — XP</span>
@@ -431,7 +424,7 @@
           <div class="prontidao-lista">
             <div class="prontidao-item" id="q-verde">
               <div class="dot-status verde"></div>
-              <span class="prontidao-item-label">ATIVO (0–3 DIAS)</span>
+              <span class="prontidao-item-label">QAP (0–3 DIAS)</span>
             </div>
             <div class="prontidao-item" id="q-amarelo">
               <div class="dot-status amarelo"></div>
@@ -520,109 +513,100 @@
       </defs>
     `;
 
-    // 1. RECRUTA (Level 1): Single chevron with tactical target circle
+    // 1. RECRUTA (Level 1): Single chevron
     if (nivel === 1) {
-      return `<svg width="72" height="72" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <rect x="12" y="12" width="40" height="40" rx="6" stroke="${corTema}" stroke-width="1.5" stroke-dasharray="4 2" fill="none" opacity="0.45"/>
-          <circle cx="32" cy="32" r="16" stroke="url(#silverGrad)" stroke-width="1.8" fill="none" opacity="0.3"/>
-          <polyline points="20,24 32,34 44,24" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="32" cy="32" r="3" fill="${corTema}"/>
+          <polyline points="14,26 32,38 50,26" stroke="url(#themeGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="32" cy="20" r="3.5" fill="${corTema}"/>
         </g>
       </svg>`;
     }
 
-    // 2. SOLDADO (Level 2): Double chevrons with dual tactical outer wings
+    // 2. SOLDADO (Level 2): Double chevrons
     if (nivel === 2) {
-      return `<svg width="72" height="72" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <path d="M12,16 L6,28 L12,40 M52,16 L58,28 L52,40" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
-          <polyline points="18,22 32,32 46,22" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="18,29 32,39 46,29" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14,22 32,34 50,22" stroke="url(#themeGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14,30 32,42 50,30" stroke="url(#themeGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
         </g>
       </svg>`;
     }
 
-    // 3. CABO (Level 3): Triple chevrons clutched by custom wings
+    // 3. CABO (Level 3): Triple chevrons
     if (nivel === 3) {
-      return `<svg width="72" height="72" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <path d="M10,14 L4,26 L10,38 M54,14 L60,26 L54,38" stroke="url(#silverGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="16,20 32,30 48,20" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="16,26 32,36 48,26" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="16,32 32,42 48,32" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14,18 32,30 50,18" stroke="url(#themeGrad)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14,25 32,37 50,25" stroke="url(#themeGrad)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="14,32 32,44 50,32" stroke="url(#themeGrad)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round"/>
         </g>
       </svg>`;
     }
 
     // 4. TERCEIRO-SARGENTO (Level 4): Triple chevrons with horizontal base bar
     if (nivel === 4) {
-      return `<svg width="76" height="76" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <path d="M6,16 L32,6 L58,16 L50,46 L32,56 L14,46 Z" stroke="url(#silverGrad)" stroke-width="1" fill="none" opacity="0.2"/>
-          <polyline points="18,18 32,28 46,18" stroke="url(#themeGrad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="18,24 32,34 46,24" stroke="url(#themeGrad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="18,30 32,40 46,30" stroke="url(#themeGrad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="20" y1="46" x2="44" y2="46" stroke="url(#silverGrad)" stroke-width="3.5" stroke-linecap="round"/>
+          <polyline points="16,18 32,30 48,18" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="16,24 32,36 48,24" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="16,30 32,42 48,30" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="18" y1="46" x2="46" y2="46" stroke="url(#silverGrad)" stroke-width="4" stroke-linecap="round"/>
         </g>
       </svg>`;
     }
 
     // 5. SEGUNDO-SARGENTO (Level 5): Chevrons with dual horizontal base bars
     if (nivel === 5) {
-      return `<svg width="76" height="76" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <polyline points="18,16 32,26 46,16" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="18,22 32,32 46,22" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="18,28 32,38 46,28" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="20" y1="44" x2="44" y2="44" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
-          <line x1="20" y1="50" x2="44" y2="50" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+          <polyline points="16,16 32,28 48,16" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="16,22 32,34 48,22" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="16,28 32,40 48,28" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="18" y1="44" x2="46" y2="44" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+          <line x1="18" y1="50" x2="46" y2="50" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
         </g>
       </svg>`;
     }
 
-    // 6. PRIMEIRO-SARGENTO (Level 6): Chevrons, triple base bars & outer shield wings
+    // 6. PRIMEIRO-SARGENTO (Level 6): Chevrons, triple base bars
     if (nivel === 6) {
-      return `<svg width="76" height="76" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <path d="M10,12 L6,22 L10,32 M54,12 L58,22 L54,32" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round"/>
-          <polyline points="18,14 32,24 46,14" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="18,20 32,30 46,20" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="18,26 32,36 46,26" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <line x1="20" y1="42" x2="44" y2="42" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
-          <line x1="20" y1="47" x2="44" y2="47" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
-          <line x1="20" y1="52" x2="44" y2="52" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+          <polyline points="16,14 32,26 48,14" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="16,20 32,32 48,20" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="16,26 32,38 48,26" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="18" y1="42" x2="46" y2="42" stroke="url(#silverGrad)" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="18" y1="47" x2="46" y2="47" stroke="url(#silverGrad)" stroke-width="3.5" stroke-linecap="round"/>
+          <line x1="18" y1="52" x2="46" y2="52" stroke="url(#silverGrad)" stroke-width="3.5" stroke-linecap="round"/>
         </g>
       </svg>`;
     }
 
-    // 7. SUBTENENTE (Level 7): Elite shield backdrop with glowing central diamond
+    // 7. SUBTENENTE (Level 7): Chevrons with glowing central diamond
     if (nivel === 7) {
-      return `<svg width="80" height="80" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <path d="M12,8 L32,2 L52,8 L48,46 L32,58 L16,46 Z" stroke="url(#silverGrad)" stroke-width="1.8" fill="none" opacity="0.35"/>
-          <polyline points="20,16 32,26 46,16" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="20,22 32,32 46,22" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <polygon points="32,38 38,44 32,50 26,44" fill="url(#goldGrad)" filter="url(#premiumGlow)"/>
+          <polyline points="16,16 32,28 48,16" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="16,22 32,34 48,22" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polygon points="32,38 38,44 32,50 26,44" fill="url(#goldGrad)"/>
         </g>
       </svg>`;
     }
 
     // 8. SEGUNDO-TENENTE (Level 8): Officer rank - Star inside double shield frames
     if (nivel === 8) {
-      return `<svg width="84" height="84" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <path d="M10,8 L32,2 L54,8 L48,48 L32,60 L16,48 Z" stroke="url(#silverGrad)" stroke-width="2" fill="none"/>
-          <path d="M14,12 L32,7 L50,12 L45,44 L32,54 L19,44 Z" stroke="${corTema}" stroke-width="1" fill="none" opacity="0.4"/>
-          <!-- Star -->
+          <path d="M10,8 L32,2 L54,8 L48,48 L32,60 L16,48 Z" stroke="url(#silverGrad)" stroke-width="2.5" fill="none"/>
           <polygon points="32,18 35,26 43,26 37,31 39,39 32,34 25,39 27,31 21,26 29,26" fill="url(#goldGrad)"/>
         </g>
       </svg>`;
@@ -630,15 +614,11 @@
 
     // 9. PRIMEIRO-TENENTE (Level 9): Two gold stars with crossed officer swords
     if (nivel === 9) {
-      return `<svg width="84" height="84" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <!-- Crossed Swords in Background -->
-          <line x1="16" y1="48" x2="48" y2="16" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-          <line x1="48" y1="48" x2="16" y2="16" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
-          <path d="M10,12 L32,4 L54,12 L48,50 L32,60 L16,50 Z" stroke="url(#silverGrad)" stroke-width="2" fill="none"/>
-          
-          <!-- Two Stars -->
+          <line x1="16" y1="48" x2="48" y2="16" stroke="url(#silverGrad)" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <line x1="48" y1="48" x2="16" y2="16" stroke="url(#silverGrad)" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
           <g transform="translate(-8, 6)">
             <polygon points="32,16 34.5,23 41.5,23 36,27 38,34 32,30 26,34 28,27 22.5,23 29.5,23" fill="url(#goldGrad)"/>
           </g>
@@ -651,13 +631,10 @@
 
     // 10. CAPITÃO (Level 10): Three gold stars inside premium tactical wing crest
     if (nivel === 10) {
-      return `<svg width="88" height="88" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="46" height="46" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <path d="M6,16 L12,28 L6,40 M58,16 L52,28 L58,40" stroke="url(#themeGrad)" stroke-width="2.5" stroke-linecap="round"/>
-          <path d="M14,10 L32,3 L50,10 L45,46 L32,56 L19,46 Z" stroke="url(#silverGrad)" stroke-width="2" fill="none"/>
-          
-          <!-- Three Stars in Triangle -->
+          <path d="M14,10 L32,3 L50,10 L45,46 L32,56 L19,46 Z" stroke="url(#silverGrad)" stroke-width="2.5" fill="none"/>
           <g transform="translate(0, -3)">
             <polygon points="32,14 34,19 39,19 35,22 36.5,27 32,24 27.5,27 29,22 25,19 30,19" fill="url(#goldGrad)"/>
           </g>
@@ -673,64 +650,36 @@
 
     // 11. MAJOR (Level 11): Oak Leaf cluster clutched by double tactical wings
     if (nivel === 11) {
-      return `<svg width="92" height="92" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <!-- Outer Wings -->
-          <path d="M4,18 C12,18 16,10 16,10 L16,42 C16,42 12,50 4,50 Z" fill="url(#themeGrad)" opacity="0.25"/>
-          <path d="M60,18 C52,18 48,10 48,10 L48,42 C48,42 52,50 60,50 Z" fill="url(#themeGrad)" opacity="0.25"/>
-          <path d="M4,18 C12,18 16,10 16,10 L16,42 C16,42 12,50 4,50 Z" stroke="url(#themeGrad)" stroke-width="2"/>
-          <path d="M60,18 C52,18 48,10 48,10 L48,42 C48,42 52,50 60,50 Z" stroke="url(#themeGrad)" stroke-width="2"/>
-          
-          <!-- Central Oak Leaf / Star combination -->
-          <path d="M32,10 C25,22 24,36 32,50 C40,36 39,22 32,10 Z" fill="url(#goldGrad)" opacity="0.85"/>
-          <polygon points="32,20 34,25 39,25 35,28 36.5,33 32,30 27.5,33 29,28 25,25 30,25" fill="#FFFFFF"/>
+          <path d="M4,18 C12,18 16,10 16,10 L16,42 C16,42 12,50 4,50 Z" stroke="url(#themeGrad)" stroke-width="2.5" fill="none"/>
+          <path d="M60,18 C52,18 48,10 48,10 L48,42 C48,42 52,50 60,50 Z" stroke="url(#themeGrad)" stroke-width="2.5" fill="none"/>
+          <path d="M32,10 C25,22 24,36 32,50 C40,36 39,22 32,10 Z" fill="url(#goldGrad)" opacity="0.95"/>
         </g>
       </svg>`;
     }
 
     // 12. TENENTE-CORONEL (Level 12): Majestic military eagle clutching a gold shield
     if (nivel === 12) {
-      return `<svg width="96" height="96" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="50" height="50" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <!-- Eagle Shape Stylized -->
-          <path d="M12,28 C4,24 8,14 16,12 C24,10 28,14 32,18 C36,14 40,10 48,12 C56,14 60,24 52,28 C44,32 40,24 32,26 C24,24 20,32 12,28 Z" fill="url(#silverGrad)" opacity="0.4"/>
-          <path d="M12,28 C4,24 8,14 16,12 C24,10 28,14 32,18 C36,14 40,10 48,12 C56,14 60,24 52,28" stroke="url(#silverGrad)" stroke-width="1.8" stroke-linejoin="round"/>
-          
-          <!-- Inner Shield with Star -->
+          <path d="M12,28 C4,24 8,14 16,12 C24,10 28,14 32,18 C36,14 40,10 48,12 C56,14 60,24 52,28" stroke="url(#silverGrad)" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
           <path d="M22,24 L32,18 L42,24 L39,46 L32,54 L25,46 Z" fill="url(#goldGrad)"/>
-          <polygon points="32,28 34,33 39,33 35,36 36.5,41 32,38 27.5,41 29,36 25,33 30,33" fill="#FFFFFF"/>
         </g>
       </svg>`;
     }
 
-    // 13. CORONEL (Level 13): Double-headed tactical eagle clutched by gold double shields
+    // 13. CORONEL (Level 13): Double-headed eagle
     if (nivel === 13) {
-      return `<svg width="104" height="104" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      return `<svg width="52" height="52" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
         ${defs}
         <g filter="url(#premiumGlow)">
-          <!-- Crossed Sword Handles -->
           <line x1="8" y1="52" x2="56" y2="12" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
           <line x1="56" y1="52" x2="8" y2="12" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
-          
-          <!-- Grand Double Headed Eagle Wings -->
-          <path d="M14,14 L8,32 L20,44 M50,14 L56,32 L44,44" stroke="url(#goldGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M20,10 L32,2 L44,10 L39,48 L32,58 L25,48 Z" fill="url(#themeGrad)" opacity="0.3" stroke="url(#silverGrad)" stroke-width="2"/>
-          
-          <!-- Center Golden Eagle Emblem -->
           <path d="M24,20 L32,14 L40,20 L37,42 L32,50 L27,42 Z" fill="url(#goldGrad)"/>
-          
-          <!-- Ultimate 3 Star Row -->
-          <g transform="translate(0, 16)">
-            <polygon points="32,10 33.5,14 37,14 34,16.5 35,20 32,18 29,20 30,16.5 27,14 30.5,14" fill="#FFFFFF"/>
-          </g>
-          <g transform="translate(-6, 21)">
-            <polygon points="32,10 33.5,14 37,14 34,16.5 35,20 32,18 29,20 30,16.5 27,14 30.5,14" fill="#FFFFFF"/>
-          </g>
-          <g transform="translate(6, 21)">
-            <polygon points="32,10 33.5,14 37,14 34,16.5 35,20 32,18 29,20 30,16.5 27,14 30.5,14" fill="#FFFFFF"/>
-          </g>
         </g>
       </svg>`;
     }
@@ -773,7 +722,10 @@
       // 4. Prontidão Operacional
       const pBadge = document.getElementById('prontidao-badge-txt');
       const corProntidao = response.prontidao_cor || 'amarelo';
-      const statusProntidao = response.prontidao || 'Afastado';
+      let statusProntidao = response.prontidao || 'Afastado';
+      if (statusProntidao.toUpperCase() === 'PRONTO') {
+        statusProntidao = 'QAP';
+      }
       pBadge.className = 'prontidao-badge cor-' + corProntidao;
       pBadge.textContent = statusProntidao.toUpperCase();
 
@@ -812,7 +764,6 @@
       const logsBox = document.getElementById('logs-terminal-box');
       logsBox.innerHTML = '';
 
-      const rest = response.xp_restante || 0;
       const statusMeta = response.xp_proximo
         ? `Faltam ${rest} XP para a próxima graduação militar.`
         : 'Patamar Máximo de Carreira operacional.';
