@@ -1185,68 +1185,205 @@ async function init() {
 
 // ── CARREIRA E PROGRESSÃO TÁTICA ──
 function obterInsigniaSVG(nivel, curso) {
-  const cor = 'var(--brand-primary)';
+  const isCba = (curso === 'cba');
+  const corTema = isCba ? 'var(--info-fg)' : 'var(--brand-primary)';
+  
+  const defs = `
+    <defs>
+      <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFE259" />
+        <stop offset="50%" stop-color="#FFA751" />
+        <stop offset="100%" stop-color="#FF512F" />
+      </linearGradient>
+      <linearGradient id="silverGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFFFFF" />
+        <stop offset="50%" stop-color="#D2D7DF" />
+        <stop offset="100%" stop-color="#8E9AA6" />
+      </linearGradient>
+      <linearGradient id="themeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="${isCba ? '#60A5FA' : '#F87171'}" />
+        <stop offset="100%" stop-color="${corTema}" />
+      </linearGradient>
+      <filter id="premiumGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="1.5" result="blur" />
+        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+      </filter>
+    </defs>
+  `;
 
-  if (nivel >= 8) {
-    if (nivel === 11) {
-      return `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12,2 2,7 12,12 22,7" fill="${cor}" fill-opacity="0.1"/>
-        <path d="M2 17l10 5 10-5"/>
-        <path d="M2 12l10 5 10-5"/>
-      </svg>`;
-    }
-    if (nivel === 12) {
-      return `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12,3 14.5,9 21,9 16,13 18,19 12,15 6,19 8,13 3,9 9.5,9" fill="${cor}" fill-opacity="0.2"/>
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-      </svg>`;
-    }
-    if (nivel === 13) {
-      return `<svg width="34" height="34" viewBox="0 0 28 28" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="7,3 8.5,7 12.5,7 9.5,10 11,14 7,11 3,14 4.5,10 1.5,7 5.5,7" fill="${cor}" fill-opacity="0.2"/>
-        <polygon points="21,3 22.5,7 26.5,7 23.5,10 25,14 21,11 17,14 18.5,10 15.5,7 19.5,7" fill="${cor}" fill-opacity="0.2"/>
-        <path d="M14 16l-8 4 8 4 8-4-8-4z"/>
-      </svg>`;
-    }
-
-    const estrelas = nivel - 7;
-    let estrelasHtml = '';
-    for (let i = 0; i < estrelas; i++) {
-      estrelasHtml += `<g transform="translate(0, ${i * 12})">
-        <polygon points="12,2 14.5,8.5 21,8.5 16,12.5 18,19 12,15 6,19 8,12.5 3,8.5 9.5,8.5" fill="${cor}" fill-opacity="0.15" stroke="${cor}" stroke-width="1.8" stroke-linejoin="round"/>
-      </g>`;
-    }
-    return `<svg width="24" height="${14 + (estrelas - 1) * 12}" viewBox="0 0 24 ${14 + (estrelas - 1) * 12}" fill="none" style="overflow:visible;">
-      ${estrelasHtml}
-    </svg>`;
-  } else {
-    if (nivel === 1) {
-      return `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="${cor}" fill-opacity="0.05"/>
-      </svg>`;
-    }
-
-    const totalChevrons = Math.min(3, nivel - 1);
-    let chevronsHtml = '';
-    for (let i = 0; i < totalChevrons; i++) {
-      const y = 6 + i * 6;
-      chevronsHtml += `<polyline points="6,${y + 6} 24,${y} 42,${y + 6}" stroke="${cor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
-    }
-
-    let linhasHtml = '';
-    if (nivel >= 5) {
-      const totalLinhas = nivel === 5 ? 1 : (nivel === 6 ? 2 : 3);
-      for (let i = 0; i < totalLinhas; i++) {
-        const y = 26 + i * 5;
-        linhasHtml += `<line x1="10" y1="${y}" x2="38" y2="${y}" stroke="${cor}" stroke-width="2.5" stroke-linecap="round"/>`;
-      }
-    }
-
-    return `<svg width="34" height="34" viewBox="0 0 48 48" fill="none" style="overflow:visible; display:block;">
-      ${chevronsHtml}
-      ${linhasHtml}
+  if (nivel === 1) {
+    return `<svg width="34" height="34" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <rect x="12" y="12" width="40" height="40" rx="6" stroke="${corTema}" stroke-width="1.5" stroke-dasharray="4 2" fill="none" opacity="0.45"/>
+        <polyline points="20,24 32,34 44,24" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="32" cy="32" r="3" fill="${corTema}"/>
+      </g>
     </svg>`;
   }
+
+  if (nivel === 2) {
+    return `<svg width="34" height="34" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <path d="M12,16 L6,28 L12,40 M52,16 L58,28 L52,40" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.5"/>
+        <polyline points="18,22 32,32 46,22" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="18,29 32,39 46,29" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 3) {
+    return `<svg width="34" height="34" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <path d="M10,14 L4,26 L10,38 M54,14 L60,26 L54,38" stroke="url(#silverGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="16,20 32,30 48,20" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="16,26 32,36 48,26" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="16,32 32,42 48,32" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 4) {
+    return `<svg width="36" height="36" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <polyline points="18,18 32,28 46,18" stroke="url(#themeGrad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="18,24 32,34 46,24" stroke="url(#themeGrad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="18,30 32,40 46,30" stroke="url(#themeGrad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="20" y1="46" x2="44" y2="46" stroke="url(#silverGrad)" stroke-width="3.5" stroke-linecap="round"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 5) {
+    return `<svg width="36" height="36" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <polyline points="18,16 32,26 46,16" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="18,22 32,32 46,22" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="18,28 32,38 46,28" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="20" y1="44" x2="44" y2="44" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="20" y1="50" x2="44" y2="50" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 6) {
+    return `<svg width="36" height="36" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <path d="M10,12 L6,22 L10,32 M54,12 L58,22 L54,32" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round"/>
+        <polyline points="18,14 32,24 46,14" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="18,20 32,30 46,20" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="18,26 32,36 46,26" stroke="url(#themeGrad)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="20" y1="42" x2="44" y2="42" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="20" y1="47" x2="44" y2="47" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="20" y1="52" x2="44" y2="52" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 7) {
+    return `<svg width="38" height="38" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <path d="M12,8 L32,2 L52,8 L48,46 L32,58 L16,46 Z" stroke="url(#silverGrad)" stroke-width="1.8" fill="none" opacity="0.35"/>
+        <polyline points="20,16 32,26 46,16" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="20,22 32,32 46,22" stroke="url(#themeGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <polygon points="32,38 38,44 32,50 26,44" fill="url(#goldGrad)" filter="url(#premiumGlow)"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 8) {
+    return `<svg width="40" height="40" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <path d="M10,8 L32,2 L54,8 L48,48 L32,60 L16,48 Z" stroke="url(#silverGrad)" stroke-width="2" fill="none"/>
+        <polygon points="32,18 35,26 43,26 37,31 39,39 32,34 25,39 27,31 21,26 29,26" fill="url(#goldGrad)"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 9) {
+    return `<svg width="40" height="40" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <line x1="16" y1="48" x2="48" y2="16" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+        <line x1="48" y1="48" x2="16" y2="16" stroke="url(#silverGrad)" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+        <path d="M10,12 L32,4 L54,12 L48,50 L32,60 L16,50 Z" stroke="url(#silverGrad)" stroke-width="2" fill="none"/>
+        <g transform="translate(-8, 6)">
+          <polygon points="32,16 34.5,23 41.5,23 36,27 38,34 32,30 26,34 28,27 22.5,23 29.5,23" fill="url(#goldGrad)"/>
+        </g>
+        <g transform="translate(8, 6)">
+          <polygon points="32,16 34.5,23 41.5,23 36,27 38,34 32,30 26,34 28,27 22.5,23 29.5,23" fill="url(#goldGrad)"/>
+        </g>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 10) {
+    return `<svg width="42" height="42" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <path d="M6,16 L12,28 L6,40 M58,16 L52,28 L58,40" stroke="url(#themeGrad)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M14,10 L32,3 L50,10 L45,46 L32,56 L19,46 Z" stroke="url(#silverGrad)" stroke-width="2" fill="none"/>
+        <g transform="translate(0, -3)">
+          <polygon points="32,14 34,19 39,19 35,22 36.5,27 32,24 27.5,27 29,22 25,19 30,19" fill="url(#goldGrad)"/>
+        </g>
+        <g transform="translate(-8, 7)">
+          <polygon points="32,14 34,19 39,19 35,22 36.5,27 32,24 27.5,27 29,22 25,19 30,19" fill="url(#goldGrad)"/>
+        </g>
+        <g transform="translate(8, 7)">
+          <polygon points="32,14 34,19 39,19 35,22 36.5,27 32,24 27.5,27 29,22 25,19 30,19" fill="url(#goldGrad)"/>
+        </g>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 11) {
+    return `<svg width="44" height="44" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <path d="M4,18 C12,18 16,10 16,10 L16,42 C16,42 12,50 4,50 Z" stroke="url(#themeGrad)" stroke-width="2"/>
+        <path d="M60,18 C52,18 48,10 48,10 L48,42 C48,42 52,50 60,50 Z" stroke="url(#themeGrad)" stroke-width="2"/>
+        <path d="M32,10 C25,22 24,36 32,50 C40,36 39,22 32,10 Z" fill="url(#goldGrad)" opacity="0.85"/>
+        <polygon points="32,20 34,25 39,25 35,28 36.5,33 32,30 27.5,33 29,28 25,25 30,25" fill="#FFFFFF"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 12) {
+    return `<svg width="46" height="46" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <path d="M12,28 C4,24 8,14 16,12 C24,10 28,14 32,18 C36,14 40,10 48,12 C56,14 60,24 52,28 C44,32 40,24 32,26 C24,24 20,32 12,28 Z" fill="url(#silverGrad)" opacity="0.4"/>
+        <path d="M12,28 C4,24 8,14 16,12 C24,10 28,14 32,18 C36,14 40,10 48,12 C56,14 60,24 52,28" stroke="url(#silverGrad)" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M22,24 L32,18 L42,24 L39,46 L32,54 L25,46 Z" fill="url(#goldGrad)"/>
+        <polygon points="32,28 34,33 39,33 35,36 36.5,41 32,38 27.5,41 29,36 25,33 30,33" fill="#FFFFFF"/>
+      </g>
+    </svg>`;
+  }
+
+  if (nivel === 13) {
+    return `<svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="overflow:visible;">
+      ${defs}
+      <g filter="url(#premiumGlow)">
+        <line x1="8" y1="52" x2="56" y2="12" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+        <line x1="56" y1="52" x2="8" y2="12" stroke="url(#silverGrad)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M14,14 L8,32 L20,44 M50,14 L56,32 L44,44" stroke="url(#goldGrad)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20,10 L32,2 L44,10 L39,48 L32,58 L25,48 Z" fill="url(#themeGrad)" opacity="0.3" stroke="url(#silverGrad)" stroke-width="2"/>
+        <path d="M24,20 L32,14 L40,20 L37,42 L32,50 L27,42 Z" fill="url(#goldGrad)"/>
+        <g transform="translate(0, 16)">
+          <polygon points="32,10 33.5,14 37,14 34,16.5 35,20 32,18 29,20 30,16.5 27,14 30.5,14" fill="#FFFFFF"/>
+        </g>
+      </g>
+    </svg>`;
+  }
+
+  return '';
 }
 
 async function atualizarCarreiraDashboard() {
