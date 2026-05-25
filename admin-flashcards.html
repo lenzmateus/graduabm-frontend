@@ -24,10 +24,12 @@
   .filtro-busca:focus { border-color: var(--roxo); }
   .filtro-busca::placeholder { color: #555; }
 
-  .lista-header { display: grid; grid-template-columns: minmax(0, 1fr) 80px 60px 80px 60px 110px; gap: 1rem; padding: 8px 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 4px; }
-  .card-row { display: grid; grid-template-columns: minmax(0, 1fr) 80px 60px 80px 60px 110px; gap: 1rem; align-items: center; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 1rem; margin-bottom: 6px; transition: border-color 0.15s; }
+  .lista-header { display: grid; grid-template-columns: minmax(0, 1fr) 80px 60px 80px 90px 110px; gap: 1rem; padding: 8px 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 4px; }
+  .card-row { display: grid; grid-template-columns: minmax(0, 1fr) 80px 60px 80px 90px 110px; gap: 1rem; align-items: center; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 1rem; margin-bottom: 6px; transition: border-color 0.15s; }
   .card-row:hover { border-color: #444; }
   .card-frente { font-size: 13px; color: var(--branco); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card-frente :is(p,strong,em,u,span,sup,sub) { display: inline; margin: 0; }
+  .card-frente img { display: none; }
   .card-leg { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .card-area-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; display: inline-block; }
   .badge-AT1 { background: rgba(192,39,15,0.12); color: #E0866E; border: 1px solid rgba(192,39,15,0.3); }
@@ -39,8 +41,9 @@
   .fonte-ia { background: rgba(127,119,221,0.08); border: 1px solid rgba(127,119,221,0.2); color: #AFA9EC; }
   .fonte-manual { background: rgba(39,160,90,0.08); border: 1px solid rgba(39,160,90,0.2); color: var(--success-fg); }
   .card-status { display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 20px; }
-  .status-ativa { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
-  .status-inativa { background: rgba(226,75,74,0.08); border: 1px solid rgba(226,75,74,0.2); color: var(--danger-fg); }
+  .status-publicado { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .status-rascunho  { background: rgba(186,117,23,0.10); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
+  .status-pendente  { background: rgba(127,119,221,0.10); border: 1px solid rgba(127,119,221,0.3); color: #AFA9EC; }
   .card-acoes { display: flex; gap: 6px; justify-content: flex-end; }
   .btn-mini { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s; }
   .btn-mini:hover { border-color: #555; color: var(--branco); }
@@ -53,7 +56,7 @@
 
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
   .overlay.aberto { display: flex; }
-  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; }
+  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 720px; max-height: 92vh; display: flex; flex-direction: column; }
   .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
   .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.03em; }
   .modal-fechar { background: transparent; border: none; color: var(--cinza-texto); font-size: 20px; cursor: pointer; padding: 0 4px; transition: color 0.15s; }
@@ -63,17 +66,24 @@
 
   .campo { margin-bottom: 1rem; }
   .campo label { display: block; font-size: 11px; font-weight: 500; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
-  .campo input, .campo select, .campo textarea { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 9px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.2s; }
-  .campo input:focus, .campo select:focus, .campo textarea:focus { border-color: var(--roxo); }
-  .campo input::placeholder, .campo textarea::placeholder { color: #555; }
-  .campo textarea { resize: vertical; min-height: 90px; }
+  .campo input, .campo select { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 9px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--branco); outline: none; transition: border-color 0.2s; }
+  .campo input:focus, .campo select:focus { border-color: var(--roxo); }
+  .campo input::placeholder { color: #555; }
   .campo select option { background: var(--cinza-medio); }
+
+  .campo-aviso { font-size: 11px; color: var(--cinza-texto); margin-top: 4px; }
+  .campo-aviso.warn { color: #EF9F27; }
 
   .btn-salvar { background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: background 0.2s; }
   .btn-salvar:hover { background: #6960C8; }
   .btn-salvar:disabled { background: #444; cursor: default; }
   .btn-cancelar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.15s; }
   .btn-cancelar:hover { border-color: #555; color: var(--branco); }
+
+  .rt-host { background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; }
+  .rt-host .ql-toolbar { border: none; border-bottom: 1px solid var(--cinza-borda); }
+  .rt-host .ql-container { border: none; }
+  .rt-host .ql-editor { min-height: 100px; color: var(--branco); font-family: 'Inter', sans-serif; font-size: 14px; }
 
   @media (max-width: 768px) {
     .lista-header { display: none; }
@@ -84,7 +94,8 @@
 </head>
 <body>
 
-<script src="/js/api.js?v=5"></script>
+<script src="/js/api.js?v=6"></script>
+<script src="/js/rich-text.js?v=2"></script>
 <script src="/js/admin-chrome.js"></script>
 <script>
 const _isAdmin = PBM.isAdmin();
@@ -118,9 +129,10 @@ const _isAdmin = PBM.isAdmin();
           <option value="manual">Manual</option>
         </select>
         <select class="filtro-select" id="filtro-status">
-          <option value="">Todos</option>
-          <option value="true">Ativos</option>
-          <option value="false">Inativos</option>
+          <option value="">Todos status</option>
+          <option value="publicado">Publicado</option>
+          <option value="rascunho">Rascunho</option>
+          <option value="pendente_aprovacao">Pendente aprovação</option>
         </select>
         <input class="filtro-busca" type="text" id="filtro-busca" placeholder="Buscar frente ou legislação…">
       </div>
@@ -154,6 +166,7 @@ const _isAdmin = PBM.isAdmin();
         <div class="campo">
           <label>Área Temática</label>
           <select id="m-area">
+            <option value="">— selecione —</option>
             <option value="AT1">AT1 — Segurança contra incêndios</option>
             <option value="AT2">AT2 — Combate a incêndios</option>
             <option value="AT3">AT3 — Buscas e salvamentos / APH</option>
@@ -171,22 +184,28 @@ const _isAdmin = PBM.isAdmin();
         </div>
       </div>
       <div class="campo">
+        <label>Legislação</label>
+        <select id="m-legislacao-id" disabled><option value="">— escolha a área primeiro —</option></select>
+      </div>
+      <div class="campo">
         <label>Frente (pergunta / conceito)</label>
-        <textarea id="m-frente" rows="3" placeholder="O que aparece na frente do card…"></textarea>
+        <textarea id="m-frente-html"></textarea>
+        <div class="campo-aviso" id="aviso-frente">Princípio da Informação Mínima — uma ideia por card.</div>
       </div>
       <div class="campo">
         <label>Verso (resposta)</label>
-        <textarea id="m-verso" rows="4" placeholder="Resposta completa e precisa…"></textarea>
+        <textarea id="m-verso-html"></textarea>
       </div>
       <div class="campo">
-        <label>Referência / Legislação</label>
-        <input type="text" id="m-legislacao" placeholder="Ex: RT CBMRS nº 05 — Parte 06/2025 (Fiscalização)">
+        <label>Mnemônico / Dica (opcional)</label>
+        <textarea id="m-mnemonico"></textarea>
+        <div class="campo-aviso">Aceita texto formatado e imagens — use como dica visual ou acrônimo para o aluno.</div>
       </div>
       <div class="campo">
         <label>Status</label>
-        <select id="m-ativa">
-          <option value="true">Ativo</option>
-          <option value="false">Inativo</option>
+        <select id="m-status">
+          <option value="publicado">Publicado</option>
+          <option value="rascunho">Rascunho</option>
         </select>
       </div>
       <div id="modal-erro" style="font-size:12px;color:var(--danger-fg);margin-top:4px;display:none"></div>
@@ -218,18 +237,88 @@ const _isAdmin = PBM.isAdmin();
 
 <script>
 let todosCards = [];
+let manifestoLegs = [];
 let deleteId = null;
+let editoresMontados = false;
+const RT_IDS = ['m-frente-html', 'm-verso-html', 'm-mnemonico'];
 
-function supaFetch(path, method = 'GET', body = null) {
-  return PBM.Admin.query(path, 'return=representation', method, body);
+async function carregarManifesto() {
+  if (manifestoLegs.length) return;
+  try {
+    const r = await fetch('/api/legislacoes/manifesto');
+    const data = await r.json();
+    manifestoLegs = (data?.legislacoes || []);
+  } catch (e) {
+    console.error('Erro ao carregar manifesto', e);
+  }
+}
+
+function legPorId(id) { return manifestoLegs.find(l => l.id === id) || null; }
+function atDaLeg(leg, curso) {
+  if (!leg) return null;
+  const at = leg.area_tematica;
+  if (typeof at === 'string') return at;
+  if (at && typeof at === 'object') return at[curso === 'cba' ? 'cba' : 'ctsp'] || at.ctsp || at.cba;
+  return null;
+}
+
+// Repopula o select de legislação com base na AT escolhida + curso.
+// Se a leg do card em edição não estiver no recorte, injeta como opção avulsa
+// para não "sumir" silenciosamente.
+function popularLegsPorArea(legPreservar) {
+  const at    = document.getElementById('m-area').value;
+  const curso = document.getElementById('m-curso').value;
+  const sel   = document.getElementById('m-legislacao-id');
+  const valorAnterior = legPreservar || sel.value;
+
+  if (!at) {
+    sel.innerHTML = '<option value="">— escolha a área primeiro —</option>';
+    sel.disabled = true;
+    return;
+  }
+
+  // Filtra manifestoLegs pelas que casam com a AT escolhida, considerando o curso
+  const casa = manifestoLegs.filter(l => atDaLeg(l, curso) === at);
+
+  // Compatível com curso: se card é "ambos", precisa leg com curso='ambos'.
+  // Para CTSP/CBA exclusivos, aceita leg do mesmo curso ou 'ambos'.
+  const filtradas = casa.filter(l => {
+    if (curso === 'ambos') return l.curso === 'ambos';
+    return l.curso === curso || l.curso === 'ambos';
+  });
+
+  filtradas.sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+
+  sel.innerHTML = '<option value="">— selecione —</option>' + filtradas.map(l => {
+    const nome = (l.nome || '').replace(/</g, '&lt;');
+    return `<option value="${l.id}">${nome}</option>`;
+  }).join('');
+
+  // Tenta restaurar valor anterior. Se não estiver no recorte mas o card o tinha,
+  // injeta opção avulsa com aviso.
+  if (valorAnterior) {
+    if (filtradas.some(l => l.id === valorAnterior)) {
+      sel.value = valorAnterior;
+    } else {
+      const legOrig = legPorId(valorAnterior);
+      if (legOrig) {
+        const opt = document.createElement('option');
+        opt.value = legOrig.id;
+        opt.textContent = (legOrig.nome || legOrig.id) + ' ⚠ fora do recorte atual';
+        sel.appendChild(opt);
+        sel.value = legOrig.id;
+      }
+    }
+  }
+  sel.disabled = false;
 }
 
 async function carregarCards() {
-  const r = await supaFetch('/rest/v1/flashcards?select=*&order=criado_em.desc&limit=1000');
-  if (r.ok && Array.isArray(r.data)) {
-    todosCards = r.data;
+  try {
+    const data = await PBM.Admin.flashcards.listar();
+    todosCards = Array.isArray(data) ? data : [];
     aplicarFiltros();
-  } else {
+  } catch (e) {
     document.getElementById('lista-cards').innerHTML = '<div class="loading-txt" style="color:var(--danger-fg)">Erro ao carregar flashcards.</div>';
   }
 }
@@ -241,12 +330,15 @@ function aplicarFiltros() {
   const status = document.getElementById('filtro-status').value;
   const busca  = document.getElementById('filtro-busca').value.toLowerCase();
 
-  let filtrados = todosCards.filter(c => {
-    if (area   && c.area !== area) return false;
-    if (curso  && c.curso !== curso) return false;
-    if (fonte  && c.fonte !== fonte) return false;
-    if (status !== '' && String(c.ativa) !== status) return false;
-    if (busca  && !c.frente.toLowerCase().includes(busca) && !c.legislacao?.toLowerCase().includes(busca)) return false;
+  const filtrados = todosCards.filter(c => {
+    if (area   && c.area_tematica  !== area)   return false;
+    if (curso  && c.curso          !== curso)  return false;
+    if (fonte  && c.fonte          !== fonte)  return false;
+    if (status && c.status         !== status) return false;
+    if (busca) {
+      const hay = ((c.frente_html || '') + ' ' + (c.legislacao_nome || '')).toLowerCase();
+      if (!hay.includes(busca)) return false;
+    }
     return true;
   });
 
@@ -261,21 +353,27 @@ function renderLista(cards) {
     return;
   }
   el.innerHTML = cards.map(c => {
-    const frente = c.frente.length > 80 ? c.frente.substring(0, 80) + '…' : c.frente;
-    const frenteEsc = frente.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const frenteHTML = window.RichText
+      ? RichText.renderInline(c.frente_html || '')
+      : (c.frente_html || '').replace(/<[^>]+>/g, '');
+    const at = c.area_tematica || '—';
+    const statusClass = c.status === 'publicado' ? 'status-publicado'
+                      : c.status === 'rascunho'  ? 'status-rascunho'
+                      : 'status-pendente';
+    const statusLabel = c.status === 'pendente_aprovacao' ? 'Pendente' : (c.status || '—');
     return `
     <div class="card-row" id="row-${c.id}">
       <div>
-        <div class="card-frente" title="${c.frente.replace(/"/g,'&quot;')}">${frenteEsc}</div>
-        <div class="card-leg">${c.legislacao || '—'}</div>
+        <div class="card-frente">${frenteHTML}</div>
+        <div class="card-leg">${(c.legislacao_nome || '—').replace(/</g,'&lt;')}</div>
       </div>
-      <div><span class="card-area-badge badge-${c.area}">${c.area}</span></div>
+      <div>${at !== '—' ? `<span class="card-area-badge badge-${at}">${at}</span>` : '<span style="color:#555">—</span>'}</div>
       <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888">${(c.curso||'').toUpperCase()}</div>
       <div><span class="fonte-badge fonte-${c.fonte||'manual'}">${c.fonte === 'ia' ? 'IA' : 'Manual'}</span></div>
-      <div><span class="card-status ${c.ativa ? 'status-ativa' : 'status-inativa'}">${c.ativa ? 'Ativo' : 'Inativo'}</span></div>
+      <div><span class="card-status ${statusClass}">${statusLabel}</span></div>
       <div class="card-acoes">
         <button class="btn-mini edit" data-action="editar" data-id="${c.id}">Editar</button>
-        ${_isAdmin ? `<button class="btn-mini danger" data-action="deletar" data-id="${c.id}" data-preview="${frenteEsc}">Excluir</button>` : ''}
+        ${_isAdmin ? `<button class="btn-mini danger" data-action="deletar" data-id="${c.id}">Excluir</button>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -285,33 +383,57 @@ document.getElementById('lista-cards').addEventListener('click', function(e) {
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
   if (btn.dataset.action === 'editar')  abrirModalEditar(btn.dataset.id);
-  if (btn.dataset.action === 'deletar') pedirDelete(btn.dataset.id, btn.dataset.preview || '');
+  if (btn.dataset.action === 'deletar') pedirDelete(btn.dataset.id);
 });
 
-function abrirModalNova() {
+async function garantirEditores() {
+  await RichText.ensureLoaded();
+  if (editoresMontados) return;
+  for (const id of RT_IDS) {
+    if (RichText.get(id)) continue;
+    if (!document.getElementById(id)) continue;
+    RichText.mountField(id, {
+      imageUploader: (file) => PBM.Admin.uploadMedia(file, { pasta: 'flashcards' }),
+    });
+  }
+  editoresMontados = true;
+}
+
+function limparEditores() {
+  for (const id of RT_IDS) RichText.setHTML(id, '');
+}
+
+async function abrirModalNova() {
+  await carregarManifesto();
+  await garantirEditores();
   document.getElementById('modal-titulo').textContent = 'Novo Flashcard';
   document.getElementById('modal-id').value = '';
-  document.getElementById('m-frente').value = '';
-  document.getElementById('m-verso').value = '';
-  document.getElementById('m-legislacao').value = '';
-  document.getElementById('m-area').value = 'AT1';
+  limparEditores();
+  document.getElementById('m-area').value = '';
   document.getElementById('m-curso').value = 'ambos';
-  document.getElementById('m-ativa').value = 'true';
+  popularLegsPorArea();
+  document.getElementById('m-status').value = 'publicado';
   document.getElementById('modal-erro').style.display = 'none';
   document.getElementById('overlay-modal').classList.add('aberto');
 }
 
-function abrirModalEditar(id) {
+async function abrirModalEditar(id) {
   const c = todosCards.find(x => String(x.id) === String(id));
   if (!c) return;
+  await carregarManifesto();
+  await garantirEditores();
   document.getElementById('modal-titulo').textContent = 'Editar Flashcard';
   document.getElementById('modal-id').value = c.id;
-  document.getElementById('m-frente').value = c.frente || '';
-  document.getElementById('m-verso').value = c.verso || '';
-  document.getElementById('m-legislacao').value = c.legislacao || '';
-  document.getElementById('m-area').value = c.area || 'AT1';
+  RichText.setHTML('m-frente-html', c.frente_html || '');
+  RichText.setHTML('m-verso-html',  c.verso_html  || '');
   document.getElementById('m-curso').value = c.curso || 'ambos';
-  document.getElementById('m-ativa').value = String(c.ativa !== false);
+  // Deriva AT a partir do area_tematica do card (já vem enriquecido do backend),
+  // ou da legislação se area_tematica não vier.
+  const atCard = c.area_tematica || atDaLeg(legPorId(c.legislacao_id), c.curso) || '';
+  document.getElementById('m-area').value = atCard;
+  popularLegsPorArea(c.legislacao_id || '');
+  RichText.setHTML('m-mnemonico', c.mnemonico || '');
+  document.getElementById('m-status').value = c.status === 'pendente_aprovacao' ? 'publicado' : (c.status || 'publicado');
   document.getElementById('modal-erro').style.display = 'none';
   document.getElementById('overlay-modal').classList.add('aberto');
 }
@@ -323,52 +445,58 @@ async function salvarCard() {
   const erroEl = document.getElementById('modal-erro');
   erroEl.style.display = 'none';
 
-  const id     = document.getElementById('modal-id').value;
-  const frente = document.getElementById('m-frente').value.trim();
-  const verso  = document.getElementById('m-verso').value.trim();
+  const id          = document.getElementById('modal-id').value;
+  const frente_html = RichText.getHTML('m-frente-html');
+  const verso_html  = RichText.getHTML('m-verso-html');
+  const legislacao_id = document.getElementById('m-legislacao-id').value;
 
-  if (!frente || !verso) {
+  if (!frente_html || !verso_html) {
     erroEl.textContent = 'Preencha a frente e o verso do flashcard.';
+    erroEl.style.display = 'block';
+    return;
+  }
+  if (!legislacao_id) {
+    erroEl.textContent = 'Selecione a legislação.';
     erroEl.style.display = 'block';
     return;
   }
 
   const payload = {
-    frente,
-    verso,
-    area:      document.getElementById('m-area').value,
-    curso:     document.getElementById('m-curso').value,
-    legislacao: document.getElementById('m-legislacao').value.trim() || null,
-    ativa:     document.getElementById('m-ativa').value === 'true',
-    fonte:     id ? undefined : 'manual',
+    frente_html,
+    verso_html,
+    mnemonico: RichText.getHTML('m-mnemonico') || null,
+    legislacao_id,
+    curso:  document.getElementById('m-curso').value,
+    status: document.getElementById('m-status').value,
   };
-  if (!id) payload.fonte = 'manual';
 
   btn.disabled = true;
   btn.textContent = 'Salvando…';
 
-  let r;
-  if (id) {
-    r = await supaFetch('/rest/v1/flashcards?id=eq.' + id, 'PATCH', payload);
-  } else {
-    r = await supaFetch('/rest/v1/flashcards', 'POST', [payload]);
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Salvar';
-
-  if (r.ok) {
+  try {
+    if (id) {
+      await PBM.Admin.flashcards.editar(id, payload);
+    } else {
+      await PBM.Admin.flashcards.criar(payload);
+    }
     fecharModal();
     await carregarCards();
-  } else {
-    erroEl.textContent = r.data?.message || 'Erro ao salvar. Tente novamente.';
+  } catch (err) {
+    erroEl.textContent = err?.erro || err?.message || 'Erro ao salvar.';
     erroEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Salvar';
   }
 }
 
-function pedirDelete(id, preview) {
+function pedirDelete(id) {
   deleteId = id;
-  document.getElementById('delete-preview').textContent = preview;
+  const c = todosCards.find(x => String(x.id) === String(id));
+  const preview = c && c.frente_html
+    ? (window.RichText ? RichText.renderInline(c.frente_html) : c.frente_html.replace(/<[^>]+>/g, '')).slice(0, 200)
+    : '';
+  document.getElementById('delete-preview').innerHTML = preview;
   document.getElementById('overlay-delete').classList.add('aberto');
 }
 function fecharDelete() { document.getElementById('overlay-delete').classList.remove('aberto'); deleteId = null; }
@@ -378,7 +506,11 @@ async function confirmarDelete() {
   const btn = document.getElementById('btn-confirmar-delete');
   btn.disabled = true;
   btn.textContent = 'Excluindo…';
-  await supaFetch('/rest/v1/flashcards?id=eq.' + deleteId, 'DELETE');
+  try {
+    await PBM.Admin.flashcards.excluir(deleteId);
+  } catch (err) {
+    alert(err?.erro || err?.message || 'Erro ao excluir.');
+  }
   btn.disabled = false;
   btn.textContent = 'Excluir';
   fecharDelete();
@@ -405,6 +537,9 @@ document.getElementById('btn-fechar-delete').addEventListener('click', fecharDel
 document.getElementById('btn-cancelar-delete').addEventListener('click', fecharDelete);
 document.getElementById('btn-confirmar-delete').addEventListener('click', confirmarDelete);
 
+document.getElementById('m-area').addEventListener('change', () => popularLegsPorArea());
+document.getElementById('m-curso').addEventListener('change', () => popularLegsPorArea());
+
 ['filtro-area','filtro-curso','filtro-fonte','filtro-status'].forEach(id => {
   document.getElementById(id).addEventListener('change', aplicarFiltros);
 });
@@ -424,6 +559,7 @@ if (linkModoAluno) {
   });
 }
 
+carregarManifesto();
 carregarCards();
 </script>
 <script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>

@@ -404,7 +404,7 @@
           <!-- Texto da Esquerda -->
           <div style="display:flex;flex-direction:column;justify-content:center;position:relative;z-index:3;">
             <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brand-primary);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:6px;">Protocolo Bravo Mike</div>
-            <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--branco);line-height:1.1;">Bem-vindo, <span id="dash-hero-nome" style="color:var(--brand-primary);">Combatente</span></div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:0.04em;color:var(--branco);line-height:1.1;">Bem-vindo, <span id="dash-hero-nome" style="color:var(--brand-primary);">Combatente</span><span id="dash-hero-insignia" style="margin-left:10px;display:inline-flex;align-items:center;vertical-align:middle;"></span></div>
             <div style="font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:0.08em;color:var(--brand-primary);margin-top:5px;opacity:0.7;">Você não estuda. Você Treina.</div>
           </div>
           
@@ -611,8 +611,8 @@ function renderRankBadge(curso) {
   const isCba = curso === 'cba';
   const cor = isCba ? '#185FA5' : '#C0270F';
   const icon = isCba
-    ? `<svg width="44" height="22" viewBox="0 0 56 28" fill="none" stroke="${cor}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="14,2 16.8,9.6 24,9.6 18.4,14.6 20.6,22 14,17.4 7.4,22 9.6,14.6 4,9.6 11.2,9.6"/><polygon points="42,2 44.8,9.6 52,9.6 46.4,14.6 48.6,22 42,17.4 35.4,22 37.6,14.6 32,9.6 39.2,9.6"/></svg>`
-    : `<svg width="36" height="24" viewBox="0 0 48 32" fill="none" stroke="${cor}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,28 24,20 44,28"/><polyline points="4,21 24,13 44,21"/><polyline points="4,14 24,6 44,14"/></svg>`;
+    ? `<svg width="22" height="44" viewBox="0 0 28 56" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 8px;"><polygon points="14,2 16.8,9.6 24,9.6 18.4,14.6 20.6,22 14,17.4 7.4,22 9.6,14.6 4,9.6 11.2,9.6"/><polygon points="14,30 16.8,37.6 24,37.6 18.4,42.6 20.6,50 14,45.4 7.4,50 9.6,42.6 4,37.6 11.2,37.6"/></svg>`
+    : `<svg width="36" height="26" viewBox="0 0 48 34" fill="none" stroke="${cor}" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="4,10 24,2 44,10"/><polyline points="4,16 24,8 44,16"/><polyline points="4,22 24,14 44,22"/><polyline points="4,32 24,24 44,32"/></svg>`;
   const nome = isCba ? '1º Tenente' : '2º Sargento';
   el.innerHTML = `<div class="rank-badge">${icon}<div class="rank-badge-info"><div class="rank-badge-titulo">Objetivo</div><div class="rank-badge-nome" style="color:${cor}">${nome}</div></div></div>`;
 }
@@ -1071,6 +1071,19 @@ async function init() {
     const heroNome = document.getElementById('dash-hero-nome');
     if (heroNome && user.nome) heroNome.textContent = user.nome.split(' ')[0];
     renderRankBadge(user.curso);
+    
+    // Injeção dinâmica de insígnias/divisas do lado do nome do combatente
+    const heroInsignia = document.getElementById('dash-hero-insignia');
+    if (heroInsignia && user.curso) {
+      const isCba = user.curso === 'cba';
+      if (isCba) {
+        // Insígnia de 1º Tenente (Duas estrelas verticais - uma acima da outra)
+        heroInsignia.innerHTML = `<svg width="18" height="36" viewBox="0 0 28 56" fill="none" stroke="var(--brand-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align: middle;"><polygon points="14,2 16.8,9.6 24,9.6 18.4,14.6 20.6,22 14,17.4 7.4,22 9.6,14.6 4,9.6 11.2,9.6"/><polygon points="14,30 16.8,37.6 24,37.6 18.4,42.6 20.6,50 14,45.4 7.4,50 9.6,42.6 4,37.6 11.2,37.6"/></svg>`;
+      } else {
+        // Divisas de 2º Sargento (Três listras, espacinho, uma listra)
+        heroInsignia.innerHTML = `<svg width="28" height="20" viewBox="0 0 48 34" fill="none" stroke="var(--brand-primary)" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align: middle;"><polyline points="4,10 24,2 44,10"/><polyline points="4,16 24,8 44,16"/><polyline points="4,22 24,14 44,22"/><polyline points="4,32 24,24 44,32"/></svg>`;
+      }
+    }
   }
 
   if (window.PBMTour) PBMTour.init();

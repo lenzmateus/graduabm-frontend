@@ -184,6 +184,18 @@
             </div>
           </div>
         </div>
+        <div class="grid-2" style="margin-top:1rem;">
+          <div class="card">
+            <div class="card-titulo">Encerramentos de Bloco — Últimos 90 dias</div>
+            <div class="dist-bars" id="dist-encerramentos" style="margin-top:8px;">
+              <div style="color:#555;font-size:12px;">Carregando...</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-titulo">Top 10 Legislações Encerradas na Rodada</div>
+            <div id="top-legs-encerradas" style="margin-top:8px;font-size:12px;color:#555;">Carregando...</div>
+          </div>
+        </div>
       </div>
 
       <!-- SEÇÃO 3: Qualidade do Banco -->
@@ -477,6 +489,40 @@ async function carregarEngajamento() {
         <span class="dist-val">${c.val}</span>
       </div>`;
     }).join('');
+
+    const enc = d.ciclo_encerramentos || { balde_cheio: 0, forcado_manual: 0, encerrado_rodada: 0, sem_motivo: 0 };
+    const totalEnc = Math.max(enc.balde_cheio + enc.forcado_manual + enc.encerrado_rodada + enc.sem_motivo, 1);
+    const motivos = [
+      { label: 'Balde cheio (natural)', val: enc.balde_cheio, color: '#27A05A' },
+      { label: 'Forçado manual', val: enc.forcado_manual, color: '#BA7517' },
+      { label: 'Encerrado na rodada', val: enc.encerrado_rodada, color: '#C0270F' },
+      { label: 'Sem motivo (legado)', val: enc.sem_motivo, color: '#555' },
+    ];
+    document.getElementById('dist-encerramentos').innerHTML = motivos.map(m => {
+      const pct = Math.round((m.val / totalEnc) * 100);
+      return `<div class="dist-item">
+        <span class="dist-nome">${m.label}</span>
+        <div class="dist-bar-wrap"><div class="dist-bar" style="width:${pct}%;background:${m.color};"></div></div>
+        <span class="dist-val">${m.val}</span>
+      </div>`;
+    }).join('');
+
+    const tops = d.top_legs_encerradas || [];
+    if (tops.length === 0) {
+      document.getElementById('top-legs-encerradas').innerHTML = '<div style="color:#555;padding:8px 0;">Nenhuma leg encerrada na rodada nos últimos 90 dias.</div>';
+    } else {
+      const maxVal = Math.max(...tops.map(t => t.vezes), 1);
+      document.getElementById('top-legs-encerradas').innerHTML = `<div class="dist-bars">${
+        tops.map(t => {
+          const pct = Math.round((t.vezes / maxVal) * 100);
+          return `<div class="dist-item">
+            <span class="dist-nome" style="font-family:'IBM Plex Mono',monospace;font-size:11px;">${t.legislacao_id}</span>
+            <div class="dist-bar-wrap"><div class="dist-bar" style="width:${pct}%;background:#C0270F;"></div></div>
+            <span class="dist-val">${t.vezes}</span>
+          </div>`;
+        }).join('')
+      }</div>`;
+    }
   } catch (e) {
     console.error('engajamento:', e);
   }

@@ -12,7 +12,7 @@
   --bg-hover: #2A2A2A;
   --border-color: #333333;
   --texto-principal: #F8F6F2;
-  --texto-suporte: #888888;
+  --texto-suporte: #9E9E9E;
   --texto-suave: #EFEFEA;
   --brand-primary: #C0270F;
   --brand-primary-hover: #8B1A08;
@@ -183,3 +183,20 @@ html.tema-pronto .painel {
   outline: 2px solid var(--brand-primary);
   outline-offset: 1px;
 }
+
+/* ============================================================
+   Pivotamento Dinâmico de Cor — Alunos CBA (Tenente)
+   ============================================================ */
+html.curso-cba {
+  --brand-primary: #185FA5;
+  --brand-primary-hover: #144d87;
+  --vermelho: #185FA5;
+  --vermelho-escuro: #144d87;
+}
+html.curso-cba.light-mode {
+  --brand-primary: #185FA5;
+  --brand-primary-hover: #144d87;
+  --vermelho: #185FA5;
+  --vermelho-escuro: #144d87;
+}
+

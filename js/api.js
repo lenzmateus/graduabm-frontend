@@ -460,11 +460,15 @@ const PBM = {
       listar(qs = '') {
         return request('/api/flashcards' + (qs ? '?' + qs : ''));
       },
-      revisar(id, qualidade) {
+      revisar(id, avaliacao) {
         return request(`/api/flashcards/${id}/revisar`, {
           method: 'POST',
-          body: JSON.stringify({ qualidade }),
+          body: JSON.stringify({ avaliacao }),
         });
+      },
+      maestria(legislacao_id) {
+        const qs = legislacao_id ? '?legislacao_id=' + encodeURIComponent(legislacao_id) : '';
+        return request('/api/flashcards/maestria' + qs);
       },
     },
   },
@@ -644,6 +648,29 @@ const PBM = {
       } catch {
         return { ok: false, erro: 'Erro de rede.' };
       }
+    },
+    async uploadMedia(file, { pasta = 'misc', id = '' } = {}) {
+      try {
+        const fd = new FormData();
+        fd.append('arquivo', file);
+        const qs = new URLSearchParams({ pasta, ...(id ? { id } : {}) });
+        const res = await fetch('/api/admin/upload/media?' + qs.toString(), {
+          method: 'POST',
+          headers: PBM.Admin._authHeader(),
+          body: fd,
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.url) return { ok: true, url: data.url, path: data.path };
+        return { ok: false, erro: data.erro || 'Erro no upload.' };
+      } catch {
+        return { ok: false, erro: 'Erro de rede.' };
+      }
+    },
+    flashcards: {
+      listar()         { return PBM.Admin.req('/api/admin/flashcards'); },
+      criar(body)      { return PBM.Admin.req('/api/admin/flashcards', { method: 'POST', body: JSON.stringify(body) }); },
+      editar(id, body) { return PBM.Admin.req('/api/admin/flashcards/' + id, { method: 'PATCH', body: JSON.stringify(body) }); },
+      excluir(id)      { return PBM.Admin.req('/api/admin/flashcards/' + id, { method: 'DELETE' }); },
     },
     Auth: {
       async login({ email, senha }) {

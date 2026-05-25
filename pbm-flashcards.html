@@ -20,21 +20,61 @@
 <style>
   .conteudo { display: flex; flex-direction: column; }
 
-  .filtros-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.75rem; flex-wrap: wrap; }
-  .filtro-select { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 7px 12px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; outline: none; transition: border-color 0.15s; }
+  /* ── BARRA DE MAESTRIA ── */
+  .maestria-bar {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+    border-radius: 10px; padding: 10px 16px; margin-bottom: 1rem;
+  }
+  .maestria-bar-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    color: var(--cinza-texto); letter-spacing: 0.04em; text-transform: uppercase;
+    flex-shrink: 0; min-width: 0;
+  }
+  .maestria-bar-label strong { color: var(--branco); font-weight: 600; }
+  .maestria-bar-track {
+    flex: 1; height: 6px; background: var(--cinza-borda);
+    border-radius: 3px; overflow: hidden;
+  }
+  .maestria-bar-fill {
+    height: 100%; background: var(--vermelho); border-radius: 3px;
+    width: 0%; transition: width 0.4s ease;
+  }
+  .maestria-bar-pct {
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px;
+    color: var(--branco); letter-spacing: 0.04em; flex-shrink: 0;
+  }
+  .maestria-bar-pct .dom-num {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--texto-suporte); display: block; text-align: right;
+    margin-top: -2px;
+  }
+
+  /* ── FILTROS ── */
+  .filtros-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .at-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .at-chip {
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 999px; padding: 6px 14px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.05em; cursor: pointer; transition: all 0.15s;
+  }
+  .at-chip:hover { border-color: var(--texto-suporte); color: var(--branco); }
+  .at-chip.ativo { background: var(--at1-bg); border-color: var(--vermelho); color: var(--branco); }
+  .at-chip[data-area="AT2"].ativo { background: var(--at2-bg); border-color: var(--at2-fg); }
+  .at-chip[data-area="AT3"].ativo { background: var(--at3-bg); border-color: var(--at3-fg); }
+  .at-chip[data-area="AT4"].ativo { background: var(--at4-bg); border-color: var(--at4-fg); }
+  .at-chip[data-area="AT5"].ativo { background: var(--at5-bg); border-color: var(--at5-fg); }
+  .filtro-select {
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco);
+    border-radius: 8px; padding: 7px 12px; font-family: 'Inter', sans-serif; font-size: 13px;
+    cursor: pointer; outline: none; transition: border-color 0.15s; min-width: 180px;
+  }
   .filtro-select:focus { border-color: var(--vermelho); }
   .filtro-select option { background: var(--cinza-medio); }
   .count-badge { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-left: auto; }
 
-  .area-dots { display: flex; align-items: center; gap: 5px; }
-  .area-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--cinza-borda); transition: background 0.2s, transform 0.2s; cursor: pointer; }
-  .area-dot.ativo { transform: scale(1.3); }
-  .area-dot[data-area="AT1"].ativo { background: var(--at1-fg); }
-  .area-dot[data-area="AT2"].ativo { background: var(--at2-fg); }
-  .area-dot[data-area="AT3"].ativo { background: var(--at3-fg); }
-  .area-dot[data-area="AT4"].ativo { background: var(--at4-fg); }
-  .area-dot[data-area="AT5"].ativo { background: var(--at5-fg); }
-
+  /* ── CARD ── */
   .card-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; min-height: 440px; }
   .card-scene { width: 100%; max-width: 680px; height: 440px; perspective: 1200px; cursor: pointer; }
   .card-inner { width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; position: relative; }
@@ -46,7 +86,6 @@
   .card-face-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-suporte); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .card-area-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.06em; }
 
-  /* Bloco de texto — wrapper aplica scroll/alinhamento, .card-texto-inner segura o conteúdo */
   .card-texto { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; padding-right: 8px; }
   .card-texto-inner { font-size: 18px; font-weight: 500; color: var(--branco); line-height: 1.7; word-break: break-word; hyphens: auto; }
   .card-front .card-texto { justify-content: center; }
@@ -55,13 +94,44 @@
   .card-back .card-texto-inner { font-size: 16px; font-weight: 400; line-height: 1.65; text-align: left; }
   .card-texto::-webkit-scrollbar { width: 6px; }
   .card-texto::-webkit-scrollbar-thumb { background: var(--cinza-borda); border-radius: 3px; }
-  .card-texto-inner br + br { display: none; }
   .card-texto-inner > *:first-child { margin-top: 0; }
   .card-texto-inner > *:last-child { margin-bottom: 0; }
+  .card-texto-inner img { max-width: 100%; height: auto; border-radius: 6px; margin: 8px 0; }
 
   .card-hint { margin-top: 1rem; font-size: 11px; color: var(--texto-suporte); text-align: center; font-family: 'IBM Plex Mono', monospace; flex-shrink: 0; }
   .card-ref { margin-top: 0.85rem; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--texto-suporte); padding-top: 0.75rem; border-top: 1px solid var(--cinza-borda); line-height: 1.55; flex-shrink: 0; }
   .card-back .card-face-label { color: var(--vermelho); }
+
+  /* DICA panel dentro do FRONT */
+  .card-dica {
+    flex-shrink: 0; margin-top: 1rem; padding: 10px 14px;
+    background: var(--at5-bg); border: 1px solid var(--at5-border);
+    border-radius: 8px; color: var(--at5-fg);
+    font-size: 13px; line-height: 1.55;
+    text-align: left; max-height: 220px; overflow-y: auto;
+  }
+  .card-dica > div > * { margin: 0 0 4px 0; }
+  .card-dica img { max-width: 100%; height: auto; border-radius: 6px; margin: 6px 0; display: block; }
+  .card-dica-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 4px;
+    opacity: 0.8;
+  }
+
+  /* Botões dentro do FRONT (Mostrar dica / Revelar verso) */
+  .card-front-actions {
+    margin-top: 0.85rem; display: flex; gap: 8px; justify-content: center;
+    flex-shrink: 0;
+  }
+  .btn-front {
+    background: transparent; border: 1px solid var(--cinza-borda);
+    color: var(--cinza-texto); border-radius: 8px; padding: 7px 14px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+    letter-spacing: 0.05em; cursor: pointer; transition: all 0.15s;
+  }
+  .btn-front:hover { border-color: var(--texto-suporte); color: var(--branco); }
+  .btn-front.btn-front-primary { background: var(--at1-bg); border-color: var(--vermelho); color: var(--branco); }
+  .btn-front.btn-front-primary:hover { background: var(--vermelho); }
 
   .area-AT1.card-back { border: 1px solid var(--at1-border); }
   .area-AT1 .card-area-badge { background: var(--at1-bg); color: var(--at1-fg); border: 1px solid var(--at1-border); }
@@ -93,7 +163,7 @@
   .card-scene { animation: fadeUp 0.3s ease both; }
 
   /* ── MODO TABS ── */
-  .modo-tabs { display: flex; gap: 6px; margin-bottom: 1.25rem; }
+  .modo-tabs { display: flex; gap: 6px; margin-bottom: 1rem; }
   .modo-tab {
     background: transparent; border: 1px solid var(--cinza-borda);
     color: var(--cinza-texto); border-radius: 6px; padding: 6px 16px;
@@ -116,12 +186,20 @@
   }
   .srs-rating.visivel { display: flex; }
   .srs-rating-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--texto-suporte); letter-spacing: 0.1em; text-transform: uppercase; }
+  .srs-rating-microcopy {
+    font-family: 'Inter', sans-serif; font-size: 11px; color: var(--texto-suporte);
+    text-align: center; line-height: 1.5; max-width: 520px;
+  }
   .srs-btns { display: flex; gap: 8px; width: 100%; }
   .btn-rating {
     flex: 1; padding: 10px 4px; border: 1px solid; border-radius: 8px;
     font-size: 12px; font-weight: 600; cursor: pointer;
     font-family: 'IBM Plex Mono', monospace; letter-spacing: 0.04em;
     transition: all 0.15s; text-transform: uppercase;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .btn-rating .kbd {
+    font-size: 9px; opacity: 0.7; font-weight: 500;
   }
   .btn-rating-errei   { background: var(--at1-bg); border-color: var(--at1-border); color: var(--at1-fg); }
   .btn-rating-errei:hover   { background: var(--danger-bg); border-color: var(--vermelho); color: var(--brand-on-primary); }
@@ -131,29 +209,6 @@
   .btn-rating-bom:hover     { background: var(--success-bg); border-color: var(--success); color: var(--brand-on-primary); }
   .btn-rating-facil   { background: var(--at5-bg); border-color: var(--at5-border); color: var(--at5-fg); }
   .btn-rating-facil:hover   { background: var(--at5-bg); border-color: var(--at5-fg); color: var(--brand-on-primary); }
-
-  /* ── MNEMÔNICO ── */
-  .mnemonico-wrap { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--cinza-borda); }
-  .btn-mnemonico {
-    background: transparent; border: none; color: var(--texto-suporte); font-size: 11px;
-    font-family: 'IBM Plex Mono', monospace; cursor: pointer; padding: 0;
-    letter-spacing: 0.05em; transition: color 0.15s;
-  }
-  .btn-mnemonico:hover { color: var(--branco); }
-  .mnemonico-conteudo {
-    display: none; margin-top: 8px; background: var(--at5-bg);
-    border: 1px solid var(--at5-border); border-radius: 6px;
-    padding: 8px 12px; font-size: 12px; color: var(--at5-fg); line-height: 1.5;
-    font-style: italic;
-  }
-  .mnemonico-conteudo.visivel { display: block; }
-
-  /* ── MARKDOWN COLORS ── */
-  .md-prazo  { color: var(--at1-fg); font-weight: 600; } /* prazos/tempo */
-  .md-valor  { color: var(--success-fg); font-weight: 600; } /* valores numéricos */
-  .md-lei    { color: var(--info-fg); }                   /* referências de lei */
-  .card-texto strong { color: var(--branco); font-weight: 700; }
-  .card-texto em { color: var(--texto-suave); font-style: italic; }
 
   /* ── SRS COMPLETO ── */
   .srs-completo {
@@ -168,18 +223,11 @@
 
   /* ── SETAS LATERAIS ── */
   .seta-fc {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
+    position: fixed; top: 50%; transform: translateY(-50%);
     width: 44px; height: 44px;
-    background: var(--cinza-escuro);
-    border: 1px solid var(--cinza-borda);
-    border-radius: 50%;
+    background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    z-index: 49;
-    color: var(--cinza-texto);
+    cursor: pointer; transition: all 0.15s; z-index: 49; color: var(--cinza-texto);
   }
   .seta-fc:hover:not([disabled]) { border-color: var(--texto-suporte); color: var(--branco); background: var(--cinza-medio); }
   .seta-fc[disabled] { opacity: 0.2; cursor: default; pointer-events: none; }
@@ -195,17 +243,11 @@
     .card-face { padding: 1.5rem 1.5rem; }
     .card-texto-inner { font-size: 16px; line-height: 1.65; }
     .card-back .card-texto-inner { font-size: 15px; line-height: 1.6; }
+    .maestria-bar-pct { font-size: 16px; }
   }
 
-/* ── SPRINT 4 — AJUSTES FINOS MOBILE ── */
   @media (max-width: 480px) {
-    .btn-iniciar, .btn-acao, .btn-confirmar, .btn-resultado, .btn-estudar,
-    .alt, .leg-item, .view-tab, .qtd-btn { min-height: 44px; }
-    .area-num-label, .tag, .prog-txt, .stat-label, .stat-sub, .dash-label,
-    .header-contexto, .badge-area, .badge-leg, .alt-letra, .resultado-secao,
-    .res-gabarito, .curso-badge, .cobertura-label, .secao-label, .leg-qbadge,
-    .leg-tag, .config-label, .mensal-info, .countdown-label,
-    .historico-data, .historico-stats, .prog-info, .modal-char { font-size: 13px; }
+    .btn-rating, .at-chip, .modo-tab, .btn-nav, .btn-front { min-height: 40px; }
   }
 </style>
 </head>
@@ -224,9 +266,7 @@
 </div>
 
 <div class="layout">
-  <!-- SIDEBAR (dinâmica) -->
   <aside id="pbm-sidebar"></aside>
-  <!-- BOTTOMBAR mobile (dinâmica, position:fixed) -->
   <nav id="pbm-bottombar"></nav>
 
   <div class="main">
@@ -236,21 +276,32 @@
     </div>
 
     <div class="conteudo">
+      <div class="maestria-bar" id="maestria-bar">
+        <span class="maestria-bar-label" id="maestria-bar-label">Maestria <strong>geral</strong></span>
+        <div class="maestria-bar-track"><div class="maestria-bar-fill" id="maestria-bar-fill"></div></div>
+        <span class="maestria-bar-pct">
+          <span id="maestria-bar-pct">0%</span>
+          <span class="dom-num" id="maestria-bar-num">0/0 dominados</span>
+        </span>
+      </div>
+
       <div class="modo-tabs">
         <button class="modo-tab ativo" id="tab-livre" onclick="trocarModo('livre')">LIVRE</button>
         <button class="modo-tab" id="tab-srs" onclick="trocarModo('srs')">REVISÃO SRS</button>
       </div>
 
       <div class="filtros-bar">
-        <select class="filtro-select" id="filtro-area" onchange="aplicarFiltro()">
-          <option value="">Todas as áreas</option>
-          <option value="AT1">AT1 — Segurança contra incêndios</option>
-          <option value="AT2">AT2 — Combate a incêndios</option>
-          <option value="AT3">AT3 — Buscas e salvamentos / APH</option>
-          <option value="AT4">AT4 — Direito institucional e militar</option>
-          <option value="AT5">AT5 — Normas e documentação técnica</option>
+        <div class="at-chips" id="at-chips">
+          <button class="at-chip ativo" data-area="" onclick="selecionarAT('')">Todas</button>
+          <button class="at-chip" data-area="AT1" onclick="selecionarAT('AT1')">AT1</button>
+          <button class="at-chip" data-area="AT2" onclick="selecionarAT('AT2')">AT2</button>
+          <button class="at-chip" data-area="AT3" onclick="selecionarAT('AT3')">AT3</button>
+          <button class="at-chip" data-area="AT4" onclick="selecionarAT('AT4')">AT4</button>
+          <button class="at-chip" data-area="AT5" onclick="selecionarAT('AT5')">AT5</button>
+        </div>
+        <select class="filtro-select" id="filtro-legislacao" onchange="aplicarFiltro()">
+          <option value="">Toda a área</option>
         </select>
-        <div class="area-dots" id="area-dots"></div>
         <span class="count-badge" id="count-badge"></span>
       </div>
 
@@ -275,7 +326,7 @@
           <div class="progress-txt" id="progress-txt"></div>
         </div>
 
-        <div class="card-scene" id="card-scene" onclick="flipCard()" title="Clique para revelar">
+        <div class="card-scene" id="card-scene" onclick="acaoCardClick()" title="Clique para revelar">
           <div class="card-inner" id="card-inner">
             <div class="card-face card-front" id="card-front">
               <div class="card-face-label">
@@ -283,7 +334,14 @@
                 <span class="card-area-badge" id="front-badge"></span>
               </div>
               <div class="card-texto"><div class="card-texto-inner" id="front-texto"></div></div>
-              <div class="card-hint">Clique no card ou pressione Espaço para revelar</div>
+              <div class="card-dica" id="card-dica" style="display:none">
+                <div class="card-dica-label">Dica / Mnemônico</div>
+                <div id="card-dica-texto"></div>
+              </div>
+              <div class="card-front-actions" id="card-front-actions">
+                <button type="button" class="btn-front" id="btn-mostrar-dica" onclick="mostrarDica(event)" style="display:none">Mostrar dica · H</button>
+                <button type="button" class="btn-front btn-front-primary" onclick="revelarVerso(event)">Revelar verso · Espaço</button>
+              </div>
             </div>
             <div class="card-face card-back" id="card-back">
               <div class="card-face-label">
@@ -292,10 +350,6 @@
               </div>
               <div class="card-texto"><div class="card-texto-inner" id="back-texto"></div></div>
               <div class="card-ref" id="back-ref"></div>
-              <div class="mnemonico-wrap" id="mnemonico-wrap" style="display:none">
-                <button class="btn-mnemonico" onclick="toggleMnemonico(event)">▸ Ver mnemônico</button>
-                <div class="mnemonico-conteudo" id="mnemonico-conteudo"></div>
-              </div>
             </div>
           </div>
         </div>
@@ -303,10 +357,14 @@
         <div class="srs-rating" id="srs-rating">
           <div class="srs-rating-label">Como foi?</div>
           <div class="srs-btns">
-            <button class="btn-rating btn-rating-errei"   onclick="avaliar(1)">Errei</button>
-            <button class="btn-rating btn-rating-dificil" onclick="avaliar(3)">Difícil</button>
-            <button class="btn-rating btn-rating-bom"     onclick="avaliar(4)">Bom</button>
-            <button class="btn-rating btn-rating-facil"   onclick="avaliar(5)">Fácil</button>
+            <button class="btn-rating btn-rating-errei"   onclick="avaliar(1)"><span>Errei</span><span class="kbd">1</span></button>
+            <button class="btn-rating btn-rating-dificil" onclick="avaliar(2)"><span>Difícil</span><span class="kbd">2</span></button>
+            <button class="btn-rating btn-rating-bom"     onclick="avaliar(3)"><span>Bom</span><span class="kbd">3</span></button>
+            <button class="btn-rating btn-rating-facil"   onclick="avaliar(4)"><span>Fácil</span><span class="kbd">4</span></button>
+          </div>
+          <div class="srs-rating-microcopy">
+            Errou a palavra-chave ou conceito? <strong>Errei (1)</strong>.<br>
+            Erros leves de redação? <strong>Bom (3)</strong>.
           </div>
         </div>
 
@@ -324,46 +382,55 @@
   <a href="/admin" style="display:inline-flex;align-items:center;gap:8px;background:#7F77DD;color:#fff;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600;font-family:'Inter',sans-serif;text-decoration:none;box-shadow:0 4px 16px rgba(0,0,0,0.4);">← Admin</a>
 </div>
 
+<script src="/js/rich-text.js?v=2"></script>
 <script>
-const AREA_CORES = { AT1:'#C0270F', AT2:'#BA7517', AT3:'#185FA5', AT4:'#27A05A', AT5:'#7F77DD' };
+// ──────────────────────────────────────────────────────────────────
+// Estado
+// ──────────────────────────────────────────────────────────────────
 const AREA_NOMES = { AT1:'Segurança Incêndio', AT2:'Combate Incêndio', AT3:'Buscas / APH', AT4:'Direito Militar', AT5:'Normas Admin.' };
+const AREA_COR_CSS = { AT1:'var(--at1-fg)', AT2:'var(--at2-fg)', AT3:'var(--at3-fg)', AT4:'var(--at4-fg)', AT5:'var(--at5-fg)' };
+
+const ESTADO = { FRENTE: 'FRENTE', DICA: 'DICA', VERSO: 'VERSO' };
 
 let todosCards = [];
 let cardsFiltrados = [];
 let indiceAtual = 0;
-let virado = false;
+let estadoAtual = ESTADO.FRENTE;
 let cursoAluno = null;
-let modoAtual = 'livre'; // 'livre' | 'srs'
+let modoAtual = 'livre';
 let avaliacaoEmAndamento = false;
+let manifestoLegs = [];        // [{id, nome, area_tematica, curso}]
+let filtroAT = '';
+let filtroLeg = '';
+let maestriaPrecaregada = null; // resposta /maestria
 
-// ── MARKDOWN RENDERER ──────────────────────────────────────────────
-function renderMd(texto) {
-  if (!texto) return '';
-  // trim e colapsa runs de whitespace/quebras para um único \n
-  let h = String(texto).trim().replace(/\r\n?/g, '\n').replace(/\n{2,}/g, '\n').replace(/[ \t]{2,}/g, ' ');
-  h = h.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  // bold **text**
-  h = h.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-  // italic *text*
-  h = h.replace(/\*([^*]+)\*/g, '<em>$1</em>');
-  // law refs: LC, Dec., RT, CF, CE, CPM, CPPM, ITO, IT + identifier
-  h = h.replace(/\b(LC|Decreto(?:\s+n[oº°]?)?|Dec\.|Portaria|RT|CF\/88|CE\/RS|CPM|CPPM|LOB|RDBM|ITO|IT)\s+[\d.\/\w-]+/g,
-    '<span class="md-lei">$&</span>');
-  // time prazos: "30 dias", "12 meses", "2 anos", "24 horas"
-  h = h.replace(/\b(\d+(?:[.,]\d+)?)\s*(dias?|meses?|horas?|minutos?|anos?)\b/gi,
-    '<span class="md-prazo">$1 $2</span>');
-  // numeric values with units (m², %, kPa, etc.)
-  h = h.replace(/\b(\d+(?:[.,]\d+)?)\s*(m²|m³|m\b|kg|kPa|kN|%|cm|mm)/g,
-    '<span class="md-valor">$1 $2</span>');
-  // standalone prominent numbers (4+ digits, or art./§)
-  h = h.replace(/\b(art(?:igo)?\.?\s*\d+[°º]?(?:-[A-Z])?|§\s*\d+[°º]?)/gi,
-    '<span class="md-lei">$&</span>');
-  // line breaks (já colapsados)
-  h = h.replace(/\n/g, '<br>');
-  return h;
+// ──────────────────────────────────────────────────────────────────
+// Render HTML (sanitização lazy do DOMPurify via RichText)
+// ──────────────────────────────────────────────────────────────────
+function renderHTML(html) {
+  if (!html) return '';
+  if (window.RichText && typeof window.RichText.render === 'function') {
+    return window.RichText.render(html);
+  }
+  // Fallback bruto enquanto RichText carrega — escapa
+  return String(html)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
 }
 
-// ── MODO TABS ──────────────────────────────────────────────────────
+// Mnemônico pode vir vazio mesmo como string (ex: <p><br></p> do Quill).
+// Considera "vazio" quando não há texto nem <img>.
+function temMnemonico(card) {
+  if (!card || !temMnemonico(card)) return false;
+  const raw = String(temMnemonico(card));
+  if (/<img\b/i.test(raw)) return true;
+  const txt = raw.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
+  return txt.length > 0;
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Modo tabs
+// ──────────────────────────────────────────────────────────────────
 async function trocarModo(modo) {
   modoAtual = modo;
   document.getElementById('tab-livre').classList.toggle('ativo', modo === 'livre');
@@ -371,22 +438,91 @@ async function trocarModo(modo) {
   document.getElementById('srs-stats').style.display = modo === 'srs' ? 'block' : 'none';
   document.getElementById('srs-completo').style.display = 'none';
   indiceAtual = 0;
-  virado = false;
+  estadoAtual = ESTADO.FRENTE;
   await carregarFlashcards();
 }
 
-function aplicarFiltro() {
-  const area = document.getElementById('filtro-area').value;
-  if (modoAtual === 'srs') {
-    carregarFlashcards();
-    return;
-  }
-  cardsFiltrados = area ? todosCards.filter(c => c.area === area) : [...todosCards];
-  indiceAtual = 0;
-  virado = false;
-  renderEstado();
+// ──────────────────────────────────────────────────────────────────
+// Filtros
+// ──────────────────────────────────────────────────────────────────
+function selecionarAT(at) {
+  if (filtroAT === at) return;
+  filtroAT = at;
+  document.querySelectorAll('.at-chip').forEach(el => {
+    el.classList.toggle('ativo', (el.dataset.area || '') === at);
+  });
+  popularDropdownLeg();
+  filtroLeg = '';
+  document.getElementById('filtro-legislacao').value = '';
+  aplicarFiltro();
+  atualizarBarraMaestria();
 }
 
+function popularDropdownLeg() {
+  const sel = document.getElementById('filtro-legislacao');
+  const legs = filtroAT
+    ? manifestoLegs.filter(l => atDaLeg(l) === filtroAT)
+    : manifestoLegs;
+  legs.sort((a, b) => (a.nome || '') < (b.nome || '') ? -1 : 1);
+  sel.innerHTML = '<option value="">' + (filtroAT ? 'Toda a área' : 'Toda a base') + '</option>'
+    + legs.map(l => '<option value="' + l.id + '">' + l.nome + '</option>').join('');
+}
+
+function atDaLeg(leg) {
+  const at = leg.area_tematica;
+  if (!at) return null;
+  if (typeof at === 'string') return at;
+  // objeto {ctsp, cba}
+  const curso = (cursoAluno === 'cba') ? 'cba' : 'ctsp';
+  return at[curso] || at.ctsp || at.cba || null;
+}
+
+function aplicarFiltro() {
+  filtroLeg = document.getElementById('filtro-legislacao').value || '';
+  carregarFlashcards();
+  atualizarBarraMaestria();
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Barra de Maestria
+// ──────────────────────────────────────────────────────────────────
+async function carregarMaestria() {
+  try {
+    maestriaPrecaregada = await PBM.api.flashcards.maestria();
+  } catch (err) {
+    console.warn('[Maestria] erro:', err);
+    maestriaPrecaregada = [];
+  }
+  atualizarBarraMaestria();
+}
+
+function atualizarBarraMaestria() {
+  if (!maestriaPrecaregada) return;
+  let escopo = maestriaPrecaregada;
+  let label = 'Maestria <strong>geral</strong>';
+
+  if (filtroLeg) {
+    escopo = maestriaPrecaregada.filter(m => m.legislacao_id === filtroLeg);
+    const leg = manifestoLegs.find(l => l.id === filtroLeg);
+    label = 'Maestria <strong>' + (leg?.nome || filtroLeg) + '</strong>';
+  } else if (filtroAT) {
+    escopo = maestriaPrecaregada.filter(m => m.area === filtroAT);
+    label = 'Maestria <strong>' + filtroAT + ' — ' + AREA_NOMES[filtroAT] + '</strong>';
+  }
+
+  let total = 0, dom = 0;
+  for (const m of escopo) { total += m.total_publicados; dom += m.dominados; }
+  const pct = total > 0 ? Math.round((dom / total) * 100) : 0;
+
+  document.getElementById('maestria-bar-label').innerHTML = label;
+  document.getElementById('maestria-bar-pct').textContent = pct + '%';
+  document.getElementById('maestria-bar-num').textContent = dom + '/' + total + ' dominados';
+  document.getElementById('maestria-bar-fill').style.width = pct + '%';
+}
+
+// ──────────────────────────────────────────────────────────────────
+// Card rendering / estado machine
+// ──────────────────────────────────────────────────────────────────
 function renderEstado() {
   document.getElementById('estado-loading').style.display = 'none';
   document.getElementById('srs-completo').style.display = 'none';
@@ -396,7 +532,7 @@ function renderEstado() {
       document.getElementById('srs-completo').style.display = 'flex';
       document.getElementById('card-wrapper').style.display = 'none';
       document.getElementById('estado-vazio').style.display = 'none';
-      document.getElementById('srs-stats').textContent = 'Nenhum card para revisar hoje.';
+      document.getElementById('srs-stats').textContent = 'Nenhum card para revisar agora.';
     } else {
       document.getElementById('estado-vazio').style.display = 'flex';
       document.getElementById('card-wrapper').style.display = 'none';
@@ -405,14 +541,38 @@ function renderEstado() {
     document.getElementById('estado-vazio').style.display = 'none';
     document.getElementById('card-wrapper').style.display = 'flex';
     renderCard();
-    renderDots();
   }
 
   const total = cardsFiltrados.length;
   document.getElementById('count-badge').textContent = total ? total + ' card' + (total !== 1 ? 's' : '') : '';
   document.getElementById('topbar-info').textContent = total ? total + ' flashcards' : 'Sem cards';
   if (modoAtual === 'srs' && total > 0) {
-    document.getElementById('srs-stats').innerHTML = '<span>' + total + '</span> card' + (total !== 1 ? 's' : '') + ' para revisar hoje';
+    document.getElementById('srs-stats').innerHTML = '<span>' + total + '</span> card' + (total !== 1 ? 's' : '') + ' para revisar';
+  }
+}
+
+function setEstado(novo) {
+  estadoAtual = novo;
+  const inner = document.getElementById('card-inner');
+  const dica = document.getElementById('card-dica');
+  const btnDica = document.getElementById('btn-mostrar-dica');
+  const rating = document.getElementById('srs-rating');
+
+  if (novo === ESTADO.VERSO) {
+    inner.classList.add('flipped');
+    if (modoAtual === 'srs') rating.classList.add('visivel');
+  } else {
+    inner.classList.remove('flipped');
+    rating.classList.remove('visivel');
+  }
+
+  if (novo === ESTADO.DICA) {
+    dica.style.display = 'block';
+    if (btnDica) btnDica.style.display = 'none';
+  } else if (novo === ESTADO.FRENTE) {
+    dica.style.display = 'none';
+    const card = cardsFiltrados[indiceAtual];
+    if (btnDica) btnDica.style.display = card && temMnemonico(card) ? 'inline-block' : 'none';
   }
 }
 
@@ -420,47 +580,42 @@ function renderCard() {
   const card = cardsFiltrados[indiceAtual];
   if (!card) return;
 
-  virado = false;
   avaliacaoEmAndamento = false;
-  document.getElementById('card-inner').classList.remove('flipped');
+  estadoAtual = ESTADO.FRENTE;
 
+  const area = card.area || 'AT1';
   document.getElementById('card-front').className = 'card-face card-front';
-  document.getElementById('card-back').className = 'card-face card-back area-' + card.area;
+  document.getElementById('card-back').className = 'card-face card-back area-' + area;
 
-  document.getElementById('front-badge').textContent = card.area;
-  document.getElementById('back-badge').textContent = card.area;
-  document.getElementById('front-texto').innerHTML = renderMd(card.frente);
-  document.getElementById('back-texto').innerHTML  = renderMd(card.verso);
+  document.getElementById('front-badge').textContent = area;
+  document.getElementById('back-badge').textContent = area;
+  document.getElementById('front-texto').innerHTML = renderHTML(card.frente_html);
+  document.getElementById('back-texto').innerHTML  = renderHTML(card.verso_html);
 
   const refEl = document.getElementById('back-ref');
-  if (card.legislacao) {
-    refEl.innerHTML = renderMd(card.legislacao);
+  if (card.legislacao_nome) {
+    refEl.textContent = card.legislacao_nome;
     refEl.style.display = 'block';
   } else {
     refEl.style.display = 'none';
   }
 
-  // Mnemônico
-  const mnemoWrap = document.getElementById('mnemonico-wrap');
-  const mnemoConteudo = document.getElementById('mnemonico-conteudo');
-  if (card.mnemonico_texto) {
-    mnemoConteudo.textContent = card.mnemonico_texto;
-    mnemoConteudo.classList.remove('visivel');
-    document.querySelector('.btn-mnemonico').textContent = '▸ Ver mnemônico';
-    mnemoWrap.style.display = 'block';
-  } else {
-    mnemoWrap.style.display = 'none';
-  }
+  // Dica panel — renderiza HTML rico (texto formatado, cores, imagens)
+  const dicaTextoEl = document.getElementById('card-dica-texto');
+  dicaTextoEl.innerHTML = temMnemonico(card) ? renderHTML(card.mnemonico) : '';
 
-  // Rating buttons
-  const rating = document.getElementById('srs-rating');
-  rating.classList.remove('visivel');
+  // Reset estado (oculta dica, oculta rating, mostra/esconde botão dica)
+  document.getElementById('card-inner').classList.remove('flipped');
+  document.getElementById('card-dica').style.display = 'none';
+  document.getElementById('srs-rating').classList.remove('visivel');
+  const btnDica = document.getElementById('btn-mostrar-dica');
+  if (btnDica) btnDica.style.display = temMnemonico(card) ? 'inline-block' : 'none';
 
   // Nav bar
   const navBar = document.getElementById('nav-bar');
   navBar.style.display = modoAtual === 'srs' ? 'none' : 'flex';
 
-  const cor = AREA_CORES[card.area] || '#888';
+  const cor = AREA_COR_CSS[area] || 'var(--vermelho)';
   const total = cardsFiltrados.length;
   const pct = total > 1 ? ((indiceAtual + 1) / total * 100).toFixed(0) : 100;
   document.getElementById('progress-fill').style.width = pct + '%';
@@ -475,77 +630,72 @@ function renderCard() {
   if (fcDir) { if (indiceAtual === total - 1 || modoAtual === 'srs') fcDir.setAttribute('disabled',''); else fcDir.removeAttribute('disabled'); }
 }
 
-function renderDots() {
-  const container = document.getElementById('area-dots');
-  const contagem = {};
-  todosCards.forEach(c => { contagem[c.area] = (contagem[c.area] || 0) + 1; });
-  const filtroArea = document.getElementById('filtro-area').value;
-
-  container.innerHTML = ['AT1','AT2','AT3','AT4','AT5'].filter(a => contagem[a]).map(a => {
-    const ativo = filtroArea === a || filtroArea === '';
-    return '<div class="area-dot' + (ativo ? ' ativo' : '') + '" data-area="' + a + '" title="' + AREA_NOMES[a] + ': ' + contagem[a] + ' cards" onclick="selecionarAreaDot(\'' + a + '\')"></div>';
-  }).join('');
+// ──────────────────────────────────────────────────────────────────
+// Transições de estado
+// ──────────────────────────────────────────────────────────────────
+function acaoCardClick() {
+  // Clique no card: avança estado
+  if (estadoAtual === ESTADO.VERSO) return; // VERSO requer botão de avaliação
+  setEstado(ESTADO.VERSO);
 }
 
-function selecionarAreaDot(area) {
-  const sel = document.getElementById('filtro-area');
-  sel.value = (sel.value === area) ? '' : area;
-  aplicarFiltro();
+function mostrarDica(e) {
+  if (e) { e.stopPropagation(); e.preventDefault(); }
+  if (estadoAtual !== ESTADO.FRENTE) return;
+  const card = cardsFiltrados[indiceAtual];
+  if (!card || !temMnemonico(card)) return;
+  setEstado(ESTADO.DICA);
 }
 
-function flipCard() {
-  virado = !virado;
-  document.getElementById('card-inner').classList.toggle('flipped', virado);
-  if (virado && modoAtual === 'srs') {
-    document.getElementById('srs-rating').classList.add('visivel');
-  }
+function revelarVerso(e) {
+  if (e) { e.stopPropagation(); e.preventDefault(); }
+  setEstado(ESTADO.VERSO);
 }
 
-function toggleMnemonico(e) {
-  e.stopPropagation();
-  const conteudo = document.getElementById('mnemonico-conteudo');
-  const btn = document.querySelector('.btn-mnemonico');
-  const visivel = conteudo.classList.toggle('visivel');
-  btn.textContent = visivel ? '▾ Ocultar mnemônico' : '▸ Ver mnemônico';
-}
-
-async function avaliar(qualidade) {
+async function avaliar(avaliacao) {
   if (avaliacaoEmAndamento) return;
+  if (estadoAtual !== ESTADO.VERSO) return;
   avaliacaoEmAndamento = true;
 
   const card = cardsFiltrados[indiceAtual];
   if (!card) { avaliacaoEmAndamento = false; return; }
 
-  try {
-    await PBM.api.flashcards.revisar(card.id, qualidade);
-  } catch (err) {
-    console.warn('[SRS] Erro ao registrar avaliação:', err);
+  if (modoAtual === 'srs') {
+    try {
+      const resp = await PBM.api.flashcards.revisar(card.id, avaliacao);
+      if (resp && resp.mudou_dominio) carregarMaestria();
+    } catch (err) {
+      console.warn('[SRS] Erro ao registrar avaliação:', err);
+    }
+
+    cardsFiltrados.splice(indiceAtual, 1);
+
+    if (cardsFiltrados.length === 0) {
+      renderEstadoSrsCompleto();
+      return;
+    }
+    if (indiceAtual >= cardsFiltrados.length) {
+      indiceAtual = cardsFiltrados.length - 1;
+    }
+    renderCard();
+    const total = cardsFiltrados.length;
+    document.getElementById('count-badge').textContent = total + ' card' + (total !== 1 ? 's' : '');
+    document.getElementById('srs-stats').innerHTML = '<span>' + total + '</span> card' + (total !== 1 ? 's' : '') + ' para revisar';
+  } else {
+    // Modo livre: não persiste; só avança para o próximo
+    if (indiceAtual < cardsFiltrados.length - 1) {
+      indiceAtual++;
+      renderCard();
+    } else {
+      avaliacaoEmAndamento = false;
+    }
   }
-
-  // Remove card from queue and advance
-  cardsFiltrados.splice(indiceAtual, 1);
-
-  if (cardsFiltrados.length === 0) {
-    renderEstadoSrsCompleto();
-    return;
-  }
-
-  if (indiceAtual >= cardsFiltrados.length) {
-    indiceAtual = cardsFiltrados.length - 1;
-  }
-
-  renderCard();
-  renderDots();
-
-  const total = cardsFiltrados.length;
-  document.getElementById('count-badge').textContent = total + ' card' + (total !== 1 ? 's' : '');
-  document.getElementById('srs-stats').innerHTML = '<span>' + total + '</span> card' + (total !== 1 ? 's' : '') + ' para revisar hoje';
 }
 
 function renderEstadoSrsCompleto() {
   document.getElementById('card-wrapper').style.display = 'none';
   document.getElementById('srs-completo').style.display = 'flex';
-  document.getElementById('srs-completo-sub').innerHTML = 'Todos os cards de hoje foram revisados.<br>Volte amanhã para continuar sua sequência.';
+  document.getElementById('srs-completo-sub').innerHTML = 'Todos os cards desta fila foram revisados.<br>Volte mais tarde para a próxima rodada.';
   document.getElementById('srs-stats').textContent = 'Sessão concluída!';
   document.getElementById('count-badge').textContent = '';
   document.getElementById('topbar-info').textContent = 'Revisão concluída';
@@ -558,20 +708,42 @@ function navegar(dir) {
   renderCard();
 }
 
+// ──────────────────────────────────────────────────────────────────
+// Keyboard
+// ──────────────────────────────────────────────────────────────────
 document.addEventListener('keydown', function(e) {
   if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
-  if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+  if (e.key === ' ' || e.key === 'Enter') {
+    e.preventDefault();
+    if (estadoAtual === ESTADO.VERSO) return;
+    setEstado(ESTADO.VERSO);
+    return;
+  }
+
+  if ((e.key === 'h' || e.key === 'H') && estadoAtual === ESTADO.FRENTE) {
+    const card = cardsFiltrados[indiceAtual];
+    if (card && temMnemonico(card)) { e.preventDefault(); setEstado(ESTADO.DICA); }
+    return;
+  }
+
+  if (estadoAtual === ESTADO.VERSO) {
+    if (e.key === '1') { e.preventDefault(); avaliar(1); return; }
+    if (e.key === '2') { e.preventDefault(); avaliar(2); return; }
+    if (e.key === '3') { e.preventDefault(); avaliar(3); return; }
+    if (e.key === '4') { e.preventDefault(); avaliar(4); return; }
+  }
+
   if (modoAtual !== 'srs') {
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navegar(1);
     if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')  navegar(-1);
-  } else if (virado) {
-    if (e.key === '1') avaliar(1);
-    if (e.key === '2') avaliar(3);
-    if (e.key === '3') avaliar(4);
-    if (e.key === '4') avaliar(5);
   }
 });
 
+// ──────────────────────────────────────────────────────────────────
+// Init
+// ──────────────────────────────────────────────────────────────────
 function handleSair() {
   if (PBM.isAdmin()) {
     sessionStorage.removeItem('pbm_admin');
@@ -602,15 +774,35 @@ async function iniciarApp() {
     if (usuario) {
       cursoAluno = usuario.curso || null;
       if (isPreview && statusTxtEl) statusTxtEl.textContent = 'Modo Aluno (Preview)';
-      // Caso contrário, mantém o que `PBM.Layout.populateUsuario` já preencheu (ALUNO PRO · CURSO)
     }
   }
 
   if (isPreview) document.getElementById('preview-banner').style.display = 'flex';
   if (sessionStorage.getItem('pbm_admin') === '1') document.getElementById('btn-admin-float').style.display = 'block';
 
+  // Pre-carrega Purify para sanitizar HTML
+  if (window.RichText && typeof window.RichText.ensurePurify === 'function') {
+    try { await window.RichText.ensurePurify(); } catch {}
+  }
+
+  // Manifesto + Maestria em paralelo
+  await Promise.all([carregarManifesto(), carregarMaestria()]);
+  popularDropdownLeg();
   await carregarFlashcards();
   if (window.PBMTour) PBMTour.init();
+}
+
+async function carregarManifesto() {
+  try {
+    const qs = cursoAluno ? '?curso=' + encodeURIComponent(cursoAluno) : '';
+    const resp = await fetch('/api/legislacoes/manifesto' + qs);
+    if (!resp.ok) throw new Error('manifesto http ' + resp.status);
+    const data = await resp.json();
+    manifestoLegs = Array.isArray(data) ? data : (data.legislacoes || []);
+  } catch (err) {
+    console.warn('[manifesto] erro:', err);
+    manifestoLegs = [];
+  }
 }
 
 async function carregarFlashcards() {
@@ -620,17 +812,16 @@ async function carregarFlashcards() {
   document.getElementById('srs-completo').style.display = 'none';
 
   try {
-    const area = document.getElementById('filtro-area').value;
     const params = new URLSearchParams();
     if (cursoAluno) params.set('curso', cursoAluno);
-    if (area)       params.set('area', area);
+    if (filtroAT)   params.set('area', filtroAT);
+    if (filtroLeg)  params.set('legislacao_id', filtroLeg);
     if (modoAtual === 'srs') params.set('modo', 'srs');
 
     const cards = await PBM.api.flashcards.listar(params.toString());
-    todosCards = cards;
+    todosCards = cards || [];
 
     if (modoAtual === 'livre') {
-      // Shuffle for free mode
       for (let i = todosCards.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [todosCards[i], todosCards[j]] = [todosCards[j], todosCards[i]];
@@ -639,7 +830,7 @@ async function carregarFlashcards() {
 
     cardsFiltrados = [...todosCards];
     indiceAtual = 0;
-    virado = false;
+    estadoAtual = ESTADO.FRENTE;
     renderEstado();
   } catch (err) {
     document.getElementById('estado-loading').style.display = 'none';
@@ -650,11 +841,9 @@ async function carregarFlashcards() {
 }
 </script>
 <script src="/js/tour.js"></script>
-<script src="/js/api.js?v=5"></script>
+<script src="/js/api.js?v=6"></script>
 <script src="/js/pbm-components.js?v=4"></script>
 <script>PBM.Layout.mount({active:'flashcards'});iniciarApp();</script>
-<style>
-</style>
 <div class="pbm-watermark" aria-hidden="true"></div>
 
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>

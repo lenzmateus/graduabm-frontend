@@ -735,9 +735,38 @@
     }
   }
 
+  // Manifesto de legislações em cache para o form de edição
+  let _manifestoFC = [];
+  async function carregarManifestoFC() {
+    try {
+      const r = await fetch('/api/legislacoes/manifesto');
+      const data = await r.json();
+      _manifestoFC = data?.legislacoes || [];
+    } catch { _manifestoFC = []; }
+    return _manifestoFC;
+  }
+
+  function renderHtmlFC(html) {
+    return window.RichText ? RichText.render(html || '') : (html || '').replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '');
+  }
+
+  // Wrapper que pré-carrega manifest + Quill antes de listar
+  const flashcardsApi = {
+    async listar() {
+      await Promise.all([
+        _manifestoFC.length ? Promise.resolve() : carregarManifestoFC(),
+        window.RichText ? RichText.ensureLoaded() : Promise.resolve(),
+      ]);
+      return PBM.Admin.aprovacoes.flashcards.listar();
+    },
+    aprovar:  PBM.Admin.aprovacoes.flashcards.aprovar,
+    rejeitar: PBM.Admin.aprovacoes.flashcards.rejeitar,
+    editar:   PBM.Admin.aprovacoes.flashcards.editar,
+  };
+
   FilaAprovacao.registrar({
     key: 'flashcards',
-    api: PBM.Admin.aprovacoes.flashcards,
+    api: flashcardsApi,
     toolbarHTML: `<div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-bottom:1rem;">
       <button id="btn-gerar-flashcard" class="btn btn-editar" style="gap:6px;">${ICO_GERAR}Gerar flashcard agora</button>
     </div>`,
@@ -747,32 +776,61 @@
       msg: 'Nenhum flashcard pendente.',
     },
     renderMeta(fc) {
-      return [tagArea(fc.area_tematica), tagData(fc.created_at), tagLeg(fc.legislacao_nome)];
+      return [tagArea(fc.area_tematica), tagData(fc.criado_em || fc.created_at), tagLeg(fc.legislacao_nome)];
     },
     renderBody(fc) {
-      return `<p class="flashcard-frente">${esc(fc.frente)}</p><p class="flashcard-verso">${esc(fc.verso)}</p>`;
+      const frente = renderHtmlFC(fc.frente_html);
+      const verso  = renderHtmlFC(fc.verso_html);
+      const mnem   = fc.mnemonico ? `<p class="flashcard-verso" style="font-style:italic;opacity:0.85"><strong>Mnemônico:</strong> ${esc(fc.mnemonico)}</p>` : '';
+      return `<div class="flashcard-frente">${frente}</div><div class="flashcard-verso">${verso}</div>${mnem}`;
     },
     renderEditForm(fc) {
-      return `<div class="campo"><label>Frente</label><textarea name="frente" rows="2">${esc(fc.frente)}</textarea></div>
-        <div class="campo"><label>Verso</label><textarea name="verso" rows="4">${esc(fc.verso)}</textarea></div>
+      const opts = _manifestoFC.map(l => {
+        const at = typeof l.area_tematica === 'string' ? l.area_tematica : (l.area_tematica?.ctsp || l.area_tematica?.cba || '');
+        return `<option value="${l.id}" ${fc.legislacao_id === l.id ? 'selected' : ''}>${esc(at + ' — ' + l.nome)}</option>`;
+      }).join('');
+      const cursoOpts = ['ambos','ctsp','cba'].map(c => `<option value="${c}" ${fc.curso === c ? 'selected' : ''}>${c.toUpperCase()}</option>`).join('');
+      return `
+        <div class="campo"><label>Frente</label><textarea name="frente_html" id="rt-fc-${fc.id}-frente_html">${esc(fc.frente_html || '')}</textarea></div>
+        <div class="campo"><label>Verso</label><textarea name="verso_html" id="rt-fc-${fc.id}-verso_html">${esc(fc.verso_html || '')}</textarea></div>
+        <div class="campo"><label>Mnemônico (opcional)</label><input name="mnemonico" maxlength="200" value="${esc(fc.mnemonico || '')}"></div>
         <div class="form-row">
-          <div class="campo"><label>Área Temática</label><select name="area_tematica">${['AT1','AT2','AT3','AT4','AT5'].map(a => `<option value="${a}" ${fc.area_tematica === a ? 'selected' : ''}>${a}</option>`).join('')}</select></div>
-          <div class="campo"><label>Legislação</label><input name="legislacao_nome" value="${esc(fc.legislacao_nome || '')}"></div>
+          <div class="campo"><label>Legislação</label><select name="legislacao_id">${opts}</select></div>
+          <div class="campo"><label>Curso</label><select name="curso">${cursoOpts}</select></div>
         </div>`;
     },
-    coletarEdit(f) {
+    onCard(card, fc) {
+      if (!window.RichText) return;
+      // Monta Quill nas textareas do form (já estão no DOM, ocultos até toggle)
+      ['frente_html', 'verso_html'].forEach(name => {
+        const id = `rt-fc-${fc.id}-${name}`;
+        if (RichText.get(id)) return;
+        if (!document.getElementById(id)) return;
+        RichText.mountField(id, {
+          initial: fc[name] || '',
+          imageUploader: (file) => PBM.Admin.uploadMedia(file, { pasta: 'flashcards', id: String(fc.id) }),
+        });
+      });
+    },
+    coletarEdit(f, fc) {
+      const getRT = (name) => {
+        const id = `rt-fc-${fc.id}-${name}`;
+        return window.RichText && RichText.get(id) ? RichText.getHTML(id) : (f.querySelector(`[name=${name}]`)?.value || '');
+      };
       return {
-        frente: f.querySelector('[name=frente]').value,
-        verso: f.querySelector('[name=verso]').value,
-        area_tematica: f.querySelector('[name=area_tematica]').value,
-        legislacao_nome: f.querySelector('[name=legislacao_nome]').value,
+        frente_html:   getRT('frente_html'),
+        verso_html:    getRT('verso_html'),
+        mnemonico:     f.querySelector('[name=mnemonico]').value || null,
+        legislacao_id: f.querySelector('[name=legislacao_id]').value,
+        curso:         f.querySelector('[name=curso]').value,
       };
     },
     aplicarEdit(card, fc, body) {
-      card.querySelector('.flashcard-frente').textContent = body.frente;
-      card.querySelector('.flashcard-verso').textContent = body.verso;
-      const tagAreaEl = card.querySelector('.tag-area');
-      if (tagAreaEl) tagAreaEl.textContent = body.area_tematica;
+      const frenteEl = card.querySelector('.flashcard-frente');
+      const versoEl  = card.querySelector('.flashcard-verso');
+      if (frenteEl) frenteEl.innerHTML = renderHtmlFC(body.frente_html);
+      if (versoEl)  versoEl.innerHTML  = renderHtmlFC(body.verso_html);
+      Object.assign(fc, body);
     },
     msgEditado: 'Flashcard editado.',
     msgAprovado: 'Flashcard aprovado!',
