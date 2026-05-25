@@ -470,6 +470,12 @@ const PBM = {
         const qs = legislacao_id ? '?legislacao_id=' + encodeURIComponent(legislacao_id) : '';
         return request('/api/flashcards/maestria' + qs);
       },
+      sugerir(body) {
+        return request('/api/flashcards/sugerir', {
+          method: 'POST',
+          body: JSON.stringify(body),
+        });
+      },
     },
   },
 

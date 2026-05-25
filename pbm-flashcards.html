@@ -285,9 +285,15 @@
         </span>
       </div>
 
-      <div class="modo-tabs">
-        <button class="modo-tab ativo" id="tab-livre" onclick="trocarModo('livre')">LIVRE</button>
-        <button class="modo-tab" id="tab-srs" onclick="trocarModo('srs')">REVISÃO SRS</button>
+      <div class="modo-tabs" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+        <div style="display:flex; gap:6px;">
+          <button class="modo-tab ativo" id="tab-livre" onclick="trocarModo('livre')">LIVRE</button>
+          <button class="modo-tab" id="tab-srs" onclick="trocarModo('srs')">REVISÃO SRS</button>
+        </div>
+        <button type="button" class="modo-tab" id="btn-sugerir" onclick="abrirModalSugestao()" style="border-color:var(--vermelho); color:var(--branco); display:flex; align-items:center; gap:6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M12 5v14M5 12h14"/></svg>
+          Sugerir Flashcard
+        </button>
       </div>
 
       <div class="filtros-bar">
@@ -350,6 +356,7 @@
               </div>
               <div class="card-texto"><div class="card-texto-inner" id="back-texto"></div></div>
               <div class="card-ref" id="back-ref"></div>
+              <div class="card-autor" id="back-autor" style="display:none; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--texto-suporte); margin-top:8px; border-top:1px dashed var(--cinza-borda); padding-top:6px; text-align:right;"></div>
             </div>
           </div>
         </div>
@@ -421,8 +428,8 @@ function renderHTML(html) {
 // Mnemônico pode vir vazio mesmo como string (ex: <p><br></p> do Quill).
 // Considera "vazio" quando não há texto nem <img>.
 function temMnemonico(card) {
-  if (!card || !temMnemonico(card)) return false;
-  const raw = String(temMnemonico(card));
+  if (!card || !card.mnemonico) return false;
+  const raw = String(card.mnemonico);
   if (/<img\b/i.test(raw)) return true;
   const txt = raw.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim();
   return txt.length > 0;
@@ -600,6 +607,16 @@ function renderCard() {
     refEl.style.display = 'none';
   }
 
+  const autorEl = document.getElementById('back-autor');
+  if (autorEl) {
+    if (card.credito_autor) {
+      autorEl.innerHTML = `👤 Sugerido por: <strong style="color:var(--branco);">${card.credito_autor}</strong>`;
+      autorEl.style.display = 'block';
+    } else {
+      autorEl.style.display = 'none';
+    }
+  }
+
   // Dica panel — renderiza HTML rico (texto formatado, cores, imagens)
   const dicaTextoEl = document.getElementById('card-dica-texto');
   dicaTextoEl.innerHTML = temMnemonico(card) ? renderHTML(card.mnemonico) : '';
@@ -741,6 +758,140 @@ document.addEventListener('keydown', function(e) {
   }
 });
 
+function abrirModalSugestao() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;';
+  
+  const atOptions = [
+    { value: '', label: 'Selecione a área...' },
+    { value: 'AT1', label: 'AT1 — Segurança Contra Incêndios' },
+    { value: 'AT2', label: 'AT2 — Combate a Incêndios' },
+    { value: 'AT3', label: 'AT3 — Buscas e APH' },
+    { value: 'AT4', label: 'AT4 — Direito Militar' },
+    { value: 'AT5', label: 'AT5 — Normas Administrativas' }
+  ].map(o => `<option value="${o.value}" ${filtroAT === o.value ? 'selected' : ''}>${o.label}</option>`).join('');
+
+  overlay.innerHTML = `
+    <div style="background:var(--cinza-escuro); border:1px solid var(--cinza-borda); border-radius:12px; padding:24px; max-width:540px; width:100%; box-shadow:0 8px 32px rgba(0,0,0,0.6); display:flex; flex-direction:column; gap:16px; position:relative; animation: fadeUp 0.3s ease both;">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--cinza-borda); padding-bottom:12px;">
+        <span style="font-family:'Bebas Neue',sans-serif; font-size:22px; color:var(--branco); letter-spacing:0.04em; display:flex; align-items:center; gap:8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--vermelho)" stroke-width="2" style="flex-shrink:0;"><path d="M12 5v14M5 12h14"/></svg>
+          Sugerir Flashcard
+        </span>
+        <button id="btn-fechar-sugestao" style="background:none; border:none; color:var(--cinza-texto); cursor:pointer; font-size:22px; line-height:1; font-family:'Inter',sans-serif;">&times;</button>
+      </div>
+
+      <form id="form-sugerir" style="display:flex; flex-direction:column; gap:12px; margin:0;">
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--cinza-texto);">Área Temática</label>
+          <select id="sug-area" style="background:var(--cinza-medio); border:1px solid var(--cinza-borda); color:var(--branco); padding:8px; border-radius:6px; outline:none; font-family:Inter,sans-serif; font-size:13px;" required>
+            ${atOptions}
+          </select>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--cinza-texto);">Legislação Relacionada</label>
+          <select id="sug-legislacao" style="background:var(--cinza-medio); border:1px solid var(--cinza-borda); color:var(--branco); padding:8px; border-radius:6px; outline:none; font-family:Inter,sans-serif; font-size:13px;" required disabled>
+            <option value="">Selecione uma área primeiro...</option>
+          </select>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--cinza-texto);">Frente (Pergunta ou Conceito)</label>
+          <textarea id="sug-frente" placeholder="Ex: Qual o tempo de resposta máximo em incêndios urbanos?" style="background:var(--cinza-medio); border:1px solid var(--cinza-borda); color:var(--branco); padding:10px; border-radius:6px; height:80px; resize:none; outline:none; font-family:Inter,sans-serif; font-size:13px;" required></textarea>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--cinza-texto);">Verso (Resposta ou Explicação)</label>
+          <textarea id="sug-verso" placeholder="Ex: O tempo máximo de resposta é de 10 minutos." style="background:var(--cinza-medio); border:1px solid var(--cinza-borda); color:var(--branco); padding:10px; border-radius:6px; height:80px; resize:none; outline:none; font-family:Inter,sans-serif; font-size:13px;" required></textarea>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--cinza-texto);">Dica ou Mnemônico (Opcional)</label>
+          <textarea id="sug-mnemonico" placeholder="Dica mental ou mnemônico (suporta múltiplas linhas)..." style="background:var(--cinza-medio); border:1px solid var(--cinza-borda); color:var(--branco); padding:10px; border-radius:6px; height:80px; resize:vertical; outline:none; font-family:Inter,sans-serif; font-size:13px; min-height:60px;"></textarea>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <label style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--cinza-texto); margin-bottom:4px;">Como quer ser creditado no cartão?</label>
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--branco); cursor:pointer;">
+              <input type="radio" name="sug-credito" value="nome" checked style="accent-color:var(--vermelho); margin:0;">
+              Meu nome real (Ex: "${(PBM.getUsuario && PBM.getUsuario())?.nome || 'Aluno'}")
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--branco); cursor:pointer;">
+              <input type="radio" name="sug-credito" value="nickname" style="accent-color:var(--vermelho); margin:0;">
+              Meu codenome/nickname (Ex: "${(PBM.getUsuario && PBM.getUsuario())?.nickname || 'Combatente'}")
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--branco); cursor:pointer;">
+              <input type="radio" name="sug-credito" value="anonimo" style="accent-color:var(--vermelho); margin:0;">
+              Permanecer anônimo ("Aluno Anônimo")
+            </label>
+          </div>
+        </div>
+
+        <button type="submit" style="background:var(--vermelho); border:none; color:var(--branco); padding:10px; border-radius:6px; font-weight:600; font-family:Inter,sans-serif; font-size:13px; cursor:pointer; margin-top:8px; transition: background 0.15s;">
+          Enviar Sugestão
+        </button>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const sugArea = overlay.querySelector('#sug-area');
+  const sugLeg = overlay.querySelector('#sug-legislacao');
+
+  function atualizarLegislacoes() {
+    const at = sugArea.value;
+    if (!at) {
+      sugLeg.innerHTML = '<option value="">Selecione uma área primeiro...</option>';
+      sugLeg.disabled = true;
+      return;
+    }
+    const filtered = manifestoLegs.filter(l => atDaLeg(l) === at);
+    if (!filtered.length) {
+      sugLeg.innerHTML = '<option value="">Nenhuma legislação nesta área...</option>';
+      sugLeg.disabled = true;
+      return;
+    }
+    filtered.sort((a, b) => (a.nome || '') < (b.nome || '') ? -1 : 1);
+    sugLeg.innerHTML = filtered.map(l => `<option value="${l.id}">${l.nome}</option>`).join('');
+    sugLeg.disabled = false;
+  }
+
+  sugArea.addEventListener('change', atualizarLegislacoes);
+  if (filtroAT) {
+    atualizarLegislacoes();
+  }
+
+  const fechar = () => overlay.remove();
+  overlay.querySelector('#btn-fechar-sugestao').addEventListener('click', fechar);
+  overlay.addEventListener('click', e => { if (e.target === overlay) fechar(); });
+
+  overlay.querySelector('#form-sugerir').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const legislacao_id = sugLeg.value;
+    const frente_html = '<p>' + overlay.querySelector('#sug-frente').value.replace(/\n/g, '<br>') + '</p>';
+    const verso_html = '<p>' + overlay.querySelector('#sug-verso').value.replace(/\n/g, '<br>') + '</p>';
+    const mnemonico = overlay.querySelector('#sug-mnemonico').value.trim();
+    const sugestao_credito = overlay.querySelector('input[name="sug-credito"]:checked').value;
+
+    try {
+      await PBM.api.flashcards.sugerir({
+        legislacao_id,
+        frente_html,
+        verso_html,
+        mnemonico: mnemonico || null,
+        sugestao_credito
+      });
+      if (window.PBM && PBM.Toast) PBM.Toast.success('Sugestão enviada com sucesso! Aguarde a moderação.');
+      fechar();
+    } catch (err) {
+      if (window.PBM && PBM.Toast) PBM.Toast.error(err.erro || 'Falha ao enviar sugestão.');
+    }
+  });
+}
+
 // ──────────────────────────────────────────────────────────────────
 // Init
 // ──────────────────────────────────────────────────────────────────
@@ -842,7 +993,7 @@ async function carregarFlashcards() {
 </script>
 <script src="/js/tour.js"></script>
 <script src="/js/api.js?v=6"></script>
-<script src="/js/pbm-components.js?v=4"></script>
+<script src="/js/pbm-components.js?v=5"></script>
 <script>PBM.Layout.mount({active:'flashcards'});iniciarApp();</script>
 <div class="pbm-watermark" aria-hidden="true"></div>
 

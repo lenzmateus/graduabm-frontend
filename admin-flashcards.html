@@ -40,6 +40,7 @@
   .fonte-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 2px 7px; border-radius: 20px; }
   .fonte-ia { background: rgba(127,119,221,0.08); border: 1px solid rgba(127,119,221,0.2); color: #AFA9EC; }
   .fonte-manual { background: rgba(39,160,90,0.08); border: 1px solid rgba(39,160,90,0.2); color: var(--success-fg); }
+  .fonte-aluno { background: rgba(192,39,15,0.08); border: 1px solid rgba(192,39,15,0.2); color: var(--vermelho); }
   .card-status { display: inline-flex; align-items: center; gap: 5px; font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 20px; }
   .status-publicado { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
   .status-rascunho  { background: rgba(186,117,23,0.10); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
@@ -127,6 +128,7 @@ const _isAdmin = PBM.isAdmin();
           <option value="">Todas as fontes</option>
           <option value="ia">Gerado por IA</option>
           <option value="manual">Manual</option>
+          <option value="aluno">Aluno</option>
         </select>
         <select class="filtro-select" id="filtro-status">
           <option value="">Todos status</option>
@@ -186,6 +188,7 @@ const _isAdmin = PBM.isAdmin();
       <div class="campo">
         <label>Legislação</label>
         <select id="m-legislacao-id" disabled><option value="">— escolha a área primeiro —</option></select>
+        <span id="leg-info-modal" style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#FFA500; margin-top:6px; display:block;"></span>
       </div>
       <div class="campo">
         <label>Frente (pergunta / conceito)</label>
@@ -313,6 +316,36 @@ function popularLegsPorArea(legPreservar) {
   sel.disabled = false;
 }
 
+function atualizarInfoLeg() {
+  const selLeg = document.getElementById('m-legislacao-id');
+  const infoEl = document.getElementById('leg-info-modal');
+  const selCurso = document.getElementById('m-curso');
+  if (!selLeg || !infoEl) return;
+
+  const selectedId = selLeg.value;
+  if (!selectedId) {
+    infoEl.innerHTML = '';
+    return;
+  }
+
+  const leg = legPorId(selectedId);
+  if (leg) {
+    if (leg.curso === 'ambos') {
+      infoEl.innerHTML = `⭐ <strong style="color:#FFA500;">Esta legislação é elegível para AMBOS os cursos (CTSP e CBA)!</strong>`;
+    } else {
+      const cursoLeg = (leg.curso || '').toUpperCase();
+      infoEl.innerHTML = `ℹ️ Edital desta legislação: <strong style="color:var(--branco);">${cursoLeg}</strong>`;
+    }
+    
+    if (selCurso && leg.curso && selCurso.value !== leg.curso) {
+      selCurso.value = leg.curso;
+      popularLegsPorArea(selectedId);
+    }
+  } else {
+    infoEl.innerHTML = '';
+  }
+}
+
 async function carregarCards() {
   try {
     const data = await PBM.Admin.flashcards.listar();
@@ -369,7 +402,7 @@ function renderLista(cards) {
       </div>
       <div>${at !== '—' ? `<span class="card-area-badge badge-${at}">${at}</span>` : '<span style="color:#555">—</span>'}</div>
       <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888">${(c.curso||'').toUpperCase()}</div>
-      <div><span class="fonte-badge fonte-${c.fonte||'manual'}">${c.fonte === 'ia' ? 'IA' : 'Manual'}</span></div>
+      <div><span class="fonte-badge fonte-${c.fonte||'manual'}">${c.fonte === 'ia' ? 'IA' : (c.fonte === 'aluno' ? 'Aluno' : 'Manual')}</span></div>
       <div><span class="card-status ${statusClass}">${statusLabel}</span></div>
       <div class="card-acoes">
         <button class="btn-mini edit" data-action="editar" data-id="${c.id}">Editar</button>
@@ -403,7 +436,7 @@ function limparEditores() {
   for (const id of RT_IDS) RichText.setHTML(id, '');
 }
 
-async function abrirModalNova() {
+async function abrirModalNovo() {
   await carregarManifesto();
   await garantirEditores();
   document.getElementById('modal-titulo').textContent = 'Novo Flashcard';
@@ -412,6 +445,7 @@ async function abrirModalNova() {
   document.getElementById('m-area').value = '';
   document.getElementById('m-curso').value = 'ambos';
   popularLegsPorArea();
+  atualizarInfoLeg();
   document.getElementById('m-status').value = 'publicado';
   document.getElementById('modal-erro').style.display = 'none';
   document.getElementById('overlay-modal').classList.add('aberto');
@@ -432,10 +466,17 @@ async function abrirModalEditar(id) {
   const atCard = c.area_tematica || atDaLeg(legPorId(c.legislacao_id), c.curso) || '';
   document.getElementById('m-area').value = atCard;
   popularLegsPorArea(c.legislacao_id || '');
+  atualizarInfoLeg();
   RichText.setHTML('m-mnemonico', c.mnemonico || '');
   document.getElementById('m-status').value = c.status === 'pendente_aprovacao' ? 'publicado' : (c.status || 'publicado');
   document.getElementById('modal-erro').style.display = 'none';
   document.getElementById('overlay-modal').classList.add('aberto');
+}
+
+function fecharModal() {
+  document.getElementById('overlay-modal').classList.remove('aberto');
+  document.getElementById('leg-info-modal').innerHTML = '';
+}classList.add('aberto');
 }
 
 function fecharModal() { document.getElementById('overlay-modal').classList.remove('aberto'); }
@@ -525,7 +566,7 @@ AdminChrome.init({
       texto: 'Novo Flashcard',
       variant: 'primary',
       icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
-      onClick: abrirModalNova,
+      onClick: abrirModalNovo,
     },
   ],
 });
@@ -539,6 +580,7 @@ document.getElementById('btn-confirmar-delete').addEventListener('click', confir
 
 document.getElementById('m-area').addEventListener('change', () => popularLegsPorArea());
 document.getElementById('m-curso').addEventListener('change', () => popularLegsPorArea());
+document.getElementById('m-legislacao-id').addEventListener('change', atualizarInfoLeg);
 
 ['filtro-area','filtro-curso','filtro-fonte','filtro-status'].forEach(id => {
   document.getElementById(id).addEventListener('change', aplicarFiltros);

@@ -776,30 +776,77 @@
       msg: 'Nenhum flashcard pendente.',
     },
     renderMeta(fc) {
-      return [tagArea(fc.area_tematica), tagData(fc.criado_em || fc.created_at), tagLeg(fc.legislacao_nome)];
+      const tags = [tagArea(fc.area_tematica), tagData(fc.criado_em || fc.created_at), tagLeg(fc.legislacao_nome)];
+      if (fc.fonte === 'aluno') {
+        tags.push(`<span class="tag tag-tipo" style="background:var(--vermelho); color:var(--branco); font-weight:600;">SUGESTÃO DE ALUNO</span>`);
+      }
+      return tags;
     },
     renderBody(fc) {
       const frente = renderHtmlFC(fc.frente_html);
       const verso  = renderHtmlFC(fc.verso_html);
       const mnem   = fc.mnemonico ? `<p class="flashcard-verso" style="font-style:italic;opacity:0.85"><strong>Mnemônico:</strong> ${esc(fc.mnemonico)}</p>` : '';
-      return `<div class="flashcard-frente">${frente}</div><div class="flashcard-verso">${verso}</div>${mnem}`;
+      
+      let autorHtml = '';
+      if (fc.fonte === 'aluno') {
+        const u = fc.users || {};
+        autorHtml = `
+          <div style="margin-top:12px; padding:10px; background:var(--cinza-medio); border:1px dashed var(--cinza-borda); border-radius:6px; font-family:'Inter',sans-serif; font-size:12px; color:var(--cinza-texto);">
+            <strong style="color:var(--branco);">👤 Sugestão de Aluno:</strong> ${esc(u.nome || 'Desconhecido')} (${esc(u.email || 'sem e-mail')})<br>
+            <strong style="color:var(--branco);">🏷️ Modo de Crédito:</strong> ${fc.sugestao_credito.toUpperCase()} <span style="color:var(--vermelho); font-weight:600;">(Será publicado como: "${fc.credito_autor || 'Aluno Anônimo'}")</span>
+          </div>
+        `;
+      }
+      
+      return `<div class="flashcard-frente">${frente}</div><div class="flashcard-verso">${verso}</div>${mnem}${autorHtml}`;
     },
     renderEditForm(fc) {
       const opts = _manifestoFC.map(l => {
         const at = typeof l.area_tematica === 'string' ? l.area_tematica : (l.area_tematica?.ctsp || l.area_tematica?.cba || '');
-        return `<option value="${l.id}" ${fc.legislacao_id === l.id ? 'selected' : ''}>${esc(at + ' — ' + l.nome)}</option>`;
+        const cursoLeg = l.curso === 'ambos' ? 'AMBOS' : (l.curso || '').toUpperCase();
+        return `<option value="${l.id}" ${fc.legislacao_id === l.id ? 'selected' : ''}>[${cursoLeg}] ${esc(at + ' — ' + l.nome)}</option>`;
       }).join('');
       const cursoOpts = ['ambos','ctsp','cba'].map(c => `<option value="${c}" ${fc.curso === c ? 'selected' : ''}>${c.toUpperCase()}</option>`).join('');
       return `
         <div class="campo"><label>Frente</label><textarea name="frente_html" id="rt-fc-${fc.id}-frente_html">${esc(fc.frente_html || '')}</textarea></div>
         <div class="campo"><label>Verso</label><textarea name="verso_html" id="rt-fc-${fc.id}-verso_html">${esc(fc.verso_html || '')}</textarea></div>
-        <div class="campo"><label>Mnemônico (opcional)</label><input name="mnemonico" maxlength="200" value="${esc(fc.mnemonico || '')}"></div>
+        <div class="campo"><label>Mnemônico (opcional)</label><textarea name="mnemonico" style="background:var(--cinza-medio); border:1px solid var(--cinza-borda); color:var(--branco); padding:10px; border-radius:6px; height:80px; resize:vertical; outline:none; font-family:Inter,sans-serif; font-size:13px; min-height:60px;">${esc(fc.mnemonico || '')}</textarea></div>
         <div class="form-row">
-          <div class="campo"><label>Legislação</label><select name="legislacao_id">${opts}</select></div>
+          <div class="campo">
+            <label>Legislação</label>
+            <select name="legislacao_id">${opts}</select>
+            <span id="leg-info-${fc.id}" style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--vermelho); margin-top:6px; display:block;"></span>
+          </div>
           <div class="campo"><label>Curso</label><select name="curso">${cursoOpts}</select></div>
         </div>`;
     },
     onCard(card, fc) {
+      const selLeg = card.querySelector('[name=legislacao_id]');
+      const infoEl = card.querySelector(`#leg-info-${fc.id}`);
+      
+      function updateLegInfo() {
+        if (!selLeg || !infoEl) return;
+        const selectedId = selLeg.value;
+        const leg = _manifestoFC.find(l => l.id === selectedId);
+        if (leg) {
+          const selCurso = card.querySelector('[name=curso]');
+          if (leg.curso === 'ambos') {
+            infoEl.innerHTML = `⭐ <strong style="color:#FFA500;">Esta legislação é elegível para AMBOS os cursos (CTSP e CBA)!</strong>`;
+          } else {
+            const cursoLeg = (leg.curso || '').toUpperCase();
+            infoEl.innerHTML = `ℹ️ Edital desta legislação: <strong style="color:var(--branco);">${cursoLeg}</strong>`;
+          }
+          if (selCurso && leg.curso && selCurso.value !== leg.curso) {
+            selCurso.value = leg.curso;
+          }
+        }
+      }
+      
+      if (selLeg && infoEl) {
+        selLeg.addEventListener('change', updateLegInfo);
+        updateLegInfo();
+      }
+
       if (!window.RichText) return;
       // Monta Quill nas textareas do form (já estão no DOM, ocultos até toggle)
       ['frente_html', 'verso_html'].forEach(name => {
