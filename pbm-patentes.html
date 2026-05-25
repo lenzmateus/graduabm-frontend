@@ -52,7 +52,7 @@
   .insignia-big {
     font-size: 64px;
     line-height: 1;
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
     border: 1px solid var(--cinza-borda);
     width: 96px;
     height: 96px;
@@ -60,6 +60,13 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-md);
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .insignia-big:hover {
+    border-color: var(--brand-primary);
+    background: rgba(255, 255, 255, 0.04);
+    box-shadow: 0 0 16px rgba(192, 39, 15, 0.08);
   }
 
   .posto-nome {
@@ -74,7 +81,7 @@
   .dossie-tag {
     font-family: var(--font-mono);
     font-size: 11px;
-    color: var(--vermelho);
+    color: var(--brand-primary);
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
@@ -107,7 +114,7 @@
   }
 
   .progress-fill {
-    background: var(--vermelho);
+    background: var(--brand-primary);
     height: 100%;
     border-radius: var(--radius-pill);
     transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
@@ -164,7 +171,7 @@
 
   .prontidao-badge.cor-vermelho {
     background: rgba(192, 39, 15, 0.12);
-    color: var(--vermelho);
+    color: var(--erro);
     border: 1px solid rgba(192, 39, 15, 0.3);
   }
 
@@ -193,7 +200,7 @@
 
   .prontidao-quadrante.ativo.verde { border-color: var(--sucesso); }
   .prontidao-quadrante.ativo.amarelo { border-color: var(--atencao); }
-  .prontidao-quadrante.ativo.vermelho { border-color: var(--vermelho); }
+  .prontidao-quadrante.ativo.vermelho { border-color: var(--erro); }
 
   .dot-status {
     width: 8px;
@@ -202,7 +209,7 @@
   }
   .dot-status.verde { background: var(--sucesso); }
   .dot-status.amarelo { background: var(--atencao); }
-  .dot-status.vermelho { background: var(--vermelho); }
+  .dot-status.vermelho { background: var(--erro); }
 
   .status-text {
     font-size: 11px;
@@ -492,55 +499,133 @@
   PBM.Layout.mount({ active: 'ranking' }); // Associa ao item 'Carreira' do layout
 </script>
 <script>
+  function obterInsigniaSVG(nivel, curso) {
+    const isCba = curso === 'cba';
+    const cor = 'var(--brand-primary)';
+    
+    if (nivel >= 8) {
+      // Oficiais: Tenente a Coronel
+      if (nivel === 11) { // Major (Escudo com linhas cruzadas de alta patente)
+        return `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;">
+          <polygon points="12,2 2,7 12,12 22,7" fill="${cor}" fill-opacity="0.1"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>`;
+      }
+      if (nivel === 12) { // Tenente-Coronel (Escudo + 1 Estrela)
+        return `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;">
+          <polygon points="12,3 14.5,9 21,9 16,13 18,19 12,15 6,19 8,13 3,9 9.5,9" fill="${cor}" fill-opacity="0.2"/>
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        </svg>`;
+      }
+      if (nivel === 13) { // Coronel (Copa/escudo + 2 Estrelas)
+        return `<svg width="60" height="60" viewBox="0 0 28 28" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;">
+          <polygon points="7,3 8.5,7 12.5,7 9.5,10 11,14 7,11 3,14 4.5,10 1.5,7 5.5,7" fill="${cor}" fill-opacity="0.2"/>
+          <polygon points="21,3 22.5,7 26.5,7 23.5,10 25,14 21,11 17,14 18.5,10 15.5,7 19.5,7" fill="${cor}" fill-opacity="0.2"/>
+          <path d="M14 16l-8 4 8 4 8-4-8-4z"/>
+        </svg>`;
+      }
+
+      // 2º Tenente, 1º Tenente, Capitão (Estrelas de Oficial)
+      const estrelas = nivel - 7;
+      let estrelasHtml = '';
+      for (let i = 0; i < estrelas; i++) {
+        estrelasHtml += `
+          <g transform="translate(0, ${i * 18})">
+            <polygon points="12,2 14.5,8.5 21,8.5 16,12.5 18,19 12,15 6,19 8,12.5 3,8.5 9.5,8.5" fill="${cor}" fill-opacity="0.15" stroke="${cor}" stroke-width="1.8" stroke-linejoin="round"/>
+          </g>
+        `;
+      }
+      return `<svg width="40" height="${24 + (estrelas - 1) * 18}" viewBox="0 0 24 ${24 + (estrelas - 1) * 18}" fill="none" style="display:inline-block; overflow:visible;">
+        ${estrelasHtml}
+      </svg>`;
+    } else {
+      // Praças: Recruta a Subtenente
+      if (nivel === 1) { // Recruta (Escudo vazio simples)
+        return `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="${cor}" fill-opacity="0.05"/>
+        </svg>`;
+      }
+      
+      // Chevrons (V invertidos)
+      const totalChevrons = Math.min(3, nivel - 1); 
+      let chevronsHtml = '';
+      for (let i = 0; i < totalChevrons; i++) {
+        const y = 6 + i * 8;
+        chevronsHtml += `<polyline points="6,${y + 8} 24,${y} 42,${y + 8}" stroke="${cor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+      }
+
+      // Linhas retas abaixo (para 2º Sargento, 1º Sargento e Subtenente)
+      let linhasHtml = '';
+      if (nivel >= 5) {
+        const totalLinhas = nivel === 5 ? 1 : (nivel === 6 ? 2 : 3);
+        for (let i = 0; i < totalLinhas; i++) {
+          const y = 32 + i * 6;
+          linhasHtml += `<line x1="10" y1="${y}" x2="38" y2="${y}" stroke="${cor}" stroke-width="2.5" stroke-linecap="round"/>`;
+        }
+      }
+
+      return `<svg width="56" height="56" viewBox="0 0 48 48" fill="none" style="display:inline-block; overflow:visible;">
+        ${chevronsHtml}
+        ${linhasHtml}
+      </svg>`;
+    }
+  }
+
   async function carregarDossie() {
     try {
       const response = await request('/api/progresso');
       if (!response) throw new Error('Dados nulos');
 
-      // 1. Posto e Identificação
+      const user = PBM.getUsuario() || {};
+      const cursoAtivo = user.curso || 'ctsp';
+
+      // 1. Posto e Identificação (High fidelity SVG)
       document.getElementById('posto-txt').textContent = response.patente || 'Recruta';
-      document.getElementById('patente-nivel-txt').textContent = 'NÍVEL ' + String(response.nivel).padStart(2, '0');
-      document.getElementById('insignia-box').textContent = response.insignia || '🔰';
+      document.getElementById('patente-nivel-txt').textContent = 'NÍVEL ' + String(response.nivel || 1).padStart(2, '0');
+      document.getElementById('insignia-box').innerHTML = obterInsigniaSVG(response.nivel || 1, cursoAtivo);
 
       // 2. XP Progresso
-      document.getElementById('xp-numeros-txt').innerHTML = `<span class="xp-atual">${response.xp_atual}</span> / ${response.xp_proximo || response.xp_atual} XP`;
-      document.getElementById('xp-progress-bar').style.width = response.progresso_percentual + '%';
+      document.getElementById('xp-numeros-txt').innerHTML = `<span class="xp-atual">${response.xp_atual || 0}</span> / ${response.xp_proximo || response.xp_atual || 0} XP`;
+      document.getElementById('xp-progress-bar').style.width = (response.progresso_percentual || 0) + '%';
       
       const rest = response.xp_restante || 0;
       if (response.xp_proximo) {
         document.getElementById('xp-meta-msg').innerHTML = `Faltam <strong>${rest} XP</strong> para sua próxima graduação militar.`;
       } else {
-        document.getElementById('xp-meta-msg').innerHTML = `Você atingiu o **Patamar Máximo** de Carreira! Prontidão operacional contínua recomendada.`;
+        document.getElementById('xp-meta-msg').innerHTML = `Você atingiu o <strong>Patamar Máximo</strong> de Carreira! Prontidão operacional contínua recomendada.`;
       }
 
-      // 3. Grid de Estatísticas
-      document.getElementById('stat-streak').textContent = response.streak_atual + 'd';
-      document.getElementById('stat-max-streak').textContent = response.max_streak + 'd';
-      document.getElementById('stat-licencas').textContent = response.licencas_plantao + '/3';
+      // 3. Grid de Estatísticas (Com tratamento estrito contra 'undefined')
+      document.getElementById('stat-streak').textContent = (response.streak_atual || 0) + 'd';
+      document.getElementById('stat-max-streak').textContent = (response.max_streak || 0) + 'd';
+      document.getElementById('stat-licencas').textContent = (response.licencas_plantao || 0) + '/3';
       
-      const bounsPct = Math.round((response.multiplicador_streak - 1) * 100);
+      const bounsPct = Math.round(((response.multiplicador_streak || 1) - 1) * 100);
       document.getElementById('stat-mult').textContent = bounsPct > 0 ? `+${bounsPct}%` : '0%';
 
       // 4. Prontidão Operacional
       const pBadge = document.getElementById('prontidao-badge-txt');
-      pBadge.className = 'prontidao-badge cor-' + response.prontidao_cor;
-      pBadge.textContent = response.prontidao.toUpperCase();
+      const corProntidao = response.prontidao_cor || 'amarelo';
+      const statusProntidao = response.prontidao || 'Afastado';
+      pBadge.className = 'prontidao-badge cor-' + corProntidao;
+      pBadge.textContent = statusProntidao.toUpperCase();
 
       // Ativa quadrante correto
       document.querySelectorAll('.prontidao-quadrante').forEach(q => q.classList.remove('ativo', 'verde', 'amarelo', 'vermelho'));
-      const quad = document.getElementById('q-' + response.prontidao_cor);
+      const quad = document.getElementById('q-' + corProntidao);
       if (quad) {
-        quad.classList.add('ativo', response.prontidao_cor);
+        quad.classList.add('ativo', corProntidao);
       }
 
-      // Descrição do status
+      // Descrição do status sem markdown cru
       const descEl = document.getElementById('prontidao-desc-txt');
-      if (response.prontidao_cor === 'verde') {
-        descEl.innerHTML = '🟢 **Prontidão Excelente**: Aluno ativo no serviço de estudos. Multiplicador de consistência diária operando em capacidade total.';
-      } else if (response.prontidao_cor === 'amarelo') {
-        descEl.innerHTML = '🟡 **Afastado Temporariamente**: Ausente nos últimos 4+ dias. Estude hoje para reativar sua prontidão total e reaver bônus de consistência.';
+      if (corProntidao === 'verde') {
+        descEl.innerHTML = '🟢 <strong>Prontidão Excelente</strong>: Aluno ativo no serviço de estudos. Multiplicador de consistência diária operando em capacidade total.';
+      } else if (corProntidao === 'amarelo') {
+        descEl.innerHTML = '🟡 <strong>Afastado Temporariamente</strong>: Ausente nos últimos 4+ dias. Estude hoje para reativar sua prontidão total e reaver bônus de consistência.';
       } else {
-        descEl.innerHTML = '🔴 **Inatividade na Reserva**: Mais de 8 dias fora de serviço. **Multa de -100 XP por dia ativa** para Oficiais. Conclua uma **Missão de Reintegração** (meta de questões ou Bloco do Ciclo) para restabelecer o serviço ativo.';
+        descEl.innerHTML = '🔴 <strong>Inatividade na Reserva</strong>: Mais de 8 dias fora de serviço. <strong>Multa de -100 XP por dia ativa</strong> para Oficiais. Conclua uma <strong>Missão de Reintegração</strong> (meta de questões ou Bloco do Ciclo) para restabelecer o serviço ativo.';
       }
 
       // Rebaixado Toast
@@ -551,38 +636,39 @@
       // 5. Licenças Slots (Munição)
       const slotsBox = document.getElementById('licencas-slots-box');
       slotsBox.innerHTML = '';
+      const licencasAtivas = response.licencas_plantao || 0;
       for (let i = 1; i <= 3; i++) {
         const slot = document.createElement('div');
         slot.className = 'licenca-slot';
-        if (i <= response.licencas_plantao) {
+        if (i <= licencasAtivas) {
           slot.classList.add('ativo');
         }
         slot.innerHTML = '<span class="shield-icon">🛡️</span>';
         slotsBox.appendChild(slot);
       }
 
-      // 6. Logs de Serviço (Dinâmicos recentes simulados baseados nas conquistas)
+      // 6. Logs de Serviço (Dinâmicos com tratamento contra undefined)
       const logsBox = document.getElementById('logs-terminal-box');
       logsBox.innerHTML = '';
       
       const logs = [
         { time: 'SISTEMA', tag: 'Dossiê operacional de cadete recuperado com sucesso.', xp: 0 },
-        { time: 'STATUS', tag: `Mecanismo de streak verificado: ${response.streak_atual} dias consecutivos.`, xp: 0 },
-        { time: 'DEFESA', tag: `Licenças de plantão ativas: ${response.licencas_plantao} slots carregados.`, xp: 0 },
+        { time: 'STATUS', tag: `Mecanismo de streak verificado: ${(response.streak_atual || 0)} dias consecutivos.`, xp: 0 },
+        { time: 'DEFESA', tag: `Licenças de plantão ativas: ${(response.licencas_plantao || 0)} slots carregados.`, xp: 0 },
       ];
 
-      if (response.questoes_estudadas_hoje > 0) {
+      if ((response.questoes_estudadas_hoje || 0) > 0) {
         logs.unshift({
           time: 'SERVIÇO',
-          tag: `Completadas ${response.questoes_estudadas_hoje} questões na data de hoje. Progresso meta: ${response.questoes_estudadas_hoje}/${response.meta_diaria}`,
+          tag: `Completadas ${response.questoes_estudadas_hoje} questões na data de hoje. Progresso meta: ${response.questoes_estudadas_hoje}/${response.meta_diaria || 30}`,
           xp: 0
         });
       }
 
-      if (response.xp_atual > 0) {
+      if ((response.xp_atual || 0) > 0) {
         logs.unshift({
           time: 'RECOMPENSA',
-          tag: `Estudos recentes computados. Patente atual: ${response.patente}.`,
+          tag: `Estudos recentes computados. Patente atual: ${response.patente || 'Recruta'}.`,
           xp: response.xp_atual
         });
       }
