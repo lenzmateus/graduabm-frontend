@@ -1186,7 +1186,7 @@ async function init() {
 // ── CARREIRA E PROGRESSÃO TÁTICA ──
 async function atualizarCarreiraDashboard() {
   try {
-    const response = await PBM.API.get('/progresso');
+    const response = await request('/api/progresso');
     if (!response) return;
 
     document.getElementById('dash-patente-insignia').textContent = response.insignia || '🔰';

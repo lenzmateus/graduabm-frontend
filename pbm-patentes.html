@@ -494,7 +494,7 @@
 <script>
   async function carregarDossie() {
     try {
-      const response = await PBM.API.get('/progresso');
+      const response = await request('/api/progresso');
       if (!response) throw new Error('Dados nulos');
 
       // 1. Posto e Identificação
