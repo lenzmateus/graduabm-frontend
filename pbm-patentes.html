@@ -11,476 +11,460 @@
 <script src="/js/pbm-theme-boot.js?v=2"></script>
 <link rel="stylesheet" href="/css/pbm-tokens.css">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/pbm-layout.css">
-<link rel="stylesheet" href="/css/admin-chrome.css">
+<link rel="stylesheet" href="/css/pbm-layout.css?v=5">
+<link rel="stylesheet" href="/css/pbm-components.css?v=5">
 <style>
-  /* ── CARREIRA MILITAR (DOSSIÊ STYLE) ── */
-  .dossie-secao {
-    display: grid;
-    grid-template-columns: 1fr 340px;
-    gap: 1.5rem;
-    align-items: start;
-    margin-bottom: 2rem;
+
+/* ── HERO CARD (matches dashboard/ciclo hero pattern) ── */
+.carreira-hero {
+  background: var(--cinza-escuro);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 12px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.carreira-hero-watermark {
+  position: absolute;
+  right: -20px;
+  bottom: -20px;
+  width: 200px;
+  opacity: 0.03;
+  pointer-events: none;
+  user-select: none;
+}
+
+.carreira-hero-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.insignia-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--cinza-borda);
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+  transition: border-color 0.2s ease;
+}
+
+.insignia-box:hover {
+  border-color: var(--brand-primary);
+}
+
+.carreira-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  margin-bottom: 4px;
+}
+
+.carreira-posto {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 0.04em;
+  color: var(--branco);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.carreira-nivel {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--cinza-texto);
+  text-transform: uppercase;
+}
+
+/* ── XP PROGRESS (matches progress-bar DNA) ── */
+.xp-section {
+  border-top: 1px solid var(--cinza-borda);
+  padding-top: 20px;
+}
+
+.xp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+
+.xp-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cinza-texto);
+}
+
+.xp-numeros {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--cinza-texto);
+}
+
+.xp-numeros .xp-atual {
+  color: var(--branco);
+  font-weight: 500;
+}
+
+.xp-track {
+  background: var(--bg-hover);
+  height: 6px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.xp-fill {
+  background: var(--brand-primary);
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.xp-msg {
+  font-size: 12px;
+  color: var(--cinza-texto);
+  margin-top: 8px;
+}
+
+.xp-msg strong {
+  color: var(--branco);
+  font-weight: 500;
+}
+
+/* ── STAT GRID (4 columns, reuses .stat-card from components) ── */
+.carreira-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* ── PANELS GRID ── */
+.carreira-paineis {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* ── CARD SECTION TITLE (matches ciclo/conta card-titulo pattern) ── */
+.painel-titulo {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cinza-texto);
+}
+
+.painel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--cinza-borda);
+}
+
+/* ── PRONTIDÃO OPERACIONAL ── */
+.prontidao-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.06em;
+}
+
+.prontidao-badge.cor-verde {
+  background: var(--success-bg);
+  color: var(--success-fg);
+  border: 1px solid var(--success-border);
+}
+
+.prontidao-badge.cor-amarelo {
+  background: var(--warning-bg);
+  color: var(--warning-fg);
+  border: 1px solid var(--warning-border);
+}
+
+.prontidao-badge.cor-vermelho {
+  background: var(--danger-bg);
+  color: var(--danger-fg);
+  border: 1px solid var(--danger-border);
+}
+
+.prontidao-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.prontidao-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--cinza-borda);
+  border-radius: 6px;
+  opacity: 0.35;
+  transition: opacity 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.prontidao-item.ativo {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.prontidao-item.ativo.verde { border-color: var(--success-border); }
+.prontidao-item.ativo.amarelo { border-color: var(--warning-border); }
+.prontidao-item.ativo.vermelho { border-color: var(--danger-border); }
+
+.dot-status {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.dot-status.verde { background: var(--sucesso); }
+.dot-status.amarelo { background: var(--atencao); }
+.dot-status.vermelho { background: var(--erro); }
+
+.prontidao-item-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--branco-suave);
+  letter-spacing: 0.04em;
+}
+
+.prontidao-desc {
+  font-size: 12px;
+  color: var(--cinza-texto);
+  line-height: 1.5;
+}
+
+.prontidao-desc strong {
+  color: var(--branco-suave);
+  font-weight: 500;
+}
+
+/* ── LICENÇAS DE PLANTÃO ── */
+.licencas-slots {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.licenca-slot {
+  flex: 1;
+  border: 1px dashed var(--cinza-borda);
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.licenca-slot.ativo {
+  border-style: solid;
+  border-color: var(--success-border);
+  background: var(--success-bg);
+}
+
+.shield-icon {
+  font-size: 18px;
+  opacity: 0.2;
+  transition: opacity 0.2s ease;
+}
+
+.licenca-slot.ativo .shield-icon {
+  opacity: 1;
+}
+
+.licencas-help {
+  font-size: 12px;
+  color: var(--cinza-texto);
+  line-height: 1.5;
+}
+
+/* ── LOGS TERMINAL ── */
+.logs-terminal {
+  background: var(--carvao);
+  border: 1px solid var(--cinza-borda);
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--branco-suave);
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.log-linha {
+  display: flex;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.log-linha:last-child { border-bottom: none; }
+.log-time { color: var(--cinza-texto); white-space: nowrap; }
+.log-tag { color: var(--warning-fg); }
+.log-xp { color: var(--success-fg); font-weight: 500; margin-left: auto; white-space: nowrap; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .carreira-stats {
+    grid-template-columns: 1fr 1fr;
   }
-
-  .dossie-card {
-    background: var(--cinza-escuro);
-    border: 1px solid var(--cinza-borda);
-    border-radius: var(--radius-md);
-    padding: var(--space-5);
-    position: relative;
-    overflow: hidden;
+  .carreira-paineis {
+    grid-template-columns: 1fr;
   }
-
-  .emblem-watermark {
-    position: absolute;
-    right: -20px;
-    bottom: -20px;
-    width: 220px;
-    opacity: 0.03;
-    pointer-events: none;
-    user-select: none;
+  .carreira-hero-header {
+    gap: 16px;
   }
-
-  .dossie-header {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-    margin-bottom: var(--space-5);
-  }
-
-  .insignia-big {
-    font-size: 64px;
-    line-height: 1;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--cinza-borda);
-    width: 96px;
-    height: 96px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--radius-md);
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .insignia-big:hover {
-    border-color: var(--brand-primary);
-    background: rgba(255, 255, 255, 0.04);
-    box-shadow: 0 0 16px rgba(192, 39, 15, 0.08);
-  }
-
-  .posto-nome {
-    font-family: var(--font-display);
-    font-size: 38px;
-    letter-spacing: 0.04em;
-    color: var(--branco);
-    line-height: 1;
-    margin-bottom: 4px;
-  }
-
-  .dossie-tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--brand-primary);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-  }
-
-  /* ── XP PROGRESS BAR ── */
-  .xp-progresso-container {
-    margin-bottom: var(--space-4);
-  }
-
-  .xp-stats {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--cinza-texto);
-    margin-bottom: var(--space-2);
-  }
-
-  .xp-atual {
-    color: var(--branco);
-    font-weight: 500;
-  }
-
-  .progress-track {
-    background: var(--cinza-medio);
-    height: 10px;
-    border-radius: var(--radius-pill);
-    overflow: hidden;
-    border: 1px solid var(--cinza-borda);
-  }
-
-  .progress-fill {
-    background: var(--brand-primary);
-    height: 100%;
-    border-radius: var(--radius-pill);
-    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .xp-meta-msg {
-    font-size: 13px;
-    color: var(--cinza-texto);
-    margin-top: var(--space-2);
-  }
-
-  .xp-meta-msg strong {
-    color: var(--branco);
-    font-weight: 500;
-  }
-
-  /* ── PRONTIDÃO OPERACIONAL ── */
-  .painel-status-prontidao {
-    background: var(--cinza-escuro);
-    border: 1px solid var(--cinza-borda);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    margin-bottom: var(--space-4);
-  }
-
-  .prontidao-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--cinza-borda);
-    padding-bottom: var(--space-2);
-    margin-bottom: var(--space-3);
-  }
-
-  .prontidao-badge {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: var(--radius-sm);
-  }
-
-  .prontidao-badge.cor-verde {
-    background: rgba(39, 160, 90, 0.12);
-    color: var(--sucesso);
-    border: 1px solid rgba(39, 160, 90, 0.3);
-  }
-
-  .prontidao-badge.cor-amarelo {
-    background: rgba(186, 117, 23, 0.12);
-    color: var(--atencao);
-    border: 1px solid rgba(186, 117, 23, 0.3);
-  }
-
-  .prontidao-badge.cor-vermelho {
-    background: rgba(192, 39, 15, 0.12);
-    color: var(--erro);
-    border: 1px solid rgba(192, 39, 15, 0.3);
-  }
-
-  .prontidao-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-2);
-    margin-bottom: var(--space-3);
-  }
-
-  .prontidao-quadrante {
-    border: 1px solid var(--cinza-borda);
-    padding: var(--space-2);
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    opacity: 0.3;
-    transition: all 0.2s ease;
-  }
-
-  .prontidao-quadrante.ativo {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.02);
-  }
-
-  .prontidao-quadrante.ativo.verde { border-color: var(--sucesso); }
-  .prontidao-quadrante.ativo.amarelo { border-color: var(--atencao); }
-  .prontidao-quadrante.ativo.vermelho { border-color: var(--erro); }
-
-  .dot-status {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
-  .dot-status.verde { background: var(--sucesso); }
-  .dot-status.amarelo { background: var(--atencao); }
-  .dot-status.vermelho { background: var(--erro); }
-
-  .status-text {
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--branco-suave);
-  }
-
-  .status-desc {
-    font-size: 12px;
-    color: var(--cinza-texto);
-    line-height: 1.4;
-  }
-
-  /* ── LICENÇAS DE PLANTÃO (ESCUDOS) ── */
-  .painel-licencas {
-    background: var(--cinza-escuro);
-    border: 1px solid var(--cinza-borda);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-  }
-
-  .licencas-header {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--cinza-texto);
-    border-bottom: 1px solid var(--cinza-borda);
-    padding-bottom: var(--space-2);
-    margin-bottom: var(--space-3);
-    letter-spacing: 0.05em;
-  }
-
-  .licencas-slots {
-    display: flex;
-    gap: var(--space-3);
-    margin-bottom: var(--space-3);
-  }
-
-  .licenca-slot {
-    flex: 1;
-    border: 1px dashed var(--cinza-borda);
-    background: rgba(0,0,0,0.15);
-    border-radius: var(--radius-sm);
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease;
-  }
-
-  .licenca-slot.ativo {
-    border: 1px solid rgba(39, 160, 90, 0.4);
-    background: rgba(39, 160, 90, 0.06);
-  }
-
-  .shield-icon {
-    font-size: 20px;
-    opacity: 0.2;
-    transition: all 0.2s ease;
-  }
-
-  .licenca-slot.ativo .shield-icon {
-    opacity: 1;
-    animation: pulse-shield 2.5s infinite;
-  }
-
-  @keyframes pulse-shield {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-  }
-
-  .licencas-help {
-    font-size: 12px;
-    color: var(--cinza-texto);
-    line-height: 1.4;
-  }
-
-  /* ── RESUMO DOS PONTOS ── */
-  .dossie-grid-stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-3);
-    margin-bottom: var(--space-4);
-  }
-
-  .dossie-stat-item {
-    background: rgba(0,0,0,0.2);
-    border: 1px solid var(--cinza-borda);
-    border-radius: var(--radius-sm);
-    padding: var(--space-3);
-    text-align: center;
-  }
-
-  .dossie-stat-val {
-    font-family: var(--font-display);
+  .carreira-posto {
     font-size: 28px;
-    letter-spacing: 0.04em;
-    color: var(--branco);
-    line-height: 1;
-    margin-bottom: 4px;
   }
-
-  .dossie-stat-label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    color: var(--cinza-texto);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+  .insignia-box {
+    width: 72px;
+    height: 72px;
   }
+}
 
-  /* ── TACTICAL LOGS ── */
-  .logs-secao-titulo {
-    font-family: var(--font-display);
-    font-size: 22px;
-    letter-spacing: 0.04em;
-    color: var(--branco);
-    margin-bottom: var(--space-3);
-    border-bottom: 1px solid var(--cinza-borda);
-    padding-bottom: var(--space-2);
-  }
-
-  .logs-terminal {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--cinza-borda);
-    border-radius: var(--radius-md);
-    padding: var(--space-4);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--branco-suave);
-    max-height: 240px;
-    overflow-y: auto;
-  }
-
-  .log-linha {
-    display: flex;
-    gap: var(--space-3);
-    padding: var(--space-1) 0;
-    border-bottom: 1px solid rgba(255,255,255,0.02);
-  }
-  
-  .log-linha:last-child { border-bottom: none; }
-
-  .log-time { color: var(--cinza-texto); }
-  .log-tag { color: var(--atencao); }
-  .log-xp { color: var(--sucesso); font-weight: 500; margin-left: auto; }
-
-  @media (max-width: 900px) {
-    .dossie-secao {
-      grid-template-columns: 1fr;
-    }
-    .dossie-grid-stats {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
 </style>
 </head>
 <body>
 
 <div class="layout">
-  <!-- SIDEBAR -->
   <aside id="pbm-sidebar"></aside>
-  <!-- BOTTOMBAR mobile -->
   <nav id="pbm-bottombar"></nav>
 
-  <!-- MAIN -->
   <div class="main">
     <div class="topbar">
-      <span class="topbar-titulo">Dossiê de Carreira</span>
-      <span class="topbar-mono">DOCUMENTO OPERACIONAL</span>
+      <span class="topbar-titulo">Carreira Militar</span>
+      <span class="topbar-mono">DOSSIÊ OPERACIONAL</span>
     </div>
 
     <div class="conteudo">
-      
-      <!-- DOSSIÊ SEÇÃO -->
-      <div class="dossie-secao">
-        
-        <!-- CARD PRINCIPAL DE CARREIRA -->
-        <div class="dossie-card">
-          <div class="emblem-watermark">
-            <img src="/images/emblem-pbm.png" alt="" style="width:100%;filter:brightness(0) invert(1);">
-          </div>
-          
-          <div class="dossie-header">
-            <div class="insignia-big" id="insignia-box">—</div>
-            <div>
-              <div class="dossie-tag">REGISTRO DE SERVIÇO ATIVO</div>
-              <h1 class="posto-nome" id="posto-txt">Carregando…</h1>
-              <div class="dossie-tag" id="patente-nivel-txt">NÍVEL 00</div>
-            </div>
-          </div>
 
-          <!-- XP PROGRESSO -->
-          <div class="xp-progresso-container">
-            <div class="xp-stats">
-              <span>PROGRESSÃO DE XP</span>
-              <span id="xp-numeros-txt"><span class="xp-atual">—</span> / — XP</span>
-            </div>
-            <div class="progress-track">
-              <div class="progress-fill" id="xp-progress-bar" style="width: 0%"></div>
-            </div>
-            <div class="xp-meta-msg" id="xp-meta-msg">
-              Faltam <strong>— XP</strong> para sua próxima graduação militar.
-            </div>
-          </div>
+      <!-- HERO: POSTO + XP PROGRESS -->
+      <div class="carreira-hero">
+        <div class="carreira-hero-watermark">
+          <img src="/images/emblem-pbm.png" alt="" style="width:100%;filter:brightness(0) invert(1);">
+        </div>
 
-          <!-- GRID DE SUB-ESTATÍSTICAS -->
-          <div class="dossie-grid-stats">
-            <div class="dossie-stat-item">
-              <div class="dossie-stat-val" id="stat-streak">—</div>
-              <div class="dossie-stat-label">Streak Ativo</div>
-            </div>
-            <div class="dossie-stat-item">
-              <div class="dossie-stat-val" id="stat-max-streak">—</div>
-              <div class="dossie-stat-label">Recorde</div>
-            </div>
-            <div class="dossie-stat-item">
-              <div class="dossie-stat-val" id="stat-licencas">—</div>
-              <div class="dossie-stat-label">Licenças</div>
-            </div>
-            <div class="dossie-stat-item">
-              <div class="dossie-stat-val" id="stat-mult">—</div>
-              <div class="dossie-stat-label">Bônus XP</div>
-            </div>
+        <div class="carreira-hero-header">
+          <div class="insignia-box" id="insignia-box">—</div>
+          <div>
+            <div class="carreira-tag">REGISTRO DE SERVIÇO ATIVO</div>
+            <h1 class="carreira-posto" id="posto-txt">Carregando…</h1>
+            <div class="carreira-nivel" id="patente-nivel-txt">NÍVEL 00</div>
           </div>
         </div>
 
-        <!-- PAINÉIS LATERAIS DE STATUS -->
-        <div>
-          <!-- PRONTIDÃO OPERACIONAL -->
-          <div class="painel-status-prontidao">
-            <div class="prontidao-header">
-              <span class="mono-label">PRONTIDÃO OPERACIONAL</span>
-              <span class="prontidao-badge" id="prontidao-badge-txt">—</span>
+        <div class="xp-section">
+          <div class="xp-header">
+            <span class="xp-label">PROGRESSÃO DE XP</span>
+            <span class="xp-numeros" id="xp-numeros-txt"><span class="xp-atual">—</span> / — XP</span>
+          </div>
+          <div class="xp-track">
+            <div class="xp-fill" id="xp-progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="xp-msg" id="xp-meta-msg">
+            Faltam <strong>— XP</strong> para sua próxima graduação militar.
+          </div>
+        </div>
+      </div>
+
+      <!-- STAT GRID -->
+      <div class="carreira-stats">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-streak">—</div>
+          <div class="stat-label">OFENSIVA ATIVA</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-max-streak">—</div>
+          <div class="stat-label">RECORDE</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-licencas">—</div>
+          <div class="stat-label">LICENÇAS</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-mult">—</div>
+          <div class="stat-label">BÔNUS XP</div>
+        </div>
+      </div>
+
+      <!-- PAINÉIS: PRONTIDÃO + LICENÇAS -->
+      <div class="carreira-paineis">
+
+        <!-- PRONTIDÃO OPERACIONAL -->
+        <div class="card">
+          <div class="painel-header">
+            <span class="painel-titulo">PRONTIDÃO OPERACIONAL</span>
+            <span class="prontidao-badge" id="prontidao-badge-txt">—</span>
+          </div>
+          <div class="prontidao-lista">
+            <div class="prontidao-item" id="q-verde">
+              <div class="dot-status verde"></div>
+              <span class="prontidao-item-label">ATIVO (0–3 DIAS)</span>
             </div>
-            <div class="prontidao-grid">
-              <div class="prontidao-quadrante" id="q-verde">
-                <div class="dot-status verde"></div>
-                <span class="status-text">ATIVO (0-3d)</span>
-              </div>
-              <div class="prontidao-quadrante" id="q-amarelo">
-                <div class="dot-status amarelo"></div>
-                <span class="status-text">AFASTADO (4-7d)</span>
-              </div>
-              <div class="prontidao-quadrante" id="q-vermelho">
-                <div class="dot-status vermelho"></div>
-                <span class="status-text">RESERVA (8d+)</span>
-              </div>
+            <div class="prontidao-item" id="q-amarelo">
+              <div class="dot-status amarelo"></div>
+              <span class="prontidao-item-label">AFASTADO (4–7 DIAS)</span>
             </div>
-            <div class="status-desc" id="prontidao-desc-txt">
-              Carregando relatório de prontidão…
+            <div class="prontidao-item" id="q-vermelho">
+              <div class="dot-status vermelho"></div>
+              <span class="prontidao-item-label">RESERVA (8+ DIAS)</span>
             </div>
           </div>
+          <div class="prontidao-desc" id="prontidao-desc-txt">
+            Carregando relatório de prontidão…
+          </div>
+        </div>
 
-          <!-- LICENÇAS DE PLANTÃO -->
-          <div class="painel-licencas">
-            <div class="licencas-header">LICENÇAS DE PLANTÃO 🛡️</div>
-            <div class="licencas-slots" id="licencas-slots-box">
-              <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
-              <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
-              <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
-            </div>
-            <div class="licencas-help">
-              Licenças protegem sua ofensiva de zerar em dias de plantão 24h. Ganhe completando **Rodadas inteiras** do ciclo de estudos (teto máx: 3).
-            </div>
+        <!-- LICENÇAS DE PLANTÃO -->
+        <div class="card">
+          <div class="painel-header">
+            <span class="painel-titulo">LICENÇAS DE PLANTÃO</span>
+            <span class="painel-titulo">🛡️</span>
+          </div>
+          <div class="licencas-slots" id="licencas-slots-box">
+            <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
+            <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
+            <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
+          </div>
+          <div class="licencas-help">
+            Licenças protegem sua ofensiva de zerar em dias de plantão 24h. Ganhe completando rodadas inteiras do ciclo de estudos (máx: 3).
           </div>
         </div>
 
       </div>
 
-      <!-- HISTÓRICO DE LOGS TÁTICOS -->
-      <div>
-        <h2 class="logs-secao-titulo">LOGS DE SERVIÇO</h2>
+      <!-- LOGS DE SERVIÇO -->
+      <div class="card">
+        <div class="painel-header" style="margin-bottom:12px;">
+          <span class="painel-titulo">LOGS DE SERVIÇO</span>
+        </div>
         <div class="logs-terminal" id="logs-terminal-box">
           <div class="log-linha">
             <span class="log-time">[SISTEMA]</span>
@@ -496,66 +480,58 @@
 <script src="/js/api.js?v=5"></script>
 <script src="/js/pbm-components.js?v=5"></script>
 <script>
-  PBM.Layout.mount({ active: 'ranking' }); // Associa ao item 'Carreira' do layout
+  PBM.Layout.mount({ active: 'ranking' });
 </script>
 <script>
   function obterInsigniaSVG(nivel, curso) {
-    const isCba = curso === 'cba';
     const cor = 'var(--brand-primary)';
-    
+
     if (nivel >= 8) {
-      // Oficiais: Tenente a Coronel
-      if (nivel === 11) { // Major (Escudo com linhas cruzadas de alta patente)
-        return `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;">
+      if (nivel === 11) {
+        return `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="12,2 2,7 12,12 22,7" fill="${cor}" fill-opacity="0.1"/>
           <path d="M2 17l10 5 10-5"/>
           <path d="M2 12l10 5 10-5"/>
         </svg>`;
       }
-      if (nivel === 12) { // Tenente-Coronel (Escudo + 1 Estrela)
-        return `<svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;">
+      if (nivel === 12) {
+        return `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="12,3 14.5,9 21,9 16,13 18,19 12,15 6,19 8,13 3,9 9.5,9" fill="${cor}" fill-opacity="0.2"/>
           <path d="M12 2L2 7l10 5 10-5-10-5z"/>
         </svg>`;
       }
-      if (nivel === 13) { // Coronel (Copa/escudo + 2 Estrelas)
-        return `<svg width="60" height="60" viewBox="0 0 28 28" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;">
+      if (nivel === 13) {
+        return `<svg width="52" height="52" viewBox="0 0 28 28" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="7,3 8.5,7 12.5,7 9.5,10 11,14 7,11 3,14 4.5,10 1.5,7 5.5,7" fill="${cor}" fill-opacity="0.2"/>
           <polygon points="21,3 22.5,7 26.5,7 23.5,10 25,14 21,11 17,14 18.5,10 15.5,7 19.5,7" fill="${cor}" fill-opacity="0.2"/>
           <path d="M14 16l-8 4 8 4 8-4-8-4z"/>
         </svg>`;
       }
 
-      // 2º Tenente, 1º Tenente, Capitão (Estrelas de Oficial)
       const estrelas = nivel - 7;
       let estrelasHtml = '';
       for (let i = 0; i < estrelas; i++) {
-        estrelasHtml += `
-          <g transform="translate(0, ${i * 18})">
-            <polygon points="12,2 14.5,8.5 21,8.5 16,12.5 18,19 12,15 6,19 8,12.5 3,8.5 9.5,8.5" fill="${cor}" fill-opacity="0.15" stroke="${cor}" stroke-width="1.8" stroke-linejoin="round"/>
-          </g>
-        `;
+        estrelasHtml += `<g transform="translate(0, ${i * 18})">
+          <polygon points="12,2 14.5,8.5 21,8.5 16,12.5 18,19 12,15 6,19 8,12.5 3,8.5 9.5,8.5" fill="${cor}" fill-opacity="0.15" stroke="${cor}" stroke-width="1.8" stroke-linejoin="round"/>
+        </g>`;
       }
-      return `<svg width="40" height="${24 + (estrelas - 1) * 18}" viewBox="0 0 24 ${24 + (estrelas - 1) * 18}" fill="none" style="display:inline-block; overflow:visible;">
+      return `<svg width="36" height="${20 + (estrelas - 1) * 18}" viewBox="0 0 24 ${20 + (estrelas - 1) * 18}" fill="none" style="overflow:visible;">
         ${estrelasHtml}
       </svg>`;
     } else {
-      // Praças: Recruta a Subtenente
-      if (nivel === 1) { // Recruta (Escudo vazio simples)
-        return `<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;">
+      if (nivel === 1) {
+        return `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="${cor}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="${cor}" fill-opacity="0.05"/>
         </svg>`;
       }
-      
-      // Chevrons (V invertidos)
-      const totalChevrons = Math.min(3, nivel - 1); 
+
+      const totalChevrons = Math.min(3, nivel - 1);
       let chevronsHtml = '';
       for (let i = 0; i < totalChevrons; i++) {
         const y = 6 + i * 8;
         chevronsHtml += `<polyline points="6,${y + 8} 24,${y} 42,${y + 8}" stroke="${cor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
       }
 
-      // Linhas retas abaixo (para 2º Sargento, 1º Sargento e Subtenente)
       let linhasHtml = '';
       if (nivel >= 5) {
         const totalLinhas = nivel === 5 ? 1 : (nivel === 6 ? 2 : 3);
@@ -565,7 +541,7 @@
         }
       }
 
-      return `<svg width="56" height="56" viewBox="0 0 48 48" fill="none" style="display:inline-block; overflow:visible;">
+      return `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" style="overflow:visible;">
         ${chevronsHtml}
         ${linhasHtml}
       </svg>`;
@@ -580,7 +556,7 @@
       const user = PBM.getUsuario() || {};
       const cursoAtivo = user.curso || 'ctsp';
 
-      // 1. Posto e Identificação (High fidelity SVG)
+      // 1. Posto e Identificação
       document.getElementById('posto-txt').textContent = response.patente || 'Recruta';
       document.getElementById('patente-nivel-txt').textContent = 'NÍVEL ' + String(response.nivel || 1).padStart(2, '0');
       document.getElementById('insignia-box').innerHTML = obterInsigniaSVG(response.nivel || 1, cursoAtivo);
@@ -588,19 +564,19 @@
       // 2. XP Progresso
       document.getElementById('xp-numeros-txt').innerHTML = `<span class="xp-atual">${response.xp_atual || 0}</span> / ${response.xp_proximo || response.xp_atual || 0} XP`;
       document.getElementById('xp-progress-bar').style.width = (response.progresso_percentual || 0) + '%';
-      
+
       const rest = response.xp_restante || 0;
       if (response.xp_proximo) {
         document.getElementById('xp-meta-msg').innerHTML = `Faltam <strong>${rest} XP</strong> para sua próxima graduação militar.`;
       } else {
-        document.getElementById('xp-meta-msg').innerHTML = `Você atingiu o <strong>Patamar Máximo</strong> de Carreira! Prontidão operacional contínua recomendada.`;
+        document.getElementById('xp-meta-msg').innerHTML = `Você atingiu o <strong>Patamar Máximo</strong> de Carreira. Prontidão operacional contínua recomendada.`;
       }
 
-      // 3. Grid de Estatísticas (Com tratamento estrito contra 'undefined')
+      // 3. Grid de Estatísticas
       document.getElementById('stat-streak').textContent = (response.streak_atual || 0) + 'd';
       document.getElementById('stat-max-streak').textContent = (response.max_streak || 0) + 'd';
       document.getElementById('stat-licencas').textContent = (response.licencas_plantao || 0) + '/3';
-      
+
       const bounsPct = Math.round(((response.multiplicador_streak || 1) - 1) * 100);
       document.getElementById('stat-mult').textContent = bounsPct > 0 ? `+${bounsPct}%` : '0%';
 
@@ -611,56 +587,51 @@
       pBadge.className = 'prontidao-badge cor-' + corProntidao;
       pBadge.textContent = statusProntidao.toUpperCase();
 
-      // Ativa quadrante correto
-      document.querySelectorAll('.prontidao-quadrante').forEach(q => q.classList.remove('ativo', 'verde', 'amarelo', 'vermelho'));
+      document.querySelectorAll('.prontidao-item').forEach(q => q.classList.remove('ativo', 'verde', 'amarelo', 'vermelho'));
       const quad = document.getElementById('q-' + corProntidao);
       if (quad) {
         quad.classList.add('ativo', corProntidao);
       }
 
-      // Descrição do status sem markdown cru
       const descEl = document.getElementById('prontidao-desc-txt');
       if (corProntidao === 'verde') {
-        descEl.innerHTML = '🟢 <strong>Prontidão Excelente</strong>: Aluno ativo no serviço de estudos. Multiplicador de consistência diária operando em capacidade total.';
+        descEl.innerHTML = '<strong>Prontidão Excelente.</strong> Aluno ativo no serviço de estudos. Multiplicador de consistência diária operando em capacidade total.';
       } else if (corProntidao === 'amarelo') {
-        descEl.innerHTML = '🟡 <strong>Afastado Temporariamente</strong>: Ausente nos últimos 4+ dias. Estude hoje para reativar sua prontidão total e reaver bônus de consistência.';
+        descEl.innerHTML = '<strong>Afastado Temporariamente.</strong> Ausente nos últimos 4+ dias. Estude hoje para reativar sua prontidão total e reaver bônus de consistência.';
       } else {
-        descEl.innerHTML = '🔴 <strong>Inatividade na Reserva</strong>: Mais de 8 dias fora de serviço. <strong>Multa de -100 XP por dia ativa</strong> para Oficiais. Conclua uma <strong>Missão de Reintegração</strong> (meta de questões ou Bloco do Ciclo) para restabelecer o serviço ativo.';
+        descEl.innerHTML = '<strong>Inatividade na Reserva.</strong> Mais de 8 dias fora de serviço. Multa de -100 XP/dia ativa para Oficiais. Conclua uma missão de reintegração para restabelecer o serviço ativo.';
       }
 
-      // Rebaixado Toast
       if (response.rebaixado_recente) {
         PBM.Toast.error('ATENÇÃO: Rebaixado por inatividade operacional. Retome seus estudos imediatamente!', 8000);
       }
 
-      // 5. Licenças Slots (Munição)
+      // 5. Licenças Slots
       const slotsBox = document.getElementById('licencas-slots-box');
       slotsBox.innerHTML = '';
       const licencasAtivas = response.licencas_plantao || 0;
       for (let i = 1; i <= 3; i++) {
         const slot = document.createElement('div');
         slot.className = 'licenca-slot';
-        if (i <= licencasAtivas) {
-          slot.classList.add('ativo');
-        }
+        if (i <= licencasAtivas) slot.classList.add('ativo');
         slot.innerHTML = '<span class="shield-icon">🛡️</span>';
         slotsBox.appendChild(slot);
       }
 
-      // 6. Logs de Serviço (Dinâmicos com tratamento contra undefined)
+      // 6. Logs de Serviço
       const logsBox = document.getElementById('logs-terminal-box');
       logsBox.innerHTML = '';
-      
+
       const logs = [
-        { time: 'SISTEMA', tag: 'Dossiê operacional de cadete recuperado com sucesso.', xp: 0 },
-        { time: 'STATUS', tag: `Mecanismo de streak verificado: ${(response.streak_atual || 0)} dias consecutivos.`, xp: 0 },
-        { time: 'DEFESA', tag: `Licenças de plantão ativas: ${(response.licencas_plantao || 0)} slots carregados.`, xp: 0 },
+        { time: 'SISTEMA', tag: 'Dossiê operacional recuperado com sucesso.', xp: 0 },
+        { time: 'STATUS', tag: `Streak verificado: ${(response.streak_atual || 0)} dias consecutivos.`, xp: 0 },
+        { time: 'DEFESA', tag: `Licenças de plantão: ${(response.licencas_plantao || 0)} slots carregados.`, xp: 0 },
       ];
 
       if ((response.questoes_estudadas_hoje || 0) > 0) {
         logs.unshift({
           time: 'SERVIÇO',
-          tag: `Completadas ${response.questoes_estudadas_hoje} questões na data de hoje. Progresso meta: ${response.questoes_estudadas_hoje}/${response.meta_diaria || 30}`,
+          tag: `${response.questoes_estudadas_hoje} questões hoje. Meta: ${response.questoes_estudadas_hoje}/${response.meta_diaria || 30}`,
           xp: 0
         });
       }
@@ -668,7 +639,7 @@
       if ((response.xp_atual || 0) > 0) {
         logs.unshift({
           time: 'RECOMPENSA',
-          tag: `Estudos recentes computados. Patente atual: ${response.patente || 'Recruta'}.`,
+          tag: `Estudos computados. Patente: ${response.patente || 'Recruta'}.`,
           xp: response.xp_atual
         });
       }
@@ -683,11 +654,10 @@
 
     } catch (e) {
       console.error(e);
-      PBM.Toast.error('Erro ao carregar o seu dossiê de progresso.');
+      if (PBM.Toast) PBM.Toast.error('Erro ao carregar o dossiê de progresso.');
     }
   }
 
-  // Inicializa
   carregarDossie();
 </script>
 </body>
