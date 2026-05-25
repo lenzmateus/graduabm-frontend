@@ -420,6 +420,31 @@
           </div>
         </div>
       </div>
+
+      <!-- CARD PROGRESSO DE CARREIRA TÁTICO -->
+      <div id="card-carreira-dashboard" class="dash-card" style="margin-bottom:1.5rem; border:1px solid var(--cinza-borda); background:var(--cinza-escuro); cursor:pointer; display:none;" onclick="window.location.href='/pbm-patentes.html'">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap: 12px; flex-wrap: wrap;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span id="dash-patente-insignia" style="font-size:24px;">🔰</span>
+            <div>
+              <span id="dash-patente-nome" style="font-family:'Bebas Neue',sans-serif; font-size:22px; letter-spacing:0.04em; color:var(--branco); display:block; line-height:1;">Recruta</span>
+              <span id="dash-prontidao-txt" style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.05em; color:var(--sucesso);">PRONTIDÃO: PRONTO PARA O SERVIÇO</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <span id="dash-streak-txt" style="font-family:'Bebas Neue',sans-serif; font-size:20px; color:var(--vermelho); line-height:1; display:block;">🔥 0 DIAS</span>
+            <span id="dash-licencas-txt" style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--cinza-texto);">LICENÇAS: 🛡️ 1/3</span>
+          </div>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="dash-xp-progress-bar" style="width: 0%"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--cinza-texto); margin-top:6px; flex-wrap: wrap; gap: 6px;">
+          <span id="dash-xp-numeros">— / — XP</span>
+          <span id="dash-xp-restante">FALTAM — XP PARA O PRÓXIMO POSTO</span>
+        </div>
+      </div>
+
       <!-- INSTALL BANNER (Android/Chrome: após 2ª sessão) -->
       <div class="install-banner" id="install-banner" role="banner">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#185FA5" stroke-width="2" style="flex-shrink:0"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1148,12 +1173,42 @@ async function init() {
 
     // Calcula meta diária (busca contagem autoritativa do servidor)
     atualizarMetaDiaria();
+    atualizarCarreiraDashboard();
 
   } catch (err) {
     console.error('Erro ao carregar dashboard', err);
     if (window.PBM && PBM.Toast) {
       PBM.Toast.error('Não foi possível carregar suas estatísticas. Recarregue a página.');
     }
+  }
+}
+
+// ── CARREIRA E PROGRESSÃO TÁTICA ──
+async function atualizarCarreiraDashboard() {
+  try {
+    const response = await PBM.API.get('/progresso');
+    if (!response) return;
+
+    document.getElementById('dash-patente-insignia').textContent = response.insignia || '🔰';
+    document.getElementById('dash-patente-nome').textContent = response.patente || 'Recruta';
+    
+    const pTxt = document.getElementById('dash-prontidao-txt');
+    pTxt.textContent = 'PRONTIDÃO: ' + response.prontidao.toUpperCase();
+    pTxt.style.color = response.prontidao_cor === 'verde' ? 'var(--sucesso)' : (response.prontidao_cor === 'amarelo' ? 'var(--atencao)' : 'var(--vermelho)');
+
+    document.getElementById('dash-streak-txt').textContent = `🔥 ${response.streak_atual} DIAS`;
+    document.getElementById('dash-licencas-txt').textContent = `LICENÇAS: 🛡️ ${response.licencas_plantao}/3`;
+    document.getElementById('dash-xp-progress-bar').style.width = response.progresso_percentual + '%';
+    document.getElementById('dash-xp-numeros').textContent = `${response.xp_atual} / ${response.xp_proximo || response.xp_atual} XP`;
+    
+    const rest = response.xp_restante || 0;
+    document.getElementById('dash-xp-restante').textContent = response.xp_proximo 
+      ? `FALTAM ${rest} XP PARA O PRÓXIMO POSTO` 
+      : 'PATAMAR MÁXIMO DE CARREIRA';
+
+    document.getElementById('card-carreira-dashboard').style.display = 'block';
+  } catch (e) {
+    console.warn('[progresso] Erro ao carregar progresso no dashboard:', e.message);
   }
 }
 

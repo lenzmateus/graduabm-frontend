@@ -591,13 +591,13 @@
 <script src="/js/pbm-components.js?v=5"></script>
 <script src="/js/admin-chrome.js"></script>
 <script>
-  // Admin acessando /ranking ganha a sidebar admin no lugar da sidebar de aluno
-  if (PBM.isAdmin && PBM.isAdmin()) {
+  // Redireciona estudantes para a tela de Carreira Militar; Admins continuam acessando o ranking completo
+  if (!window.PBM || !PBM.isAdmin || !PBM.isAdmin()) {
+    window.location.replace('/pbm-patentes.html');
+  } else {
     const aside = document.getElementById('pbm-sidebar');
     if (aside) aside.id = 'admin-chrome';
     AdminChrome.init({ pagina: 'ranking', titulo: 'Ranking Geral' });
-  } else {
-    PBM.Layout.mount({ active: 'ranking' });
   }
 </script>
 <script>

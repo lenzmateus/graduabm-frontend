@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Carreira Militar</title>
+<script src="/js/font-size.js"></script>
+<script src="/js/pbm-theme-boot.js?v=2"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/pbm-layout.css">
+<link rel="stylesheet" href="/css/admin-chrome.css">
+<style>
+  /* ── CARREIRA MILITAR (DOSSIÊ STYLE) ── */
+  .dossie-secao {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1.5rem;
+    align-items: start;
+    margin-bottom: 2rem;
+  }
+
+  .dossie-card {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-md);
+    padding: var(--space-5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .emblem-watermark {
+    position: absolute;
+    right: -20px;
+    bottom: -20px;
+    width: 220px;
+    opacity: 0.03;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .dossie-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
+  }
+
+  .insignia-big {
+    font-size: 64px;
+    line-height: 1;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--cinza-borda);
+    width: 96px;
+    height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+  }
+
+  .posto-nome {
+    font-family: var(--font-display);
+    font-size: 38px;
+    letter-spacing: 0.04em;
+    color: var(--branco);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .dossie-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--vermelho);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── XP PROGRESS BAR ── */
+  .xp-progresso-container {
+    margin-bottom: var(--space-4);
+  }
+
+  .xp-stats {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--cinza-texto);
+    margin-bottom: var(--space-2);
+  }
+
+  .xp-atual {
+    color: var(--branco);
+    font-weight: 500;
+  }
+
+  .progress-track {
+    background: var(--cinza-medio);
+    height: 10px;
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    border: 1px solid var(--cinza-borda);
+  }
+
+  .progress-fill {
+    background: var(--vermelho);
+    height: 100%;
+    border-radius: var(--radius-pill);
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .xp-meta-msg {
+    font-size: 13px;
+    color: var(--cinza-texto);
+    margin-top: var(--space-2);
+  }
+
+  .xp-meta-msg strong {
+    color: var(--branco);
+    font-weight: 500;
+  }
+
+  /* ── PRONTIDÃO OPERACIONAL ── */
+  .painel-status-prontidao {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .prontidao-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--cinza-borda);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .prontidao-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+  }
+
+  .prontidao-badge.cor-verde {
+    background: rgba(39, 160, 90, 0.12);
+    color: var(--sucesso);
+    border: 1px solid rgba(39, 160, 90, 0.3);
+  }
+
+  .prontidao-badge.cor-amarelo {
+    background: rgba(186, 117, 23, 0.12);
+    color: var(--atencao);
+    border: 1px solid rgba(186, 117, 23, 0.3);
+  }
+
+  .prontidao-badge.cor-vermelho {
+    background: rgba(192, 39, 15, 0.12);
+    color: var(--vermelho);
+    border: 1px solid rgba(192, 39, 15, 0.3);
+  }
+
+  .prontidao-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .prontidao-quadrante {
+    border: 1px solid var(--cinza-borda);
+    padding: var(--space-2);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    opacity: 0.3;
+    transition: all 0.2s ease;
+  }
+
+  .prontidao-quadrante.ativo {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .prontidao-quadrante.ativo.verde { border-color: var(--sucesso); }
+  .prontidao-quadrante.ativo.amarelo { border-color: var(--atencao); }
+  .prontidao-quadrante.ativo.vermelho { border-color: var(--vermelho); }
+
+  .dot-status {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .dot-status.verde { background: var(--sucesso); }
+  .dot-status.amarelo { background: var(--atencao); }
+  .dot-status.vermelho { background: var(--vermelho); }
+
+  .status-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--branco-suave);
+  }
+
+  .status-desc {
+    font-size: 12px;
+    color: var(--cinza-texto);
+    line-height: 1.4;
+  }
+
+  /* ── LICENÇAS DE PLANTÃO (ESCUDOS) ── */
+  .painel-licencas {
+    background: var(--cinza-escuro);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+  }
+
+  .licencas-header {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--cinza-texto);
+    border-bottom: 1px solid var(--cinza-borda);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-3);
+    letter-spacing: 0.05em;
+  }
+
+  .licencas-slots {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .licenca-slot {
+    flex: 1;
+    border: 1px dashed var(--cinza-borda);
+    background: rgba(0,0,0,0.15);
+    border-radius: var(--radius-sm);
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .licenca-slot.ativo {
+    border: 1px solid rgba(39, 160, 90, 0.4);
+    background: rgba(39, 160, 90, 0.06);
+  }
+
+  .shield-icon {
+    font-size: 20px;
+    opacity: 0.2;
+    transition: all 0.2s ease;
+  }
+
+  .licenca-slot.ativo .shield-icon {
+    opacity: 1;
+    animation: pulse-shield 2.5s infinite;
+  }
+
+  @keyframes pulse-shield {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  .licencas-help {
+    font-size: 12px;
+    color: var(--cinza-texto);
+    line-height: 1.4;
+  }
+
+  /* ── RESUMO DOS PONTOS ── */
+  .dossie-grid-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .dossie-stat-item {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+    text-align: center;
+  }
+
+  .dossie-stat-val {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    color: var(--branco);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .dossie-stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--cinza-texto);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── TACTICAL LOGS ── */
+  .logs-secao-titulo {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    color: var(--branco);
+    margin-bottom: var(--space-3);
+    border-bottom: 1px solid var(--cinza-borda);
+    padding-bottom: var(--space-2);
+  }
+
+  .logs-terminal {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--cinza-borda);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--branco-suave);
+    max-height: 240px;
+    overflow-y: auto;
+  }
+
+  .log-linha {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-1) 0;
+    border-bottom: 1px solid rgba(255,255,255,0.02);
+  }
+  
+  .log-linha:last-child { border-bottom: none; }
+
+  .log-time { color: var(--cinza-texto); }
+  .log-tag { color: var(--atencao); }
+  .log-xp { color: var(--sucesso); font-weight: 500; margin-left: auto; }
+
+  @media (max-width: 900px) {
+    .dossie-secao {
+      grid-template-columns: 1fr;
+    }
+    .dossie-grid-stats {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside id="pbm-sidebar"></aside>
+  <!-- BOTTOMBAR mobile -->
+  <nav id="pbm-bottombar"></nav>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-titulo">Dossiê de Carreira</span>
+      <span class="topbar-mono">DOCUMENTO OPERACIONAL</span>
+    </div>
+
+    <div class="conteudo">
+      
+      <!-- DOSSIÊ SEÇÃO -->
+      <div class="dossie-secao">
+        
+        <!-- CARD PRINCIPAL DE CARREIRA -->
+        <div class="dossie-card">
+          <div class="emblem-watermark">
+            <img src="/images/emblem-pbm.png" alt="" style="width:100%;filter:brightness(0) invert(1);">
+          </div>
+          
+          <div class="dossie-header">
+            <div class="insignia-big" id="insignia-box">—</div>
+            <div>
+              <div class="dossie-tag">REGISTRO DE SERVIÇO ATIVO</div>
+              <h1 class="posto-nome" id="posto-txt">Carregando…</h1>
+              <div class="dossie-tag" id="patente-nivel-txt">NÍVEL 00</div>
+            </div>
+          </div>
+
+          <!-- XP PROGRESSO -->
+          <div class="xp-progresso-container">
+            <div class="xp-stats">
+              <span>PROGRESSÃO DE XP</span>
+              <span id="xp-numeros-txt"><span class="xp-atual">—</span> / — XP</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" id="xp-progress-bar" style="width: 0%"></div>
+            </div>
+            <div class="xp-meta-msg" id="xp-meta-msg">
+              Faltam <strong>— XP</strong> para sua próxima graduação militar.
+            </div>
+          </div>
+
+          <!-- GRID DE SUB-ESTATÍSTICAS -->
+          <div class="dossie-grid-stats">
+            <div class="dossie-stat-item">
+              <div class="dossie-stat-val" id="stat-streak">—</div>
+              <div class="dossie-stat-label">Streak Ativo</div>
+            </div>
+            <div class="dossie-stat-item">
+              <div class="dossie-stat-val" id="stat-max-streak">—</div>
+              <div class="dossie-stat-label">Recorde</div>
+            </div>
+            <div class="dossie-stat-item">
+              <div class="dossie-stat-val" id="stat-licencas">—</div>
+              <div class="dossie-stat-label">Licenças</div>
+            </div>
+            <div class="dossie-stat-item">
+              <div class="dossie-stat-val" id="stat-mult">—</div>
+              <div class="dossie-stat-label">Bônus XP</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAINÉIS LATERAIS DE STATUS -->
+        <div>
+          <!-- PRONTIDÃO OPERACIONAL -->
+          <div class="painel-status-prontidao">
+            <div class="prontidao-header">
+              <span class="mono-label">PRONTIDÃO OPERACIONAL</span>
+              <span class="prontidao-badge" id="prontidao-badge-txt">—</span>
+            </div>
+            <div class="prontidao-grid">
+              <div class="prontidao-quadrante" id="q-verde">
+                <div class="dot-status verde"></div>
+                <span class="status-text">ATIVO (0-3d)</span>
+              </div>
+              <div class="prontidao-quadrante" id="q-amarelo">
+                <div class="dot-status amarelo"></div>
+                <span class="status-text">AFASTADO (4-7d)</span>
+              </div>
+              <div class="prontidao-quadrante" id="q-vermelho">
+                <div class="dot-status vermelho"></div>
+                <span class="status-text">RESERVA (8d+)</span>
+              </div>
+            </div>
+            <div class="status-desc" id="prontidao-desc-txt">
+              Carregando relatório de prontidão…
+            </div>
+          </div>
+
+          <!-- LICENÇAS DE PLANTÃO -->
+          <div class="painel-licencas">
+            <div class="licencas-header">LICENÇAS DE PLANTÃO 🛡️</div>
+            <div class="licencas-slots" id="licencas-slots-box">
+              <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
+              <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
+              <div class="licenca-slot"><span class="shield-icon">🛡️</span></div>
+            </div>
+            <div class="licencas-help">
+              Licenças protegem sua ofensiva de zerar em dias de plantão 24h. Ganhe completando **Rodadas inteiras** do ciclo de estudos (teto máx: 3).
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- HISTÓRICO DE LOGS TÁTICOS -->
+      <div>
+        <h2 class="logs-secao-titulo">LOGS DE SERVIÇO</h2>
+        <div class="logs-terminal" id="logs-terminal-box">
+          <div class="log-linha">
+            <span class="log-time">[SISTEMA]</span>
+            <span class="log-tag">CARREGANDO REGISTRO OPERACIONAL...</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="/js/api.js?v=5"></script>
+<script src="/js/pbm-components.js?v=5"></script>
+<script>
+  PBM.Layout.mount({ active: 'ranking' }); // Associa ao item 'Carreira' do layout
+</script>
+<script>
+  async function carregarDossie() {
+    try {
+      const response = await PBM.API.get('/progresso');
+      if (!response) throw new Error('Dados nulos');
+
+      // 1. Posto e Identificação
+      document.getElementById('posto-txt').textContent = response.patente || 'Recruta';
+      document.getElementById('patente-nivel-txt').textContent = 'NÍVEL ' + String(response.nivel).padStart(2, '0');
+      document.getElementById('insignia-box').textContent = response.insignia || '🔰';
+
+      // 2. XP Progresso
+      document.getElementById('xp-numeros-txt').innerHTML = `<span class="xp-atual">${response.xp_atual}</span> / ${response.xp_proximo || response.xp_atual} XP`;
+      document.getElementById('xp-progress-bar').style.width = response.progresso_percentual + '%';
+      
+      const rest = response.xp_restante || 0;
+      if (response.xp_proximo) {
+        document.getElementById('xp-meta-msg').innerHTML = `Faltam <strong>${rest} XP</strong> para sua próxima graduação militar.`;
+      } else {
+        document.getElementById('xp-meta-msg').innerHTML = `Você atingiu o **Patamar Máximo** de Carreira! Prontidão operacional contínua recomendada.`;
+      }
+
+      // 3. Grid de Estatísticas
+      document.getElementById('stat-streak').textContent = response.streak_atual + 'd';
+      document.getElementById('stat-max-streak').textContent = response.max_streak + 'd';
+      document.getElementById('stat-licencas').textContent = response.licencas_plantao + '/3';
+      
+      const bounsPct = Math.round((response.multiplicador_streak - 1) * 100);
+      document.getElementById('stat-mult').textContent = bounsPct > 0 ? `+${bounsPct}%` : '0%';
+
+      // 4. Prontidão Operacional
+      const pBadge = document.getElementById('prontidao-badge-txt');
+      pBadge.className = 'prontidao-badge cor-' + response.prontidao_cor;
+      pBadge.textContent = response.prontidao.toUpperCase();
+
+      // Ativa quadrante correto
+      document.querySelectorAll('.prontidao-quadrante').forEach(q => q.classList.remove('ativo', 'verde', 'amarelo', 'vermelho'));
+      const quad = document.getElementById('q-' + response.prontidao_cor);
+      if (quad) {
+        quad.classList.add('ativo', response.prontidao_cor);
+      }
+
+      // Descrição do status
+      const descEl = document.getElementById('prontidao-desc-txt');
+      if (response.prontidao_cor === 'verde') {
+        descEl.innerHTML = '🟢 **Prontidão Excelente**: Aluno ativo no serviço de estudos. Multiplicador de consistência diária operando em capacidade total.';
+      } else if (response.prontidao_cor === 'amarelo') {
+        descEl.innerHTML = '🟡 **Afastado Temporariamente**: Ausente nos últimos 4+ dias. Estude hoje para reativar sua prontidão total e reaver bônus de consistência.';
+      } else {
+        descEl.innerHTML = '🔴 **Inatividade na Reserva**: Mais de 8 dias fora de serviço. **Multa de -100 XP por dia ativa** para Oficiais. Conclua uma **Missão de Reintegração** (meta de questões ou Bloco do Ciclo) para restabelecer o serviço ativo.';
+      }
+
+      // Rebaixado Toast
+      if (response.rebaixado_recente) {
+        PBM.Toast.error('ATENÇÃO: Rebaixado por inatividade operacional. Retome seus estudos imediatamente!', 8000);
+      }
+
+      // 5. Licenças Slots (Munição)
+      const slotsBox = document.getElementById('licencas-slots-box');
+      slotsBox.innerHTML = '';
+      for (let i = 1; i <= 3; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'licenca-slot';
+        if (i <= response.licencas_plantao) {
+          slot.classList.add('ativo');
+        }
+        slot.innerHTML = '<span class="shield-icon">🛡️</span>';
+        slotsBox.appendChild(slot);
+      }
+
+      // 6. Logs de Serviço (Dinâmicos recentes simulados baseados nas conquistas)
+      const logsBox = document.getElementById('logs-terminal-box');
+      logsBox.innerHTML = '';
+      
+      const logs = [
+        { time: 'SISTEMA', tag: 'Dossiê operacional de cadete recuperado com sucesso.', xp: 0 },
+        { time: 'STATUS', tag: `Mecanismo de streak verificado: ${response.streak_atual} dias consecutivos.`, xp: 0 },
+        { time: 'DEFESA', tag: `Licenças de plantão ativas: ${response.licencas_plantao} slots carregados.`, xp: 0 },
+      ];
+
+      if (response.questoes_estudadas_hoje > 0) {
+        logs.unshift({
+          time: 'SERVIÇO',
+          tag: `Completadas ${response.questoes_estudadas_hoje} questões na data de hoje. Progresso meta: ${response.questoes_estudadas_hoje}/${response.meta_diaria}`,
+          xp: 0
+        });
+      }
+
+      if (response.xp_atual > 0) {
+        logs.unshift({
+          time: 'RECOMPENSA',
+          tag: `Estudos recentes computados. Patente atual: ${response.patente}.`,
+          xp: response.xp_atual
+        });
+      }
+
+      logsBox.innerHTML = logs.map(l => `
+        <div class="log-linha">
+          <span class="log-time">[${l.time}]</span>
+          <span class="log-tag">${l.tag}</span>
+          ${l.xp > 0 ? `<span class="log-xp">+${l.xp} XP</span>` : ''}
+        </div>
+      `).join('');
+
+    } catch (e) {
+      console.error(e);
+      PBM.Toast.error('Erro ao carregar o seu dossiê de progresso.');
+    }
+  }
+
+  // Inicializa
+  carregarDossie();
+</script>
+</body>
+</html>

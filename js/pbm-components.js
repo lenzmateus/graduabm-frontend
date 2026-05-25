@@ -34,6 +34,7 @@
     '/simulado-mensal': 'qap',
     '/simulado-mensal-ranking': 'qap',
     '/flashcards': 'flashcards',
+    '/pbm-patentes.html': 'ranking',
     '/ranking': 'ranking',
     '/conta': 'conta'
   };
@@ -91,7 +92,7 @@
           <span class="nav-missao-timer" id="missao-timer" style="display:none">--:--:--</span>
           <div class="nav-missao-tooltip" id="missao-tooltip"></div>
         </div>
-        ${item('ranking', '/ranking', 'Ranking')}
+        ${item('ranking', '/pbm-patentes.html', 'Carreira')}
         ${item('flashcards', '/flashcards', 'Flashcards')}
         ${item('conta', '/conta', 'Minha Conta')}
       </nav>
@@ -116,7 +117,7 @@
       ${link('simulados', '/simulados', 'Simulados')}
       ${link('qap', '/simulado-mensal', 'QAP')}
       ${link('flashcards', '/flashcards', 'Cards')}
-      ${link('ranking', '/ranking', 'Ranking')}
+      ${link('ranking', '/pbm-patentes.html', 'Carreira')}
     `;
   }
 
