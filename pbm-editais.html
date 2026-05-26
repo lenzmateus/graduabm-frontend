@@ -93,6 +93,116 @@
   .btn-enviar:disabled { opacity: 0.5; cursor: default; }
   .modal-help { font-size: 11px; color: var(--texto-suporte); margin-top: 6px; }
 
+  /* CARD MATERIAL DIDÁTICO PREMIUM */
+  .material-card {
+    background: linear-gradient(135deg, rgba(192, 39, 15, 0.08) 0%, rgba(20, 20, 20, 0.6) 100%);
+    border: 1px solid rgba(192, 39, 15, 0.25);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+  .material-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.02) 0%, transparent 70%);
+    transform: rotate(30deg);
+    pointer-events: none;
+  }
+  .material-card:hover {
+    border-color: var(--vermelho);
+    box-shadow: 0 6px 24px rgba(192, 39, 15, 0.15);
+    transform: translateY(-2px);
+  }
+  .material-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    min-width: 0;
+  }
+  .material-icon-wrapper {
+    background: rgba(192, 39, 15, 0.12);
+    border: 1px solid rgba(192, 39, 15, 0.25);
+    border-radius: 10px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--vermelho);
+    flex-shrink: 0;
+  }
+  .material-icon-wrapper svg {
+    width: 24px;
+    height: 24px;
+  }
+  .material-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .material-titulo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.05em;
+    color: var(--branco);
+    margin: 0;
+  }
+  .material-subtitulo {
+    font-size: 13px;
+    color: var(--cinza-texto);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .material-data {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--texto-suporte);
+    margin-top: 2px;
+  }
+  .btn-material-drive {
+    background: var(--vermelho);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--vermelho);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(192, 39, 15, 0.2);
+    flex-shrink: 0;
+  }
+  .btn-material-drive:hover {
+    background: #e0321b;
+    border-color: #e0321b;
+    box-shadow: 0 6px 16px rgba(192, 39, 15, 0.35);
+    transform: translateY(-1px);
+  }
+  .btn-material-drive svg {
+    width: 16px;
+    height: 16px;
+  }
+
   /* TOAST: removido — usar PBM.Toast (pbm-components.js) */
 
   /* MOBILE */
@@ -147,6 +257,9 @@
         <button class="tab ativo" data-curso="ctsp" role="tab" aria-selected="true">CTSP — Sargentos</button>
         <button class="tab" data-curso="cba" role="tab" aria-selected="false">CBA — Tenentes</button>
       </div>
+
+      <!-- CARD MATERIAL DIDÁTICO ATUALIZADO -->
+      <div id="material-didatico-container" style="margin-bottom: 1.5rem;"></div>
 
       <div class="editais-grid">
         <div id="editais-areas">
@@ -210,6 +323,15 @@
   const usuario = PBM.getUsuario() || {};
   let cursoAtivo = (usuario.curso || '').toLowerCase();
   if (cursoAtivo !== 'ctsp' && cursoAtivo !== 'cba') cursoAtivo = 'ctsp';
+
+  // Esconder abas se o aluno for de um curso específico (não admin preview)
+  const eAdminOuSemCurso = !usuario.curso || usuario.id === 'admin-preview';
+  if (!eAdminOuSemCurso) {
+    const tabsContainer = document.querySelector('.tabs');
+    if (tabsContainer) {
+      tabsContainer.style.display = 'none';
+    }
+  }
 
   document.querySelectorAll('.tab').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -283,6 +405,49 @@
     `).join('');
   }
 
+  function renderMaterialCard() {
+    const container = document.getElementById('material-didatico-container');
+    if (!container) return;
+
+    const links = {
+      ctsp: 'https://drive.google.com/drive/folders/1djelpXXRyXC76_iYD3c6hPryDDZX1y7-?usp=sharing',
+      cba: 'https://drive.google.com/drive/folders/1LmCDsbVLXq73znqqml_KrXmpQq_QpPy3?usp=sharing'
+    };
+
+    const link = links[cursoAtivo];
+    const cursoLabel = cursoAtivo.toUpperCase();
+    const dataAtualizacao = '21/05/2026';
+
+    container.innerHTML = `
+      <div class="material-card">
+        <div class="material-info">
+          <div class="material-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
+          <div class="material-text">
+            <h4 class="material-titulo">Material Didático Oficial — ${cursoLabel}</h4>
+            <p class="material-subtitulo">Acesse a pasta de arquivos oficiais de apoio do seu curso diretamente no Google Drive.</p>
+            <span class="material-data">Atualizado em: ${dataAtualizacao}</span>
+          </div>
+        </div>
+        <a href="${link}" target="_blank" class="btn-material-drive">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+          Acessar Material
+        </a>
+      </div>
+    `;
+  }
+
   async function carregarEdital() {
     const areasEl = document.getElementById('editais-areas');
     const ladoEl = document.getElementById('editais-atualizacoes');
@@ -292,6 +457,7 @@
       const data = await PBM.Editais.obter(cursoAtivo);
       renderAreas(data);
       renderAtualizacoes(data);
+      renderMaterialCard();
     } catch (e) {
       areasEl.innerHTML = '<div class="estado-vazio" style="color:var(--danger-fg);">Erro ao carregar edital. Tente recarregar a página.</div>';
       ladoEl.innerHTML = '<div class="side-vazio" style="color:var(--danger-fg);">Erro.</div>';
