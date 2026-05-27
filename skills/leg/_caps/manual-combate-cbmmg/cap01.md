@@ -2,7 +2,7 @@
 parent_leg: manual-combate-cbmmg
 capitulo: 1
 titulo: Fundamentos e Comportamento do Fogo
-fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 197–3288)
+fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 44–2054)
 area_tematica: AT2
 curso: ambos
 ---

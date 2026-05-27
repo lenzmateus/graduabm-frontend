@@ -2,7 +2,7 @@
 parent_leg: manual-combate-cbmmg
 capitulo: 3
 titulo: Materiais Básicos de Combate a Incêndio Urbano
-fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 4648–5326)
+fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 2944–3326)
 area_tematica: AT2
 curso: ambos
 ---

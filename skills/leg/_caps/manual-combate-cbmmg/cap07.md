@@ -2,7 +2,7 @@
 parent_leg: manual-combate-cbmmg
 capitulo: 7
 titulo: Entradas Forçadas
-fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 7386–8593)
+fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 3629–4303)
 area_tematica: AT2
 curso: ambos
 ---

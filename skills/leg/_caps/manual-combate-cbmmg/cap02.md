@@ -2,7 +2,7 @@
 parent_leg: manual-combate-cbmmg
 capitulo: 2
 titulo: Equipamentos de Proteção Individual e Respiratória (EPI/EPR)
-fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 3289–4647)
+fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 2055–2943)
 area_tematica: AT2
 curso: ambos
 ---

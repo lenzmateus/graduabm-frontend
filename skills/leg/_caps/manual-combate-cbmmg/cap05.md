@@ -2,7 +2,7 @@
 parent_leg: manual-combate-cbmmg
 capitulo: 5
 titulo: Técnicas de Combate a Incêndio Urbano
-fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 6421–6973)
+fonte: src/legislacoes/manual-combate-cbmmg.md (linhas 3327–3628)
 area_tematica: AT2
 curso: ambos
 ---
