@@ -51,9 +51,12 @@
   .total-txt { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-bottom: 1rem; }
 
   /* modal */
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .overlay.aberto { display: flex; }
-  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 640px; max-height: 90vh; display: flex; flex-direction: column; }
+  /* margin:auto centraliza vertical/horizontal quando cabe; quando o conteúdo
+     fica maior que a viewport (ex.: zoom do "tamanho de fonte" > 1, ou tela
+     baixa), o overlay rola e o topo/rodapé continuam alcançáveis. */
+  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 640px; max-height: 90vh; margin: auto; display: flex; flex-direction: column; }
   .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
   .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.03em; }
   .modal-fechar { background: transparent; border: none; color: var(--cinza-texto); font-size: 20px; cursor: pointer; padding: 0 4px; transition: color 0.15s; }
@@ -520,6 +523,7 @@ let totalRealBanco = 0;
 let deleteId = null;
 let _buscaTimer = null;
 let _editOriginal = null; // snapshot dos campos críticos para detectar edição relevante
+let _ultimaSelecaoQuestao = null; // { curso, area, legId } — lembrado só durante a sessão da página (zera no F5/saída)
 
 function escHtml(str) {
   if (!str) return '';
@@ -702,9 +706,18 @@ async function abrirModalNova() {
   document.getElementById('modal-titulo').textContent = 'Nova Questão';
   document.getElementById('modal-id').value = '';
   limparEditoresModal();
-  document.getElementById('m-curso').value = 'ctsp';
-  document.getElementById('m-area').value = 'AT1';
+  const mem = _ultimaSelecaoQuestao;
+  document.getElementById('m-curso').value = mem?.curso || 'ctsp';
+  document.getElementById('m-area').value = mem?.area || 'AT1';
   atualizarSelectLegislacoes();
+  if (mem?.legId) {
+    const selLeg = document.getElementById('m-leg-id');
+    // Só reaplica se a legislação ainda for opção válida para esse curso+área.
+    if ([...selLeg.options].some(o => o.value === mem.legId)) {
+      selLeg.value = mem.legId;
+      atualizarNomeLegislacao();
+    }
+  }
   document.getElementById('m-gabarito').value = '0';
   document.getElementById('m-ativa').value = 'true';
   document.getElementById('modal-erro').style.display = 'none';
@@ -896,6 +909,21 @@ async function salvarQuestao() {
   btn.textContent = 'Salvar';
 
   if (r.ok) {
+    // Criação manual por admin → marca como auditada automaticamente
+    // (autor já é admin, não faz sentido cair na fila de pendentes).
+    if (!id) {
+      const novaId = Array.isArray(r.data) ? r.data[0]?.id : r.data?.id;
+      if (novaId) {
+        try { await PBM.Admin.auditoria.registrar(novaId, 'auditada_manual', 'Criada manualmente pelo admin.'); }
+        catch (e) { console.warn('Falha ao auto-auditar questão recém-criada:', e); }
+      }
+      // Lembra a seleção dos menus suspensos para pré-preencher a próxima criação em lote.
+      _ultimaSelecaoQuestao = {
+        curso: document.getElementById('m-curso').value,
+        area:  document.getElementById('m-area').value,
+        legId: document.getElementById('m-leg-id').value,
+      };
+    }
     // Edição crítica em questão auditada → oferecer reset da auditoria.
     if (id && _editOriginal && _editOriginal.auditada_em) {
       const norm = RichText.normalizeForCompare;
