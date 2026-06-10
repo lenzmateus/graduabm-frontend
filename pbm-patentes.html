@@ -712,8 +712,8 @@
       }
 
       // 3. Grid de Estatísticas
-      document.getElementById('stat-streak').textContent = (response.streak_atual || 0) + 'd';
-      document.getElementById('stat-max-streak').textContent = (response.max_streak || 0) + 'd';
+      document.getElementById('stat-streak').textContent = (response.streak_atual || 0) + ' D';
+      document.getElementById('stat-max-streak').textContent = (response.max_streak || 0) + ' D';
       document.getElementById('stat-licencas').textContent = (response.licencas_plantao || 0) + '/3';
 
       const bounsPct = Math.round(((response.multiplicador_streak || 1) - 1) * 100);
