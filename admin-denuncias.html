@@ -80,9 +80,12 @@
   .estado-vazio svg { opacity: 0.2; margin-bottom: 1rem; }
 
   /* MODAL EDIÇÃO DE QUESTÃO */
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; padding: 1rem; }
+  /* overlay rolável + margin:auto no modal: centraliza quando cabe e rola
+     quando o conteúdo passa da viewport (zoom do tamanho de fonte / tela baixa),
+     mantendo o rodapé sempre alcançável. */
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .overlay.aberto { display: flex; }
-  .modal-edit { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 680px; max-height: 92vh; display: flex; flex-direction: column; }
+  .modal-edit { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 680px; max-height: 92vh; margin: auto; display: flex; flex-direction: column; }
   .modal-edit-header { padding: 1.1rem 1.4rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 1rem; }
   .modal-edit-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.03em; }
   .modal-edit-meta { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); line-height: 1.45; word-break: break-word; margin-top: 3px; }

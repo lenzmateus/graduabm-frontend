@@ -72,9 +72,10 @@
   .empty { text-align: center; padding: 3rem 2rem; color: #555; font-size: 13px; }
 
   /* MODAL */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; z-index: 500; padding: 1rem; }
+  /* overlay rolável + margin:auto: rodapé alcançável sob zoom alto / tela baixa. */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); display: none; align-items: flex-start; justify-content: center; z-index: 500; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; }
   .modal-overlay.visivel { display: flex; }
-  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; max-width: 560px; width: 100%; padding: 1.5rem; }
+  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; max-width: 560px; width: 100%; padding: 1.5rem; margin: auto; }
   .modal h2 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; margin-bottom: 4px; }
   .modal-sub { font-size: 12px; color: var(--cinza-texto); margin-bottom: 14px; }
   .ref-bloco { background: rgba(127,119,221,0.05); border: 1px solid var(--roxo-borda); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
