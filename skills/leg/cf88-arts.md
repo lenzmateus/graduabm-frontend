@@ -1,6 +1,6 @@
 ---
 manifest_id: cf88-arts
-nome: CF/88 — Arts. 37-42 e 125-144
+nome: CF/88 — Arts. 37-42 e 125-144 (revisada em 21/05/2026)
 area_tematica: AT4
 curso: ambos
 arquivo_md: cf88-arts-admin-militar.md
@@ -84,12 +84,14 @@ fora dessas faixas está **fora**.
   **Presidente da República**, destinadas à defesa da Pátria, à
   garantia dos poderes constitucionais e, por iniciativa de qualquer
   destes, da lei e da ordem.
-- **Art. 142, § 3º (incisos relevantes):** vedação de **habeas
-  corpus** em punições disciplinares militares (inciso II); **perda
-  de posto e patente** apenas por sentença de tribunal militar de
-  tempo de paz (inciso VI); **militar enquanto em serviço ativo não
-  pode estar filiado a partido político** (inciso V); vedação de
-  sindicalização e greve (inciso IV); pensão por morte; pagamentos.
+- **Art. 142, § 2º:** vedação de **habeas corpus** em relação a
+  punições disciplinares militares (aplicável aos militares estaduais
+  via art. 42, § 1º, que remete aos §§ 2º e 3º do art. 142).
+- **Art. 142, § 3º (incisos relevantes):** **perda de posto e
+  patente** apenas por sentença de tribunal militar de tempo de paz
+  (inciso VI); **militar enquanto em serviço ativo não pode estar
+  filiado a partido político** (inciso V); vedação de sindicalização
+  e greve (inciso IV); pensão por morte; pagamentos.
 - **Art. 143:** **serviço militar obrigatório** nos termos da lei;
   **alistamento militar**; mulheres e eclesiásticos isentos em tempo
   de paz, sujeitos a outros encargos.

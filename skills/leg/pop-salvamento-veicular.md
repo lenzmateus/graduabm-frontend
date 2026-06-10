@@ -1,6 +1,6 @@
 ---
 manifest_id: pop-salvamento-veicular
-nome: POP Salvamento Veicular RS (Jun/2022)
+nome: POP Salvamento Veicular RS (Nov/2024) (revisada em 21/05/2026)
 area_tematica: AT3
 curso: ambos
 arquivo_md: pop-salvamento-veicular.md

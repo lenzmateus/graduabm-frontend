@@ -1,6 +1,6 @@
 ---
 manifest_id: ito23-aph
-nome: ITO 23 CBMMG 3ª Ed./2021 (APH)
+nome: ITO 23 CBMMG 3ª Ed./2021 (APH) (revisada em 21/05/2026)
 area_tematica: AT3
 curso: ambos
 arquivo_md: ito23-aph.md

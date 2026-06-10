@@ -1,6 +1,6 @@
 ---
 manifest_id: ir002-adm-rh20
-nome: IR 002/Adm_RH-20 — Estágio Probatório
+nome: IR 002/Adm_RH-20 — Estágio Probatório (revisada em 21/05/2026)
 area_tematica: AT5
 curso: cba
 arquivo_md: ir002-adm-rh20.md

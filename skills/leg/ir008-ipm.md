@@ -1,6 +1,6 @@
 ---
 manifest_id: ir008-ipm
-nome: IR 008 — Inquérito Policial Militar (IPM)
+nome: IR 008 — Inquérito Policial Militar (IPM) (revisada em 21/05/2026)
 area_tematica: {"ctsp":"AT4","cba":"AT5"}
 curso: ambos
 arquivo_md: ir008-ipm.md

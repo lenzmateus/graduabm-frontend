@@ -1,6 +1,6 @@
 ---
 manifest_id: ito34-salvamento-veicular
-nome: ITO 34 CBMMG 1ª Ed./2023 (Salvamento Veicular)
+nome: ITO 34 CBMMG 1ª Ed./2023 (Salvamento Veicular) (revisada em 21/05/2026)
 area_tematica: AT3
 curso: ambos
 arquivo_md: ito34-salvamento-veicular.md
