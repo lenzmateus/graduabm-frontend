@@ -99,7 +99,6 @@
   .card-texto-inner img { max-width: 100%; height: auto; border-radius: 6px; margin: 8px 0; }
 
   .card-hint { margin-top: 1rem; font-size: 11px; color: var(--texto-suporte); text-align: center; font-family: 'IBM Plex Mono', monospace; flex-shrink: 0; }
-  .card-ref { margin-top: 0.85rem; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--texto-suporte); padding-top: 0.75rem; border-top: 1px solid var(--cinza-borda); line-height: 1.55; flex-shrink: 0; }
   .card-back .card-face-label { color: var(--vermelho); }
 
   /* DICA panel dentro do FRONT */
@@ -249,6 +248,115 @@
   @media (max-width: 480px) {
     .btn-rating, .at-chip, .modo-tab, .btn-nav, .btn-front { min-height: 40px; }
   }
+
+  /* ════════════════════════════════════════════════════════════
+     ESTILO SLIDE — frente e verso com fundo temático por AT
+     Fundo: gradiente na cor da AT (sem fotos)
+     ════════════════════════════════════════════════════════════ */
+  .card-front, .card-back { background: var(--cinza-escuro); }
+
+  /* Fundo (gradiente temático da AT) + scrim escuro para legibilidade */
+  .slide-bg, .slide-scrim { position: absolute; inset: 0; border-radius: 14px; pointer-events: none; }
+  .slide-bg {
+    z-index: 0;
+    background: var(--fc-bg-grad, var(--cinza-escuro));
+    background-color: var(--cinza-escuro);
+  }
+  .slide-scrim {
+    z-index: 1;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.30) 38%, rgba(0,0,0,0.80) 100%);
+  }
+  /* Marca d'água do brasão (atrás do texto, sobre o fundo) */
+  .slide-watermark { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1; pointer-events: none; opacity: 0.08; }
+  .slide-watermark img { width: 60%; max-width: 340px; height: auto; filter: grayscale(0.15); }
+
+  /* Paleta da AT no flashcard (independente dos tokens globais do app) */
+  .area-AT1 .card-face { --fc-accent: #E8C24A; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(214,160,30,0.42), rgba(24,18,4,0.95)); }   /* amarelo */
+  .area-AT2 .card-face { --fc-accent: #E8694C; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(192,39,15,0.48), rgba(20,8,6,0.95)); }    /* vermelho */
+  .area-AT3 .card-face { --fc-accent: #5C9BD9; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(24,95,165,0.45), rgba(6,12,22,0.95)); }    /* azul */
+  .area-AT4 .card-face { --fc-accent: #7DD99A; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(47,111,68,0.45), rgba(6,18,11,0.95)); }    /* verde */
+  .area-AT5 .card-face { --fc-accent: #E06EAC; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(190,40,130,0.42), rgba(22,8,17,0.95)); }   /* magenta */
+
+  .area-AT1 .slide-scrim { box-shadow: inset 0 0 220px rgba(214,160,30,0.26); }
+  .area-AT2 .slide-scrim { box-shadow: inset 0 0 220px rgba(192,39,15,0.30); }
+  .area-AT3 .slide-scrim { box-shadow: inset 0 0 220px rgba(24,95,165,0.30); }
+  .area-AT4 .slide-scrim { box-shadow: inset 0 0 220px rgba(47,111,68,0.30); }
+  .area-AT5 .slide-scrim { box-shadow: inset 0 0 220px rgba(190,40,130,0.26); }
+
+  /* Conteúdo acima do fundo */
+  .card-face > .slide-header,
+  .card-face > .card-face-label,
+  .card-face > .card-texto,
+  .card-face > .card-dica,
+  .card-face > .card-front-actions,
+  .card-face > .card-autor,
+  .card-face > .slide-footer { position: relative; z-index: 2; }
+
+  /* Cabeçalho do slide */
+  .slide-header {
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 12px; margin-bottom: 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.14);
+    flex-shrink: 0;
+  }
+  .slide-emblem { width: 40px; height: 40px; object-fit: contain; flex-shrink: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6)); }
+  .slide-header-txt { min-width: 0; }
+  .slide-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 19px; letter-spacing: 0.04em;
+    color: #fff; line-height: 1.05; text-transform: uppercase;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .slide-title .at-num { color: var(--fc-accent, var(--vermelho)); }
+  .slide-subtitle {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.72); margin-top: 3px; text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  }
+
+  /* Texto grande sobre a foto */
+  .slide-bg ~ .card-texto .card-texto-inner,
+  .card-front .card-texto-inner,
+  .card-back .card-texto-inner { text-shadow: 0 2px 10px rgba(0,0,0,0.85); }
+  .card-front .card-texto-inner { font-size: 26px; font-weight: 600; line-height: 1.45; }
+  .card-back .card-texto-inner { font-size: 17px; font-weight: 500; line-height: 1.6; color: #fff; }
+
+  /* Rodapé do slide */
+  .slide-footer {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px;
+    padding-top: 10px; margin-top: 6px;
+    border-top: 1px solid rgba(255,255,255,0.14);
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.55); text-transform: uppercase; flex-shrink: 0;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+  }
+  .slide-footer .sf-marca { color: var(--fc-accent, rgba(255,255,255,0.7)); font-weight: 500; }
+  .slide-footer .sf-right { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Esconde o badge AT antigo (a AT agora aparece no cabeçalho) */
+  .card-face-label { color: rgba(255,255,255,0.7) !important; text-shadow: 0 1px 4px rgba(0,0,0,0.7); }
+  .card-area-badge { display: none; }
+  .card-front .card-face-label { display: none; }  /* na frente, o header já dá o contexto */
+  .card-back .card-face-label { color: var(--fc-accent, var(--vermelho)) !important; }
+
+  @media (max-width: 768px) {
+    .card-front .card-texto-inner { font-size: 21px; line-height: 1.4; }
+    .card-back .card-texto-inner { font-size: 15px; }
+    .slide-header { padding-bottom: 9px; gap: 9px; }
+    .slide-title { font-size: 16px; }
+    .slide-subtitle { font-size: 9px; }
+    .slide-emblem { width: 30px; height: 30px; }
+    .slide-watermark img { width: 70%; max-width: 240px; }
+    .slide-footer { font-size: 8px; padding-top: 8px; }
+  }
+
+  /* Em telas estreitas o rodapé só mantém a marca; o sublinha-curso some */
+  @media (max-width: 460px) {
+    .slide-footer .sf-right { display: none; }
+    .slide-footer { justify-content: flex-start; }
+  }
 </style>
 </head>
 <body>
@@ -335,6 +443,15 @@
         <div class="card-scene" id="card-scene" onclick="acaoCardClick()" title="Clique para revelar">
           <div class="card-inner" id="card-inner">
             <div class="card-face card-front" id="card-front">
+              <div class="slide-bg"></div><div class="slide-scrim"></div>
+              <div class="slide-watermark"><img src="/images/emblem-pbm.png" alt="" /></div>
+              <div class="slide-header">
+                <img class="slide-emblem" src="/images/emblem-pbm.png" alt="" />
+                <div class="slide-header-txt">
+                  <div class="slide-title" id="front-title"></div>
+                  <div class="slide-subtitle" id="front-subtitle"></div>
+                </div>
+              </div>
               <div class="card-face-label">
                 <span>Frente</span>
                 <span class="card-area-badge" id="front-badge"></span>
@@ -348,15 +465,31 @@
                 <button type="button" class="btn-front" id="btn-mostrar-dica" onclick="mostrarDica(event)" style="display:none">Mostrar dica · H</button>
                 <button type="button" class="btn-front btn-front-primary" onclick="revelarVerso(event)">Revelar verso · Espaço</button>
               </div>
+              <div class="slide-footer">
+                <span class="sf-marca">Protocolo Bravo Mike</span>
+                <span class="sf-right">CTSP / CBA · Processo Seletivo Intelectual</span>
+              </div>
             </div>
             <div class="card-face card-back" id="card-back">
+              <div class="slide-bg"></div><div class="slide-scrim"></div>
+              <div class="slide-watermark"><img src="/images/emblem-pbm.png" alt="" /></div>
+              <div class="slide-header">
+                <img class="slide-emblem" src="/images/emblem-pbm.png" alt="" />
+                <div class="slide-header-txt">
+                  <div class="slide-title" id="back-title"></div>
+                  <div class="slide-subtitle" id="back-subtitle"></div>
+                </div>
+              </div>
               <div class="card-face-label">
                 <span>Resposta</span>
                 <span class="card-area-badge" id="back-badge"></span>
               </div>
               <div class="card-texto"><div class="card-texto-inner" id="back-texto"></div></div>
-              <div class="card-ref" id="back-ref"></div>
-              <div class="card-autor" id="back-autor" style="display:none; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--texto-suporte); margin-top:8px; border-top:1px dashed var(--cinza-borda); padding-top:6px; text-align:right;"></div>
+              <div class="card-autor" id="back-autor" style="display:none; font-family:'IBM Plex Mono',monospace; font-size:10px; color:rgba(255,255,255,0.6); margin-top:8px; border-top:1px dashed rgba(255,255,255,0.2); padding-top:6px; text-align:right;"></div>
+              <div class="slide-footer">
+                <span class="sf-marca">Protocolo Bravo Mike</span>
+                <span class="sf-right">CTSP / CBA · Processo Seletivo Intelectual</span>
+              </div>
             </div>
           </div>
         </div>
@@ -395,6 +528,8 @@
 // Estado
 // ──────────────────────────────────────────────────────────────────
 const AREA_NOMES = { AT1:'Segurança Incêndio', AT2:'Combate Incêndio', AT3:'Buscas / APH', AT4:'Direito Militar', AT5:'Normas Admin.' };
+// Títulos completos para o cabeçalho estilo slide
+const AREA_TITULOS = { AT1:'Segurança Contra Incêndios', AT2:'Combate a Incêndios', AT3:'Buscas e APH', AT4:'Direito Militar', AT5:'Normas Administrativas' };
 const AREA_COR_CSS = { AT1:'var(--at1-fg)', AT2:'var(--at2-fg)', AT3:'var(--at3-fg)', AT4:'var(--at4-fg)', AT5:'var(--at5-fg)' };
 
 const ESTADO = { FRENTE: 'FRENTE', DICA: 'DICA', VERSO: 'VERSO' };
@@ -591,21 +726,21 @@ function renderCard() {
   estadoAtual = ESTADO.FRENTE;
 
   const area = card.area || 'AT1';
-  document.getElementById('card-front').className = 'card-face card-front';
+  document.getElementById('card-front').className = 'card-face card-front area-' + area;
   document.getElementById('card-back').className = 'card-face card-back area-' + area;
+
+  // Cabeçalho estilo slide (frente e verso): AT + nome da área + legislação
+  const tituloHtml = '<span class="at-num">' + area + '</span> · ' + (AREA_TITULOS[area] || '');
+  const subtitulo = card.legislacao_nome || '';
+  document.getElementById('front-title').innerHTML = tituloHtml;
+  document.getElementById('back-title').innerHTML  = tituloHtml;
+  document.getElementById('front-subtitle').textContent = subtitulo;
+  document.getElementById('back-subtitle').textContent  = subtitulo;
 
   document.getElementById('front-badge').textContent = area;
   document.getElementById('back-badge').textContent = area;
   document.getElementById('front-texto').innerHTML = renderHTML(card.frente_html);
   document.getElementById('back-texto').innerHTML  = renderHTML(card.verso_html);
-
-  const refEl = document.getElementById('back-ref');
-  if (card.legislacao_nome) {
-    refEl.textContent = card.legislacao_nome;
-    refEl.style.display = 'block';
-  } else {
-    refEl.style.display = 'none';
-  }
 
   const autorEl = document.getElementById('back-autor');
   if (autorEl) {
@@ -995,7 +1130,7 @@ async function carregarFlashcards() {
 <script src="/js/api.js?v=6"></script>
 <script src="/js/pbm-components.js?v=5"></script>
 <script>PBM.Layout.mount({active:'flashcards'});iniciarApp();</script>
-<div class="pbm-watermark" aria-hidden="true"></div>
+<!-- marca d'água global removida: o flashcard já tem o brasão no próprio card -->
 
 <script>if('serviceWorker'in navigator)navigator.serviceWorker.register('/sw.js');</script>
 </body>
