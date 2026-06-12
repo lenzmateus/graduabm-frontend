@@ -106,25 +106,49 @@
   .areas-lista { display: flex; flex-direction: column; gap: 1px; }
 
   .area-item {
-    background: var(--cinza-escuro);
-    background-size: cover;
-    background-position: center right;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
     border: 1px solid var(--cinza-borda);
     border-radius: 10px;
     margin-bottom: 10px;
-    overflow: hidden;
+    min-height: 92px;
+    background-color: var(--cinza-escuro);
     transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-    position: relative;
-    min-height: 88px;
   }
+  /* leve lavada da cor da área só no vão central; escuro limpo nas pontas */
   .area-item::before {
     content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(90deg, var(--banner-fade-strong) 0%, var(--banner-fade-medium) 45%, var(--banner-fade-light) 75%, rgba(0,0,0,0) 100%);
-    pointer-events: none; z-index: 0;
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background: linear-gradient(100deg,
+      var(--cinza-escuro) 0%,
+      var(--cinza-escuro) 40%,
+      color-mix(in srgb, var(--area-cor, #888) 15%, var(--cinza-escuro)) 62%,
+      var(--cinza-escuro) 86%,
+      var(--cinza-escuro) 100%);
   }
-  .area-item { cursor: pointer; }
+  /* foto inteira à direita, derretendo no card pela esquerda */
+  .area-foto {
+    position: absolute; top: 0; bottom: 0; right: 150px; z-index: 0;
+    aspect-ratio: 1916 / 821;
+    background-image: var(--area-img);
+    background-position: center; background-repeat: no-repeat; background-size: contain;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+  }
+  /* ícone-marca grande e sutil preenchendo o meio */
+  .area-watermark {
+    position: absolute; z-index: 0; pointer-events: none;
+    right: 42%; top: 50%; transform: translateY(-50%);
+    width: 76px; height: 76px; opacity: 0.10; color: var(--area-cor, #888);
+  }
+  .area-watermark svg { width: 100%; height: 100%; display: block; }
   .area-item:hover { border-color: var(--texto-suporte); box-shadow: 0 2px 16px rgba(0,0,0,0.4); }
+  @media (max-width: 480px) {
+    .area-foto { right: 0; opacity: 0.9; }
+    .area-watermark { display: none; }
+  }
 
   .area-header {
     display: flex; align-items: center; gap: 0;
@@ -171,14 +195,16 @@
     font-size: 22px; letter-spacing: 0.02em;
   }
 
-  .area-info { flex: 1; padding: 14px 16px; min-width: 0; }
+  .area-info { flex: 1; padding: 14px 16px; min-width: 0; position: relative; z-index: 1; }
   .area-nome {
-    font-size: 13px; font-weight: 500;
+    font-size: 13px; font-weight: 600;
     color: var(--branco); margin-bottom: 4px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.85);
   }
   .area-legislacao {
     font-size: 11px; color: var(--cinza-texto);
     line-height: 1.5; white-space: normal;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.9);
   }
 
   .area-tags { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
@@ -202,14 +228,14 @@
   }
 
   .btn-estudar {
-    background: var(--vermelho); color: #fff;
+    background: var(--btn-bg, var(--vermelho)); color: var(--btn-fg, #fff);
     border: none; border-radius: 6px;
-    padding: 7px 16px; font-size: 12px; font-weight: 500;
+    padding: 7px 16px; font-size: 12px; font-weight: 600;
     cursor: pointer; font-family: 'Inter', sans-serif;
-    transition: background 0.15s; white-space: nowrap;
+    transition: filter 0.15s; white-space: nowrap;
     width: 100%;
   }
-  .btn-estudar:hover { background: var(--vermelho-escuro); }
+  .btn-estudar:hover { filter: brightness(0.9); }
   .btn-estudar.cba-btn { background: var(--cba); }
   .btn-estudar.cba-btn:hover { background: #0C447C; }
 
@@ -270,11 +296,11 @@
       margin: 0 16px 14px;
       padding: 9px 0;
       text-align: center;
-      background: var(--vermelho);
-      color: #fff;
+      background: var(--btn-bg, var(--vermelho));
+      color: var(--btn-fg, #fff);
       border-radius: 6px;
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       font-family: 'Inter', sans-serif;
       border: none;
       cursor: pointer;
@@ -527,6 +553,13 @@ const dados = {
   }
 };
 
+// texto escuro sobre cores claras (ex.: dourado), branco no resto
+function corContraste(hex) {
+  const c = hex.replace('#', '');
+  const r = parseInt(c.substr(0, 2), 16), g = parseInt(c.substr(2, 2), 16), b = parseInt(c.substr(4, 2), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) > 150 ? '#1c1c1c' : '#fff';
+}
+
 function renderRankBadge(curso) {
   const el = document.getElementById('rank-badge');
   if (!el) return;
@@ -591,7 +624,12 @@ function renderAreas() {
     div.onclick = () => iniciarEstudo(area.num);
     div.style.setProperty('--area-cor', area.cor);
     if (AREA_IMGS[area.num]) {
-      div.style.backgroundImage = `url('${AREA_IMGS[area.num]}')`;
+      div.style.setProperty('--area-img', `url('${AREA_IMGS[area.num]}')`);
+    }
+    // botão Papirar herda a cor da área (só no CTSP; CBA mantém o azul)
+    if (!isCba) {
+      div.style.setProperty('--btn-bg', area.cor);
+      div.style.setProperty('--btn-fg', corContraste(area.cor));
     }
 
     const tagsHtml = area.tags.map(t =>
@@ -601,6 +639,8 @@ function renderAreas() {
     const btnClass = isCba ? 'btn-estudar cba-btn' : 'btn-estudar';
 
     div.innerHTML = `
+      <div class="area-foto"></div>
+      <div class="area-watermark">${AREA_ICONS[area.num] || ''}</div>
       <div class="area-header">
         <div class="area-num">
           <span class="area-num-icon" style="color:${area.cor}">${AREA_ICONS[area.num] || ''}</span>
