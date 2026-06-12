@@ -727,7 +727,7 @@ function iniciarCronometro() {
   }, 1000);
 }
 
-const CORES_AT = { 'AT1':'#C0270F','AT2':'#BA7517','AT3':'#185FA5','AT4':'#27A05A','AT5':'#7F77DD' };
+const CORES_AT = { 'AT1':'#D6A01E','AT2':'#C0270F','AT3':'#185FA5','AT4':'#27A05A','AT5':'#BE2882' };
 const NOMES_AT = {
   'AT1':'Seg. Incêndio','AT2':'Combate','AT3':'Resgate / APH',
   'AT4':'Direito Militar','AT5':'Normas Admin.'
@@ -1048,8 +1048,8 @@ function mostrarResultado() {
 
   // Desempenho por área
   const porArea = {};
-  const coresAT = { 'AT01':'#C0270F', 'AT02':'#BA7517', 'AT03':'#185FA5', 'AT04':'#27A05A', 'AT05':'#7F77DD',
-                    'AT1':'#C0270F', 'AT2':'#BA7517', 'AT3':'#185FA5', 'AT4':'#27A05A', 'AT5':'#7F77DD' };
+  const coresAT = { 'AT01':'#D6A01E', 'AT02':'#C0270F', 'AT03':'#185FA5', 'AT04':'#27A05A', 'AT05':'#BE2882',
+                    'AT1':'#D6A01E', 'AT2':'#C0270F', 'AT3':'#185FA5', 'AT4':'#27A05A', 'AT5':'#BE2882' };
   respostas.forEach((r, i) => {
     const at = (questoes[i].area_tematica || questoes[i].area || 'GERAL').toUpperCase();
     if (!porArea[at]) porArea[at] = { acertos: 0, total: 0 };

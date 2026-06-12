@@ -43,11 +43,12 @@ The grid is dense but organized. Screens carry substantial information — perfo
 - **Azul** (`#185FA5`): CBA course identity. CBA badges, CBA-specific UI elements, secondary informational states.
 
 ### Area Thematic Overlays (AT Cards)
-- **AT1 Overlay** (`rgba(192,39,15,0.72)`): Segurança contra incêndios — vermelho
-- **AT2 Overlay** (`rgba(186,117,23,0.72)`): Combate a incêndios — âmbar
-- **AT3 Overlay** (`rgba(24,95,165,0.72)`): Buscas e salvamentos / APH — azul
-- **AT4 Overlay** (`rgba(39,160,90,0.72)`): Direito militar — verde
-- **AT5 Overlay** (`rgba(127,119,221,0.72)`): Normas administrativas — roxo
+- **AT1** (`#D6A01E` / `rgba(214,160,30,*)`): Segurança contra incêndios — amarelo
+- **AT2** (`#C0270F` / `rgba(192,39,15,*)`): Combate a incêndios — vermelho
+- **AT3** (`#185FA5` / `rgba(24,95,165,*)`): Buscas e salvamentos / APH — azul
+- **AT4** (`#27A05A` / `rgba(39,160,90,*)`): Direito militar — verde
+- **AT5** (`#BE2882` / `rgba(190,40,130,*)`): Normas administrativas — magenta
+- Observação: a cor de área é independente do **vermelho de marca** (`#C0270F`), do **âmbar de atenção/warning** (`#BA7517`) e do **roxo do admin** (`#7F77DD`) — esses não mudam com a AT.
 
 ### Semantic States
 - **Sucesso** (`#27A060`): Correct answers, active subscriptions, positive feedback.

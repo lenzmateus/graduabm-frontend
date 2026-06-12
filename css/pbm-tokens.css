@@ -92,11 +92,11 @@
        --atN-bg     = tint de background (rgba)
        --atN-border = borda (rgba) — usado por hero-bloco / proximo-area destacado
      Modo escuro: tons claros sobre fundo carvão. Modo claro: tons escurecidos. */
-  --at1-fg: #E0866E;  --at1-bg: rgba(192,39,15,0.10);  --at1-border: rgba(192,39,15,0.35);
-  --at2-fg: #D4A24A;  --at2-bg: rgba(186,117,23,0.10); --at2-border: rgba(186,117,23,0.35);
-  --at3-fg: #5C9BD9;  --at3-bg: rgba(24,95,165,0.12);  --at3-border: rgba(24,95,165,0.35);
-  --at4-fg: #7DD99A;  --at4-bg: rgba(47,111,68,0.15);  --at4-border: rgba(47,111,68,0.35);
-  --at5-fg: #B58AE0;  --at5-bg: rgba(127,119,221,0.12); --at5-border: rgba(127,119,221,0.35);
+  --at1-fg: #E8C24A;  --at1-bg: rgba(214,160,30,0.12); --at1-border: rgba(214,160,30,0.38);  /* amarelo */
+  --at2-fg: #E8694C;  --at2-bg: rgba(192,39,15,0.10);  --at2-border: rgba(192,39,15,0.35);   /* vermelho */
+  --at3-fg: #5C9BD9;  --at3-bg: rgba(24,95,165,0.12);  --at3-border: rgba(24,95,165,0.35);   /* azul */
+  --at4-fg: #7DD99A;  --at4-bg: rgba(47,111,68,0.15);  --at4-border: rgba(47,111,68,0.35);   /* verde */
+  --at5-fg: #E06EAC;  --at5-bg: rgba(190,40,130,0.12); --at5-border: rgba(190,40,130,0.38);  /* magenta */
 }
 
 :root.light-mode {
@@ -132,11 +132,11 @@
   --banner-fade-light: rgba(244,245,247,0.5);
 
   /* AT — versões escurecidas para legibilidade sobre fundo claro */
-  --at1-fg: #9A1F0C;  --at1-bg: rgba(154,31,12,0.10);  --at1-border: rgba(154,31,12,0.40);
-  --at2-fg: #7A4D0E;  --at2-bg: rgba(186,117,23,0.14); --at2-border: rgba(122,77,14,0.40);
-  --at3-fg: #1A4F87;  --at3-bg: rgba(24,95,165,0.10);  --at3-border: rgba(24,95,165,0.40);
-  --at4-fg: #1F6135;  --at4-bg: rgba(47,111,68,0.12);  --at4-border: rgba(47,111,68,0.40);
-  --at5-fg: #5F45A8;  --at5-bg: rgba(127,119,221,0.12); --at5-border: rgba(95,69,168,0.40);
+  --at1-fg: #8A6A00;  --at1-bg: rgba(214,160,30,0.16); --at1-border: rgba(176,130,20,0.42);  /* amarelo escurecido */
+  --at2-fg: #9A1F0C;  --at2-bg: rgba(192,39,15,0.10);  --at2-border: rgba(154,31,12,0.40);   /* vermelho escurecido */
+  --at3-fg: #1A4F87;  --at3-bg: rgba(24,95,165,0.10);  --at3-border: rgba(24,95,165,0.40);   /* azul */
+  --at4-fg: #1F6135;  --at4-bg: rgba(47,111,68,0.12);  --at4-border: rgba(47,111,68,0.40);   /* verde */
+  --at5-fg: #9A2C68;  --at5-bg: rgba(190,40,130,0.12); --at5-border: rgba(154,44,104,0.40);  /* magenta escurecido */
 }
 
 /* Transição suave entre temas (não anima durante o boot) */
