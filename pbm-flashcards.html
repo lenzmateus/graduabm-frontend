@@ -75,8 +75,8 @@
   .count-badge { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-left: auto; }
 
   /* ── CARD ── */
-  .card-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; min-height: 440px; }
-  .card-scene { width: 100%; max-width: 680px; height: 440px; perspective: 1200px; cursor: pointer; }
+  .card-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; min-height: 480px; }
+  .card-scene { width: 100%; max-width: 680px; height: 480px; perspective: 1200px; cursor: pointer; }
   .card-inner { width: 100%; height: 100%; transition: transform 0.55s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; position: relative; }
   .card-inner.flipped { transform: rotateY(180deg); }
   .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 14px; padding: 2.25rem 2.5rem; display: flex; flex-direction: column; overflow: hidden; }
@@ -86,14 +86,15 @@
   .card-face-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--texto-suporte); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
   .card-area-badge { font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.06em; }
 
-  .card-texto { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow-y: auto; padding-right: 8px; }
-  .card-texto-inner { font-size: 18px; font-weight: 500; color: var(--branco); line-height: 1.7; word-break: break-word; hyphens: auto; }
+  /* Texto SEM scroll — o tamanho da fonte é auto-ajustado por JS para caber */
+  .card-texto { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .card-texto-inner { font-size: 18px; font-weight: 500; color: var(--branco); line-height: 1.6; word-break: break-word; hyphens: auto; text-align: justify; text-indent: 1.6em; }
   .card-front .card-texto { justify-content: center; }
-  .card-front .card-texto-inner { text-align: center; }
   .card-back .card-texto { justify-content: flex-start; }
-  .card-back .card-texto-inner { font-size: 16px; font-weight: 400; line-height: 1.65; text-align: left; }
-  .card-texto::-webkit-scrollbar { width: 6px; }
-  .card-texto::-webkit-scrollbar-thumb { background: var(--cinza-borda); border-radius: 3px; }
+  .card-back .card-texto-inner { font-weight: 400; }
+  /* listas/itens não recebem recuo de parágrafo */
+  .card-texto-inner li, .card-texto-inner img { text-indent: 0; }
+  .card-texto-inner img { text-align: center; }
   .card-texto-inner > *:first-child { margin-top: 0; }
   .card-texto-inner > *:last-child { margin-bottom: 0; }
   .card-texto-inner img { max-width: 100%; height: auto; border-radius: 6px; margin: 8px 0; }
@@ -237,11 +238,9 @@
   @media (max-width: 768px) {
     .sidebar-usuario, .sidebar-nav { display: none; }
     .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
-    .card-wrapper { min-height: 420px; }
-    .card-scene { height: 420px; }
+    .card-wrapper { min-height: 460px; }
+    .card-scene { height: 460px; }
     .card-face { padding: 1.5rem 1.5rem; }
-    .card-texto-inner { font-size: 16px; line-height: 1.65; }
-    .card-back .card-texto-inner { font-size: 15px; line-height: 1.6; }
     .maestria-bar-pct { font-size: 16px; }
   }
 
@@ -272,11 +271,11 @@
   .slide-watermark img { width: 60%; max-width: 340px; height: auto; filter: grayscale(0.15); }
 
   /* Paleta da AT no flashcard (independente dos tokens globais do app) */
-  .area-AT1 .card-face { --fc-accent: #E8C24A; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(214,160,30,0.42), rgba(24,18,4,0.95)); }   /* amarelo */
-  .area-AT2 .card-face { --fc-accent: #E8694C; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(192,39,15,0.48), rgba(20,8,6,0.95)); }    /* vermelho */
-  .area-AT3 .card-face { --fc-accent: #5C9BD9; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(24,95,165,0.45), rgba(6,12,22,0.95)); }    /* azul */
-  .area-AT4 .card-face { --fc-accent: #7DD99A; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(47,111,68,0.45), rgba(6,18,11,0.95)); }    /* verde */
-  .area-AT5 .card-face { --fc-accent: #E06EAC; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(190,40,130,0.42), rgba(22,8,17,0.95)); }   /* magenta */
+  .card-face.area-AT1 { --fc-accent: #E8C24A; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(214,160,30,0.42), rgba(24,18,4,0.95)); }   /* amarelo */
+  .card-face.area-AT2 { --fc-accent: #E8694C; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(192,39,15,0.48), rgba(20,8,6,0.95)); }    /* vermelho */
+  .card-face.area-AT3 { --fc-accent: #5C9BD9; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(24,95,165,0.45), rgba(6,12,22,0.95)); }    /* azul */
+  .card-face.area-AT4 { --fc-accent: #7DD99A; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(47,111,68,0.45), rgba(6,18,11,0.95)); }    /* verde */
+  .card-face.area-AT5 { --fc-accent: #E06EAC; --fc-bg-grad: radial-gradient(120% 120% at 70% 20%, rgba(190,40,130,0.42), rgba(22,8,17,0.95)); }   /* magenta */
 
   .area-AT1 .slide-scrim { box-shadow: inset 0 0 220px rgba(214,160,30,0.26); }
   .area-AT2 .slide-scrim { box-shadow: inset 0 0 220px rgba(192,39,15,0.30); }
@@ -716,6 +715,34 @@ function setEstado(novo) {
     const card = cardsFiltrados[indiceAtual];
     if (btnDica) btnDica.style.display = card && temMnemonico(card) ? 'inline-block' : 'none';
   }
+  // A dica ocupa espaço na frente — reajusta o texto para continuar cabendo
+  if (novo === ESTADO.DICA || novo === ESTADO.FRENTE) {
+    ajustarTextoFace(document.getElementById('card-front'));
+  }
+}
+
+// Ajusta o tamanho da fonte para o texto caber na face SEM scroll.
+// Diminui de maxPx até minPx enquanto o conteúdo transbordar o container.
+function ajustarTextoFace(face) {
+  if (!face) return;
+  const cont = face.querySelector('.card-texto');
+  const inner = face.querySelector('.card-texto-inner');
+  if (!cont || !inner) return;
+  const mobile = window.innerWidth <= 768;
+  const isFront = face.classList.contains('card-front');
+  const maxPx = isFront ? (mobile ? 21 : 26) : (mobile ? 15 : 17);
+  const minPx = isFront ? 13 : 12;
+  let size = maxPx, guard = 80;
+  inner.style.fontSize = size + 'px';
+  while (size > minPx && inner.scrollHeight > cont.clientHeight + 1 && guard-- > 0) {
+    size -= 0.5;
+    inner.style.fontSize = size + 'px';
+  }
+}
+
+function ajustarTextoCartaoAtual() {
+  ajustarTextoFace(document.getElementById('card-front'));
+  ajustarTextoFace(document.getElementById('card-back'));
 }
 
 function renderCard() {
@@ -762,6 +789,9 @@ function renderCard() {
   document.getElementById('srs-rating').classList.remove('visivel');
   const btnDica = document.getElementById('btn-mostrar-dica');
   if (btnDica) btnDica.style.display = temMnemonico(card) ? 'inline-block' : 'none';
+
+  // Auto-ajusta a fonte das duas faces para caber sem scroll
+  ajustarTextoCartaoAtual();
 
   // Nav bar
   const navBar = document.getElementById('nav-bar');
@@ -1076,6 +1106,17 @@ async function iniciarApp() {
   popularDropdownLeg();
   await carregarFlashcards();
   if (window.PBMTour) PBMTour.init();
+
+  // Reajusta o texto quando as fontes web terminam de carregar (evita medir antes)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => { if (cardsFiltrados.length) ajustarTextoCartaoAtual(); });
+  }
+  // E ao redimensionar a janela (debounced)
+  let _resizeFitT;
+  window.addEventListener('resize', () => {
+    clearTimeout(_resizeFitT);
+    _resizeFitT = setTimeout(() => { if (cardsFiltrados.length) ajustarTextoCartaoAtual(); }, 150);
+  });
 }
 
 async function carregarManifesto() {
