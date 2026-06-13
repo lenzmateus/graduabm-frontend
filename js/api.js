@@ -776,7 +776,6 @@ const PBM = {
       adicionarQuestoes(id, ids) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/questoes`, { method: 'POST', body: JSON.stringify({ questao_ids: ids }) }); },
       removerQuestao(id, questaoId) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/questoes/${questaoId}`, { method: 'DELETE' }); },
       incorporar(id) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/incorporar`, { method: 'POST' }); },
-      ranking(id) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/ranking`); },
     },
     assinaturas: {
       stats() {
@@ -1022,9 +1021,6 @@ const PBM = {
         method: 'PATCH',
         body: JSON.stringify({ respostas_cartao }),
       });
-    },
-    ranking(id) {
-      return request(`/api/simulados-mensais/${id}/ranking`);
     },
     gabarito(id) {
       return request(`/api/simulados-mensais/${id}/gabarito`);

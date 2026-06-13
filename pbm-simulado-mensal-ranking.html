@@ -11,7 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="PBM">
 <link rel="apple-touch-icon" href="/images/pwa-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Protocolo Bravo Mike — Ranking Protocolo QAP</title>
+<title>Protocolo Bravo Mike — Resultado do Protocolo QAP</title>
 <script src="/js/font-size.js"></script>
 <script src="/js/pbm-theme-boot.js?v=2"></script>
 <link rel="stylesheet" href="/css/pbm-tokens.css">
@@ -47,44 +47,11 @@
   .hero-curso.ctsp { background: var(--ctsp-bg); color: var(--at1-fg); border: 1px solid var(--ctsp-borda); }
   .hero-curso.cba { background: var(--cba-bg); color: var(--info-fg); border: 1px solid var(--cba-borda); }
 
-  /* Minha posição */
-  .minha-posicao {
-    background: rgba(240,192,80,0.08); border: 1px solid rgba(240,192,80,0.3);
-    border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;
-    display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
-    animation: fadeUp 0.4s ease 0.1s both;
-  }
-  .pos-numero { font-family: 'Bebas Neue', sans-serif; font-size: 64px; color: var(--dourado); line-height: 1; min-width: 80px; text-align: center; }
-  .pos-info-titulo { font-size: 16px; font-weight: 600; color: var(--branco); margin-bottom: 4px; }
-  .pos-stats { display: flex; gap: 16px; flex-wrap: wrap; }
-  .pos-stat { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
-  .pos-stat .val { font-size: 20px; font-weight: 700; font-family: 'Bebas Neue', sans-serif; }
-  .pos-stat .lbl { color: var(--cinza-texto); font-size: 10px; display: block; text-transform: uppercase; letter-spacing: 0.06em; }
-
   /* Abas */
   .abas { display: flex; gap: 0; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 1.5rem; animation: fadeUp 0.4s ease 0.2s both; }
   .aba { padding: 10px 20px; font-size: 13px; color: var(--cinza-texto); cursor: pointer; border-bottom: 2px solid transparent; transition: 0.15s; background: none; border-top: none; border-left: none; border-right: none; font-family: 'Inter', sans-serif; }
   .aba:hover { color: var(--branco); }
   .aba.ativa { color: var(--branco); border-bottom-color: var(--vermelho); }
-
-  /* Ranking */
-  .ranking-lista { display: flex; flex-direction: column; gap: 6px; animation: fadeUp 0.4s ease 0.25s both; }
-  .ranking-item {
-    display: grid; grid-template-columns: 40px 1fr auto auto; align-items: center;
-    gap: 12px; padding: 10px 16px; border-radius: 8px;
-    border: 1px solid var(--cinza-borda); background: var(--cinza-escuro);
-    transition: background 0.12s;
-  }
-  .ranking-item.eu { border-color: rgba(240,192,80,0.4); background: rgba(240,192,80,0.05); }
-  .ranking-item.top3 { border-color: rgba(240,192,80,0.2); }
-  .ranking-pos { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--cinza-texto); text-align: center; }
-  .ranking-pos.ouro { color: #FFD700; }
-  .ranking-pos.prata { color: #C0C0C0; }
-  .ranking-pos.bronze { color: #CD7F32; }
-  .ranking-nome { font-size: 13px; font-weight: 500; color: var(--branco); }
-  .ranking-nome-sub { font-size: 11px; color: var(--cinza-texto); font-family: 'IBM Plex Mono', monospace; }
-  .ranking-acertos { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cinza-texto); text-align: right; }
-  .ranking-pct { font-family: 'Bebas Neue', sans-serif; font-size: 22px; text-align: right; min-width: 60px; }
 
   /* Gabarito */
   .gabarito-wrap { animation: fadeUp 0.4s ease 0.25s both; }
@@ -135,10 +102,6 @@
   @media (max-width: 768px) {
     .sidebar-usuario, .sidebar-nav { display: none; }
     .sidebar-footer .btn-sair { width: auto; padding: 6px 14px; font-size: 12px; }
-    .minha-posicao { gap: 1rem; }
-    .pos-numero { font-size: 48px; }
-    .ranking-item { grid-template-columns: 32px 1fr auto; }
-    .ranking-acertos { display: none; }
     .stats-header { grid-template-columns: 1fr 1fr; }
     .stat-destaque-grid { grid-template-columns: 1fr; }
   }
@@ -165,7 +128,7 @@
 
   <div class="main">
     <div class="topbar">
-      <span class="topbar-titulo" id="topbar-titulo">Protocolo QAP — Ranking</span>
+      <span class="topbar-titulo" id="topbar-titulo">Protocolo QAP — Resultado</span>
       <button class="btn-logout-top" id="btn-logout-top">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         Sair
@@ -188,10 +151,9 @@
 RichText.ensurePurify().catch(() => {});</script>
 <script>
 let simuladoId = null;
-let dadosRanking = null;
 let dadosGabarito = null;
 let dadosEstatisticas = null;
-let abaAtiva = 'ranking';
+let abaAtiva = 'gabarito';
 let gabFiltro = 'todos';
 let countdownInterval = null;
 
@@ -236,19 +198,16 @@ async function init() {
   simuladoId = getSimuladoId();
   if (!simuladoId) { window.location.href = '/simulados'; return; }
 
-  // Tenta carregar ranking (pode ser 403 se ainda não encerrou)
+  // Gate pelas estatísticas (403 AGUARDANDO enquanto não encerra). O ranking do
+  // Simulado Mensal foi removido (ADR-0010); a tela agora é Gabarito + Estatísticas.
   try {
-    const res = await PBM.SimuladoMensal.ranking(simuladoId);
-    dadosRanking = res;
-    document.getElementById('topbar-titulo').textContent = res.simulado.titulo + ' — Ranking';
+    const stats = await PBM.SimuladoMensal.estatisticas(simuladoId);
+    dadosEstatisticas = stats;
+    document.getElementById('topbar-titulo').textContent = (stats.simulado?.titulo || 'Protocolo QAP') + ' — Resultado';
 
-    // Carrega gabarito e estatísticas em paralelo
-    const [gab, stats] = await Promise.allSettled([
-      PBM.SimuladoMensal.gabarito(simuladoId),
-      PBM.SimuladoMensal.estatisticas(simuladoId),
-    ]);
-    if (gab.status === 'fulfilled') dadosGabarito = gab.value;
-    if (stats.status === 'fulfilled') dadosEstatisticas = stats.value;
+    // Gabarito comentado em paralelo (best-effort)
+    const gab = await PBM.SimuladoMensal.gabarito(simuladoId).catch(() => null);
+    if (gab) dadosGabarito = gab;
 
     renderizarPagina();
 
@@ -269,8 +228,8 @@ function renderizarAguardando(encerramento) {
   const el = document.getElementById('conteudo-principal');
   el.innerHTML = `
     <div class="aguardando-card">
-      <div class="aguardando-titulo">Ranking em Breve</div>
-      <div class="aguardando-sub">O ranking e o gabarito comentado serão liberados após o encerramento do simulado.</div>
+      <div class="aguardando-titulo">Resultado em Breve</div>
+      <div class="aguardando-sub">O gabarito comentado e as estatísticas serão liberados após o encerramento do simulado.</div>
       ${encerramento ? `<div id="countdown-aguardando"></div>
         <div style="margin-top:1rem;font-size:12px;color:var(--cinza-texto);font-family:'IBM Plex Mono',monospace;">Encerra em ${formatarData(encerramento)} às ${formatarHora(encerramento)}</div>` : ''}
     </div>
@@ -284,53 +243,26 @@ function renderizarAguardando(encerramento) {
 }
 
 function renderizarPagina() {
-  const sim = dadosRanking.simulado;
-  const ranking = dadosRanking.ranking || [];
-  const minhaPos = dadosRanking.minha_posicao;
-  const eu = ranking.find(r => r.sou_eu);
+  const sim = dadosEstatisticas.simulado || {};
+  const totalPart = dadosEstatisticas.total_participantes || 0;
 
   let html = `
     <div class="hero">
-      <div class="hero-curso ${sim.curso}">${sim.curso.toUpperCase()}</div>
-      <div class="hero-titulo">${sim.titulo}</div>
-      <div class="hero-sub">${formatarData(sim.abertura || '')} — ${ranking.length} participante${ranking.length !== 1 ? 's' : ''}</div>
+      ${sim.curso ? `<div class="hero-curso ${sim.curso}">${sim.curso.toUpperCase()}</div>` : ''}
+      <div class="hero-titulo">${sim.titulo || 'Protocolo QAP'}</div>
+      <div class="hero-sub">${sim.abertura ? formatarData(sim.abertura) + ' — ' : ''}${totalPart} participante${totalPart !== 1 ? 's' : ''}</div>
     </div>`;
 
-  if (eu) {
-    const cor = eu.percentual >= 70 ? 'var(--success-fg)' : eu.percentual >= 50 ? '#F0C050' : 'var(--danger-fg)';
-    const posLabel = minhaPos === 1 ? '🥇 1º' : minhaPos === 2 ? '🥈 2º' : minhaPos === 3 ? '🥉 3º' : `#${minhaPos}`;
-    html += `
-      <div class="minha-posicao">
-        <div class="pos-numero" style="color:${cor}">${posLabel}</div>
-        <div>
-          <div class="pos-info-titulo">Sua posição no ranking</div>
-          <div class="pos-stats">
-            <div class="pos-stat">
-              <span class="val" style="color:var(--success-fg)">${eu.acertos}</span>
-              <span class="lbl">Acertos</span>
-            </div>
-            <div class="pos-stat">
-              <span class="val" style="color:${cor}">${eu.percentual?.toFixed(1)}%</span>
-              <span class="lbl">Aproveitamento</span>
-            </div>
-            <div class="pos-stat">
-              <span class="val" style="color:var(--cinza-texto)">${eu.total - eu.acertos}</span>
-              <span class="lbl">Erros/Branco</span>
-            </div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  // Abas
+  // Abas — Gabarito + Estatísticas (ranking removido, ADR-0010)
   const abas = [
-    { id: 'ranking', label: 'Ranking' },
     ...(dadosGabarito ? [{ id: 'gabarito', label: 'Gabarito Comentado' }] : []),
     ...(dadosEstatisticas ? [{ id: 'estatisticas', label: 'Estatísticas' }] : []),
   ];
+  // Garante uma aba ativa válida mesmo se o gabarito não veio.
+  if (!abas.some(a => a.id === abaAtiva)) abaAtiva = abas[0]?.id;
 
   html += `<div class="abas">${abas.map(a =>
-    `<button class="aba ${a.id === abaAtiva ? 'ativa' : ''}" onclick="trocarAba('${a.id}')">${a.label}</button>`
+    `<button class="aba ${a.id === abaAtiva ? 'ativa' : ''}" data-aba="${a.id}" onclick="trocarAba('${a.id}')">${a.label}</button>`
   ).join('')}</div>`;
 
   html += `<div id="conteudo-aba"></div>`;
@@ -340,36 +272,15 @@ function renderizarPagina() {
 
 function trocarAba(id) {
   abaAtiva = id;
-  document.querySelectorAll('.aba').forEach(el => el.classList.toggle('ativa', el.textContent.toLowerCase().startsWith(id)));
+  document.querySelectorAll('.aba').forEach(el => el.classList.toggle('ativa', el.dataset.aba === id));
   renderizarAba();
 }
 
 function renderizarAba() {
   const el = document.getElementById('conteudo-aba');
   if (!el) return;
-  if (abaAtiva === 'ranking') el.innerHTML = renderRanking();
-  else if (abaAtiva === 'gabarito') el.innerHTML = renderGabarito();
+  if (abaAtiva === 'gabarito') el.innerHTML = renderGabarito();
   else if (abaAtiva === 'estatisticas') el.innerHTML = renderEstatisticas();
-}
-
-function renderRanking() {
-  const ranking = dadosRanking.ranking || [];
-  if (ranking.length === 0) return `<div style="text-align:center;color:var(--cinza-texto);padding:2rem;">Nenhum participante registrado ainda.</div>`;
-
-  return `<div class="ranking-lista">${ranking.map(p => {
-    const cor = p.percentual >= 70 ? 'var(--success-fg)' : p.percentual >= 50 ? '#F0C050' : 'var(--danger-fg)';
-    const posClass = p.posicao === 1 ? 'ouro' : p.posicao === 2 ? 'prata' : p.posicao === 3 ? 'bronze' : '';
-    return `
-      <div class="ranking-item ${p.sou_eu ? 'eu' : ''} ${p.posicao <= 3 ? 'top3' : ''}">
-        <div class="ranking-pos ${posClass}">${p.posicao}º</div>
-        <div>
-          <div class="ranking-nome">${p.nome}${p.sou_eu ? ' <span style="font-size:10px;color:var(--dourado);">← você</span>' : ''}</div>
-          <div class="ranking-nome-sub">Entregou às ${formatarHora(p.entregue_em)}</div>
-        </div>
-        <div class="ranking-acertos" style="color:var(--cinza-texto);">${p.acertos}/${p.total}</div>
-        <div class="ranking-pct" style="color:${cor}">${p.percentual?.toFixed(1)}%</div>
-      </div>`;
-  }).join('')}</div>`;
 }
 
 function renderGabarito() {
@@ -432,13 +343,9 @@ function renderGabarito() {
 
 function renderEstatisticas() {
   if (!dadosEstatisticas) return '<div style="color:var(--cinza-texto);padding:2rem;">Estatísticas indisponíveis.</div>';
-  const { total_participantes, mais_dificil, mais_facil } = dadosEstatisticas;
+  const { total_participantes, media_geral, mais_dificil, mais_facil } = dadosEstatisticas;
 
-  // Calcula média de acertos do ranking
-  const ranking = dadosRanking.ranking || [];
-  const mediaGeral = ranking.length > 0
-    ? (ranking.reduce((s, p) => s + (p.percentual || 0), 0) / ranking.length).toFixed(1)
-    : '—';
+  const mediaGeral = (media_geral != null) ? media_geral.toFixed(1) : '—';
 
   const destaqueDificil = mais_dificil
     ? `${mais_dificil.percentual}% de acerto (${mais_dificil.acertos}/${mais_dificil.total} participantes)`

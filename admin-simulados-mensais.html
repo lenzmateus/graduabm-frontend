@@ -463,7 +463,7 @@ async function carregarSimulados(tentativa = 1) {
             <div class="sim-acoes">
               ${st.label === 'ENCERRADO' && !sim.questoes_incorporadas
                 ? `<button class="btn-sm" onclick="event.stopPropagation();incorporar('${sim.id}', this)">Incorporar Questões</button>` : ''}
-              <button class="btn-sm" onclick="event.stopPropagation();verRanking('${sim.id}')">Ranking</button>
+              <button class="btn-sm" onclick="event.stopPropagation();verResultado('${sim.id}')">Resultado</button>
               <button class="btn-sm" onclick="event.stopPropagation();toggleEditDatas('${sim.id}')">Editar Datas</button>
               <button class="btn-sm" onclick="event.stopPropagation();toggleAtivo('${sim.id}',${!sim.ativo})">${sim.ativo ? 'Desativar' : 'Habilitar'}</button>
             </div>
@@ -701,7 +701,7 @@ async function incorporar(simId, btn) {
   }
 }
 
-function verRanking(simId) {
+function verResultado(simId) {
   window.open(`/simulado-mensal-ranking?id=${simId}`, '_blank');
 }
 

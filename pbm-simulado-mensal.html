@@ -138,13 +138,6 @@
   .res-hero { text-align: center; margin-bottom: 2.5rem; animation: fadeUp 0.4s ease both; }
   .res-hero-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 0.04em; line-height: 1; margin-bottom: 6px; }
   .res-hero-sub { font-size: 14px; color: var(--cinza-texto); }
-  .res-ranking-badge {
-    display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(240,192,80,0.1); border: 1px solid rgba(240,192,80,0.4);
-    border-radius: 8px; padding: 10px 20px; margin-top: 16px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--dourado);
-    animation: fadeUp 0.4s ease 0.05s both;
-  }
   .res-score-grid {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; width: 100%; margin-bottom: 2.5rem;
     animation: fadeUp 0.4s ease 0.1s both;
@@ -196,8 +189,6 @@
   }
   .res-btn-primary { background: var(--vermelho); color: #fff; border: none; }
   .res-btn-primary:hover { background: var(--vermelho-escuro); }
-  .res-btn-gold { background: rgba(240,192,80,0.15); color: var(--dourado); border: 1px solid rgba(240,192,80,0.4); }
-  .res-btn-gold:hover { background: rgba(240,192,80,0.25); }
   .res-btn-secondary { background: transparent; border: 1px solid var(--cinza-borda); color: var(--branco); }
   .res-btn-secondary:hover { background: var(--cinza-medio); border-color: var(--texto-suporte); }
 
@@ -373,10 +364,6 @@
       <div class="res-hero">
         <div class="res-hero-titulo">Simulado Entregue</div>
         <div class="res-hero-sub" id="res-subtitulo">Confira seu desempenho</div>
-        <div class="res-ranking-badge" id="res-ranking-badge" style="display:none;">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
-          <span id="res-ranking-texto"></span>
-        </div>
       </div>
 
       <div class="res-score-grid" id="res-score-grid"></div>
@@ -388,10 +375,6 @@
       <div class="res-gabarito-grid" id="res-gabarito-grid"></div>
 
       <div class="res-acoes">
-        <a id="btn-ver-ranking" href="#" class="res-btn res-btn-gold" style="display:none;">
-          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 20 18 10"/><polyline points="12 20 12 4"/><polyline points="6 20 6 14"/></svg>
-          Ver Ranking Completo
-        </a>
         <a href="/simulados" class="res-btn res-btn-primary">← Voltar aos Simulados</a>
         <a href="/dashboard" class="res-btn res-btn-secondary">Dashboard</a>
       </div>
@@ -880,7 +863,7 @@ async function entregarProva(porTempo) {
 }
 
 function mostrarResultado(resultado) {
-  const { acertos, total, percentual, posicao } = resultado;
+  const { acertos, total, percentual } = resultado;
   const emBranco = respostas.filter(r => !r.oficial).length;
   const erros = Math.max(0, total - acertos - emBranco);
   const tempoUsadoSeg = Math.floor((Date.now() - tempoInicio) / 1000);
@@ -889,12 +872,6 @@ function mostrarResultado(resultado) {
   const ts = String(tempoUsadoSeg % 60).padStart(2,'0');
 
   document.getElementById('res-tempo-info').textContent = `Tempo: ${th}:${tm}:${ts}`;
-
-  // Badge de ranking
-  if (posicao) {
-    document.getElementById('res-ranking-badge').style.display = 'inline-flex';
-    document.getElementById('res-ranking-texto').textContent = `Sua posição: #${posicao} no ranking`;
-  }
 
   // Score cards
   const cor = percentual >= 70 ? 'var(--success-fg)' : percentual >= 50 ? '#F0C050' : 'var(--danger-fg)';
@@ -928,15 +905,9 @@ function mostrarResultado(resultado) {
       <div class="at-detail">Disponível após encerramento</div>
     </div>`).join('');
 
-  // Botão ranking
-  if (posicao) {
-    const btn = document.getElementById('btn-ver-ranking');
-    if (simuladoEncerramento && new Date() > new Date(simuladoEncerramento)) {
-      btn.href = '/simulado-mensal-ranking?id=' + simuladoId;
-      btn.style.display = 'inline-flex';
-    } else {
-      document.getElementById('res-subtitulo').textContent = `Ranking disponível após o encerramento do simulado`;
-    }
+  // Gabarito comentado e estatísticas abrem após o encerramento (ADR-0010).
+  if (!(simuladoEncerramento && new Date() > new Date(simuladoEncerramento))) {
+    document.getElementById('res-subtitulo').textContent = 'Gabarito comentado disponível após o encerramento do simulado';
   }
 
   document.getElementById('tela-resultado').classList.add('ativo');
