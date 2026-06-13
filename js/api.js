@@ -527,6 +527,11 @@ const PBM = {
         body: JSON.stringify(body || { duracao_minutos: 0 }),
       });
     },
+    encerrarBloco(blocoId) {
+      return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/encerrar', {
+        method: 'POST',
+      });
+    },
     registrarTempo(blocoId, body) {
       return request('/api/ciclo/blocos/' + encodeURIComponent(blocoId) + '/sessoes-tempo', {
         method: 'POST',

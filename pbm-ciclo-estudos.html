@@ -948,6 +948,7 @@
               <button class="btn-primario" id="btn-iniciar">Iniciar Bloco</button>
               <button class="btn-secundario" id="btn-pular">Pular para o próximo</button>
               <button class="btn-secundario" id="btn-forcar" style="display:none;">Marcar concluído</button>
+              <button class="btn-secundario" id="btn-encerrar" style="display:none;">Encerrar legislação</button>
             </div>
           </div>
           <div class="anel-progresso">
@@ -1354,13 +1355,12 @@
       renderNotaHero(bloco);
       document.getElementById('btn-iniciar').disabled = false;
       document.getElementById('btn-pular').disabled = false;
-      // Botão "Marcar concluído" só aparece com bloco em_andamento + saldo > 0 (offline)
+      // "Marcar concluído" e "Encerrar legislação" só aparecem com bloco em_andamento
       const btnForcar = document.getElementById('btn-forcar');
-      if (bloco.status === 'em_andamento') {
-        btnForcar.style.display = '';
-      } else {
-        btnForcar.style.display = 'none';
-      }
+      const btnEncerrar = document.getElementById('btn-encerrar');
+      const ativo = bloco.status === 'em_andamento';
+      btnForcar.style.display = ativo ? '' : 'none';
+      btnEncerrar.style.display = ativo ? '' : 'none';
     } else {
       document.getElementById('hero-area').textContent = '';
       document.getElementById('hero-nome').textContent = 'Rodada concluída — gere a próxima';
@@ -1370,6 +1370,7 @@
       document.getElementById('btn-iniciar').disabled = true;
       document.getElementById('btn-pular').disabled = true;
       document.getElementById('btn-forcar').style.display = 'none';
+      document.getElementById('btn-encerrar').style.display = 'none';
     }
 
     const pct = estado.progresso ? estado.progresso.pct : 0;
@@ -1673,6 +1674,25 @@
     }
   }
 
+  // Encerrar Legislação na Rodada (ADR-0008): conclui o bloco e tira os blocos
+  // pendentes da mesma legislação desta rodada. Ela volta normal na próxima.
+  async function encerrarLegislacao() {
+    if (!estado.proximoBloco) return;
+    const bloco = estado.proximoBloco;
+    const msg = `Encerrar "${bloco.legislacao_nome}" nesta rodada?\n\n` +
+      'Os blocos restantes desta legislação saem da fila desta rodada — ' +
+      'ela volta normalmente na próxima. O tempo já estudado é preservado.';
+    if (!confirm(msg)) return;
+    try {
+      await PBM.Ciclo.encerrarBloco(bloco.id);
+      lembrarBlocoEmAndamento(bloco.id);
+      await carregar();
+    } catch (e) {
+      console.error('[ciclo] encerrar legislação', e);
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao encerrar legislação. Tente novamente.');
+    }
+  }
+
   function renderNotaHero(bloco) {
     const wrap = document.getElementById('hero-nota-wrap');
     if (!wrap) return;
@@ -1942,6 +1962,7 @@
   document.getElementById('btn-excluir').addEventListener('click', excluirCiclo);
   document.getElementById('btn-excluir-ativo').addEventListener('click', excluirCiclo);
   document.getElementById('btn-forcar').addEventListener('click', forcarConclusao);
+  document.getElementById('btn-encerrar').addEventListener('click', encerrarLegislacao);
 
   // Toast pós-conclusão
   document.querySelectorAll('.toast-btn').forEach(btn => {
