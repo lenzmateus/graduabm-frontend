@@ -1845,10 +1845,7 @@ async function confirmarPublicar() {
 async function encerrarEvento(blocoId) {
   if (!confirm('Encerrar o evento deste bloco? O simulado ficará indisponível para os alunos e você poderá liberar as questões ao banco.')) return;
   try {
-    await req(`/api/simulados-mensais/admin/blocos/${blocoId}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status: 'encerrado' }),
-    });
+    await req(`/api/simulados-mensais/admin/blocos/${blocoId}/encerrar`, { method: 'POST' });
     toast('Evento encerrado. Agora você pode liberar as questões ao banco.');
     await recarregarBlocoCard(blocoId);
   } catch(err) { toast(err.erro || 'Erro ao encerrar.', 'err'); }
