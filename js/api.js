@@ -767,7 +767,7 @@ const PBM = {
         return PBM.Admin._normalizarLista(data, null, null);
       },
       atualizar(id, body) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
-      criar(body) { return PBM.Admin.req('/api/simulados-mensais/admin/criar', { method: 'POST', body: JSON.stringify(body) }); },
+      desativar(id) { return PBM.Admin.req(`/api/simulados-mensais/admin/${id}/desativar`, { method: 'POST' }); },
       questoesDisponiveis(params = {}) {
         const qs = new URLSearchParams(params).toString();
         return PBM.Admin.req('/api/simulados-mensais/admin/questoes-disponiveis' + (qs ? '?' + qs : ''));
@@ -907,7 +907,6 @@ const PBM = {
           const data = await PBM.Admin.req('/api/admin/aprovacoes/simulados-mensais');
           return PBM.Admin._normalizarLista(data, null, null);
         },
-        aprovar(id)      { return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}/aprovar`, { method: 'POST' }); },
         rejeitar(id, obs){ return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         editar(id, body) { return PBM.Admin.req(`/api/admin/aprovacoes/simulados-mensais/${id}`, { method: 'PATCH', body: JSON.stringify(body) }); },
       },
