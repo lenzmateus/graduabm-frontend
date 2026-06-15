@@ -358,14 +358,11 @@
     msg.textContent = 'Salvando…'; msg.style.color = '#888';
 
     const cursoValor = novoCurso === '' ? null : novoCurso;
-    const r = await supaQuery(
-      `/rest/v1/users?id=eq.${alunoAtual.id}`,
-      'return=representation',
-      'PATCH',
-      { curso: cursoValor }
-    );
-    if (!r.ok) {
-      msg.textContent = 'Erro ao salvar.'; msg.style.color = 'var(--danger)'; return;
+    try {
+      // curso passa pelo dono (conta.definirCursoAdmin via endpoint de Assinaturas) — ADR-0032.
+      await PBM.Admin.assinaturas.gerenciar(alunoAtual.id, { acao: 'alterar_curso', curso: cursoValor });
+    } catch (err) {
+      msg.textContent = err?.erro || 'Erro ao salvar.'; msg.style.color = 'var(--danger)'; return;
     }
     alunoAtual.curso = cursoValor;
     document.getElementById('aluno-curso-res').textContent = cursoValor ? cursoValor.toUpperCase() : 'Sem restrição';
@@ -377,20 +374,31 @@
     if (!alunoAtual) return;
     const msg = document.getElementById('aluno-msg');
     const novoAtivo = !alunoAtual.ativo;
-    msg.textContent = 'Salvando…'; msg.style.color = '#888';
 
-    const r = await supaQuery(
-      `/rest/v1/users?id=eq.${alunoAtual.id}`,
-      'return=representation',
-      'PATCH',
-      { ativo: novoAtivo }
-    );
-    if (!r.ok) {
-      msg.textContent = 'Erro ao atualizar acesso.'; msg.style.color = 'var(--danger)'; return;
+    // Acesso passa pelo dono (assinatura, ADR-0015/0032): desativar -> cancelar;
+    // ativar -> concederAcesso(dias) (exige dias -> mata o flip de ativo sem vencimento).
+    let body;
+    if (novoAtivo) {
+      const entrada = prompt('Conceder acesso por quantos dias?', '30');
+      if (entrada === null) return; // cancelou
+      const dias = parseInt(entrada, 10);
+      if (!Number.isFinite(dias) || dias < 1) {
+        msg.textContent = 'Informe um número de dias ≥ 1.'; msg.style.color = 'var(--danger)'; return;
+      }
+      body = { acao: 'ativar', dias };
+    } else {
+      body = { acao: 'desativar' };
+    }
+
+    msg.textContent = 'Salvando…'; msg.style.color = '#888';
+    try {
+      await PBM.Admin.assinaturas.gerenciar(alunoAtual.id, body);
+    } catch (err) {
+      msg.textContent = err?.erro || 'Erro ao atualizar acesso.'; msg.style.color = 'var(--danger)'; return;
     }
     alunoAtual.ativo = novoAtivo;
     renderizarAlunoSelecionado(alunoAtual);
-    msg.textContent = novoAtivo ? 'Acesso ativado com sucesso.' : 'Acesso desativado.';
+    msg.textContent = novoAtivo ? 'Acesso concedido.' : 'Acesso desativado.';
     msg.style.color = novoAtivo ? '#27A05A' : 'var(--danger)';
     toast(novoAtivo ? 'Aluno ativado.' : 'Aluno desativado.', novoAtivo ? 'sucesso' : 'erro');
   };
