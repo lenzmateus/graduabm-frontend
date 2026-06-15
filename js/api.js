@@ -683,6 +683,12 @@ const PBM = {
       editar(id, body) { return PBM.Admin.req('/api/admin/flashcards/' + id, { method: 'PATCH', body: JSON.stringify(body) }); },
       excluir(id)      { return PBM.Admin.req('/api/admin/flashcards/' + id, { method: 'DELETE' }); },
     },
+    // CRUD de questão pelos donos (ADR-0032) — substitui a escrita crua via /admin/query.
+    questoes: {
+      criar(body)      { return PBM.Admin.req('/api/admin/questoes', { method: 'POST', body: JSON.stringify(body) }); },
+      editar(id, body) { return PBM.Admin.req('/api/admin/questoes/' + id, { method: 'PATCH', body: JSON.stringify(body) }); },
+      excluir(id)      { return PBM.Admin.req('/api/admin/questoes/' + id, { method: 'DELETE' }); },
+    },
     Auth: {
       async login({ email, senha }) {
         // silenciar401: 401 aqui é credencial inválida, não sessão expirada.
@@ -850,6 +856,7 @@ const PBM = {
           body: JSON.stringify(body || {}),
         });
       },
+      excluir(id) { return PBM.Admin.req('/api/admin/denuncias/' + id, { method: 'DELETE' }); },
     },
     auditoria: {
       registrar(questao_id, acao, comentario) {
