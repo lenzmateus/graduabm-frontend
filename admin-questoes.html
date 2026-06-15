@@ -888,66 +888,56 @@ async function salvarQuestao() {
     imagem_url: document.getElementById('m-imagem-url').value || null,
   };
 
-  if (!id) {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    let rand = '';
-    for (let i = 0; i < 5; i++) rand += chars[Math.floor(Math.random() * chars.length)];
-    payload.codigo = area + '-' + rand;
-  }
-
   btn.disabled = true;
   btn.textContent = 'Salvando…';
 
-  let r;
-  if (id) {
-    r = await supaFetch(`/rest/v1/questoes?id=eq.${id}`, 'PATCH', payload);
-  } else {
-    r = await supaFetch('/rest/v1/questoes', 'POST', payload);
+  try {
+    if (id) {
+      await PBM.Admin.questoes.editar(id, payload);
+    } else {
+      // Criar pelo dono (ADR-0032): nasce pré-auditada no servidor (codigo gerado lá),
+      // sem o passo separado de auto-auditoria.
+      await PBM.Admin.questoes.criar(payload);
+    }
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Salvar';
+    erroEl.textContent = err?.erro || err?.message || 'Erro ao salvar. Tente novamente.';
+    erroEl.style.display = 'block';
+    return;
   }
 
   btn.disabled = false;
   btn.textContent = 'Salvar';
 
-  if (r.ok) {
-    // Criação manual por admin → marca como auditada automaticamente
-    // (autor já é admin, não faz sentido cair na fila de pendentes).
-    if (!id) {
-      const novaId = Array.isArray(r.data) ? r.data[0]?.id : r.data?.id;
-      if (novaId) {
-        try { await PBM.Admin.auditoria.registrar(novaId, 'auditada_manual', 'Criada manualmente pelo admin.'); }
-        catch (e) { console.warn('Falha ao auto-auditar questão recém-criada:', e); }
-      }
-      // Lembra a seleção dos menus suspensos para pré-preencher a próxima criação em lote.
-      _ultimaSelecaoQuestao = {
-        curso: document.getElementById('m-curso').value,
-        area:  document.getElementById('m-area').value,
-        legId: document.getElementById('m-leg-id').value,
-      };
-    }
-    // Edição crítica em questão auditada → oferecer reset da auditoria.
-    if (id && _editOriginal && _editOriginal.auditada_em) {
-      const norm = RichText.normalizeForCompare;
-      const mudouEnunciado   = norm(_editOriginal.enunciado || '') !== norm(enunciado);
-      const mudouGabarito    = Number(_editOriginal.gabarito) !== Number(payload.gabarito);
-      const origAlts = (_editOriginal.alternativas || []).slice(0, 5);
-      const novasAlts = payload.alternativas.slice(0, 5);
-      const mudouAlts = origAlts.length !== novasAlts.length
-        || origAlts.some((v, i) => norm(v || '') !== norm(novasAlts[i] || ''));
-      if (mudouEnunciado || mudouGabarito || mudouAlts) {
-        const ok = confirm('Você alterou o enunciado, alternativas ou gabarito desta questão auditada.\n\nDeseja resetar o status de auditoria? A questão voltará para a fila de pendentes.');
-        if (ok) {
-          try { await PBM.Admin.auditoria.registrar(id, 'auditoria_resetada', 'Reset automático após edição crítica.'); }
-          catch (e) { toast(e?.erro || 'Falha ao resetar auditoria.', 'erro'); }
-        }
-      }
-    }
-    fecharModal();
-    _editOriginal = null;
-    await aplicarFiltros();
-  } else {
-    erroEl.textContent = r.data?.message || 'Erro ao salvar. Tente novamente.';
-    erroEl.style.display = 'block';
+  if (!id) {
+    // Lembra a seleção dos menus suspensos para pré-preencher a próxima criação em lote.
+    _ultimaSelecaoQuestao = {
+      curso: document.getElementById('m-curso').value,
+      area:  document.getElementById('m-area').value,
+      legId: document.getElementById('m-leg-id').value,
+    };
   }
+  // Edição crítica em questão auditada → oferecer reset da auditoria.
+  if (id && _editOriginal && _editOriginal.auditada_em) {
+    const norm = RichText.normalizeForCompare;
+    const mudouEnunciado   = norm(_editOriginal.enunciado || '') !== norm(enunciado);
+    const mudouGabarito    = Number(_editOriginal.gabarito) !== Number(payload.gabarito);
+    const origAlts = (_editOriginal.alternativas || []).slice(0, 5);
+    const novasAlts = payload.alternativas.slice(0, 5);
+    const mudouAlts = origAlts.length !== novasAlts.length
+      || origAlts.some((v, i) => norm(v || '') !== norm(novasAlts[i] || ''));
+    if (mudouEnunciado || mudouGabarito || mudouAlts) {
+      const ok = confirm('Você alterou o enunciado, alternativas ou gabarito desta questão auditada.\n\nDeseja resetar o status de auditoria? A questão voltará para a fila de pendentes.');
+      if (ok) {
+        try { await PBM.Admin.auditoria.registrar(id, 'auditoria_resetada', 'Reset automático após edição crítica.'); }
+        catch (e) { toast(e?.erro || 'Falha ao resetar auditoria.', 'erro'); }
+      }
+    }
+  }
+  fecharModal();
+  _editOriginal = null;
+  await aplicarFiltros();
 }
 
 function pedirDelete(id, preview) {
@@ -963,7 +953,15 @@ async function confirmarDelete() {
   const btn = document.getElementById('btn-confirmar-delete');
   btn.disabled = true;
   btn.textContent = 'Excluindo…';
-  await supaFetch(`/rest/v1/questoes?id=eq.${deleteId}`, 'DELETE');
+  try {
+    await PBM.Admin.questoes.excluir(deleteId);
+  } catch (err) {
+    btn.disabled = false;
+    btn.textContent = 'Excluir';
+    // O dono devolve 409 com mensagem clara quando há respostas/simulados vinculados.
+    toast(err?.erro || 'Erro ao excluir. Se a questão tem respostas/simulados, use Editar → Inativa.', 'erro');
+    return;
+  }
   btn.disabled = false;
   btn.textContent = 'Excluir';
   fecharDelete();

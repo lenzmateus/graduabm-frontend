@@ -800,13 +800,7 @@ async function abrirModalEditar(simId, questaoId) {
     btn.textContent = 'Salvando…';
 
     try {
-      const r = await PBM.Admin.query(
-        `/rest/v1/questoes?id=eq.${questaoId}`,
-        'return=representation',
-        'PATCH',
-        body
-      );
-      if (!r.ok) throw r;
+      await PBM.Admin.questoes.editar(questaoId, body);
       toast('Questão atualizada.');
       fechar();
       delete questoesSimulado[simId];

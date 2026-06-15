@@ -719,8 +719,7 @@
     btn.disabled = true;
     btn.textContent = '…';
     try {
-      const r = await supaQuery(`/rest/v1/questoes?id=eq.${encodeURIComponent(questaoId)}`, 'return=minimal', 'DELETE');
-      if (!r.ok) throw new Error(AdminChrome.extrairErro(r));
+      await PBM.Admin.questoes.excluir(questaoId);
       // Remove do cache local todas as denúncias dessa questão
       cache = cache.filter(d => d.questao_id !== questaoId);
       toast('Questão excluída.', 'sucesso');
@@ -730,13 +729,8 @@
     } catch (err) {
       btn.disabled = false;
       btn.textContent = '🗑 Excluir Questão';
-      const msg = String(err.message || err);
-      // FK violation comum quando há respostas/simulado_mensal_questoes vinculadas
-      if (/foreign key|violates|23503/i.test(msg)) {
-        toast('Não foi possível excluir: a questão tem respostas/simulados vinculados. Use Editar → Inativa.', 'erro', 5000);
-      } else {
-        toast('Erro ao excluir questão: ' + msg, 'erro', 5000);
-      }
+      // O dono devolve 409 com mensagem clara quando há respostas/simulados vinculados.
+      toast(err?.erro || 'Não foi possível excluir a questão. Use Editar → Inativa.', 'erro', 5000);
       console.error('[excluirQuestao]', err);
     }
   };
@@ -746,8 +740,7 @@
     btn.disabled = true;
     btn.textContent = '…';
     try {
-      const r = await supaQuery(`/rest/v1/denuncias?id=eq.${id}`, 'return=minimal', 'DELETE');
-      if (!r.ok) throw new Error();
+      await PBM.Admin.denuncias.excluir(id);
       cache = cache.filter(d => d.id !== id);
       toast('Relato excluído.', 'sucesso');
       atualizarStats();
@@ -947,15 +940,17 @@
     btn.disabled = true;
     btn.textContent = 'Salvando…';
 
-    const r = await supaQuery(`/rest/v1/questoes?id=eq.${encodeURIComponent(_editAtual.id)}`, 'return=representation', 'PATCH', payload);
-    btn.disabled = false;
-    btn.textContent = 'Salvar';
-
-    if (!r.ok) {
-      erroEl.textContent = AdminChrome.extrairErro(r);
+    try {
+      await PBM.Admin.questoes.editar(_editAtual.id, payload);
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Salvar';
+      erroEl.textContent = err?.erro || err?.message || 'Erro ao salvar.';
       erroEl.style.display = 'block';
       return;
     }
+    btn.disabled = false;
+    btn.textContent = 'Salvar';
 
     if (_editAtual.auditada_em) {
       const o = _editAtual.original;
