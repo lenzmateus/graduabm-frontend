@@ -464,8 +464,8 @@ async function carregarSimulados(tentativa = 1) {
               ${st.label === 'ENCERRADO' && !sim.questoes_incorporadas
                 ? `<button class="btn-sm" onclick="event.stopPropagation();incorporar('${sim.id}', this)">Incorporar Questões</button>` : ''}
               <button class="btn-sm" onclick="event.stopPropagation();verResultado('${sim.id}')">Resultado</button>
-              <button class="btn-sm" onclick="event.stopPropagation();toggleEditDatas('${sim.id}')">Editar Datas</button>
-              <button class="btn-sm" onclick="event.stopPropagation();toggleAtivo('${sim.id}',${!sim.ativo})">${sim.ativo ? 'Desativar' : 'Habilitar'}</button>
+              ${!sim.ativo ? `<button class="btn-sm" onclick="event.stopPropagation();toggleEditDatas('${sim.id}')">Editar Datas</button>` : ''}
+              ${st.label === 'ABERTO' ? `<button class="btn-sm" onclick="event.stopPropagation();desativarSimulado('${sim.id}')">Desativar</button>` : ''}
             </div>
           </div>
           <div class="edit-datas-form" id="edit-datas-${sim.id}">
@@ -705,12 +705,11 @@ function verResultado(simId) {
   window.open(`/simulado-mensal-ranking?id=${simId}`, '_blank');
 }
 
-async function toggleAtivo(simId, novoAtivo) {
+async function desativarSimulado(simId) {
+  if (!confirm('Desativar este simulado? Ele sai do ar para os alunos e não reabre automaticamente.')) return;
   try {
-    await req(`/api/simulados-mensais/admin/${simId}`, {
-      method: 'PATCH', body: JSON.stringify({ ativo: novoAtivo }),
-    });
-    toast(novoAtivo ? 'Simulado ativado.' : 'Simulado desativado.');
+    await req(`/api/simulados-mensais/admin/${simId}/desativar`, { method: 'POST' });
+    toast('Simulado desativado.');
     carregarSimulados();
   } catch (err) { toast(err.erro || 'Erro.', 'err'); }
 }

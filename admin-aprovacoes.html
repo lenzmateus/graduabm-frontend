@@ -525,7 +525,7 @@
           <div class="card-actions">
             ${temEdit ? `<button class="btn btn-editar btn-toggle-edit">${ICO_EDIT}${a.editLabel || 'Editar'}</button>` : ''}
             <button class="btn btn-rejeitar btn-rejeitar">${ICO_X}${a.rejeitarLabel || 'Rejeitar'}</button>
-            <button class="btn ${aprovarBtnClass} btn-aprovar">${aprovarIcon}${aprovarLabel}</button>
+            ${a.semAprovar ? '' : `<button class="btn ${aprovarBtnClass} btn-aprovar">${aprovarIcon}${aprovarLabel}</button>`}
           </div>
         </div>
         <div class="card-body">${a.renderBody(item)}</div>
@@ -552,7 +552,8 @@
         });
       }
 
-      card.querySelector('.btn-aprovar').addEventListener('click', function() {
+      const btnAprovar = card.querySelector('.btn-aprovar');
+      if (btnAprovar) btnAprovar.addEventListener('click', function() {
         if (a.aprovar) return a.aprovar(item, this, card);
         executarAcao(this, () => a.api.aprovar(item.id), a.msgAprovado || 'Aprovado!', 'Erro ao aprovar.');
       });
@@ -995,11 +996,11 @@
     key: 'simulados',
     api: PBM.Admin.aprovacoes.simulados,
     gateEdit: true,
-    aprovarLabel: 'Ativar Simulado',
+    semAprovar: true, // abrir é só o CRON time-gated (ADR-0031) — sem "Ativar Simulado"
     rejeitarConfirm: 'Tem certeza? Isso apagará o simulado e todas as suas questões.',
     emptyState: {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
-      msg: 'Nenhum simulado mensal pendente de ativação.',
+      msg: 'Nenhum simulado mensal pendente.',
     },
     renderMeta(sim) {
       const questoesCount = sim.simulado_mensal_questoes?.[0]?.count ?? '—';
@@ -1023,7 +1024,6 @@
       };
     },
     msgEditado: 'Simulado atualizado.',
-    msgAprovado: 'Simulado ativado!',
     msgRejeitado: 'Simulado rejeitado.',
   });
 
