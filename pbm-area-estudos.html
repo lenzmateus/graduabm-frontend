@@ -236,8 +236,6 @@
     width: 100%;
   }
   .btn-estudar:hover { filter: brightness(0.9); }
-  .btn-estudar.cba-btn { background: var(--cba); }
-  .btn-estudar.cba-btn:hover { background: #0C447C; }
 
   /* ── BARRA DE PROGRESSO DE ÁREA — usa tokens de pbm-components.css ── */
   .area-prog { width: 100%; }
@@ -306,7 +304,6 @@
       cursor: pointer;
       width: calc(100% - 32px);
     }
-    .btn-estudar-mobile.cba-btn { background: var(--cba); }
   }
 
 /* ── SPRINT 4 — AJUSTES FINOS MOBILE ── */
@@ -608,7 +605,6 @@ function renderAreas() {
   const lista = document.getElementById('areas-lista');
   lista.innerHTML = '';
   const areas = dados[cursoAtual].areas;
-  const isCba = cursoAtual === 'cba';
 
   const AREA_IMGS = {
     '01': '/images/card-at1.webp',
@@ -626,17 +622,13 @@ function renderAreas() {
     if (AREA_IMGS[area.num]) {
       div.style.setProperty('--area-img', `url('${AREA_IMGS[area.num]}')`);
     }
-    // botão Papirar herda a cor da área (só no CTSP; CBA mantém o azul)
-    if (!isCba) {
-      div.style.setProperty('--btn-bg', area.cor);
-      div.style.setProperty('--btn-fg', corContraste(area.cor));
-    }
+    // botão Papirar herda a cor da área (padrão do site, igual nos dois cursos)
+    div.style.setProperty('--btn-bg', area.cor);
+    div.style.setProperty('--btn-fg', corContraste(area.cor));
 
     const tagsHtml = area.tags.map(t =>
       `<span class="tag tag-${t.tipo}">${t.txt}</span>`
     ).join('');
-
-    const btnClass = isCba ? 'btn-estudar cba-btn' : 'btn-estudar';
 
     div.innerHTML = `
       <div class="area-foto"></div>
@@ -653,14 +645,14 @@ function renderAreas() {
           <div class="area-tags">${tagsHtml}</div>
         </div>
         <div class="area-acoes">
-          <button class="${btnClass}" onclick="event.stopPropagation();iniciarEstudo('${area.num}')">Papirar →</button>
+          <button class="btn-estudar" onclick="event.stopPropagation();iniciarEstudo('${area.num}')">Papirar →</button>
           <div class="area-prog">
             <div class="prog-bar"><div class="prog-fill" style="background:${area.cor};width:0%"></div></div>
             <div class="prog-txt"><div class="skeleton skeleton--text-sm" style="display:inline-block;width:120px;vertical-align:middle;"></div></div>
           </div>
         </div>
       </div>
-      <button class="btn-estudar-mobile ${isCba ? 'cba-btn' : ''}" onclick="event.stopPropagation();iniciarEstudo('${area.num}')">Papirar →</button>
+      <button class="btn-estudar-mobile" onclick="event.stopPropagation();iniciarEstudo('${area.num}')">Papirar →</button>
     `;
 
     lista.appendChild(div);
