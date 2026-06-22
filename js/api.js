@@ -908,6 +908,21 @@ const PBM = {
         publicar(id, opts) { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/publicar`, { method: 'POST', ...(opts || {}) }); },
         rejeitar(id, obs)  { return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}/rejeitar`, { method: 'POST', body: JSON.stringify({ observacao: obs }) }); },
         editar(id, caption){ return PBM.Admin.req(`/api/admin/aprovacoes/instagram/${id}`, { method: 'PATCH', body: JSON.stringify({ caption }) }); },
+        // Carrossel custom (2–10 imagens já prontas) — multipart, mesmo padrão de uploadMedia.
+        async enviarCarrossel(files, caption) {
+          try {
+            const fd = new FormData();
+            [...files].forEach(f => fd.append('imagens', f));
+            fd.append('caption', caption);
+            const res = await fetch('/api/admin/aprovacoes/instagram/carrossel', {
+              method: 'POST', headers: PBM.Admin._authHeader(), body: fd,
+            });
+            const data = await res.json().catch(() => ({}));
+            return res.ok ? { ok: true, id: data.id } : { ok: false, erro: data.erro || 'Erro ao enviar carrossel.' };
+          } catch {
+            return { ok: false, erro: 'Erro de rede.' };
+          }
+        },
       },
       simulados: {
         async listar() {
