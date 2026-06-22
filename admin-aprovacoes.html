@@ -910,6 +910,32 @@
     }
   }
 
+  // Carrossel custom: sobe 2–10 imagens já prontas + legenda → fila de aprovação.
+  async function enviarCarrosselInstagram(c) {
+    const filesEl = c.querySelector('#carrossel-files');
+    const capEl = c.querySelector('#carrossel-caption');
+    const btn = c.querySelector('#carrossel-enviar');
+    const files = filesEl?.files || [];
+    const caption = (capEl?.value || '').trim();
+    if (files.length < 2 || files.length > 10) { toast('Selecione de 2 a 10 imagens.', 'erro'); return; }
+    if (!caption) { toast('Escreva a legenda.', 'erro'); return; }
+    btn.disabled = true;
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="spinner"></span> Enviando...';
+    try {
+      const r = await PBM.Admin.aprovacoes.instagram.enviarCarrossel(files, caption);
+      if (!r.ok) { toast(r.erro || 'Erro ao enviar.', 'erro'); return; }
+      toast('Carrossel enfileirado! Recarregando...', 'sucesso');
+      filesEl.value = ''; capEl.value = '';
+      tabCarregadas['instagram'] = false;
+      await carregarInstagram();
+    } catch (err) {
+      toast((err?.erro || err?.message || 'Erro ao enviar carrossel.'), 'erro');
+    } finally {
+      btn.disabled = false; btn.innerHTML = orig;
+    }
+  }
+
   // API "editar" do instagram recebe só (id, caption) — wrapper para casar com a interface (id, body)
   const instagramApi = {
     listar: () => PBM.Admin.aprovacoes.instagram.listar(),
@@ -935,8 +961,31 @@
         <option value="AT5">AT5 — Normas Admin.</option>
       </select>
       <button id="btn-gerar-ig" class="btn btn-editar" style="gap:6px;">${ICO_GERAR}Gerar post agora</button>
+      <button id="btn-novo-carrossel" class="btn btn-editar" style="gap:6px;">Novo carrossel</button>
+    </div>
+    <div id="carrossel-form" style="display:none;border:1px solid var(--cinza-borda);border-radius:8px;padding:14px;margin-bottom:1rem;background:#111;">
+      <div style="margin-bottom:10px;">
+        <label style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--cinza-texto);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:6px;">Imagens (2–10, na ordem do carrossel)</label>
+        <input type="file" id="carrossel-files" accept="image/png,image/jpeg,image/webp" multiple>
+      </div>
+      <div>
+        <label style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--cinza-texto);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:6px;">Legenda</label>
+        <textarea id="carrossel-caption" rows="6" placeholder="Legenda do post…" style="width:100%;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
+        <button id="carrossel-cancelar" class="btn">Cancelar</button>
+        <button id="carrossel-enviar" class="btn btn-editar">Enviar para a fila</button>
+      </div>
     </div>`,
-    onToolbar(c) { c.querySelector('#btn-gerar-ig')?.addEventListener('click', gerarPostInstagram); },
+    onToolbar(c) {
+      c.querySelector('#btn-gerar-ig')?.addEventListener('click', gerarPostInstagram);
+      const form = c.querySelector('#carrossel-form');
+      c.querySelector('#btn-novo-carrossel')?.addEventListener('click', () => {
+        if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      });
+      c.querySelector('#carrossel-cancelar')?.addEventListener('click', () => { if (form) form.style.display = 'none'; });
+      c.querySelector('#carrossel-enviar')?.addEventListener('click', () => enviarCarrosselInstagram(c));
+    },
     emptyState: {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>',
       msg: 'Nenhum post Instagram pendente.',
@@ -945,11 +994,20 @@
       return [tagArea(post.area), tagData(post.created_at)];
     },
     renderBody(post) {
+      const captionHTML = `<div class="ig-caption" id="caption-${post.id}">${esc(post.caption || '')}</div>
+        <span class="ig-caption-toggle" data-target="caption-${post.id}">ver mais ↓</span>`;
+      // Carrossel custom (N slides): thumbs direto das URLs públicas (bucket instagram-temp).
+      if (Array.isArray(post.urls_imagens) && post.urls_imagens.length) {
+        const thumbs = post.urls_imagens
+          .map((u, i) => `<img class="ig-thumb" style="width:92px;height:92px;" src="${esc(u)}" alt="Slide ${i + 1}">`)
+          .join('');
+        return `<div class="ig-thumbs" style="flex-wrap:wrap;gap:8px;">${thumbs}</div>${captionHTML}`;
+      }
+      // Legado "Questão do Dia": 2 slides via proxy de preview.
       const thumb1 = post.url_imagem_questao ? `/api/admin/aprovacoes/instagram/${post.id}/preview/questao` : '';
       const thumb2 = post.url_imagem_gabarito ? `/api/admin/aprovacoes/instagram/${post.id}/preview/gabarito` : '';
       return `${(thumb1 || thumb2) ? `<div class="ig-thumbs">${thumb1 ? `<img class="ig-thumb" src="${esc(thumb1)}" alt="Questão">` : ''} ${thumb2 ? `<img class="ig-thumb" src="${esc(thumb2)}" alt="Gabarito">` : ''}</div>` : ''}
-        <div class="ig-caption" id="caption-${post.id}">${esc(post.caption || '')}</div>
-        <span class="ig-caption-toggle" data-target="caption-${post.id}">ver mais ↓</span>`;
+        ${captionHTML}`;
     },
     renderEditForm(post) {
       return `<div class="campo"><label>Caption</label><textarea name="caption" rows="6">${esc(post.caption || '')}</textarea></div>`;
