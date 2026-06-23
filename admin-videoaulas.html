@@ -266,7 +266,7 @@ function atualizarPreview() {
   const iframe = document.getElementById('yt-iframe');
   const playlist = extrairPlaylistId(bruto);
   const id = playlist ? null : extrairYoutubeId(bruto);
-  if (playlist) { iframe.src = 'https://www.youtube-nocookie.com/embed/videoseries?list=' + playlist + '&rel=0'; box.classList.add('on'); }
+  if (playlist) { iframe.src = 'https://www.youtube.com/embed/videoseries?list=' + playlist + '&rel=0'; box.classList.add('on'); }
   else if (id) { iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0'; box.classList.add('on'); }
   else { iframe.src = ''; box.classList.remove('on'); }
 }
