@@ -910,14 +910,15 @@
     }
   }
 
-  // Carrossel custom: sobe 2–10 imagens já prontas + legenda → fila de aprovação.
-  async function enviarCarrosselInstagram(c) {
-    const filesEl = c.querySelector('#carrossel-files');
-    const capEl = c.querySelector('#carrossel-caption');
-    const btn = c.querySelector('#carrossel-enviar');
+  // Nova publicação: sobe 1–10 imagens já prontas + legenda → fila de aprovação.
+  // 1 imagem = post único; 2+ = carrossel.
+  async function enviarPublicacao(c) {
+    const filesEl = c.querySelector('#pub-files');
+    const capEl = c.querySelector('#pub-caption');
+    const btn = c.querySelector('#pub-enviar');
     const files = filesEl?.files || [];
     const caption = (capEl?.value || '').trim();
-    if (files.length < 2 || files.length > 10) { toast('Selecione de 2 a 10 imagens.', 'erro'); return; }
+    if (files.length < 1 || files.length > 10) { toast('Selecione de 1 a 10 imagens.', 'erro'); return; }
     if (!caption) { toast('Escreva a legenda.', 'erro'); return; }
     btn.disabled = true;
     const orig = btn.innerHTML;
@@ -925,12 +926,14 @@
     try {
       const r = await PBM.Admin.aprovacoes.instagram.enviarCarrossel(files, caption);
       if (!r.ok) { toast(r.erro || 'Erro ao enviar.', 'erro'); return; }
-      toast('Carrossel enfileirado! Recarregando...', 'sucesso');
+      toast(files.length === 1 ? 'Publicação enfileirada!' : 'Carrossel enfileirado!', 'sucesso');
       filesEl.value = ''; capEl.value = '';
+      c.querySelector('#pub-form')?.classList.remove('visivel');
+      const info = c.querySelector('#pub-files-info'); if (info) info.textContent = '';
       tabCarregadas['instagram'] = false;
       await carregarInstagram();
     } catch (err) {
-      toast((err?.erro || err?.message || 'Erro ao enviar carrossel.'), 'erro');
+      toast((err?.erro || err?.message || 'Erro ao enviar.'), 'erro');
     } finally {
       btn.disabled = false; btn.innerHTML = orig;
     }
@@ -961,30 +964,35 @@
         <option value="AT5">AT5 — Normas Admin.</option>
       </select>
       <button id="btn-gerar-ig" class="btn btn-editar" style="gap:6px;">${ICO_GERAR}Gerar post agora</button>
-      <button id="btn-novo-carrossel" class="btn btn-editar" style="gap:6px;">Novo carrossel</button>
+      <button id="btn-nova-pub" class="btn btn-editar" style="gap:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 5v14M5 12h14"/></svg>Nova publicação</button>
     </div>
-    <div id="carrossel-form" style="display:none;border:1px solid var(--cinza-borda);border-radius:8px;padding:14px;margin-bottom:1rem;background:#111;">
-      <div style="margin-bottom:10px;">
-        <label style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--cinza-texto);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:6px;">Imagens (2–10, na ordem do carrossel)</label>
-        <input type="file" id="carrossel-files" accept="image/png,image/jpeg,image/webp" multiple>
+    <div id="pub-form" class="edit-form" style="border:1px solid var(--cinza-borda);border-radius:10px;margin-bottom:1rem;">
+      <div class="campo">
+        <label>Imagens — 1 a 10 (1 vira post único · 2+ vira carrossel)</label>
+        <input type="file" id="pub-files" accept="image/png,image/jpeg,image/webp" multiple>
+        <span id="pub-files-info" style="display:block;margin-top:6px;font-size:12px;color:var(--cinza-texto);"></span>
       </div>
-      <div>
-        <label style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--cinza-texto);text-transform:uppercase;letter-spacing:0.05em;display:block;margin-bottom:6px;">Legenda</label>
-        <textarea id="carrossel-caption" rows="6" placeholder="Legenda do post…" style="width:100%;background:var(--cinza-medio);border:1px solid var(--cinza-borda);color:var(--branco);border-radius:6px;padding:8px 12px;font-size:13px;font-family:'Inter',sans-serif;resize:vertical;"></textarea>
+      <div class="campo">
+        <label>Legenda</label>
+        <textarea id="pub-caption" rows="6" placeholder="Escreva a legenda do post…"></textarea>
       </div>
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
-        <button id="carrossel-cancelar" class="btn">Cancelar</button>
-        <button id="carrossel-enviar" class="btn btn-editar">Enviar para a fila</button>
+      <div class="form-actions">
+        <button id="pub-enviar" class="btn btn-salvar-edicao">Enviar para a fila</button>
+        <button id="pub-cancelar" class="btn btn-cancelar-edicao">Cancelar</button>
       </div>
     </div>`,
     onToolbar(c) {
       c.querySelector('#btn-gerar-ig')?.addEventListener('click', gerarPostInstagram);
-      const form = c.querySelector('#carrossel-form');
-      c.querySelector('#btn-novo-carrossel')?.addEventListener('click', () => {
-        if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      const form = c.querySelector('#pub-form');
+      const filesEl = c.querySelector('#pub-files');
+      const info = c.querySelector('#pub-files-info');
+      c.querySelector('#btn-nova-pub')?.addEventListener('click', () => form?.classList.toggle('visivel'));
+      c.querySelector('#pub-cancelar')?.addEventListener('click', () => form?.classList.remove('visivel'));
+      filesEl?.addEventListener('change', () => {
+        const n = filesEl.files?.length || 0;
+        info.textContent = n === 0 ? '' : (n === 1 ? '1 imagem — será um post único.' : n + ' imagens — será um carrossel.');
       });
-      c.querySelector('#carrossel-cancelar')?.addEventListener('click', () => { if (form) form.style.display = 'none'; });
-      c.querySelector('#carrossel-enviar')?.addEventListener('click', () => enviarCarrosselInstagram(c));
+      c.querySelector('#pub-enviar')?.addEventListener('click', () => enviarPublicacao(c));
     },
     emptyState: {
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/></svg>',
