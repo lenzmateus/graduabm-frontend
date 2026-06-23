@@ -705,6 +705,13 @@ const PBM = {
         }
       },
     },
+    videoaulas: {
+      listar()         { return PBM.Admin.req('/api/admin/videoaulas'); },
+      criar(body)      { return PBM.Admin.req('/api/admin/videoaulas', { method: 'POST', body: JSON.stringify(body) }); },
+      editar(id, body) { return PBM.Admin.req('/api/admin/videoaulas/' + id, { method: 'PATCH', body: JSON.stringify(body) }); },
+      publicar(id)     { return PBM.Admin.req('/api/admin/videoaulas/' + id + '/publicar', { method: 'POST' }); },
+      excluir(id)      { return PBM.Admin.req('/api/admin/videoaulas/' + id, { method: 'DELETE' }); },
+    },
     // CRUD de questão pelos donos (ADR-0032) — substitui a escrita crua via /admin/query.
     questoes: {
       criar(body)      { return PBM.Admin.req('/api/admin/questoes', { method: 'POST', body: JSON.stringify(body) }); },
@@ -1034,6 +1041,13 @@ const PBM = {
         body: JSON.stringify({ posicao_segundos, concluido }),
         keepalive: true,
       });
+    },
+  },
+
+  Videoaulas: {
+    // Lista as videoaulas publicadas visíveis ao curso do aluno (inclui youtube_id).
+    listar() {
+      return request('/api/videoaulas');
     },
   },
 

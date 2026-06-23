@@ -24,6 +24,7 @@
     site: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>',
     cobertura: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>',
     podcast: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>',
+    video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="14" height="14" rx="2"/><path d="M16 9l6-3v12l-6-3z"/></svg>',
   };
 
   // ---------- ESTRUTURA DE NAVEGAÇÃO ----------
@@ -40,6 +41,7 @@
     { key: 'cobertura', label: 'Cobertura do Banco', href: '/admin-cobertura', icon: ICO.cobertura },
     { key: 'flashcards', label: 'Flashcards', href: '/admin-flashcards', icon: ICO.flashcard },
     { key: 'podcasts', label: 'Podcasts', href: '/admin-podcasts', icon: ICO.podcast },
+    { key: 'videoaulas', label: 'Videoaulas', href: '/admin-videoaulas', icon: ICO.video },
     { key: 'simulados-mensais', label: 'Protocolos QAP', href: '/admin-simulados-mensais', icon: ICO.simulado },
 
     { secao: 'Alunos' },
