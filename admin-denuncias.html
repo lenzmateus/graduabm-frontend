@@ -640,7 +640,7 @@
       renderLista();
     } catch (e) {
       document.getElementById('denuncias-container').innerHTML =
-        '<div class="estado-vazio" style="color:var(--danger-fg);">Erro ao carregar relatórios. Verifique a conexão.</div>';
+        '<div class="estado-vazio" style="color:var(--danger-fg);">Não foi possível carregar os relatórios. Verifique a conexão.</div>';
     }
   }
 
@@ -703,7 +703,7 @@
       renderLista();
       carregarBadgeAprovacoes();
     } catch (err) {
-      toast(err?.erro || 'Erro ao resolver relato.', 'erro');
+      toast(err?.erro || 'Falha ao resolver o relato. Tente novamente.', 'erro');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Confirmar';
@@ -749,7 +749,7 @@
     } catch {
       btn.disabled = false;
       btn.textContent = '🗑 Excluir';
-      toast('Erro ao excluir relato.', 'erro');
+      toast('Falha ao excluir o relato. Tente novamente.', 'erro');
     }
   };
 
@@ -829,7 +829,7 @@
       _preencherEdicao(q);
     } catch (err) {
       console.error('[abrirEditarQuestao]', err);
-      erroEl.textContent = 'Erro ao abrir editor: ' + (err && err.message || err);
+      erroEl.textContent = 'Não foi possível abrir o editor: ' + (err && err.message || err);
       erroEl.style.display = 'block';
       document.getElementById('edit-meta').textContent = '—';
     }
@@ -945,7 +945,7 @@
     } catch (err) {
       btn.disabled = false;
       btn.textContent = 'Salvar';
-      erroEl.textContent = err?.erro || err?.message || 'Erro ao salvar.';
+      erroEl.textContent = err?.erro || err?.message || 'Falha ao salvar. Tente novamente.';
       erroEl.style.display = 'block';
       return;
     }

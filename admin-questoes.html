@@ -582,7 +582,7 @@ async function aplicarFiltros() {
 
   const r = await supaFetch(`/rest/v1/questoes?${params.join('&')}`);
   if (!r.ok || !Array.isArray(r.data)) {
-    document.getElementById('lista-questoes').innerHTML = '<div class="loading-txt" style="color:var(--danger-fg)">Erro ao buscar questões.</div>';
+    document.getElementById('lista-questoes').innerHTML = '<div class="loading-txt" style="color:var(--danger-fg)">Não foi possível buscar as questões.</div>';
     return;
   }
 
@@ -766,7 +766,7 @@ async function abrirModalEditar(id) {
   try {
     const r = await supaFetch(`/rest/v1/questoes?id=eq.${id}&select=*`);
     q = r.ok && Array.isArray(r.data) ? r.data[0] : null;
-  } catch (e) { toast('Erro ao carregar questão atualizada', 'erro'); }
+  } catch (e) { toast('Não foi possível recarregar a questão.', 'erro'); }
   if (!q) q = todasQuestoes.find(x => x.id === id); // fallback para cache local
   if (!q) return;
 
@@ -902,7 +902,7 @@ async function salvarQuestao() {
   } catch (err) {
     btn.disabled = false;
     btn.textContent = 'Salvar';
-    erroEl.textContent = err?.erro || err?.message || 'Erro ao salvar. Tente novamente.';
+    erroEl.textContent = err?.erro || err?.message || 'Falha ao salvar. Tente novamente.';
     erroEl.style.display = 'block';
     return;
   }
@@ -959,7 +959,7 @@ async function confirmarDelete() {
     btn.disabled = false;
     btn.textContent = 'Excluir';
     // O dono devolve 409 com mensagem clara quando há respostas/simulados vinculados.
-    toast(err?.erro || 'Erro ao excluir. Se a questão tem respostas/simulados, use Editar → Inativa.', 'erro');
+    toast(err?.erro || 'Falha ao excluir. Se a questão tem respostas/simulados, use Editar → Inativa.', 'erro');
     return;
   }
   btn.disabled = false;

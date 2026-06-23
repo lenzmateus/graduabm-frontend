@@ -1162,7 +1162,7 @@ async function carregarFlashcards() {
   } catch (err) {
     document.getElementById('estado-loading').style.display = 'none';
     document.getElementById('estado-vazio').style.display = 'flex';
-    if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao carregar flashcards. Recarregue a página.');
+    if (window.PBM && PBM.Toast) PBM.Toast.error('Não foi possível carregar os flashcards. Recarregue a página.');
     console.error(err);
   }
 }

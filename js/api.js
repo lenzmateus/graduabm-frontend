@@ -918,7 +918,7 @@ const PBM = {
               method: 'POST', headers: PBM.Admin._authHeader(), body: fd,
             });
             const data = await res.json().catch(() => ({}));
-            return res.ok ? { ok: true, id: data.id } : { ok: false, erro: data.erro || 'Erro ao enviar carrossel.' };
+            return res.ok ? { ok: true, id: data.id } : { ok: false, erro: data.erro || 'Falha ao enviar o carrossel.' };
           } catch {
             return { ok: false, erro: 'Erro de rede.' };
           }

@@ -981,7 +981,7 @@
       const data = await PBM.Auth.cadastrar({ nome: `${nome} ${sobre}`, email, senha, curso: cursoCadastro, nickname, trial_token: trialTokenAtivo || undefined, ref: refAtivo || undefined });
       mostrarPainel(data.usuario, !!trialTokenAtivo && data.usuario?.ativo);
     } catch (err) {
-      mostrarMsg('msg-cadastro', err.erro || err.message || 'Erro ao criar conta.', 'erro');
+      mostrarMsg('msg-cadastro', err.erro || err.message || 'Falha ao criar conta. Tente novamente.', 'erro');
     } finally {
       setLoading('btn-cadastro', 'spin-cadastro', 'txt-cadastro', false, 'Criar conta');
     }
@@ -1063,7 +1063,7 @@
       mostrarMsg('msg-recuperar', 'Se o e-mail estiver cadastrado, você receberá um link em breve. Verifique também a caixa de spam.', 'sucesso');
       document.getElementById('recuperar-email').value = '';
     } catch (err) {
-      mostrarMsg('msg-recuperar', err.erro || 'Erro ao enviar. Tente novamente.', 'erro');
+      mostrarMsg('msg-recuperar', err.erro || 'Falha ao enviar. Tente novamente.', 'erro');
     } finally {
       document.getElementById('btn-recuperar').disabled = false;
       document.getElementById('spin-recuperar').style.display = 'none';
@@ -1113,7 +1113,7 @@
       document.getElementById('nova-senha').value = '';
       document.getElementById('confirma-nova-senha').value = '';
     } catch (err) {
-      mostrarMsg('msg-alterar-senha', err.erro || 'Erro ao alterar senha.', 'erro');
+      mostrarMsg('msg-alterar-senha', err.erro || 'Falha ao alterar senha. Tente novamente.', 'erro');
     } finally {
       document.getElementById('btn-alterar-senha').disabled = false;
       document.getElementById('spin-alterar-senha').style.display = 'none';

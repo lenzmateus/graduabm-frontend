@@ -518,7 +518,7 @@ async function carregarSimulados(tentativa = 1) {
       grid.innerHTML = `<div style="color:var(--cinza-texto);text-align:center;padding:2rem;font-family:'IBM Plex Mono',monospace;font-size:13px;">Conectando ao servidor (tentativa ${tentativa}/3)…</div>`;
       setTimeout(() => carregarSimulados(tentativa + 1), 3000);
     } else {
-      grid.innerHTML = `<div style="color:var(--danger-fg);padding:2rem;">${err.erro || 'Erro ao carregar.'} <button class="btn-sm" style="margin-left:12px;" onclick="carregarSimulados()">Tentar novamente</button></div>`;
+      grid.innerHTML = `<div style="color:var(--danger-fg);padding:2rem;">${err.erro || 'Não foi possível carregar.'} <button class="btn-sm" style="margin-left:12px;" onclick="carregarSimulados()">Tentar novamente</button></div>`;
     }
   }
 }
@@ -603,7 +603,7 @@ async function salvarDatas(simId) {
     const datasEl = document.getElementById(`sim-datas-${simId}`);
     if (datasEl) datasEl.textContent = `${formatarData(abertura)} → ${formatarData(encerramento)}`;
     if (simuladosData[simId]) { simuladosData[simId].abertura = abertura; simuladosData[simId].encerramento = encerramento; }
-  } catch (err) { toast(err.erro || 'Erro ao salvar datas.', 'err'); }
+  } catch (err) { toast(err.erro || 'Falha ao salvar as datas. Tente novamente.', 'err'); }
 }
 
 async function removerQuestao(simId, questaoId) {
@@ -613,7 +613,7 @@ async function removerQuestao(simId, questaoId) {
     delete questoesSimulado[simId];
     carregarQuestoesDoSimulado(simId);
     toast('Questão removida e reativada no banco.');
-  } catch (err) { toast(err.erro || 'Erro ao remover.', 'err'); }
+  } catch (err) { toast(err.erro || 'Falha ao remover. Tente novamente.', 'err'); }
 }
 
 function adicionarQuestoes(simId, curso) {
@@ -685,7 +685,7 @@ async function confirmarAdicao(simId) {
     delete questoesSimulado[simId];
     fecharAdicionar(simId);
     carregarQuestoesDoSimulado(simId);
-  } catch (err) { toast(err.erro || 'Erro ao adicionar.', 'err'); }
+  } catch (err) { toast(err.erro || 'Falha ao adicionar. Tente novamente.', 'err'); }
 }
 
 async function incorporar(simId, btn) {
@@ -805,7 +805,7 @@ async function abrirModalEditar(simId, questaoId) {
       delete questoesSimulado[simId];
       carregarQuestoesDoSimulado(simId);
     } catch (err) {
-      toast(err.erro || (err.data && err.data[0]?.message) || 'Erro ao salvar.', 'err');
+      toast(err.erro || (err.data && err.data[0]?.message) || 'Falha ao salvar. Tente novamente.', 'err');
       btn.disabled = false;
       btn.textContent = 'Salvar Alterações';
     }
@@ -865,7 +865,7 @@ async function carregarBlocos() {
       atualizarBotaoPublicar(b.id);
     });
   } catch(err) {
-    grid.innerHTML = `<div style="color:var(--danger-fg);padding:1rem;">${err.erro||'Erro ao carregar blocos.'} <button class="btn-sm" onclick="carregarBlocos()" style="margin-left:8px;">Tentar novamente</button></div>`;
+    grid.innerHTML = `<div style="color:var(--danger-fg);padding:1rem;">${err.erro||'Não foi possível carregar os blocos.'} <button class="btn-sm" onclick="carregarBlocos()" style="margin-left:8px;">Tentar novamente</button></div>`;
   }
 }
 
@@ -1255,7 +1255,7 @@ async function gerarQuestoes(blocoId) {
     toast(`Geração de ${quantidade}x ${area} iniciada em background.`);
     iniciarPollingBlocoStatus(blocoId);
   } catch(err) {
-    toast(err.erro || 'Erro ao iniciar geração.', 'err');
+    toast(err.erro || 'Falha ao iniciar a geração. Tente novamente.', 'err');
     if (sgEl) sgEl.style.display = 'none';
   }
 }
@@ -1353,7 +1353,7 @@ async function removerQuestaoDoBloco(blocoId, questaoId) {
     toast('Questão removida do bloco.');
     delete questoesPorBloco[blocoId];
     await recarregarBlocoCard(blocoId);
-  } catch(err) { toast(err.erro||'Erro ao remover.', 'err'); }
+  } catch(err) { toast(err.erro||'Falha ao remover. Tente novamente.', 'err'); }
 }
 
 // ── Editar questão do bloco (inline modal) ───────────────────────────────────
@@ -1464,7 +1464,7 @@ async function abrirEditarQuestaoBloco(blocoId, questaoId) {
       delete questoesPorBloco[blocoId];
       await recarregarBlocoCard(blocoId);
     } catch(err) {
-      toast(err.erro || 'Erro ao salvar.', 'err');
+      toast(err.erro || 'Falha ao salvar. Tente novamente.', 'err');
       btn.disabled = false; btn.textContent = 'Salvar Alterações';
     }
   });
@@ -1527,7 +1527,7 @@ async function carregarBlocosCtspParaSelector(blocoId) {
       if (lista) lista.innerHTML = '<div style="color:#888;font-size:12px;font-family:\'IBM Plex Mono\',monospace;padding:4px;">Selecione um bloco CTSP acima para ver as questões disponíveis.</div>';
     }
   } catch(err) {
-    sel.innerHTML = '<option value="">Erro ao carregar blocos CTSP</option>';
+    sel.innerHTML = '<option value="">Não foi possível carregar os blocos CTSP</option>';
   }
 }
 
@@ -1562,7 +1562,7 @@ async function carregarQuestoesReaproveitaveis(blocoId) {
     if (!reaproveitadasPorBloco[blocoId]) reaproveitadasPorBloco[blocoId] = new Set();
     renderizarReaproveitaveis(blocoId);
   } catch(err) {
-    lista.innerHTML = `<div style="color:var(--danger-fg);font-size:12px;">${err.erro || 'Erro ao carregar.'}</div>`;
+    lista.innerHTML = `<div style="color:var(--danger-fg);font-size:12px;">${err.erro || 'Não foi possível carregar.'}</div>`;
   }
 }
 
@@ -1618,7 +1618,7 @@ async function salvarSelecaoReap(blocoId) {
     renderDeficitAT(blocoId);
     if (msg) { msg.style.display = 'inline'; setTimeout(() => { if (msg) msg.style.display = 'none'; }, 2500); }
   } catch(e) {
-    toast(e.erro || 'Erro ao salvar seleção.', 'err');
+    toast(e.erro || 'Falha ao salvar a seleção. Tente novamente.', 'err');
   }
   if (btn) { btn.disabled = false; btn.textContent = 'Salvar Seleção'; }
 }
@@ -1709,7 +1709,7 @@ async function renomearBlocoInline(blocoId) {
       if (blocosDadosPorId[blocoId]) blocosDadosPorId[blocoId].titulo = novo;
     } catch(e) {
       span.textContent = atual;
-      toast(e.erro || 'Erro ao renomear bloco.', 'err');
+      toast(e.erro || 'Falha ao renomear o bloco. Tente novamente.', 'err');
     }
   };
 
@@ -1760,7 +1760,7 @@ async function criarBloco() {
     toast('Bloco criado!');
     fecharModalNovoBloco();
     carregarBlocos();
-  } catch(err) { toast(err.erro||'Erro ao criar bloco.', 'err'); }
+  } catch(err) { toast(err.erro||'Falha ao criar o bloco. Tente novamente.', 'err'); }
   btn.disabled = false; btn.textContent = 'Criar Bloco';
 }
 
@@ -1771,7 +1771,7 @@ async function confirmarExcluirBloco(blocoId) {
     toast('Bloco excluído.');
     carregarBlocos();
   } catch(err) {
-    toast(err.erro || 'Erro ao excluir bloco.', 'err');
+    toast(err.erro || 'Falha ao excluir o bloco. Tente novamente.', 'err');
   }
 }
 
@@ -1829,7 +1829,7 @@ async function confirmarPublicar() {
     fecharModalPublicar();
     carregarBlocos();
     carregarSimulados();
-  } catch(err) { toast(err.erro||'Erro ao publicar.', 'err'); }
+  } catch(err) { toast(err.erro||'Falha ao publicar. Tente novamente.', 'err'); }
   btn.disabled = false; btn.textContent = 'Publicar';
 }
 
@@ -1844,7 +1844,7 @@ async function encerrarEvento(blocoId) {
     });
     toast('Evento encerrado. Agora você pode liberar as questões ao banco.');
     await recarregarBlocoCard(blocoId);
-  } catch(err) { toast(err.erro || 'Erro ao encerrar.', 'err'); }
+  } catch(err) { toast(err.erro || 'Falha ao encerrar. Tente novamente.', 'err'); }
 }
 
 // ── Liberar ao banco ─────────────────────────────────────────────────────────
@@ -1857,7 +1857,7 @@ async function liberarBanco(blocoId) {
     const r = await req(`/api/simulados-mensais/admin/blocos/${blocoId}/liberar`, { method: 'POST' });
     toast(`${r.questoes_liberadas} questão(ões) liberadas ao banco!`);
     carregarBlocos();
-  } catch(err) { toast(err.erro||'Erro ao liberar.', 'err'); }
+  } catch(err) { toast(err.erro||'Falha ao liberar. Tente novamente.', 'err'); }
 }
 
 // ── Questão Manual ───────────────────────────────────────────────────────────
@@ -1931,7 +1931,7 @@ async function salvarQuestaoManual(salvarEAprovar) {
     fecharModalQuestaoManual();
     delete questoesPorBloco[blocoId];
     await recarregarBlocoCard(blocoId);
-  } catch(err) { console.error('[salvarQuestaoManual]', err); toast(err.erro||err.message||'Erro ao salvar.', 'err'); }
+  } catch(err) { console.error('[salvarQuestaoManual]', err); toast(err.erro||err.message||'Falha ao salvar. Tente novamente.', 'err'); }
   btn.disabled = false; btn.textContent = salvarEAprovar ? 'Salvar e Aprovar' : 'Salvar (Pendente)';
 }
 

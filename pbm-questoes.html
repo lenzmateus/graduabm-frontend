@@ -1148,7 +1148,7 @@ async function init() {
 
   } catch (err) {
     const detalhe = err.erro || err.message || (err.status ? 'HTTP ' + err.status : '');
-    mostrarErro('Erro ao carregar questões' + (detalhe ? ': ' + detalhe : '. Verifique sua conexão.'));
+    mostrarErro('Não foi possível carregar as questões' + (detalhe ? ': ' + detalhe : '. Verifique sua conexão.'));
     console.error(err);
   }
 }
@@ -1656,7 +1656,7 @@ function renderAcoesRelatorioBloco(bloco) {
         btnAnotar.disabled = true;
       } catch (err) {
         console.error('[ciclo] anotar onde parei', err);
-        alert('Erro ao salvar anotação: ' + (err?.erro || 'tente novamente'));
+        alert('Falha ao salvar a anotação: ' + (err?.erro || 'tente novamente'));
       }
     });
   }
@@ -1682,7 +1682,7 @@ function renderAcoesRelatorioBloco(bloco) {
         btn.textContent = labelOrig;
         // Feedback visual visível
         const aviso = document.createElement('div');
-        aviso.textContent = '⚠ Erro ao salvar: ' + (err?.erro || err?.message || 'tente novamente');
+        aviso.textContent = '⚠ Falha ao salvar: ' + (err?.erro || err?.message || 'tente novamente');
         aviso.style.cssText = 'position:fixed;bottom:1rem;right:1rem;background:#C0270F;color:#fff;padding:.5rem 1rem;border-radius:6px;font-size:12px;z-index:9999;max-width:300px;';
         document.body.appendChild(aviso);
         setTimeout(() => aviso.remove(), 5000);

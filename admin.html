@@ -362,7 +362,7 @@
       // curso passa pelo dono (conta.definirCursoAdmin via endpoint de Assinaturas) — ADR-0032.
       await PBM.Admin.assinaturas.gerenciar(alunoAtual.id, { acao: 'alterar_curso', curso: cursoValor });
     } catch (err) {
-      msg.textContent = err?.erro || 'Erro ao salvar.'; msg.style.color = 'var(--danger)'; return;
+      msg.textContent = err?.erro || 'Falha ao salvar. Tente novamente.'; msg.style.color = 'var(--danger)'; return;
     }
     alunoAtual.curso = cursoValor;
     document.getElementById('aluno-curso-res').textContent = cursoValor ? cursoValor.toUpperCase() : 'Sem restrição';
@@ -394,7 +394,7 @@
     try {
       await PBM.Admin.assinaturas.gerenciar(alunoAtual.id, body);
     } catch (err) {
-      msg.textContent = err?.erro || 'Erro ao atualizar acesso.'; msg.style.color = 'var(--danger)'; return;
+      msg.textContent = err?.erro || 'Falha ao atualizar o acesso. Tente novamente.'; msg.style.color = 'var(--danger)'; return;
     }
     alunoAtual.ativo = novoAtivo;
     renderizarAlunoSelecionado(alunoAtual);
@@ -419,7 +419,7 @@
     try { data = await PBM.Admin.usuarios.zerarProgresso(alunoAtual.id); } catch (e) { data = e; }
 
     if (data && data.erro) {
-      msg.textContent = data.erro || 'Erro ao zerar progresso.';
+      msg.textContent = data.erro || 'Falha ao zerar o progresso. Tente novamente.';
       msg.style.color = 'var(--danger)';
       return;
     }
@@ -507,7 +507,7 @@
       document.body.removeChild(ta);
       cb();
     } catch (e) {
-      toast('Erro ao copiar. Selecione o texto manualmente.', 'erro');
+      toast('Não foi possível copiar. Selecione o texto manualmente.', 'erro');
     }
   }
 
@@ -590,7 +590,7 @@
         </div>`;
       }).join('');
     } catch {
-      lista.innerHTML = '<div style="color:var(--danger);font-size:13px;">Erro ao carregar administradores.</div>';
+      lista.innerHTML = '<div style="color:var(--danger);font-size:13px;">Não foi possível carregar os administradores.</div>';
     }
   }
 
@@ -600,7 +600,7 @@
       await PBM.Admin.admins.excluir(id);
       toast('Administrador excluído.', '');
       carregarAdmins();
-    } catch (err) { toast(err.erro || 'Erro ao excluir admin.', 'erro'); }
+    } catch (err) { toast(err.erro || 'Falha ao excluir o admin. Tente novamente.', 'erro'); }
   };
 
   document.getElementById('btn-gerar-convite-admin').addEventListener('click', async function() {

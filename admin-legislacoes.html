@@ -301,7 +301,7 @@
       if (destaqueId) focarDestaque();
     } catch (e) {
       document.getElementById('lista').innerHTML =
-        '<div class="empty" style="color:var(--danger-fg);">Erro ao carregar legislações.</div>';
+        '<div class="empty" style="color:var(--danger-fg);">Não foi possível carregar as legislações.</div>';
     }
   }
 
@@ -341,7 +341,7 @@
       toast(atualEstava ? 'Desmarcada como atualizada.' : 'Marcada como atualizada.', 'sucesso');
       await carregar();
     } catch (e) {
-      toast(e.erro || 'Erro ao salvar.', 'erro');
+      toast(e.erro || 'Falha ao salvar. Tente novamente.', 'erro');
     }
   };
 
@@ -386,7 +386,7 @@
       fecharModal();
       await carregar();
     } catch (e) {
-      toast(e.erro || 'Erro ao salvar.', 'erro');
+      toast(e.erro || 'Falha ao salvar. Tente novamente.', 'erro');
     } finally {
       btn.disabled = false; btn.textContent = 'Salvar';
     }
@@ -401,7 +401,7 @@
       fecharModal();
       await carregar();
     } catch (e) {
-      toast(e.erro || 'Erro ao remover override.', 'erro');
+      toast(e.erro || 'Falha ao remover o override. Tente novamente.', 'erro');
     }
   });
 

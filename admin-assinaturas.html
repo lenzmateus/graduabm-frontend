@@ -494,7 +494,7 @@
       atualizarPaginacao();
     } catch (err) {
       if (minha !== buscaSeq) return;
-      tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Erro ao carregar dados.</td></tr>';
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Não foi possível carregar os dados.</td></tr>';
     }
   }
 
@@ -606,7 +606,7 @@
       carregarAlunos();
       carregarStats();
     } catch (err) {
-      toast(err.erro || 'Erro ao aplicar ação.', 'erro');
+      toast(err.erro || 'Falha ao aplicar a ação. Tente novamente.', 'erro');
     } finally {
       document.getElementById('btn-modal-ok-acao').disabled = false;
     }
@@ -632,7 +632,7 @@
         </div>
       `).join('');
     } catch {
-      document.getElementById('modal-logs-lista').innerHTML = '<div class="log-item" style="color:var(--danger-fg);">Erro ao carregar logs.</div>';
+      document.getElementById('modal-logs-lista').innerHTML = '<div class="log-item" style="color:var(--danger-fg);">Não foi possível carregar os logs.</div>';
     }
   }
 
@@ -648,7 +648,7 @@
       const data = await PBM.Admin.cupons.listar();
       renderizarCupons(data.itens);
     } catch {
-      tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Erro ao carregar cupons.</td></tr>';
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="7">Não foi possível carregar os cupons.</td></tr>';
     }
   }
 
@@ -720,7 +720,7 @@
       toast('Cupom criado com sucesso!', 'sucesso');
       carregarCupons();
     } catch (err) {
-      toast(err.erro || 'Erro ao criar cupom.', 'erro');
+      toast(err.erro || 'Falha ao criar o cupom. Tente novamente.', 'erro');
     }
   }
 
@@ -753,7 +753,7 @@
       toast('Cupom atualizado!', 'sucesso');
       carregarCupons();
     } catch (err) {
-      toast(err.erro || 'Erro ao editar cupom.', 'erro');
+      toast(err.erro || 'Falha ao editar o cupom. Tente novamente.', 'erro');
     }
   }
 
@@ -764,7 +764,7 @@
       toast('Cupom desativado.', 'sucesso');
       carregarCupons();
     } catch (err) {
-      toast(err.erro || 'Erro ao desativar cupom.', 'erro');
+      toast(err.erro || 'Falha ao desativar o cupom. Tente novamente.', 'erro');
     }
   }
 
@@ -775,7 +775,7 @@
       toast('Cupom excluído.', 'sucesso');
       carregarCupons();
     } catch (err) {
-      toast(err.erro || 'Erro ao excluir cupom.', 'erro');
+      toast(err.erro || 'Falha ao excluir o cupom. Tente novamente.', 'erro');
     }
   }
 
@@ -803,7 +803,7 @@
       toast('Curso atualizado com sucesso!', 'sucesso');
       carregarAlunos();
     } catch (err) {
-      toast(err.erro || 'Erro ao alterar curso.', 'erro');
+      toast(err.erro || 'Falha ao alterar o curso. Tente novamente.', 'erro');
     }
   }
 
@@ -841,7 +841,7 @@
         <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cinza-texto);">${l.bold ? '100%' : pct(l.n)}</td>
       </tr>`).join('');
     } catch {
-      tbody.innerHTML = '<tr class="loading-row"><td colspan="3">Erro ao carregar relatório.</td></tr>';
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="3">Não foi possível carregar o relatório.</td></tr>';
     }
   }
 
@@ -882,7 +882,7 @@
         </tr>`;
       }).join('');
     } catch {
-      tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Erro ao carregar indicações.</td></tr>';
+      tbody.innerHTML = '<tr class="loading-row"><td colspan="6">Não foi possível carregar as indicações.</td></tr>';
     }
   }
 
@@ -928,7 +928,7 @@
       const resp = r?.respostas_apagadas ?? 0;
       toast(`Progresso zerado: ${sess} sessão(ões), ${resp} resposta(s).`, 'sucesso');
     } catch (err) {
-      toast(err?.erro || 'Erro ao zerar progresso.', 'erro');
+      toast(err?.erro || 'Falha ao zerar o progresso. Tente novamente.', 'erro');
       btn.disabled = false;
       btn.textContent = 'Zerar agora';
     }
@@ -970,7 +970,7 @@
       carregarAlunos();
       carregarStats();
     } catch (err) {
-      toast(err.erro || 'Erro ao excluir usuário.', 'erro');
+      toast(err.erro || 'Falha ao excluir o usuário. Tente novamente.', 'erro');
       btn.disabled = false;
       btn.textContent = 'Excluir Permanentemente';
     }

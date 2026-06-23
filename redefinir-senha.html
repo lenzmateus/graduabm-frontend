@@ -225,7 +225,7 @@
         document.getElementById('estado-valido').style.display = 'none';
         document.getElementById('estado-invalido').style.display = 'block';
       } else {
-        mostrarMsg(err.erro || 'Erro ao redefinir senha. Tente novamente.', 'erro');
+        mostrarMsg(err.erro || 'Falha ao redefinir senha. Tente novamente.', 'erro');
         document.getElementById('btn-redef').disabled = false;
         document.getElementById('spin-redef').style.display = 'none';
         document.getElementById('txt-redef').textContent = 'Salvar nova senha';

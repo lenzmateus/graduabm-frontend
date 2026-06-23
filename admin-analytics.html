@@ -678,7 +678,7 @@ async function enviarLembrete(userId, btn) {
   } catch {
     btn.disabled = false;
     btn.textContent = 'Enviar lembrete';
-    toast('Erro ao enviar lembrete.', 'erro');
+    toast('Falha ao enviar o lembrete. Tente novamente.', 'erro');
   }
 }
 

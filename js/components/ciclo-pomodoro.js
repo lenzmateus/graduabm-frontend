@@ -142,7 +142,7 @@
       if (ctx.callbacks?.aoCompletar) ctx.callbacks.aoCompletar(blocoId, duracao);
     } catch (e) {
       console.warn('[pomodoro] erro registrarSessao', e);
-      if (ctx.ui.stateEl) ctx.ui.stateEl.textContent = 'Erro ao registrar — tente novamente';
+      if (ctx.ui.stateEl) ctx.ui.stateEl.textContent = 'Falha ao registrar — tente novamente';
     }
     pintarUI();
   }

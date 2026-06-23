@@ -486,8 +486,8 @@
       renderAtualizacoes(data);
       renderMaterialCard();
     } catch (e) {
-      areasEl.innerHTML = '<div class="estado-vazio" style="color:var(--danger-fg);">Erro ao carregar edital. Tente recarregar a página.</div>';
-      ladoEl.innerHTML = '<div class="side-vazio" style="color:var(--danger-fg);">Erro.</div>';
+      areasEl.innerHTML = '<div class="estado-vazio" style="color:var(--danger-fg);">Não foi possível carregar o edital. Recarregue a página.</div>';
+      ladoEl.innerHTML = '<div class="side-vazio" style="color:var(--danger-fg);">Indisponível.</div>';
     }
   }
 
@@ -527,7 +527,7 @@
       if (window.PBM && PBM.Toast) PBM.Toast.success('Reporte enviado. Obrigado!');
       fecharModal();
     } catch (e) {
-      if (window.PBM && PBM.Toast) PBM.Toast.error(e.erro || 'Erro ao enviar reporte.');
+      if (window.PBM && PBM.Toast) PBM.Toast.error(e.erro || 'Falha ao enviar o reporte. Tente novamente.');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Enviar reporte';

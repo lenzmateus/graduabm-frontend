@@ -406,7 +406,7 @@
       await carregarBadgeDenuncias();
     } catch (err) {
       const detail = err?.erro || err?.message || '';
-      toast(detail ? `${msgErro || 'Erro.'} ${detail}` : (msgErro || 'Erro ao executar ação.'), 'erro');
+      toast(detail ? `${msgErro || 'Falha.'} ${detail}` : (msgErro || 'Falha ao executar a ação. Tente novamente.'), 'erro');
       btn.disabled = false;
       btn.innerHTML = orig;
     }
@@ -546,7 +546,7 @@
             toast(a.msgEditado || 'Editado.', 'sucesso');
             toggleEditForm(card, false);
           } catch {
-            toast('Erro ao salvar edição.', 'erro');
+            toast('Falha ao salvar a edição. Tente novamente.', 'erro');
           }
           this.disabled = false;
         });
@@ -555,12 +555,12 @@
       const btnAprovar = card.querySelector('.btn-aprovar');
       if (btnAprovar) btnAprovar.addEventListener('click', function() {
         if (a.aprovar) return a.aprovar(item, this, card);
-        executarAcao(this, () => a.api.aprovar(item.id), a.msgAprovado || 'Aprovado!', 'Erro ao aprovar.');
+        executarAcao(this, () => a.api.aprovar(item.id), a.msgAprovado || 'Aprovado!', 'Falha ao aprovar. Tente novamente.');
       });
 
       card.querySelector('.btn-rejeitar').addEventListener('click', function() {
         if (a.rejeitarConfirm && !confirm(a.rejeitarConfirm)) return;
-        executarAcao(this, () => a.api.rejeitar(item.id), a.msgRejeitado || 'Rejeitado.', 'Erro ao rejeitar.');
+        executarAcao(this, () => a.api.rejeitar(item.id), a.msgRejeitado || 'Rejeitado.', 'Falha ao rejeitar. Tente novamente.');
       });
 
       if (a.onCard) a.onCard(card, item);
@@ -598,7 +598,7 @@
       tabCarregadas['questoes'] = false;
       await carregarQuestoes();
     } catch (err) {
-      toast(err?.erro || err?.message || 'Erro ao gerar questões.', 'erro');
+      toast(err?.erro || err?.message || 'Falha ao gerar as questões. Tente novamente.', 'erro');
     } finally {
       if (btn && !btn.closest('.card')) { btn.disabled = false; btn.innerHTML = orig; }
     }
@@ -731,7 +731,7 @@
         await carregarFlashcards();
       }, 60000);
     } catch (err) {
-      toast(err?.erro || err?.message || 'Erro ao gerar flashcard.', 'erro');
+      toast(err?.erro || err?.message || 'Falha ao gerar o flashcard. Tente novamente.', 'erro');
     } finally {
       if (btn && !btn.closest('.card')) { btn.disabled = false; btn.innerHTML = orig; }
     }
@@ -904,7 +904,7 @@
       tabCarregadas['instagram'] = false;
       await carregarInstagram();
     } catch (err) {
-      toast((err?.erro || err?.message || 'Erro ao gerar post.'), 'erro');
+      toast((err?.erro || err?.message || 'Falha ao gerar o post. Tente novamente.'), 'erro');
     } finally {
       if (btn && !btn.closest('.card')) { btn.disabled = false; btn.innerHTML = orig; }
     }
@@ -925,7 +925,7 @@
     btn.innerHTML = '<span class="spinner"></span> Enviando...';
     try {
       const r = await PBM.Admin.aprovacoes.instagram.enviarCarrossel(files, caption);
-      if (!r.ok) { toast(r.erro || 'Erro ao enviar.', 'erro'); return; }
+      if (!r.ok) { toast(r.erro || 'Falha ao enviar. Tente novamente.', 'erro'); return; }
       toast(files.length === 1 ? 'Publicação enfileirada!' : 'Carrossel enfileirado!', 'sucesso');
       filesEl.value = ''; capEl.value = '';
       c.querySelector('#pub-form')?.classList.remove('visivel');
@@ -933,7 +933,7 @@
       tabCarregadas['instagram'] = false;
       await carregarInstagram();
     } catch (err) {
-      toast((err?.erro || err?.message || 'Erro ao enviar.'), 'erro');
+      toast((err?.erro || err?.message || 'Falha ao enviar. Tente novamente.'), 'erro');
     } finally {
       btn.disabled = false; btn.innerHTML = orig;
     }
@@ -1046,7 +1046,7 @@
           await carregarBadgeDenuncias();
         } catch (err) {
           const detail = err?.erro || err?.message || '';
-          toast(detail ? `Erro ao publicar. ${detail}` : 'Erro ao publicar.', 'erro');
+          toast(detail ? `Falha ao publicar. ${detail}` : 'Falha ao publicar. Tente novamente.', 'erro');
           btn.disabled = false;
           btn.innerHTML = orig;
         }
@@ -1098,7 +1098,7 @@
     const container = document.getElementById('tab-content-' + tab);
     const msg = (err && (err.message || err.erro))
       ? esc(err.message || err.erro) + (err.status ? ` (HTTP ${err.status})` : '')
-      : 'Erro ao carregar dados. Verifique a conexão.';
+      : 'Não foi possível carregar os dados. Verifique a conexão.';
     container.innerHTML = `<div class="empty">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <p style="color:var(--erro);margin-bottom:1rem;">${msg}</p>

@@ -357,7 +357,7 @@ async function carregarCards() {
     todosCards = Array.isArray(data) ? data : [];
     aplicarFiltros();
   } catch (e) {
-    document.getElementById('lista-cards').innerHTML = '<div class="loading-txt" style="color:var(--danger-fg)">Erro ao carregar flashcards.</div>';
+    document.getElementById('lista-cards').innerHTML = '<div class="loading-txt" style="color:var(--danger-fg)">Não foi possível carregar os flashcards.</div>';
   }
 }
 
@@ -532,7 +532,7 @@ async function salvarCard() {
     fecharModal();
     await carregarCards();
   } catch (err) {
-    erroEl.textContent = err?.erro || err?.message || 'Erro ao salvar.';
+    erroEl.textContent = err?.erro || err?.message || 'Falha ao salvar. Tente novamente.';
     erroEl.style.display = 'block';
   } finally {
     btn.disabled = false;
@@ -559,7 +559,7 @@ async function confirmarDelete() {
   try {
     await PBM.Admin.flashcards.excluir(deleteId);
   } catch (err) {
-    alert(err?.erro || err?.message || 'Erro ao excluir.');
+    alert(err?.erro || err?.message || 'Falha ao excluir. Tente novamente.');
   }
   btn.disabled = false;
   btn.textContent = 'Excluir';

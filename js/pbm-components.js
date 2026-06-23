@@ -409,7 +409,7 @@
   /* ── TOAST — Sistema global de feedback ──────────────────────
      Uso:
        PBM.Toast.show('Copiado!', 'success')
-       PBM.Toast.show('Erro ao salvar.', 'error')
+       PBM.Toast.show('Falha ao salvar. Tente novamente.', 'error')
        PBM.Toast.show('Processando...', 'info', 5000)
        PBM.Toast.show('Atenção!', 'warning')
 

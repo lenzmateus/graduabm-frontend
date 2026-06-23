@@ -332,7 +332,7 @@ async function carregar(curso) {
     if (data) aplicar(data);
   } catch (e) {
     console.error('cobertura:', e);
-    AdminChrome.toast('Erro ao carregar cobertura: ' + e.message, 'erro');
+    AdminChrome.toast('Não foi possível carregar a cobertura: ' + e.message, 'erro');
   }
 }
 

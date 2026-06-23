@@ -542,7 +542,7 @@ async function lobbyHabilitar(id) {
   try {
     await PBM.Admin.simuladosMensais.atualizar(id, { ativo: true });
     window.location.reload();
-  } catch { alert('Erro ao habilitar simulado.'); }
+  } catch { alert('Falha ao habilitar o simulado. Tente novamente.'); }
 }
 
 // ── EXAM ─────────────────────────────────────────────────────────────────────
@@ -857,7 +857,7 @@ async function entregarProva(porTempo) {
       window.location.href = '/simulado-mensal-ranking?id=' + simuladoId;
       return;
     }
-    alert('Erro ao processar a entrega. Tente novamente.');
+    alert('Falha ao processar a entrega. Tente novamente.');
     iniciarCronometro();
   }
 }

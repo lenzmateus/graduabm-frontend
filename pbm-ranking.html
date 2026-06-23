@@ -1009,7 +1009,7 @@
     } catch (err) {
       document.getElementById('ranking-body').innerHTML = `
         <div class="empty-state">
-          <p>Erro ao carregar o ranking. Tente novamente.</p>
+          <p>Não foi possível carregar o ranking. Recarregue a página.</p>
         </div>`;
       document.getElementById('podio').innerHTML = '';
     }
@@ -1032,7 +1032,7 @@
       renderAllSim();
     } catch (err) {
       document.getElementById('ranking-body').innerHTML =
-        '<div class="empty-state"><p>Erro ao carregar ranking de simulados.</p></div>';
+        '<div class="empty-state"><p>Não foi possível carregar o ranking de simulados. Recarregue a página.</p></div>';
       document.getElementById('podio').innerHTML = '';
     }
   }

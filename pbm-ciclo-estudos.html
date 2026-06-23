@@ -1273,7 +1273,7 @@
     } catch (e) {
       console.error('[ciclo] erro carregar', e);
       document.getElementById('loading').style.display = 'none';
-      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao carregar o ciclo. Recarregue a página.');
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Não foi possível carregar o ciclo. Recarregue a página.');
     }
   }
 
@@ -1473,7 +1473,7 @@
       await carregar();
     } catch (e) {
       console.error('[ciclo] gerar', e);
-      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao gerar ciclo. Tente novamente.');
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Falha ao gerar o ciclo. Tente novamente.');
     } finally {
       btn.disabled = false;
       btn.textContent = 'Gerar Ciclo';
@@ -1607,7 +1607,7 @@
       window._pbmReforcoRecente[legId] = nivel;
     } catch (e) {
       console.error('[ciclo] salvar dificuldade', e);
-      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao registrar. Tente novamente.');
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Falha ao registrar. Tente novamente.');
     } finally {
       fecharToast();
       if (estado.ciclo && estado.blocos.length) renderAtivo();
@@ -1670,7 +1670,7 @@
       await carregar();
     } catch (e) {
       console.error('[ciclo] forçar conclusão', e);
-      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao concluir. Tente novamente.');
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Falha ao concluir. Tente novamente.');
     }
   }
 
@@ -1689,7 +1689,7 @@
       await carregar();
     } catch (e) {
       console.error('[ciclo] encerrar legislação', e);
-      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao encerrar legislação. Tente novamente.');
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Falha ao encerrar a legislação. Tente novamente.');
     }
   }
 
@@ -1784,7 +1784,7 @@
       setTimeout(() => aviso.classList.remove('show'), 1800);
     } catch (e) {
       console.error('[ciclo] salvar nota', e);
-      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao salvar nota: ' + (e?.erro || 'tente novamente'));
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Falha ao salvar a nota: ' + (e?.erro || 'tente novamente'));
     }
   }
 
@@ -1947,7 +1947,7 @@
       await carregar();
     } catch (e) {
       console.error('[ciclo] excluir tudo', e);
-      if (window.PBM && PBM.Toast) PBM.Toast.error('Erro ao excluir. Tente novamente.');
+      if (window.PBM && PBM.Toast) PBM.Toast.error('Falha ao excluir. Tente novamente.');
     }
   }
 
