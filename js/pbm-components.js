@@ -462,6 +462,238 @@
     warning(msg, duration) { return this.show(msg, 'warning', duration); },
   };
 
+  /* ── INSÍGNIAS DE PATENTE ─────────────────────────────────────
+     Fonte ÚNICA do desenho das 13 insígnias (Recruta → Coronel).
+     Consumida pela página de Patentes, pelo Dashboard e pela
+     Celebração de promoção. Antes vivia duplicada em cada página. */
+  PBM.obterInsigniaSVG = function (nivel, curso) {
+    const isCba = (curso === 'cba');
+    const accent = isCba ? '#60A5FA' : '#F87171';
+    const accent2 = isCba ? 'var(--info-fg)' : 'var(--brand-primary)';
+    const n = Math.max(1, Math.min(13, Number(nivel) || 1));
+
+    const defs = `
+      <defs>
+        <linearGradient id="ins-bronze" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#F2C9A0"/><stop offset="55%" stop-color="#C77F3E"/><stop offset="100%" stop-color="#8A4B1A"/>
+        </linearGradient>
+        <linearGradient id="ins-silver" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FFFFFF"/><stop offset="55%" stop-color="#CFD6DE"/><stop offset="100%" stop-color="#8B97A4"/>
+        </linearGradient>
+        <linearGradient id="ins-gold" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#FFF0A6"/><stop offset="55%" stop-color="#FBC73B"/><stop offset="100%" stop-color="#D98A12"/>
+        </linearGradient>
+        <linearGradient id="ins-accent" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="${accent}"/><stop offset="100%" stop-color="${accent2}"/>
+        </linearGradient>
+        <filter id="ins-glow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="1.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>`;
+
+    const BR = 'url(#ins-bronze)', AG = 'url(#ins-silver)', OU = 'url(#ins-gold)', AC = 'url(#ins-accent)';
+    const chevron = (y, cor, sw) => `<polyline points="16,${y} 32,${y + 11} 48,${y}" stroke="${cor}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`;
+    const arco = (y, cor, sw) => `<path d="M17,${y} Q32,${y - 8} 47,${y}" stroke="${cor}" stroke-width="${sw}" stroke-linecap="round" fill="none"/>`;
+    const estrela = (cx, cy, r, fill) => {
+      let p = '';
+      for (let i = 0; i < 5; i++) {
+        const ao = -Math.PI / 2 + i * 2 * Math.PI / 5;
+        const ai = ao + Math.PI / 5;
+        p += `${(cx + r * Math.cos(ao)).toFixed(1)},${(cy + r * Math.sin(ao)).toFixed(1)} `;
+        p += `${(cx + r * 0.42 * Math.cos(ai)).toFixed(1)},${(cy + r * 0.42 * Math.sin(ai)).toFixed(1)} `;
+      }
+      return `<polygon points="${p.trim()}" fill="${fill}"/>`;
+    };
+    const wrap = (inner, size) => `<svg width="${size}" height="${size}" viewBox="0 0 64 64" fill="none" style="overflow:visible;">${defs}<g filter="url(#ins-glow)">${inner}</g></svg>`;
+
+    // ── PRAÇAS (bronze) — Recruta tem chama própria; Soldado/Cabo, galões. ──
+    if (n === 1) return wrap(                                                              // Recruta — escudo (ponto de partida)
+      `<path d="M32,12 L48,18 L48,33 C48,43 41,50 32,53 C23,50 16,43 16,33 L16,18 Z" fill="${BR}"/>` +
+      `<path d="M32,18 L43,22 L43,33 C43,40 38,45 32,47 C26,45 21,40 21,33 L21,22 Z" fill="none" stroke="${AC}" stroke-width="1.8" opacity="0.9"/>`, 46);
+    if (n === 2) return wrap(chevron(33, BR, 5.5), 46);                                   // Soldado — 1 galão
+    if (n === 3) return wrap(chevron(26, BR, 5.5) + chevron(34, BR, 5.5), 46);            // Cabo — 2 galões
+
+    // ── GRADUADOS (prata) — 3 galões + arcos (rockers). ──
+    if (n === 4) return wrap(chevron(16, AG, 4.6) + chevron(23, AG, 4.6) + chevron(30, AG, 4.6) + arco(46, AG, 3.6), 46);
+    if (n === 5) return wrap(chevron(14, AG, 4.6) + chevron(21, AG, 4.6) + chevron(28, AG, 4.6) + arco(44, AG, 3.4) + arco(51, AG, 3.4), 46);
+    if (n === 6) return wrap(chevron(13, AG, 4.4) + chevron(19, AG, 4.4) + chevron(25, AG, 4.4) + arco(41, AG, 3.2) + arco(47, AG, 3.2) + arco(53, AG, 3.2), 46);
+    // Subtenente (prata) — galões + losango dourado central (sem arcos): topo da carreira de praça.
+    if (n === 7) return wrap(chevron(18, AG, 4.6) + chevron(25, AG, 4.6) + `<polygon points="32,33 40,43 32,53 24,43" fill="${OU}"/>`, 46);
+
+    // ── OFICIAIS SUBALTERNOS (ouro) — estrelas dentro de moldura-escudo. ──
+    const escudo = `<path d="M14,12 L32,6 L50,12 L46,45 L32,55 L18,45 Z" stroke="${AC}" stroke-width="2.4" fill="none" opacity="0.8"/>`;
+    if (n === 8) return wrap(escudo + estrela(32, 30, 9.5, OU), 48);                       // 2º Tenente
+    if (n === 9) return wrap(escudo + estrela(32, 23, 7.5, OU) + estrela(32, 39, 7.5, OU), 48); // 1º Tenente
+    if (n === 10) return wrap(escudo + estrela(32, 20, 6.8, OU) + estrela(24, 35, 6.8, OU) + estrela(40, 35, 6.8, OU), 48); // Capitão
+
+    // ── OFICIAIS SUPERIORES (ouro) — sabre + bastão cruzados, ramo de louro e estrelas. ──
+    const sabre =
+      `<line x1="18" y1="50" x2="46" y2="26" stroke="${AG}" stroke-width="2.6" stroke-linecap="round"/>` +
+      `<line x1="46" y1="50" x2="18" y2="26" stroke="${AG}" stroke-width="2.6" stroke-linecap="round"/>` +
+      `<circle cx="18" cy="50" r="2.4" fill="${OU}"/><circle cx="46" cy="50" r="2.4" fill="${OU}"/>`;
+    const ramo =
+      `<path d="M23,53 Q13,43 19,30" stroke="${OU}" stroke-width="2" fill="none" opacity="0.85"/>` +
+      `<path d="M41,53 Q51,43 45,30" stroke="${OU}" stroke-width="2" fill="none" opacity="0.85"/>`;
+    if (n === 11) return wrap(ramo + sabre + estrela(32, 16, 7, OU), 50);                  // Major
+    if (n === 12) return wrap(ramo + sabre + estrela(24, 16, 6, OU) + estrela(40, 16, 6, OU), 50); // Tenente-Coronel
+    return wrap(ramo + sabre + estrela(32, 12, 5.6, OU) + estrela(22, 19, 5.6, OU) + estrela(42, 19, 5.6, OU), 50); // Coronel
+  };
+
+  /* ── CELEBRAÇÃO DE PROMOÇÃO ───────────────────────────────────
+     Overlay de comemoração quando o aluno sobe de patente (estilo
+     "passou de fase"). Disparada ao vivo pelas telas que creditam XP,
+     lendo o campo `promocao` da resposta da API (dono: carreira.js,
+     ADR-0012). Uso:
+       PBM.Celebracao.promocao({ nivel, patente, insignia })
+     `patente` é o objeto `promocao` devolvido pelo backend; null/ausente
+     não faz nada. Sem dependências externas — confete em <canvas>. */
+  const PALETA_CONFETE = ['#FFE259', '#FFA751', '#C0270F', '#F8F6F2', '#85B7EB'];
+  let celebracaoAberta = false;
+
+  function reduzMovimento() {
+    return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  function dispararConfete(canvas, onFim) {
+    const ctx = canvas.getContext('2d');
+    let raf = null;
+    let parado = false;
+    const dpr = window.devicePixelRatio || 1;
+
+    function ajustar() {
+      canvas.width = canvas.clientWidth * dpr;
+      canvas.height = canvas.clientHeight * dpr;
+    }
+    ajustar();
+
+    const N = Math.min(160, Math.round(canvas.clientWidth / 6));
+    const particulas = [];
+    for (let i = 0; i < N; i++) {
+      particulas.push({
+        x: Math.random() * canvas.width,
+        y: -Math.random() * canvas.height * 0.4,
+        vx: (Math.random() - 0.5) * 2.4 * dpr,
+        vy: (1.5 + Math.random() * 3) * dpr,
+        size: (4 + Math.random() * 5) * dpr,
+        cor: PALETA_CONFETE[(Math.random() * PALETA_CONFETE.length) | 0],
+        rot: Math.random() * Math.PI,
+        vr: (Math.random() - 0.5) * 0.3,
+        forma: Math.random() > 0.5 ? 'ret' : 'circ',
+      });
+    }
+
+    const inicio = performance.now();
+    const DURACAO = 4200;
+
+    function frame(t) {
+      if (parado) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const decorrido = t - inicio;
+      let vivas = 0;
+      for (const p of particulas) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.04 * dpr;
+        p.rot += p.vr;
+        // depois da metade do tempo, esvanece deixando cair
+        const alpha = decorrido > DURACAO ? Math.max(0, 1 - (decorrido - DURACAO) / 800) : 1;
+        if (p.y < canvas.height + 20 && alpha > 0) vivas++;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.cor;
+        if (p.forma === 'ret') {
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.5);
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+      if (vivas === 0 && decorrido > DURACAO) {
+        if (typeof onFim === 'function') onFim();
+        return;
+      }
+      raf = requestAnimationFrame(frame);
+    }
+    raf = requestAnimationFrame(frame);
+
+    return function parar() {
+      parado = true;
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }
+
+  PBM.Celebracao = {
+    promocao(patente, opts = {}) {
+      if (!patente || !patente.patente) return;
+      // Evita empilhar dois overlays (ex: duas subidas no mesmo fluxo).
+      const existente = document.getElementById('pbm-celebracao');
+      if (existente) existente.remove();
+      celebracaoAberta = true;
+
+      const usuario = (typeof PBM.getUsuario === 'function' ? PBM.getUsuario() : null) || {};
+      const curso = opts.curso || usuario.curso || 'ctsp';
+      const nivel = patente.nivel || 1;
+      const insignia = PBM.obterInsigniaSVG(nivel, curso);
+      const semMov = reduzMovimento();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'pbm-celebracao';
+      overlay.className = 'pbm-celebracao' + (semMov ? ' pbm-celebracao--still' : '');
+      overlay.setAttribute('role', 'dialog');
+      overlay.setAttribute('aria-modal', 'true');
+      overlay.setAttribute('aria-label', 'Promoção de patente');
+      overlay.innerHTML = `
+        <canvas class="pbm-celebracao__confete" aria-hidden="true"></canvas>
+        <div class="pbm-celebracao__card">
+          <img class="pbm-celebracao__emblema" src="/images/emblem-pbm.png" alt="" aria-hidden="true">
+          <span class="pbm-celebracao__kicker">Promoção de patente</span>
+          <div class="pbm-celebracao__insignia">${insignia}</div>
+          <h2 class="pbm-celebracao__patente">${patente.patente}</h2>
+          <span class="pbm-celebracao__nivel">Nível ${String(nivel).padStart(2, '0')}</span>
+          <p class="pbm-celebracao__sub">Sua constância foi reconhecida. O próximo posto exige mais.</p>
+          <button type="button" class="pbm-celebracao__btn">Continuar</button>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+      document.body.style.overflow = 'hidden';
+
+      let pararConfete = null;
+      let fechado = false;
+      function fechar() {
+        if (fechado) return;
+        fechado = true;
+        celebracaoAberta = false;
+        if (pararConfete) pararConfete();
+        document.removeEventListener('keydown', onKey);
+        overlay.classList.add('pbm-celebracao--leaving');
+        document.body.style.overflow = '';
+        setTimeout(() => overlay.remove(), 320);
+      }
+      function onKey(e) { if (e.key === 'Escape') fechar(); }
+
+      overlay.querySelector('.pbm-celebracao__btn').addEventListener('click', fechar);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) fechar(); });
+      document.addEventListener('keydown', onKey);
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => overlay.classList.add('pbm-celebracao--show'));
+      });
+
+      if (!semMov) {
+        const canvas = overlay.querySelector('.pbm-celebracao__confete');
+        pararConfete = dispararConfete(canvas);
+      }
+
+      // Auto-fecha: mais tempo se houver animação a apreciar.
+      setTimeout(fechar, semMov ? 4500 : 6500);
+      return fechar;
+    },
+  };
+
   /* ── SKELETON HELPERS ────────────────────────────────────────
      Uso:
        PBM.Skeleton.statGrid('stats-grid', 3)   // renderiza N skeleton cards

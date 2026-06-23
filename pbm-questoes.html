@@ -859,7 +859,7 @@
 
 <script src="/js/api.js?v=5"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js?v=5"></script>
+<script src="/js/pbm-components.js?v=9"></script>
 <script src="/js/rich-text.js?v=1"></script>
 <script>PBM.Layout.mount({active:'estudar'});
 RichText.ensurePurify().catch(() => {});</script>
@@ -1346,6 +1346,9 @@ async function confirmarResposta() {
   persistirEstadoQuestoes();
   if (sessaoId) {
     PBM.api.sessoes.responder(sessaoId, { questao_id: q.id, resposta_escolhida: selecionada, correta: acertou })
+      .then(resp => {
+        if (resp && resp.promocao && PBM.Celebracao) PBM.Celebracao.promocao(resp.promocao);
+      })
       .catch(err => {
         console.error('[Protocolo Bravo Mike] Falha ao registrar resposta:', err);
         if (window.PBM && PBM.Toast) PBM.Toast.warning('Progresso não salvo — verifique sua conexão.');
@@ -1405,14 +1408,16 @@ async function encerrarSessao() {
     console.warn('[Protocolo Bravo Mike] Sessão não registrada — progresso não foi salvo.');
   }
   // Se veio do Ciclo, conclui o bloco (registra tempo + acerto + avanca rodada se for ultimo)
+  let promocaoCiclo = null;
   if (cicloBloco && cicloSessaoIniciada && !PBM.isAdmin()) {
     const dur = Math.max(1, Math.round((Date.now() - cicloSessaoIniciada) / 60000));
     try {
-      await PBM.Ciclo.concluirBloco(cicloBloco.id, {
+      const r = await PBM.Ciclo.concluirBloco(cicloBloco.id, {
         duracao_minutos: dur,
         respondidas: acertos + erros,
         acertos,
       });
+      if (r && r.promocao) promocaoCiclo = r.promocao;
     } catch (err) {
       console.warn('[Ciclo] Falha ao concluir bloco:', err);
     }
@@ -1421,6 +1426,8 @@ async function encerrarSessao() {
   if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
   limparEstadoQuestoes();
   mostrarResultados();
+  // Celebra a promoção pelo bloco do Ciclo após a tela de resultado.
+  if (promocaoCiclo && PBM.Celebracao) setTimeout(() => PBM.Celebracao.promocao(promocaoCiclo), 900);
 }
 
 // ── RESULTADOS ──

@@ -370,6 +370,154 @@
 
 
 /* ─────────────────────────────────────────────────────────────
+   5b. CELEBRAÇÃO DE PROMOÇÃO — overlay de "subiu de patente"
+   ───────────────────────────────────────────────────────────── */
+.pbm-celebracao {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(circle at 50% 38%, rgba(192,39,15,0.18), rgba(15,15,15,0.92) 62%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.32s ease;
+}
+.pbm-celebracao.pbm-celebracao--show { opacity: 1; }
+.pbm-celebracao.pbm-celebracao--leaving { opacity: 0; }
+
+.pbm-celebracao__confete {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.pbm-celebracao__card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--bg-secundario), var(--bg-primario));
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 32px 28px 28px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,167,81,0.12);
+  transform: translateY(18px) scale(0.94);
+  opacity: 0;
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.42s ease;
+}
+.pbm-celebracao--show .pbm-celebracao__card { transform: translateY(0) scale(1); opacity: 1; }
+
+.pbm-celebracao__emblema {
+  height: 40px;
+  width: auto;
+  opacity: 0.9;
+  margin-bottom: 14px;
+}
+
+.pbm-celebracao__kicker {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #FFA751;
+  margin-bottom: 18px;
+}
+
+.pbm-celebracao__insignia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 132px;
+  margin: 4px auto 14px;
+  filter: drop-shadow(0 6px 18px rgba(255,167,81,0.28));
+}
+.pbm-celebracao__insignia svg {
+  width: 120px;
+  height: 120px;
+}
+.pbm-celebracao--show .pbm-celebracao__insignia {
+  animation: pbm-insignia-pop 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.pbm-celebracao__patente {
+  font-family: 'Inter', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--texto-principal);
+  margin: 0 0 4px;
+  line-height: 1.15;
+}
+
+.pbm-celebracao__nivel {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--texto-suporte);
+  margin-bottom: 14px;
+}
+
+.pbm-celebracao__sub {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--texto-suave);
+  margin: 0 0 24px;
+}
+
+.pbm-celebracao__btn {
+  width: 100%;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 10px;
+  background: var(--brand-primary);
+  color: var(--brand-on-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.pbm-celebracao__btn:hover { background: var(--brand-primary-hover); }
+.pbm-celebracao__btn:active { transform: scale(0.98); }
+
+@keyframes pbm-insignia-pop {
+  0%   { transform: scale(0.2) rotate(-25deg); opacity: 0; }
+  60%  { transform: scale(1.12) rotate(6deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Acessibilidade: sem confete nem coreografia para quem pede menos movimento */
+.pbm-celebracao--still .pbm-celebracao__card { transition: opacity 0.3s ease; transform: none; }
+.pbm-celebracao--still.pbm-celebracao--show .pbm-celebracao__card { transform: none; }
+.pbm-celebracao--still .pbm-celebracao__insignia { animation: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pbm-celebracao__card { transition: opacity 0.3s ease; transform: none; }
+  .pbm-celebracao--show .pbm-celebracao__card { transform: none; }
+  .pbm-celebracao__insignia { animation: none !important; }
+}
+
+@media (max-width: 768px) {
+  .pbm-celebracao__card { max-width: 100%; padding: 28px 22px 24px; }
+  .pbm-celebracao__insignia { height: 116px; }
+  .pbm-celebracao__insignia svg { width: 104px; height: 104px; }
+  .pbm-celebracao__patente { font-size: 23px; }
+}
+
+
+/* ─────────────────────────────────────────────────────────────
    6. PROGRESS — Barra de progresso e progress ring
    ───────────────────────────────────────────────────────────── */
 .progress-bar {

@@ -575,7 +575,7 @@
 <!-- API -->
 <script src="/js/api.js?v=5"></script>
 <script src="/js/tour.js"></script>
-<script src="/js/pbm-components.js?v=5"></script>
+<script src="/js/pbm-components.js?v=9"></script>
 <script src="/js/rich-text.js?v=1"></script>
 <script>PBM.Layout.mount({active:'simulados'});
 RichText.ensurePurify().catch(() => {});</script>
@@ -968,22 +968,33 @@ async function entregarProva(porTempoEsgotado) {
     return;
   }
 
+  // Promoção de patente alcançada durante a entrega (questões + bônus do
+  // simulado). Guarda a mais alta e celebra só após a tela de resultado.
+  let promocaoFinal = null;
+  const _talvezPromover = (resp) => {
+    if (resp && resp.promocao && (!promocaoFinal || resp.promocao.nivel > promocaoFinal.nivel)) {
+      promocaoFinal = resp.promocao;
+    }
+  };
+
   // Envia cada resposta pintada no oficial
   for (const r of respostas) {
-    const marcou = r.oficial; 
+    const marcou = r.oficial;
     const acertou = marcou ? (marcou === r.gabaritoReal) : false;
-    
+
     try {
-      await PBM.api.sessoes.responder(sessaoId, { 
-        questao_id: r.questao_id, 
+      const resp = await PBM.api.sessoes.responder(sessaoId, {
+        questao_id: r.questao_id,
         resposta_escolhida: marcou || null,
-        correta: acertou 
+        correta: acertou
       });
+      _talvezPromover(resp);
     } catch(e) { console.error("Erro salvando", e); }
   }
 
   try {
-    await PBM.api.sessoes.encerrar(sessaoId);
+    const respEnc = await PBM.api.sessoes.encerrar(sessaoId);
+    _talvezPromover(respEnc);
   } catch(e) {
     if (e && e.codigo === 'TEMPO_EXCEDIDO') {
       document.getElementById('tela-loading').style.display = 'none';
@@ -996,6 +1007,8 @@ async function entregarProva(porTempoEsgotado) {
 
   if (window.PBMFerramentas) window.PBMFerramentas.clearAll();
   mostrarResultado();
+  // Deixa o aluno ver o resultado antes da celebração de promoção.
+  if (promocaoFinal && PBM.Celebracao) setTimeout(() => PBM.Celebracao.promocao(promocaoFinal), 900);
 }
 
 function mostrarResultado() {

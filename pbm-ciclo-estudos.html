@@ -1132,7 +1132,7 @@
 </div>
 
 <script src="/js/api.js?v=5"></script>
-<script src="/js/pbm-components.js?v=5"></script>
+<script src="/js/pbm-components.js?v=9"></script>
 <script src="/js/services/cicloApi.js"></script>
 <script src="/js/pomodoro-widget.js?v=8"></script>
 <script>
@@ -1665,9 +1665,10 @@
     const bloco = estado.proximoBloco;
     if (!confirm('Marcar este bloco como concluído manualmente? Use para estudo offline.')) return;
     try {
-      await PBM.Ciclo.concluirBloco(bloco.id, {}, { forcar: true });
+      const r = await PBM.Ciclo.concluirBloco(bloco.id, {}, { forcar: true });
       lembrarBlocoEmAndamento(bloco.id);
       await carregar();
+      if (r && r.promocao && PBM.Celebracao) PBM.Celebracao.promocao(r.promocao);
     } catch (e) {
       console.error('[ciclo] forçar conclusão', e);
       if (window.PBM && PBM.Toast) PBM.Toast.error('Falha ao concluir. Tente novamente.');
@@ -1684,9 +1685,10 @@
       'ela volta normalmente na próxima. O tempo já estudado é preservado.';
     if (!confirm(msg)) return;
     try {
-      await PBM.Ciclo.encerrarBloco(bloco.id);
+      const r = await PBM.Ciclo.encerrarBloco(bloco.id);
       lembrarBlocoEmAndamento(bloco.id);
       await carregar();
+      if (r && r.promocao && PBM.Celebracao) PBM.Celebracao.promocao(r.promocao);
     } catch (e) {
       console.error('[ciclo] encerrar legislação', e);
       if (window.PBM && PBM.Toast) PBM.Toast.error('Falha ao encerrar a legislação. Tente novamente.');
