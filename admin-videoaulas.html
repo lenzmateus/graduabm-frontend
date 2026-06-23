@@ -41,6 +41,18 @@
   .vazio, .loading-txt { text-align: center; padding: 3rem; color: var(--cinza-texto); font-size: 13px; }
   .total-txt { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-bottom: 1rem; }
 
+  /* Série no admin: vídeos da mesma lei agrupados num acordeão (colapsado por padrão). */
+  .serie-admin { margin-bottom: 8px; }
+  .serie-admin-head { display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 1rem; transition: border-color 0.15s; }
+  .serie-admin-head:hover { border-color: #444; }
+  .serie-admin-chevron { font-size: 14px; line-height: 1; color: var(--cinza-texto); transition: transform 0.2s; flex: none; }
+  .serie-admin.colapsada .serie-admin-chevron { transform: rotate(-90deg); }
+  .serie-admin-nome { font-size: 13px; font-weight: 600; color: var(--branco); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .serie-admin-count { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--cinza-texto); border: 1px solid var(--cinza-borda); border-radius: 20px; padding: 3px 8px; flex: none; }
+  .serie-add { flex: none; }
+  .serie-admin-eps { margin-top: 6px; padding-left: 8px; }
+  .serie-admin.colapsada .serie-admin-eps { display: none; }
+
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 1rem; overflow-y: auto; }
   .overlay.aberto { display: flex; }
   .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 640px; max-height: 92vh; margin: auto; display: flex; flex-direction: column; }
@@ -258,19 +270,44 @@ function aplicarFiltros() {
     if (busca && !((v.titulo || '') + ' ' + (v.legislacao_id || '')).toLowerCase().includes(busca)) return false;
     return true;
   });
-  document.getElementById('total-txt').textContent = lista.length + ' videoaula' + (lista.length !== 1 ? 's' : '');
-  render(lista);
+  const nLeis = new Set(lista.map(v => v.legislacao_id || '—')).size;
+  document.getElementById('total-txt').textContent =
+    lista.length + ' videoaula' + (lista.length !== 1 ? 's' : '') + ' • ' + nLeis + ' lei' + (nLeis !== 1 ? 's' : '');
+  // Busca/filtro ativo => abre os grupos pra os resultados ficarem visíveis.
+  render(lista, !!(busca || curso || status));
 }
-function render(lista) {
-  const el = document.getElementById('lista');
-  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhuma videoaula encontrada</div>'; return; }
-  el.innerHTML = lista.map(v => {
-    const stClass = v.status === 'publicado' ? 'status-publicado' : 'status-rascunho';
-    return `
+
+function nomeLei(legId) {
+  const leg = legPorId(legId);
+  return (leg && leg.nome) || legId || '—';
+}
+
+// Agrupa por legislação e ordena cada série por `ordem` (depois título).
+function agruparPorLei(lista) {
+  const grupos = new Map();
+  lista.forEach(v => {
+    const chave = v.legislacao_id || '—';
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave).push(v);
+  });
+  return [...grupos.entries()].map(([legId, eps]) => {
+    eps.sort((a, b) => {
+      const oa = a.ordem == null ? Infinity : a.ordem;
+      const ob = b.ordem == null ? Infinity : b.ordem;
+      return oa !== ob ? oa - ob : (a.titulo || '').localeCompare(b.titulo || '');
+    });
+    return [legId, eps];
+  }).sort((a, b) => nomeLei(a[0]).localeCompare(nomeLei(b[0])));
+}
+
+function linhaEpisodio(v) {
+  const stClass = v.status === 'publicado' ? 'status-publicado' : 'status-rascunho';
+  const ordemTag = v.ordem != null ? '#' + v.ordem + ' · ' : '';
+  return `
     <div class="card-row">
       <div>
-        <div class="pod-titulo">${(v.titulo || '—').replace(/</g, '&lt;')}</div>
-        <div class="pod-leg">${(v.legislacao_id || '—').replace(/</g, '&lt;')}</div>
+        <div class="pod-titulo">${ordemTag}${(v.titulo || '—').replace(/</g, '&lt;')}</div>
+        <div class="pod-leg">${(v.capitulo || v.legislacao_id || '—').replace(/</g, '&lt;')}</div>
       </div>
       <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888">${(v.curso || '').toUpperCase()}</div>
       <div><a class="yt-link" href="https://youtu.be/${encodeURIComponent(v.youtube_id)}" target="_blank" rel="noopener">${(v.youtube_id || '—')}↗</a></div>
@@ -281,12 +318,31 @@ function render(lista) {
         <button class="btn-mini danger" data-action="excluir" data-id="${v.id}">Excluir</button>
       </div>
     </div>`;
+}
+
+function render(lista, expandir) {
+  const el = document.getElementById('lista');
+  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhuma videoaula encontrada</div>'; return; }
+  el.innerHTML = agruparPorLei(lista).map(([legId, eps]) => {
+    const legAttr = String(legId).replace(/"/g, '&quot;');
+    return `
+    <section class="serie-admin${expandir ? '' : ' colapsada'}" data-leg="${legAttr}">
+      <div class="serie-admin-head" data-action="toggle-serie">
+        <span class="serie-admin-chevron">⌄</span>
+        <span class="serie-admin-nome">${nomeLei(legId).replace(/</g, '&lt;')}</span>
+        <span class="serie-admin-count">${eps.length} ep${eps.length !== 1 ? 's' : ''}</span>
+        <button class="btn-mini edit serie-add" data-action="add-ep" data-leg="${legAttr}">+ Episódio</button>
+      </div>
+      <div class="serie-admin-eps">${eps.map(linhaEpisodio).join('')}</div>
+    </section>`;
   }).join('');
 }
 
 document.getElementById('lista').addEventListener('click', (e) => {
   const btn = e.target.closest('[data-action]');
   if (!btn) return;
+  if (btn.dataset.action === 'toggle-serie') { btn.closest('.serie-admin').classList.toggle('colapsada'); return; }
+  if (btn.dataset.action === 'add-ep') { abrirModalNovoNaLei(btn.dataset.leg); return; }
   const id = btn.dataset.id;
   if (btn.dataset.action === 'editar') abrirModalEditar(id);
   if (btn.dataset.action === 'excluir') excluir(id);
@@ -317,6 +373,31 @@ async function abrirModalNovo() {
   document.getElementById('modal-erro').style.display = 'none';
   document.getElementById('overlay-modal').classList.add('aberto');
 }
+// Quick-add: nova videoaula JÁ na lei do grupo, com área/curso/legislação preenchidos
+// e a Ordem auto-incrementada (próximo número da série). Otimiza o trabalho repetitivo.
+async function abrirModalNovoNaLei(legId) {
+  await carregarManifesto();
+  const leg = legPorId(legId);
+  const eps = todos.filter(v => v.legislacao_id === legId);
+  const maxOrdem = eps.reduce((m, v) => (v.ordem != null && v.ordem > m ? v.ordem : m), 0);
+  const proxOrdem = maxOrdem + 1;
+  const curso = (leg && leg.curso && leg.curso !== 'ambos') ? leg.curso : (eps[0] && eps[0].curso) || 'ambos';
+
+  document.getElementById('modal-titulo').textContent = 'Novo Episódio — ' + ((leg && leg.nome) || legId);
+  ['m-id', 'm-descricao', 'm-capitulo', 'm-youtube'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('m-curso').value = curso;
+  document.getElementById('m-area').value = atDaLeg(leg, curso) || '';
+  popularLegsPorArea(legId);
+  document.getElementById('m-legislacao-id').value = legId;
+  atualizarInfoLeg();
+  document.getElementById('m-titulo').value = ((leg && leg.nome) || legId) + ' — Aula ' + proxOrdem;
+  document.getElementById('m-ordem').value = proxOrdem;
+  document.getElementById('m-status').value = 'rascunho';
+  atualizarPreview();
+  document.getElementById('modal-erro').style.display = 'none';
+  document.getElementById('overlay-modal').classList.add('aberto');
+}
+
 async function abrirModalEditar(id) {
   const v = todos.find(x => String(x.id) === String(id));
   if (!v) return;
