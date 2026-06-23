@@ -183,46 +183,80 @@
 
       const eps = document.createElement('div');
       eps.className = 'serie-eps';
-      grupo.eps.forEach((v) => eps.appendChild(montarLinha(v)));
+      linhasDaLei(grupo.eps).forEach((p) => eps.appendChild(montarLinha(p)));
 
       serie.append(cab, eps);
       return serie;
     }
 
-    function montarLinha(v) {
+    // Transforma as videoaulas da lei em "linhas tocáveis": uma playlist expandida
+    // (videos[]) vira uma linha por aula; sem expansão cai em "Playlist completa";
+    // vídeo único legado vira uma linha com toggle de visto.
+    function linhasDaLei(eps) {
+      const linhas = [];
+      eps.forEach((v) => {
+        if (v.videos && v.videos.length) {
+          v.videos.forEach((vid, i) => linhas.push({
+            id: v.id + ':' + vid.youtube_id,
+            label: vid.titulo || ('Aula ' + (i + 1)),
+            youtube_id: vid.youtube_id,
+            youtube_playlist_id: v.youtube_playlist_id,
+            legislacao_nome: v.legislacao_nome,
+            semVisto: true,
+          }));
+        } else if (v.youtube_playlist_id) {
+          linhas.push({
+            id: v.id, label: 'Playlist completa', tag: 'Playlist',
+            youtube_playlist_id: v.youtube_playlist_id, youtube_id: null,
+            legislacao_nome: v.legislacao_nome, videoaula: v,
+          });
+        } else {
+          linhas.push({
+            id: v.id, label: rotuloItem(v), youtube_id: v.youtube_id, youtube_playlist_id: null,
+            capitulo: v.capitulo, legislacao_nome: v.legislacao_nome, videoaula: v,
+          });
+        }
+      });
+      return linhas;
+    }
+
+    function montarLinha(p) {
+      const v = p.videoaula;
       const card = document.createElement('div');
-      card.className = 'card' + (v.concluido ? ' concluido' : '');
-      card.dataset.id = v.id;
-      card.dataset.lei = v.legislacao_id;
+      card.className = 'card' + (v && v.concluido ? ' concluido' : '');
+      card.dataset.id = p.id;
 
       const sel = document.createElement('div');
       sel.className = 'selecionar';
       const icone = document.createElement('span');
-      icone.className = 'ep-icone'; icone.textContent = v.concluido ? '✓' : '▶';
+      icone.className = 'ep-icone'; icone.textContent = (v && v.concluido) ? '✓' : '▶';
       const texto = document.createElement('div');
       texto.className = 'ep-texto';
       const h = document.createElement('h2');
-      h.textContent = rotuloItem(v);
-      if (v.youtube_playlist_id) {
+      h.textContent = p.label;
+      if (p.tag) {
         const tag = document.createElement('span');
-        tag.className = 'ep-tag'; tag.textContent = 'Playlist';
+        tag.className = 'ep-tag'; tag.textContent = p.tag;
         h.append(tag);
       }
       texto.append(h);
-      if (v.capitulo) {
-        const cap = document.createElement('p'); cap.className = 'cap'; cap.textContent = v.capitulo;
+      if (p.capitulo) {
+        const cap = document.createElement('p'); cap.className = 'cap'; cap.textContent = p.capitulo;
         texto.append(cap);
       }
       sel.append(icone, texto);
-      sel.addEventListener('click', () => assistir(v));
+      sel.addEventListener('click', () => assistir(p));
+      card.append(sel);
 
-      const btn = document.createElement('button');
-      btn.className = 'visto-btn';
-      btn.title = v.concluido ? 'Visto — desmarcar' : 'Marcar como visto';
-      btn.textContent = v.concluido ? '✓' : '○';
-      btn.addEventListener('click', (e) => { e.stopPropagation(); alternarVisto(v); });
-
-      card.append(sel, btn);
+      // Toggle de visto só pra item com registro próprio (single/legado ou playlist-fallback).
+      if (v && !p.semVisto) {
+        const btn = document.createElement('button');
+        btn.className = 'visto-btn';
+        btn.title = v.concluido ? 'Visto — desmarcar' : 'Marcar como visto';
+        btn.textContent = v.concluido ? '✓' : '○';
+        btn.addEventListener('click', (e) => { e.stopPropagation(); alternarVisto(v); });
+        card.append(btn);
+      }
       return card;
     }
 
@@ -230,19 +264,28 @@
       card.classList.toggle('concluido', !!v.concluido);
       card.querySelector('.ep-icone').textContent = v.concluido ? '✓' : '▶';
       const btn = card.querySelector('.visto-btn');
-      btn.textContent = v.concluido ? '✓' : '○';
-      btn.title = v.concluido ? 'Visto — desmarcar' : 'Marcar como visto';
+      if (btn) {
+        btn.textContent = v.concluido ? '✓' : '○';
+        btn.title = v.concluido ? 'Visto — desmarcar' : 'Marcar como visto';
+      }
     }
 
-    // Selo "X/Y" da série; destacado quando completa.
+    // Selo da série: "N aulas" quando a playlist foi expandida; senão "X/Y vistos".
     function atualizarSelo(legId) {
       const serie = elLista.querySelector('.serie[data-lei="' + CSS.escape(legId) + '"]');
       if (!serie) return;
       const eps = videos.filter((v) => v.legislacao_id === legId);
-      const vistos = eps.filter((v) => v.concluido).length;
       const selo = serie.querySelector('.serie-selo');
-      selo.textContent = vistos + '/' + eps.length;
-      selo.classList.toggle('completa', vistos === eps.length && eps.length > 0);
+      const expandida = eps.some((v) => v.videos && v.videos.length);
+      if (expandida) {
+        const n = eps.reduce((s, v) => s + (v.videos && v.videos.length ? v.videos.length : 1), 0);
+        selo.textContent = n + (n === 1 ? ' aula' : ' aulas');
+        selo.classList.remove('completa');
+      } else {
+        const vistos = eps.filter((v) => v.concluido).length;
+        selo.textContent = vistos + '/' + eps.length;
+        selo.classList.toggle('completa', vistos === eps.length && eps.length > 0);
+      }
     }
 
     // Check manual de "visto" (o iframe do YouTube não entrega eventos sem mudar a CSP).
@@ -261,23 +304,26 @@
       }
     }
 
-    // Monta a URL de embed. Playlist usa youtube.com (o videoseries no nocookie
-    // só toca o 1º vídeo / dá erro). Vídeo único fica no nocookie (funciona).
-    function urlEmbed(v) {
-      if (v.youtube_playlist_id) {
-        return 'https://www.youtube.com/embed/videoseries?list=' + encodeURIComponent(v.youtube_playlist_id) + '&rel=0&modestbranding=1&autoplay=1';
+    // Embed: vídeo dentro da playlist (com ⏮⏭), playlist inteira, ou vídeo único.
+    function urlEmbed(p) {
+      if (p.youtube_id && p.youtube_playlist_id) {
+        return 'https://www.youtube.com/embed/' + encodeURIComponent(p.youtube_id) +
+          '?list=' + encodeURIComponent(p.youtube_playlist_id) + '&rel=0&modestbranding=1&autoplay=1';
       }
-      return 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(v.youtube_id) + '?rel=0&autoplay=1&modestbranding=1';
+      if (p.youtube_playlist_id) {
+        return 'https://www.youtube.com/embed/videoseries?list=' + encodeURIComponent(p.youtube_playlist_id) + '&rel=0&modestbranding=1&autoplay=1';
+      }
+      return 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(p.youtube_id) + '?rel=0&autoplay=1&modestbranding=1';
     }
 
-    function assistir(v) {
-      document.querySelectorAll('.card').forEach((c) => c.classList.toggle('ativo', c.dataset.id === v.id));
-      elPlayer.src = urlEmbed(v);
+    function assistir(p) {
+      document.querySelectorAll('.card').forEach((c) => c.classList.toggle('ativo', c.dataset.id === p.id));
+      elPlayer.src = urlEmbed(p);
       elPalco.classList.add('on');
       elPalcoTitulo.innerHTML = '';
-      elPalcoTitulo.append(document.createTextNode(rotuloItem(v)));
+      elPalcoTitulo.append(document.createTextNode(p.label));
       const lei = document.createElement('span');
-      lei.className = 'lei'; lei.textContent = '  ·  ' + (v.legislacao_nome || '');
+      lei.className = 'lei'; lei.textContent = '  ·  ' + (p.legislacao_nome || '');
       elPalcoTitulo.append(lei);
       elPalcoTitulo.style.display = 'block';
       elPalco.scrollIntoView({ behavior: 'smooth', block: 'start' });
