@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="/css/pbm-layout.css">
 <style>
   body { background: var(--bg-primario, #0d0d0d); color: var(--branco, #fff); }
-  .wrap { max-width: 820px; margin: 0 auto; padding: 24px 18px 64px; }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 18px 64px; }
   .voltar { display: inline-block; margin-bottom: 16px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--cinza-texto, #9a9a9a); text-decoration: none; }
   .voltar:hover { color: var(--branco, #fff); }
   .topo { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
@@ -26,7 +26,7 @@
   .topo h1 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.04em; margin: 0; }
   .subtitulo { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--cinza-texto, #9a9a9a); margin: 0 0 22px; }
 
-  /* Palco (player do YouTube) fica fixo no topo quando ativo. */
+  /* Palco (player do YouTube): vídeo único ou playlist. */
   .palco { background: #000; border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 14px; overflow: hidden; aspect-ratio: 16/9; margin-bottom: 8px; display: none; }
   .palco.on { display: block; }
   .palco iframe { width: 100%; height: 100%; border: 0; display: block; }
@@ -35,7 +35,11 @@
 
   .lista { display: flex; flex-direction: column; gap: 10px; }
 
-  /* ── Série (lei) como acordeão minimalista ─────────────────────────────── */
+  /* Cabeçalho da Área Temática (divide o conteúdo como no resto do site). */
+  .at-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cinza-texto, #9a9a9a); margin: 20px 2px 2px; padding-bottom: 6px; border-bottom: 1px solid var(--cinza-borda, #2a2a2a); }
+  .at-titulo:first-child { margin-top: 0; }
+
+  /* Série (lei) como acordeão minimalista. */
   .serie { border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 14px; overflow: hidden; background: var(--cinza-escuro, #1a1a1a); }
   .serie-cabecalho { display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; padding: 14px 16px; transition: background 0.15s; }
   .serie-cabecalho:hover { background: rgba(255,255,255,0.03); }
@@ -47,26 +51,22 @@
   .serie-selo.completa { color: #fff; background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); }
   .serie-chevron { flex: none; font-size: 15px; line-height: 1; color: var(--cinza-texto, #9a9a9a); transition: transform 0.2s; }
   .serie.colapsada .serie-chevron { transform: rotate(-90deg); }
-  .serie-eps { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; padding: 14px 16px; border-top: 1px solid var(--cinza-borda, #2a2a2a); }
+  .serie-eps { display: flex; flex-direction: column; border-top: 1px solid var(--cinza-borda, #2a2a2a); }
   .serie.colapsada .serie-eps { display: none; }
 
-  /* ── Card de vídeo: thumb + rótulo curto ───────────────────────────────── */
-  .card { position: relative; background: var(--cinza-medio, #141414); border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 12px; overflow: hidden; transition: border-color 0.15s; }
-  .card:hover, .card.ativo { border-color: var(--vermelho, #C0270F); }
-  .card.concluido { border-color: var(--vermelho, #C0270F); }
-  .card .thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: #000; cursor: pointer; }
-  .card .meta { padding: 10px 12px; }
-  .card h2 {
-    font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 600; margin: 0; color: var(--branco, #fff); cursor: pointer;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .card .cap { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--cinza-texto, #9a9a9a); margin: 3px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .visto-btn {
-    margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a);
-    color: var(--cinza-texto, #9a9a9a); border-radius: 8px; padding: 6px 8px;
-    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.03em;
-    text-transform: uppercase; cursor: pointer; transition: all 0.15s;
-  }
+  /* Linha de vídeo/playlist. */
+  .card { display: flex; align-items: center; gap: 12px; padding: 11px 16px; transition: background 0.12s; }
+  .card + .card { border-top: 1px solid rgba(255,255,255,0.05); }
+  .card:hover { background: rgba(255,255,255,0.03); }
+  .card.ativo { background: rgba(192,39,15,0.10); }
+  .card .selecionar { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+  .card .ep-icone { flex: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; color: var(--cinza-texto, #9a9a9a); border: 1px solid var(--cinza-borda, #2a2a2a); }
+  .card.ativo .ep-icone, .card.concluido .ep-icone { color: #fff; background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); }
+  .card .ep-texto { flex: 1; min-width: 0; }
+  .card h2 { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; margin: 0; color: var(--branco, #fff); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .ep-tag { display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--cinza-texto, #9a9a9a); border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 999px; padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+  .card .cap { font-family: 'Inter', sans-serif; font-size: 11px; color: var(--cinza-texto, #9a9a9a); margin: 2px 0 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .visto-btn { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a); color: var(--cinza-texto, #9a9a9a); font-size: 13px; cursor: pointer; transition: all 0.15s; padding: 0; }
   .visto-btn:hover { color: var(--branco, #fff); border-color: var(--texto-suporte, #777); }
   .card.concluido .visto-btn { color: #fff; background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); }
 
@@ -97,17 +97,30 @@
 
     let videos = [];
 
-    function thumb(id) { return 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/hqdefault.jpg'; }
+    // ── Área Temática: divide o conteúdo como no resto do site ───────────────
+    const AT_LABEL = {
+      AT1: 'AT1 — Segurança contra incêndios',
+      AT2: 'AT2 — Combate a incêndios',
+      AT3: 'AT3 — Buscas e salvamentos / APH',
+      AT4: 'AT4 — Direito institucional e militar',
+      AT5: 'AT5 — Normas e documentação técnica',
+    };
+    const AT_ORDEM = ['AT1', 'AT2', 'AT3', 'AT4', 'AT5'];
+    function rotuloAT(at) { return AT_LABEL[at] || 'Outras legislações'; }
 
-    // Rótulo curto: a lei já está no cabeçalho da série; tira a repetição do título.
-    function rotuloEpisodio(v) {
-      let t = (v.titulo || '').trim();
-      const lei = (v.legislacao_nome || '').trim();
-      if (lei && t.toLowerCase().startsWith(lei.toLowerCase())) {
-        t = t.slice(lei.length).replace(/^[\s—\-–:·.]+/, '').trim();
-      }
-      if (!t) t = v.capitulo ? v.capitulo : (v.ordem != null ? 'Aula ' + v.ordem : 'Vídeo');
-      return t;
+    function agruparPorAT(lista) {
+      const porAT = new Map();
+      lista.forEach((v) => {
+        const at = v.area_tematica || 'OUTROS';
+        if (!porAT.has(at)) porAT.set(at, []);
+        porAT.get(at).push(v);
+      });
+      return [...porAT.keys()]
+        .sort((a, b) => {
+          const ia = AT_ORDEM.indexOf(a), ib = AT_ORDEM.indexOf(b);
+          return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+        })
+        .map((at) => [at, porAT.get(at)]);
     }
 
     // Agrupa por legislação (a série da lei), preservando a ordem do backend.
@@ -121,74 +134,104 @@
       return grupos;
     }
 
+    // Rótulo curto: a lei já está no cabeçalho; tira a repetição do título.
+    function rotuloItem(v) {
+      let t = (v.titulo || '').trim();
+      const lei = (v.legislacao_nome || '').trim();
+      if (lei && t.toLowerCase().startsWith(lei.toLowerCase())) {
+        t = t.slice(lei.length).replace(/^[\s—\-–:·.]+/, '').trim();
+      }
+      if (!t) t = v.youtube_playlist_id ? 'Playlist completa' : (v.capitulo || (v.ordem != null ? 'Aula ' + v.ordem : 'Vídeo'));
+      return t;
+    }
+
     function render(lista) {
       videos = lista;
       elLista.innerHTML = '';
-      agruparPorLei(lista).forEach((grupo) => {
-        const serie = document.createElement('section');
-        serie.className = 'serie colapsada';
-        serie.dataset.lei = grupo.eps[0].legislacao_id;
-
-        const cab = document.createElement('div');
-        cab.className = 'serie-cabecalho';
-        cab.setAttribute('role', 'button');
-        cab.tabIndex = 0;
-        const nome = document.createElement('span');
-        nome.className = 'serie-nome'; nome.textContent = grupo.nome;
-        const selo = document.createElement('span');
-        selo.className = 'serie-selo';
-        const chevron = document.createElement('span');
-        chevron.className = 'serie-chevron'; chevron.textContent = '⌄';
-        cab.append(nome, selo, chevron);
-        cab.addEventListener('click', () => serie.classList.toggle('colapsada'));
-        cab.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); serie.classList.toggle('colapsada'); }
+      agruparPorAT(lista).forEach(([at, doAT]) => {
+        const tit = document.createElement('h2');
+        tit.className = 'at-titulo';
+        tit.textContent = rotuloAT(at);
+        elLista.appendChild(tit);
+        agruparPorLei(doAT).forEach((grupo) => {
+          elLista.appendChild(montarSerie(grupo));
+          atualizarSelo(grupo.eps[0].legislacao_id);
         });
-
-        const eps = document.createElement('div');
-        eps.className = 'serie-eps';
-        grupo.eps.forEach((v) => eps.appendChild(montarCard(v)));
-
-        serie.append(cab, eps);
-        elLista.appendChild(serie);
-        atualizarSelo(grupo.eps[0].legislacao_id);
       });
     }
 
-    function montarCard(v) {
+    function montarSerie(grupo) {
+      const serie = document.createElement('section');
+      serie.className = 'serie colapsada';
+      serie.dataset.lei = grupo.eps[0].legislacao_id;
+
+      const cab = document.createElement('div');
+      cab.className = 'serie-cabecalho';
+      cab.setAttribute('role', 'button');
+      cab.tabIndex = 0;
+      const nome = document.createElement('span');
+      nome.className = 'serie-nome'; nome.textContent = grupo.nome;
+      const selo = document.createElement('span');
+      selo.className = 'serie-selo';
+      const chevron = document.createElement('span');
+      chevron.className = 'serie-chevron'; chevron.textContent = '⌄';
+      cab.append(nome, selo, chevron);
+      cab.addEventListener('click', () => serie.classList.toggle('colapsada'));
+      cab.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); serie.classList.toggle('colapsada'); }
+      });
+
+      const eps = document.createElement('div');
+      eps.className = 'serie-eps';
+      grupo.eps.forEach((v) => eps.appendChild(montarLinha(v)));
+
+      serie.append(cab, eps);
+      return serie;
+    }
+
+    function montarLinha(v) {
       const card = document.createElement('div');
       card.className = 'card' + (v.concluido ? ' concluido' : '');
       card.dataset.id = v.id;
       card.dataset.lei = v.legislacao_id;
 
-      const img = document.createElement('img');
-      img.className = 'thumb'; img.loading = 'lazy'; img.alt = ''; img.src = thumb(v.youtube_id);
-      img.addEventListener('click', () => assistir(v));
-
-      const meta = document.createElement('div');
-      meta.className = 'meta';
+      const sel = document.createElement('div');
+      sel.className = 'selecionar';
+      const icone = document.createElement('span');
+      icone.className = 'ep-icone'; icone.textContent = v.concluido ? '✓' : '▶';
+      const texto = document.createElement('div');
+      texto.className = 'ep-texto';
       const h = document.createElement('h2');
-      h.textContent = rotuloEpisodio(v);
-      h.addEventListener('click', () => assistir(v));
-      meta.append(h);
+      h.textContent = rotuloItem(v);
+      if (v.youtube_playlist_id) {
+        const tag = document.createElement('span');
+        tag.className = 'ep-tag'; tag.textContent = 'Playlist';
+        h.append(tag);
+      }
+      texto.append(h);
       if (v.capitulo) {
         const cap = document.createElement('p'); cap.className = 'cap'; cap.textContent = v.capitulo;
-        meta.append(cap);
+        texto.append(cap);
       }
+      sel.append(icone, texto);
+      sel.addEventListener('click', () => assistir(v));
 
       const btn = document.createElement('button');
       btn.className = 'visto-btn';
+      btn.title = v.concluido ? 'Visto — desmarcar' : 'Marcar como visto';
+      btn.textContent = v.concluido ? '✓' : '○';
       btn.addEventListener('click', (e) => { e.stopPropagation(); alternarVisto(v); });
-      meta.append(btn);
 
-      card.append(img, meta);
-      atualizarBotaoVisto(card, v);
+      card.append(sel, btn);
       return card;
     }
 
-    function atualizarBotaoVisto(card, v) {
+    function atualizarCardVisual(card, v) {
       card.classList.toggle('concluido', !!v.concluido);
-      card.querySelector('.visto-btn').textContent = v.concluido ? 'Visto ✓' : 'Marcar como visto';
+      card.querySelector('.ep-icone').textContent = v.concluido ? '✓' : '▶';
+      const btn = card.querySelector('.visto-btn');
+      btn.textContent = v.concluido ? '✓' : '○';
+      btn.title = v.concluido ? 'Visto — desmarcar' : 'Marcar como visto';
     }
 
     // Selo "X/Y" da série; destacado quando completa.
@@ -207,23 +250,32 @@
       const novo = !v.concluido;
       v.concluido = novo;
       const card = elLista.querySelector('.card[data-id="' + CSS.escape(v.id) + '"]');
-      if (card) atualizarBotaoVisto(card, v);
+      if (card) atualizarCardVisual(card, v);
       atualizarSelo(v.legislacao_id);
       try {
         await PBM.Videoaulas.salvarProgresso(v.id, { concluido: novo });
       } catch {
         v.concluido = !novo;
-        if (card) atualizarBotaoVisto(card, v);
+        if (card) atualizarCardVisual(card, v);
         atualizarSelo(v.legislacao_id);
       }
     }
 
+    // Monta a URL de embed: playlist (videoseries?list=) ou vídeo único.
+    function urlEmbed(v) {
+      const base = 'https://www.youtube-nocookie.com/embed/';
+      if (v.youtube_playlist_id) {
+        return base + 'videoseries?list=' + encodeURIComponent(v.youtube_playlist_id) + '&rel=0&modestbranding=1';
+      }
+      return base + encodeURIComponent(v.youtube_id) + '?rel=0&autoplay=1&modestbranding=1';
+    }
+
     function assistir(v) {
       document.querySelectorAll('.card').forEach((c) => c.classList.toggle('ativo', c.dataset.id === v.id));
-      elPlayer.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(v.youtube_id) + '?rel=0&autoplay=1&modestbranding=1';
+      elPlayer.src = urlEmbed(v);
       elPalco.classList.add('on');
       elPalcoTitulo.innerHTML = '';
-      elPalcoTitulo.append(document.createTextNode(rotuloEpisodio(v)));
+      elPalcoTitulo.append(document.createTextNode(rotuloItem(v)));
       const lei = document.createElement('span');
       lei.className = 'lei'; lei.textContent = '  ·  ' + (v.legislacao_nome || '');
       elPalcoTitulo.append(lei);

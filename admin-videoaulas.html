@@ -155,9 +155,9 @@
         <span class="leg-info" id="leg-info"></span>
       </div>
       <div class="campo">
-        <label>Link ou ID do YouTube</label>
-        <input type="text" id="m-youtube" placeholder="https://youtu.be/… (vídeo Não listado)">
-        <div class="campo-aviso">Use um vídeo <strong>Não listado</strong> (não “Privado” — esse não embeda). O ID aparece no preview abaixo.</div>
+        <label>Link da playlist do YouTube (ou vídeo único)</label>
+        <input type="text" id="m-youtube" placeholder="https://youtube.com/playlist?list=… (recomendado)">
+        <div class="campo-aviso">Cole a <strong>playlist</strong> (um link só, o player navega os episódios) ou um vídeo único. Use conteúdo <strong>Não listado</strong> (não “Privado” — esse não embeda). O preview aparece abaixo.</div>
         <div class="yt-preview" id="yt-preview"><iframe id="yt-iframe" allow="encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
       </div>
       <div class="campo">
@@ -206,6 +206,16 @@ function extrairYoutubeId(input) {
   return null;
 }
 
+// Playlist: link com list= ou id cru de playlist (espelha o backend).
+function extrairPlaylistId(input) {
+  if (!input) return null;
+  const s = String(input).trim();
+  const m = s.match(/[?&]list=([A-Za-z0-9_-]+)/);
+  if (m) return m[1];
+  if (/^(PL|UU|OL|FL|RD|LL|TL)[A-Za-z0-9_-]{10,}$/.test(s)) return s;
+  return null;
+}
+
 async function carregarManifesto() {
   if (manifestoLegs.length) return;
   try { const r = await fetch('/api/legislacoes/manifesto'); manifestoLegs = (await r.json())?.legislacoes || []; }
@@ -249,10 +259,13 @@ function atualizarInfoLeg() {
 }
 
 function atualizarPreview() {
-  const id = extrairYoutubeId(document.getElementById('m-youtube').value);
+  const bruto = document.getElementById('m-youtube').value;
   const box = document.getElementById('yt-preview');
   const iframe = document.getElementById('yt-iframe');
-  if (id) { iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0'; box.classList.add('on'); }
+  const playlist = extrairPlaylistId(bruto);
+  const id = playlist ? null : extrairYoutubeId(bruto);
+  if (playlist) { iframe.src = 'https://www.youtube-nocookie.com/embed/videoseries?list=' + playlist + '&rel=0'; box.classList.add('on'); }
+  else if (id) { iframe.src = 'https://www.youtube-nocookie.com/embed/' + id + '?rel=0'; box.classList.add('on'); }
   else { iframe.src = ''; box.classList.remove('on'); }
 }
 
@@ -310,7 +323,9 @@ function linhaEpisodio(v) {
         <div class="pod-leg">${(v.capitulo || v.legislacao_id || '—').replace(/</g, '&lt;')}</div>
       </div>
       <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888">${(v.curso || '').toUpperCase()}</div>
-      <div><a class="yt-link" href="https://youtu.be/${encodeURIComponent(v.youtube_id)}" target="_blank" rel="noopener">${(v.youtube_id || '—')}↗</a></div>
+      <div>${v.youtube_playlist_id
+        ? `<a class="yt-link" href="https://www.youtube.com/playlist?list=${encodeURIComponent(v.youtube_playlist_id)}" target="_blank" rel="noopener">playlist ↗</a>`
+        : `<a class="yt-link" href="https://youtu.be/${encodeURIComponent(v.youtube_id || '')}" target="_blank" rel="noopener">${(v.youtube_id || '—')}↗</a>`}</div>
       <div><span class="pill ${stClass}">${v.status || '—'}</span></div>
       <div class="card-acoes">
         <button class="btn-mini ok" data-action="publicar" data-id="${v.id}" ${v.status !== 'publicado' ? '' : 'disabled'}>Publicar</button>
@@ -408,7 +423,9 @@ async function abrirModalEditar(id) {
   document.getElementById('m-descricao').value = v.descricao || '';
   document.getElementById('m-capitulo').value = v.capitulo || '';
   document.getElementById('m-ordem').value = (v.ordem != null ? v.ordem : '');
-  document.getElementById('m-youtube').value = v.youtube_id || '';
+  document.getElementById('m-youtube').value = v.youtube_playlist_id
+    ? ('https://www.youtube.com/playlist?list=' + v.youtube_playlist_id)
+    : (v.youtube_id || '');
   document.getElementById('m-curso').value = v.curso || 'ambos';
   document.getElementById('m-area').value = atDaLeg(legPorId(v.legislacao_id), v.curso) || '';
   popularLegsPorArea(v.legislacao_id || '');
@@ -430,13 +447,17 @@ async function salvar() {
   const id = document.getElementById('m-id').value;
   const legislacao_id = document.getElementById('m-legislacao-id').value;
   const titulo = document.getElementById('m-titulo').value.trim();
-  const youtube_id = extrairYoutubeId(document.getElementById('m-youtube').value);
+  const brutoVideo = document.getElementById('m-youtube').value.trim();
+  const playlist = extrairPlaylistId(brutoVideo);
+  const youtube_id = playlist ? null : extrairYoutubeId(brutoVideo);
   if (!legislacao_id) { erroEl.textContent = 'Selecione a legislação.'; erroEl.style.display = 'block'; return; }
   if (!titulo) { erroEl.textContent = 'Preencha o título.'; erroEl.style.display = 'block'; return; }
-  if (!youtube_id) { erroEl.textContent = 'Link ou ID do YouTube inválido.'; erroEl.style.display = 'block'; return; }
+  if (!playlist && !youtube_id) { erroEl.textContent = 'Link de playlist ou vídeo do YouTube inválido.'; erroEl.style.display = 'block'; return; }
   const ordemRaw = document.getElementById('m-ordem').value.trim();
   const payload = {
-    legislacao_id, titulo, youtube_id,
+    legislacao_id, titulo,
+    youtube_playlist_id: playlist || null,
+    youtube_id: youtube_id || null,
     descricao: document.getElementById('m-descricao').value.trim() || null,
     capitulo: document.getElementById('m-capitulo').value.trim() || null,
     ordem: ordemRaw === '' ? null : Number(ordemRaw),

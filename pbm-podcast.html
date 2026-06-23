@@ -39,6 +39,10 @@
 
   .lista { display: flex; flex-direction: column; gap: 10px; }
 
+  /* Cabeçalho da Área Temática (divide o conteúdo como no resto do site). */
+  .at-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--cinza-texto, #9a9a9a); margin: 20px 2px 2px; padding-bottom: 6px; border-bottom: 1px solid var(--cinza-borda, #2a2a2a); }
+  .at-titulo:first-child { margin-top: 0; }
+
   /* ── Série (lei) como acordeão minimalista ─────────────────────────────── */
   .serie { border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 14px; overflow: hidden; background: var(--cinza-escuro, #1a1a1a); }
   .serie-cabecalho {
@@ -214,6 +218,33 @@
       return t;
     }
 
+    // ── Área Temática: divide o conteúdo como no resto do site ───────────────
+    const AT_LABEL = {
+      AT1: 'AT1 — Segurança contra incêndios',
+      AT2: 'AT2 — Combate a incêndios',
+      AT3: 'AT3 — Buscas e salvamentos / APH',
+      AT4: 'AT4 — Direito institucional e militar',
+      AT5: 'AT5 — Normas e documentação técnica',
+    };
+    const AT_ORDEM = ['AT1', 'AT2', 'AT3', 'AT4', 'AT5'];
+    function rotuloAT(at) { return AT_LABEL[at] || 'Outras legislações'; }
+
+    // Agrupa por Área Temática, preservando a ordem AT1…AT5 (depois "Outras").
+    function agruparPorAT(podcasts) {
+      const porAT = new Map();
+      podcasts.forEach((p) => {
+        const at = p.area_tematica || 'OUTROS';
+        if (!porAT.has(at)) porAT.set(at, []);
+        porAT.get(at).push(p);
+      });
+      return [...porAT.keys()]
+        .sort((a, b) => {
+          const ia = AT_ORDEM.indexOf(a), ib = AT_ORDEM.indexOf(b);
+          return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+        })
+        .map((at) => [at, porAT.get(at)]);
+    }
+
     // Agrupa episódios por legislação (a série da lei), preservando a ordem do backend.
     function agruparPorLei(podcasts) {
       const grupos = new Map();
@@ -225,39 +256,49 @@
       return grupos;
     }
 
+    function montarSerie(grupo) {
+      const serie = document.createElement('section');
+      serie.className = 'serie colapsada';
+      serie.dataset.lei = grupo.eps[0].legislacao_id;
+
+      const cab = document.createElement('div');
+      cab.className = 'serie-cabecalho';
+      cab.setAttribute('role', 'button');
+      cab.tabIndex = 0;
+      const nome = document.createElement('span');
+      nome.className = 'serie-nome';
+      nome.textContent = grupo.nome;
+      const selo = document.createElement('span');
+      selo.className = 'serie-selo';
+      const chevron = document.createElement('span');
+      chevron.className = 'serie-chevron';
+      chevron.textContent = '⌄';
+      cab.append(nome, selo, chevron);
+      cab.addEventListener('click', () => alternarSerie(serie));
+      cab.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternarSerie(serie); }
+      });
+
+      const eps = document.createElement('div');
+      eps.className = 'serie-eps';
+      grupo.eps.forEach((p) => eps.appendChild(montarEpisodio(p)));
+
+      serie.append(cab, eps);
+      return serie;
+    }
+
     function render(podcasts) {
       episodios = podcasts;
       elLista.innerHTML = '';
-      agruparPorLei(podcasts).forEach((grupo) => {
-        const serie = document.createElement('section');
-        serie.className = 'serie colapsada';
-        serie.dataset.lei = grupo.eps[0].legislacao_id;
-
-        const cab = document.createElement('div');
-        cab.className = 'serie-cabecalho';
-        cab.setAttribute('role', 'button');
-        cab.tabIndex = 0;
-        const nome = document.createElement('span');
-        nome.className = 'serie-nome';
-        nome.textContent = grupo.nome;
-        const selo = document.createElement('span');
-        selo.className = 'serie-selo';
-        const chevron = document.createElement('span');
-        chevron.className = 'serie-chevron';
-        chevron.textContent = '⌄';
-        cab.append(nome, selo, chevron);
-        cab.addEventListener('click', () => alternarSerie(serie));
-        cab.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); alternarSerie(serie); }
+      agruparPorAT(podcasts).forEach(([at, doAT]) => {
+        const tit = document.createElement('h2');
+        tit.className = 'at-titulo';
+        tit.textContent = rotuloAT(at);
+        elLista.appendChild(tit);
+        agruparPorLei(doAT).forEach((grupo) => {
+          elLista.appendChild(montarSerie(grupo));
+          atualizarSelo(grupo.eps[0].legislacao_id);
         });
-
-        const eps = document.createElement('div');
-        eps.className = 'serie-eps';
-        grupo.eps.forEach((p) => eps.appendChild(montarEpisodio(p)));
-
-        serie.append(cab, eps);
-        elLista.appendChild(serie);
-        atualizarSelo(grupo.eps[0].legislacao_id);
       });
     }
 
