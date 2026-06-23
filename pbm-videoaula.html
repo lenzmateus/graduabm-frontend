@@ -33,16 +33,26 @@
 
   .lista { display: flex; flex-direction: column; gap: 22px; }
 
-  /* Série: vídeos de uma mesma lei, em ordem. */
-  .serie-cabecalho { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  /* Série: vídeos de uma mesma lei, em ordem. Colapsada por padrão (acordeão). */
+  .serie-cabecalho {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    cursor: pointer; user-select: none; padding: 12px 14px;
+    background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a);
+    border-radius: 12px; transition: border-color 0.15s;
+  }
+  .serie-cabecalho:hover { border-color: var(--vermelho, #C0270F); }
   .serie-nome { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--branco, #fff); }
+  .serie-dir { flex: none; display: flex; align-items: center; gap: 10px; }
   .serie-selo {
     flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em;
     text-transform: uppercase; color: var(--cinza-texto, #9a9a9a); border: 1px solid var(--cinza-borda, #2a2a2a);
     border-radius: 999px; padding: 3px 9px;
   }
   .serie-selo.completa { color: #fff; background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); }
-  .serie-eps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .serie-chevron { font-family: 'Inter', sans-serif; font-size: 16px; line-height: 1; color: var(--cinza-texto, #9a9a9a); transition: transform 0.2s; }
+  .serie.colapsada .serie-chevron { transform: rotate(-90deg); }
+  .serie-eps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 10px; }
+  .serie.colapsada .serie-eps { display: none; }
 
   .card { position: relative; background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 12px; overflow: hidden; transition: border-color 0.15s; }
   .card:hover, .card.ativo { border-color: var(--vermelho, #C0270F); }
@@ -106,16 +116,27 @@
       elLista.innerHTML = '';
       agruparPorLei(lista).forEach((grupo) => {
         const serie = document.createElement('section');
-        serie.className = 'serie';
+        serie.className = 'serie colapsada';
         serie.dataset.lei = grupo.eps[0].legislacao_id;
 
         const cab = document.createElement('div');
         cab.className = 'serie-cabecalho';
+        cab.setAttribute('role', 'button');
+        cab.tabIndex = 0;
         const nome = document.createElement('span');
         nome.className = 'serie-nome'; nome.textContent = grupo.nome;
+        const dir = document.createElement('span');
+        dir.className = 'serie-dir';
         const selo = document.createElement('span');
         selo.className = 'serie-selo';
-        cab.append(nome, selo);
+        const chevron = document.createElement('span');
+        chevron.className = 'serie-chevron'; chevron.textContent = '⌄';
+        dir.append(selo, chevron);
+        cab.append(nome, dir);
+        cab.addEventListener('click', () => serie.classList.toggle('colapsada'));
+        cab.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); serie.classList.toggle('colapsada'); }
+        });
 
         const eps = document.createElement('div');
         eps.className = 'serie-eps';
