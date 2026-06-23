@@ -1057,10 +1057,10 @@ const PBM = {
     progresso(id) {
       return request('/api/videoaulas/' + encodeURIComponent(id) + '/progresso');
     },
-    salvarProgresso(id, { concluido } = {}) {
+    salvarProgresso(id, { concluido, youtube_id } = {}) {
       return request('/api/videoaulas/' + encodeURIComponent(id) + '/progresso', {
         method: 'POST',
-        body: JSON.stringify({ concluido }),
+        body: JSON.stringify({ concluido, youtube_id }),
       });
     },
   },

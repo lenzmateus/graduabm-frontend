@@ -87,7 +87,7 @@
     <div id="lista" class="lista"></div>
   </div>
 
-  <script src="/js/api.js"></script>
+  <script src="/js/api.js?v=7"></script>
   <script>
     const elStatus = document.getElementById('status');
     const elLista = document.getElementById('lista');
@@ -196,24 +196,28 @@
       const linhas = [];
       eps.forEach((v) => {
         if (v.videos && v.videos.length) {
+          // Cada aula da playlist tem visto próprio: estado é o vídeo, progresso
+          // gravado por (videoaula, youtube_id) — migration 062.
           v.videos.forEach((vid, i) => linhas.push({
             id: v.id + ':' + vid.youtube_id,
             label: vid.titulo || ('Aula ' + (i + 1)),
             youtube_id: vid.youtube_id,
             youtube_playlist_id: v.youtube_playlist_id,
             legislacao_nome: v.legislacao_nome,
-            semVisto: true,
+            estado: vid, progressoVideoaulaId: v.id, progressoYoutubeId: vid.youtube_id, legId: v.legislacao_id,
           }));
         } else if (v.youtube_playlist_id) {
           linhas.push({
             id: v.id, label: 'Playlist completa', tag: 'Playlist',
             youtube_playlist_id: v.youtube_playlist_id, youtube_id: null,
-            legislacao_nome: v.legislacao_nome, videoaula: v,
+            legislacao_nome: v.legislacao_nome,
+            estado: v, progressoVideoaulaId: v.id, progressoYoutubeId: '', legId: v.legislacao_id,
           });
         } else {
           linhas.push({
             id: v.id, label: rotuloItem(v), youtube_id: v.youtube_id, youtube_playlist_id: null,
-            capitulo: v.capitulo, legislacao_nome: v.legislacao_nome, videoaula: v,
+            capitulo: v.capitulo, legislacao_nome: v.legislacao_nome,
+            estado: v, progressoVideoaulaId: v.id, progressoYoutubeId: '', legId: v.legislacao_id,
           });
         }
       });
@@ -221,15 +225,15 @@
     }
 
     function montarLinha(p) {
-      const v = p.videoaula;
+      const concl = !!(p.estado && p.estado.concluido);
       const card = document.createElement('div');
-      card.className = 'card' + (v && v.concluido ? ' concluido' : '');
+      card.className = 'card' + (concl ? ' concluido' : '');
       card.dataset.id = p.id;
 
       const sel = document.createElement('div');
       sel.className = 'selecionar';
       const icone = document.createElement('span');
-      icone.className = 'ep-icone'; icone.textContent = (v && v.concluido) ? '✓' : '▶';
+      icone.className = 'ep-icone'; icone.textContent = concl ? '✓' : '▶';
       const texto = document.createElement('div');
       texto.className = 'ep-texto';
       const h = document.createElement('h2');
@@ -246,61 +250,55 @@
       }
       sel.append(icone, texto);
       sel.addEventListener('click', () => assistir(p));
-      card.append(sel);
 
-      // Toggle de visto só pra item com registro próprio (single/legado ou playlist-fallback).
-      if (v && !p.semVisto) {
-        const btn = document.createElement('button');
-        btn.className = 'visto-btn';
-        btn.title = v.concluido ? 'Visto — desmarcar' : 'Marcar como visto';
-        btn.textContent = v.concluido ? '✓' : '○';
-        btn.addEventListener('click', (e) => { e.stopPropagation(); alternarVisto(v); });
-        card.append(btn);
-      }
+      const btn = document.createElement('button');
+      btn.className = 'visto-btn';
+      btn.title = concl ? 'Visto — desmarcar' : 'Marcar como visto';
+      btn.textContent = concl ? '✓' : '○';
+      btn.addEventListener('click', (e) => { e.stopPropagation(); alternarVisto(p); });
+
+      card.append(sel, btn);
       return card;
     }
 
-    function atualizarCardVisual(card, v) {
-      card.classList.toggle('concluido', !!v.concluido);
-      card.querySelector('.ep-icone').textContent = v.concluido ? '✓' : '▶';
+    function atualizarCardVisual(card, concluido) {
+      card.classList.toggle('concluido', !!concluido);
+      card.querySelector('.ep-icone').textContent = concluido ? '✓' : '▶';
       const btn = card.querySelector('.visto-btn');
       if (btn) {
-        btn.textContent = v.concluido ? '✓' : '○';
-        btn.title = v.concluido ? 'Visto — desmarcar' : 'Marcar como visto';
+        btn.textContent = concluido ? '✓' : '○';
+        btn.title = concluido ? 'Visto — desmarcar' : 'Marcar como visto';
       }
     }
 
-    // Selo da série: "N aulas" quando a playlist foi expandida; senão "X/Y vistos".
+    // Selo "X/Y vistos" da série, contando cada aula (vídeo da playlist conta 1).
     function atualizarSelo(legId) {
       const serie = elLista.querySelector('.serie[data-lei="' + CSS.escape(legId) + '"]');
       if (!serie) return;
       const eps = videos.filter((v) => v.legislacao_id === legId);
+      let total = 0, vistos = 0;
+      eps.forEach((v) => {
+        if (v.videos && v.videos.length) { total += v.videos.length; vistos += v.videos.filter((x) => x.concluido).length; }
+        else { total += 1; if (v.concluido) vistos++; }
+      });
       const selo = serie.querySelector('.serie-selo');
-      const expandida = eps.some((v) => v.videos && v.videos.length);
-      if (expandida) {
-        const n = eps.reduce((s, v) => s + (v.videos && v.videos.length ? v.videos.length : 1), 0);
-        selo.textContent = n + (n === 1 ? ' aula' : ' aulas');
-        selo.classList.remove('completa');
-      } else {
-        const vistos = eps.filter((v) => v.concluido).length;
-        selo.textContent = vistos + '/' + eps.length;
-        selo.classList.toggle('completa', vistos === eps.length && eps.length > 0);
-      }
+      selo.textContent = vistos + '/' + total;
+      selo.classList.toggle('completa', total > 0 && vistos === total);
     }
 
     // Check manual de "visto" (o iframe do YouTube não entrega eventos sem mudar a CSP).
-    async function alternarVisto(v) {
-      const novo = !v.concluido;
-      v.concluido = novo;
-      const card = elLista.querySelector('.card[data-id="' + CSS.escape(v.id) + '"]');
-      if (card) atualizarCardVisual(card, v);
-      atualizarSelo(v.legislacao_id);
+    async function alternarVisto(p) {
+      const novo = !p.estado.concluido;
+      p.estado.concluido = novo;
+      const card = elLista.querySelector('.card[data-id="' + CSS.escape(p.id) + '"]');
+      if (card) atualizarCardVisual(card, novo);
+      atualizarSelo(p.legId);
       try {
-        await PBM.Videoaulas.salvarProgresso(v.id, { concluido: novo });
+        await PBM.Videoaulas.salvarProgresso(p.progressoVideoaulaId, { concluido: novo, youtube_id: p.progressoYoutubeId });
       } catch {
-        v.concluido = !novo;
-        if (card) atualizarCardVisual(card, v);
-        atualizarSelo(v.legislacao_id);
+        p.estado.concluido = !novo;
+        if (card) atualizarCardVisual(card, !novo);
+        atualizarSelo(p.legId);
       }
     }
 
