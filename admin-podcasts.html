@@ -70,11 +70,24 @@
     .card-row { grid-template-columns: 1fr; gap: 8px; }
     .card-acoes { justify-content: flex-start; }
   }
+
+  /* Chip de progresso da conversão/upload do áudio */
+  #conv { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 200;
+    background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a);
+    border-radius: 10px; padding: 12px 16px; min-width: 260px; display: none; box-shadow: 0 8px 28px rgba(0,0,0,0.5); }
+  #conv.on { display: block; }
+  #conv .txt { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--branco, #fff); margin-bottom: 8px; }
+  #conv .bar { height: 6px; background: var(--cinza-borda, #2a2a2a); border-radius: 3px; overflow: hidden; }
+  #conv .fill { height: 100%; width: 0%; background: var(--roxo, #7F77DD); border-radius: 3px; transition: width 0.2s; }
+  #conv .fill.indet { width: 40%; animation: convSlide 1s ease-in-out infinite alternate; }
+  @keyframes convSlide { from { margin-left: 0; } to { margin-left: 60%; } }
 </style>
 </head>
 <body>
 
 <script src="/js/api.js?v=6"></script>
+<script src="/js/vendor/lame.min.js"></script>
+<script src="/js/audio-mp3.js"></script>
 <script src="/js/admin-chrome.js"></script>
 
 <div class="layout">
@@ -109,7 +122,10 @@
 </div>
 
 <!-- input de áudio escondido, acionado pelo botão "Áudio" de cada linha -->
-<input type="file" id="audio-input" accept="audio/mpeg,audio/mp4,audio/wav,audio/aac,.mp3,.m4a,.wav,.aac" style="display:none">
+<input type="file" id="audio-input" accept="audio/*,.mp3,.m4a,.wav,.aac,.ogg,.flac" style="display:none">
+
+<!-- chip de progresso (conversão + upload) -->
+<div id="conv"><div class="txt" id="conv-txt">Convertendo…</div><div class="bar"><div class="fill" id="conv-fill"></div></div></div>
 
 <!-- MODAL CRIAR/EDITAR -->
 <div class="overlay" id="overlay-modal">
@@ -307,16 +323,44 @@ function lerDuracao(file) {
   });
 }
 
+// Chip de progresso (texto + barra; pct=null => indeterminado).
+function progresso(texto, pct) {
+  const box = document.getElementById('conv');
+  const fill = document.getElementById('conv-fill');
+  document.getElementById('conv-txt').textContent = texto;
+  box.classList.add('on');
+  if (pct == null) { fill.classList.add('indet'); fill.style.width = ''; }
+  else { fill.classList.remove('indet'); fill.style.width = Math.round(pct * 100) + '%'; }
+}
+function progressoFim() { document.getElementById('conv').classList.remove('on'); document.getElementById('conv-fill').classList.remove('indet'); }
+
 document.getElementById('audio-input').addEventListener('change', async (e) => {
   const file = e.target.files[0];
   e.target.value = '';
   if (!file || !uploadAlvoId) return;
-  AdminChrome.toast('Enviando áudio…', 'info', 8000);
-  const duracao = await lerDuracao(file);
-  const r = await PBM.Admin.podcasts.uploadAudio(uploadAlvoId, file, duracao);
-  if (r.ok) { AdminChrome.toast('Áudio enviado.', 'sucesso'); await carregar(); }
-  else AdminChrome.toast(r.erro || 'Falha ao enviar o áudio. Tente novamente.', 'erro');
-  uploadAlvoId = null;
+  const id = uploadAlvoId; uploadAlvoId = null;
+
+  const ehMp3 = /\.mp3$/i.test(file.name) || file.type === 'audio/mpeg';
+  let arquivo = file, duracao = null;
+  try {
+    if (!ehMp3) {
+      // Converte no navegador: o wav pesado não viaja, só o mp3 pequeno sobe.
+      progresso('Convertendo para mp3…', 0);
+      const r = await AudioMp3.paraMp3(file, { onProgress: (p) => progresso('Convertendo para mp3… ' + Math.round(p * 100) + '%', p) });
+      arquivo = r.file; duracao = r.duracao;
+    } else {
+      duracao = await lerDuracao(file);
+    }
+    progresso('Enviando…', null);
+    const up = await PBM.Admin.podcasts.uploadAudio(id, arquivo, duracao);
+    progressoFim();
+    if (up.ok) { AdminChrome.toast('Áudio enviado.', 'sucesso'); await carregar(); }
+    else AdminChrome.toast(up.erro || 'Falha ao enviar o áudio. Tente novamente.', 'erro');
+  } catch (err) {
+    progressoFim();
+    AdminChrome.toast('Não foi possível converter este áudio. Tente outro arquivo ou use o script audio-para-mp3.', 'erro');
+    console.error('[podcast upload]', err);
+  }
 });
 
 // ── Publicar / Excluir ──────────────────────────────────────────────────────────
