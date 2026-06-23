@@ -52,6 +52,8 @@
   .serie-add { flex: none; }
   .serie-admin-eps { margin-top: 6px; padding-left: 8px; }
   .serie-admin.colapsada .serie-admin-eps { display: none; }
+  .at-titulo-admin { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: #888; margin: 20px 2px 8px; padding-bottom: 6px; border-bottom: 1px solid var(--cinza-borda); }
+  .at-titulo-admin:first-child { margin-top: 0; }
 
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 1rem; overflow-y: auto; }
   .overlay.aberto { display: flex; }
@@ -335,12 +337,21 @@ function linhaEpisodio(v) {
     </div>`;
 }
 
-function render(lista, expandir) {
-  const el = document.getElementById('lista');
-  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhuma videoaula encontrada</div>'; return; }
-  el.innerHTML = agruparPorLei(lista).map(([legId, eps]) => {
-    const legAttr = String(legId).replace(/"/g, '&quot;');
-    return `
+// ── Área Temática (mesma divisão do resto do site) ───────────────────────────
+const AT_LABEL = {
+  AT1: 'AT1 — Segurança contra incêndios',
+  AT2: 'AT2 — Combate a incêndios',
+  AT3: 'AT3 — Buscas e salvamentos / APH',
+  AT4: 'AT4 — Direito institucional e militar',
+  AT5: 'AT5 — Normas e documentação técnica',
+};
+const AT_ORDEM = ['AT1', 'AT2', 'AT3', 'AT4', 'AT5'];
+function rotuloAT(at) { return AT_LABEL[at] || 'Outras legislações'; }
+function atDaLei(legId, eps) { return atDaLeg(legPorId(legId), eps[0] && eps[0].curso) || 'OUTROS'; }
+
+function serieAdminHTML(legId, eps, expandir) {
+  const legAttr = String(legId).replace(/"/g, '&quot;');
+  return `
     <section class="serie-admin${expandir ? '' : ' colapsada'}" data-leg="${legAttr}">
       <div class="serie-admin-head" data-action="toggle-serie">
         <span class="serie-admin-chevron">⌄</span>
@@ -350,6 +361,25 @@ function render(lista, expandir) {
       </div>
       <div class="serie-admin-eps">${eps.map(linhaEpisodio).join('')}</div>
     </section>`;
+}
+
+function render(lista, expandir) {
+  const el = document.getElementById('lista');
+  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhuma videoaula encontrada</div>'; return; }
+  // Agrupa lei -> AT; cada AT vira um cabeçalho com suas séries (como no resto do site).
+  const buckets = new Map();
+  agruparPorLei(lista).forEach(([legId, eps]) => {
+    const at = atDaLei(legId, eps);
+    if (!buckets.has(at)) buckets.set(at, []);
+    buckets.get(at).push([legId, eps]);
+  });
+  const ats = [...buckets.keys()].sort((a, b) => {
+    const ia = AT_ORDEM.indexOf(a), ib = AT_ORDEM.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
+  el.innerHTML = ats.map((at) => {
+    const secoes = buckets.get(at).map(([legId, eps]) => serieAdminHTML(legId, eps, expandir)).join('');
+    return `<div class="at-titulo-admin">${rotuloAT(at)}</div>${secoes}`;
   }).join('');
 }
 
