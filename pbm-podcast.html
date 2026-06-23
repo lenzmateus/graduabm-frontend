@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PBM">
+<link rel="apple-touch-icon" href="/images/pwa-192.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Podcasts</title>
+<script src="/js/font-size.js"></script>
+<script src="/js/pbm-theme-boot.js?v=2"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/pbm-layout.css">
+<style>
+  body { background: var(--bg-primario, #0d0d0d); color: var(--branco, #fff); }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 24px 18px 64px; }
+
+  .topo { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .topo img { width: 34px; height: 34px; }
+  .topo h1 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 30px; letter-spacing: 0.04em;
+    margin: 0; color: var(--branco, #fff);
+  }
+  .voltar {
+    display: inline-block; margin-bottom: 18px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px; color: var(--cinza-texto, #9a9a9a); text-decoration: none;
+  }
+  .voltar:hover { color: var(--branco, #fff); }
+  .subtitulo {
+    font-family: 'Inter', sans-serif; font-size: 13px; color: var(--cinza-texto, #9a9a9a);
+    margin: 0 0 22px;
+  }
+
+  .lista { display: flex; flex-direction: column; gap: 10px; }
+  .card {
+    background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a);
+    border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: border-color 0.15s;
+  }
+  .card:hover { border-color: var(--vermelho, #C0270F); }
+  .card.ativo { border-color: var(--vermelho, #C0270F); }
+  .card h2 {
+    font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; margin: 0 0 4px;
+    color: var(--branco, #fff);
+  }
+  .card p {
+    font-family: 'Inter', sans-serif; font-size: 13px; color: var(--cinza-texto, #9a9a9a); margin: 0;
+  }
+
+  .player {
+    margin-top: 22px; background: var(--cinza-escuro, #1a1a1a);
+    border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 12px; padding: 16px;
+  }
+  .player[hidden] { display: none; }
+  .player .agora {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--cinza-texto, #9a9a9a); margin: 0 0 10px;
+  }
+  .player audio { width: 100%; }
+  .velocidades { display: flex; align-items: center; gap: 6px; margin-top: 12px; }
+  .vel-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--cinza-texto, #9a9a9a); margin-right: 4px; }
+  .vel-btn {
+    background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a); color: var(--cinza-texto, #9a9a9a);
+    border-radius: 999px; padding: 4px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; cursor: pointer; transition: all 0.15s;
+  }
+  .vel-btn:hover { color: var(--branco, #fff); border-color: var(--texto-suporte, #777); }
+  .vel-btn.ativo { background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); color: #fff; }
+
+  .aviso {
+    font-family: 'Inter', sans-serif; font-size: 13px; color: var(--cinza-texto, #9a9a9a);
+    padding: 20px 0;
+  }
+  .erro { color: var(--vermelho, #C0270F); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="voltar" href="/dashboard">&larr; Voltar</a>
+    <div class="topo">
+      <img src="/images/emblem-pbm.png" alt="">
+      <h1>Podcasts</h1>
+    </div>
+    <p class="subtitulo">Áudios de legislação para estudar no fone. Conteúdo exclusivo de assinante.</p>
+
+    <div id="status" class="aviso">Carregando podcasts…</div>
+    <div id="lista" class="lista"></div>
+
+    <div id="player" class="player" hidden>
+      <p class="agora" id="agora"></p>
+      <audio id="audio" controls controlsList="nodownload" preload="none" oncontextmenu="return false"></audio>
+      <div class="velocidades" id="velocidades">
+        <span class="vel-label">Velocidade</span>
+        <button class="vel-btn ativo" data-vel="1">1x</button>
+        <button class="vel-btn" data-vel="1.5">1.5x</button>
+        <button class="vel-btn" data-vel="2">2x</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script>
+    const elStatus = document.getElementById('status');
+    const elLista = document.getElementById('lista');
+    const elPlayer = document.getElementById('player');
+    const elAgora = document.getElementById('agora');
+    const elAudio = document.getElementById('audio');
+
+    let podcastAtual = null;
+    let recarregandoUrl = false;
+    let ultimoSalvo = 0;     // timestamp do último save (throttle)
+    let posicaoInicial = 0;  // onde retomar quando o áudio carregar
+
+    function render(podcasts) {
+      elLista.innerHTML = '';
+      podcasts.forEach((p) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.id = p.id;
+        const h = document.createElement('h2');
+        h.textContent = p.titulo;
+        const desc = document.createElement('p');
+        desc.textContent = p.descricao || '';
+        card.append(h, desc);
+        card.addEventListener('click', () => tocar(p));
+        elLista.appendChild(card);
+      });
+    }
+
+    function marcarAtivo(id) {
+      document.querySelectorAll('.card').forEach((c) => {
+        c.classList.toggle('ativo', c.dataset.id === id);
+      });
+    }
+
+    async function obterUrl(id) {
+      const { url } = await PBM.Podcasts.stream(id);
+      return url;
+    }
+
+    async function tocar(p) {
+      // Salva a posição do que estava tocando antes de trocar.
+      salvarProgresso();
+      podcastAtual = p;
+      posicaoInicial = 0;
+      marcarAtivo(p.id);
+      elPlayer.hidden = false;
+      elAgora.textContent = 'Tocando: ' + p.titulo;
+      definirMediaSession(p);
+      // Busca a posição de retomada (não bloqueia o carregamento do áudio).
+      PBM.Podcasts.progresso(p.id)
+        .then((prog) => { if (prog && !prog.concluido) posicaoInicial = prog.posicao_segundos || 0; })
+        .catch(() => {});
+      try {
+        elAudio.src = await obterUrl(p.id);
+        elAudio.play().catch(() => { /* autoplay pode ser bloqueado; usuário dá play */ });
+      } catch (err) {
+        elAgora.textContent = err?.erro || 'Falha ao preparar o áudio. Tente novamente.';
+      }
+    }
+
+    // Retoma da última posição assim que o áudio sabe sua duração.
+    elAudio.addEventListener('loadedmetadata', () => {
+      if (posicaoInicial > 0 && posicaoInicial < elAudio.duration - 2) {
+        try { elAudio.currentTime = posicaoInicial; } catch {}
+      }
+      posicaoInicial = 0;
+    });
+
+    // ── Progresso de escuta (resume) ──────────────────────────────────────────
+    function salvarProgresso(concluido) {
+      if (!podcastAtual || !elAudio.currentTime) return;
+      PBM.Podcasts.salvarProgresso(podcastAtual.id, {
+        posicao_segundos: Math.floor(elAudio.currentTime),
+        concluido: !!concluido,
+      }).catch(() => {});
+    }
+    elAudio.addEventListener('timeupdate', () => {
+      const agora = Date.now();
+      if (agora - ultimoSalvo > 10000) { ultimoSalvo = agora; salvarProgresso(); }
+    });
+    elAudio.addEventListener('pause', () => salvarProgresso());
+    elAudio.addEventListener('ended', () => salvarProgresso(true));
+    window.addEventListener('pagehide', () => salvarProgresso());
+    document.addEventListener('visibilitychange', () => { if (document.hidden) salvarProgresso(); });
+
+    // ── Velocidade de reprodução ──────────────────────────────────────────────
+    document.getElementById('velocidades').addEventListener('click', (e) => {
+      const btn = e.target.closest('.vel-btn');
+      if (!btn) return;
+      elAudio.playbackRate = parseFloat(btn.dataset.vel);
+      document.querySelectorAll('.vel-btn').forEach((b) => b.classList.toggle('ativo', b === btn));
+    });
+
+    // ── Media Session (controles na tela de bloqueio) ─────────────────────────
+    function definirMediaSession(p) {
+      if (!('mediaSession' in navigator)) return;
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: p.titulo,
+        artist: 'Protocolo Bravo Mike',
+        artwork: [{ src: '/images/pwa-512.png', sizes: '512x512', type: 'image/png' }],
+      });
+      navigator.mediaSession.setActionHandler('play', () => elAudio.play());
+      navigator.mediaSession.setActionHandler('pause', () => elAudio.pause());
+      navigator.mediaSession.setActionHandler('seekbackward', () => { elAudio.currentTime = Math.max(0, elAudio.currentTime - 10); });
+      navigator.mediaSession.setActionHandler('seekforward', () => { elAudio.currentTime = Math.min(elAudio.duration || 0, elAudio.currentTime + 10); });
+    }
+
+    // Re-aquisição defensiva: se a URL assinada expirar/falhar no meio, busca uma
+    // nova uma vez. O <audio> retoma da posição já bufferizada.
+    elAudio.addEventListener('error', reacquireUrl);
+    elAudio.addEventListener('stalled', reacquireUrl);
+    async function reacquireUrl() {
+      if (!podcastAtual || recarregandoUrl) return;
+      recarregandoUrl = true;
+      try {
+        const pos = elAudio.currentTime;
+        elAudio.src = await obterUrl(podcastAtual.id);
+        elAudio.currentTime = pos || 0;
+        elAudio.play().catch(() => {});
+      } catch { /* mantém o estado de erro do player */ }
+      finally { recarregandoUrl = false; }
+    }
+
+    (async function init() {
+      await PBM.protegerRota();
+      try {
+        const podcasts = await PBM.Podcasts.listar();
+        if (!podcasts.length) {
+          elStatus.textContent = 'Nenhum podcast disponível ainda. Volte em breve.';
+          return;
+        }
+        elStatus.hidden = true;
+        render(podcasts);
+      } catch (err) {
+        elStatus.className = 'aviso erro';
+        elStatus.textContent = err?.erro || 'Não foi possível carregar os podcasts.';
+      }
+    })();
+  </script>
+</body>
+</html>

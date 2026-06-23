@@ -683,6 +683,28 @@ const PBM = {
       editar(id, body) { return PBM.Admin.req('/api/admin/flashcards/' + id, { method: 'PATCH', body: JSON.stringify(body) }); },
       excluir(id)      { return PBM.Admin.req('/api/admin/flashcards/' + id, { method: 'DELETE' }); },
     },
+    podcasts: {
+      listar()         { return PBM.Admin.req('/api/admin/podcasts'); },
+      criar(body)      { return PBM.Admin.req('/api/admin/podcasts', { method: 'POST', body: JSON.stringify(body) }); },
+      editar(id, body) { return PBM.Admin.req('/api/admin/podcasts/' + id, { method: 'PATCH', body: JSON.stringify(body) }); },
+      publicar(id)     { return PBM.Admin.req('/api/admin/podcasts/' + id + '/publicar', { method: 'POST' }); },
+      excluir(id)      { return PBM.Admin.req('/api/admin/podcasts/' + id, { method: 'DELETE' }); },
+      // Upload do áudio (multipart) — mesmo padrão de uploadMedia/enviarCarrossel.
+      async uploadAudio(id, file, duracao) {
+        try {
+          const fd = new FormData();
+          fd.append('audio', file);
+          if (duracao != null && !Number.isNaN(duracao)) fd.append('duracao', String(Math.round(duracao)));
+          const res = await fetch('/api/admin/podcasts/' + id + '/audio', {
+            method: 'POST', headers: PBM.Admin._authHeader(), body: fd,
+          });
+          const data = await res.json().catch(() => ({}));
+          return res.ok ? { ok: true, podcast: data } : { ok: false, erro: data.erro || 'Falha ao enviar o áudio.' };
+        } catch {
+          return { ok: false, erro: 'Erro de rede.' };
+        }
+      },
+    },
     // CRUD de questão pelos donos (ADR-0032) — substitui a escrita crua via /admin/query.
     questoes: {
       criar(body)      { return PBM.Admin.req('/api/admin/questoes', { method: 'POST', body: JSON.stringify(body) }); },
@@ -989,6 +1011,28 @@ const PBM = {
       return request('/api/editais/reportar-mudanca', {
         method: 'POST',
         body: JSON.stringify({ legislacao_id, comentario }),
+      });
+    },
+  },
+
+  Podcasts: {
+    // Lista os podcasts publicados visíveis ao curso do aluno (sem URL de áudio).
+    listar() {
+      return request('/api/podcasts');
+    },
+    // Devolve { url, expira_em } — URL assinada de curta duração (bucket privado).
+    stream(id) {
+      return request('/api/podcasts/' + encodeURIComponent(id) + '/stream');
+    },
+    // Posição de retomada (resume): { posicao_segundos, concluido }.
+    progresso(id) {
+      return request('/api/podcasts/' + encodeURIComponent(id) + '/progresso');
+    },
+    salvarProgresso(id, { posicao_segundos, concluido } = {}) {
+      return request('/api/podcasts/' + encodeURIComponent(id) + '/progresso', {
+        method: 'POST',
+        body: JSON.stringify({ posicao_segundos, concluido }),
+        keepalive: true,
       });
     },
   },

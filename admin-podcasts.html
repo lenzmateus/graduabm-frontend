@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" href="/images/emblem-pbm.png" type="image/png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#C0270F">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Protocolo Bravo Mike — Podcasts (Admin)</title>
+<script src="/js/font-size.js"></script>
+<script src="/js/pbm-theme-boot.js?v=2"></script>
+<link rel="stylesheet" href="/css/pbm-tokens.css">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/admin-chrome.css">
+<style>
+  .filtros { display: flex; gap: 10px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .filtro-select, .filtro-busca { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); color: var(--branco); border-radius: 8px; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 13px; outline: none; }
+  .filtro-busca { flex: 1; min-width: 180px; }
+  .filtro-busca::placeholder { color: #555; }
+  .filtro-select:focus, .filtro-busca:focus { border-color: var(--roxo); }
+
+  .lista-header, .card-row { display: grid; grid-template-columns: minmax(0,1fr) 70px 90px 90px 200px; gap: 1rem; align-items: center; }
+  .lista-header { padding: 8px 1rem; font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--cinza-borda); margin-bottom: 4px; }
+  .card-row { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 12px 1rem; margin-bottom: 6px; transition: border-color 0.15s; }
+  .card-row:hover { border-color: #444; }
+  .pod-titulo { font-size: 13px; color: var(--branco); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pod-leg { font-size: 11px; color: var(--cinza-texto); margin-top: 2px; font-family: 'IBM Plex Mono', monospace; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pill { font-family: 'IBM Plex Mono', monospace; font-size: 10px; padding: 3px 8px; border-radius: 20px; display: inline-block; }
+  .audio-sim { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .audio-nao { background: rgba(186,117,23,0.10); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
+  .status-publicado { background: var(--verde-bg); border: 1px solid var(--verde-borda); color: var(--success-fg); }
+  .status-rascunho  { background: rgba(186,117,23,0.10); border: 1px solid rgba(186,117,23,0.3); color: #EF9F27; }
+  .status-pendente  { background: rgba(127,119,221,0.10); border: 1px solid rgba(127,119,221,0.3); color: #AFA9EC; }
+  .card-acoes { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: wrap; }
+  .btn-mini { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 6px; padding: 4px 10px; font-size: 11px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.12s; }
+  .btn-mini:hover { border-color: #555; color: var(--branco); }
+  .btn-mini.danger:hover { border-color: var(--erro); color: var(--danger-fg); }
+  .btn-mini.ok:hover { border-color: var(--verde-borda); color: var(--success-fg); }
+  .btn-mini.edit:hover { border-color: var(--roxo); color: #AFA9EC; }
+  .btn-mini:disabled { opacity: 0.4; cursor: default; }
+
+  .vazio, .loading-txt { text-align: center; padding: 3rem; color: var(--cinza-texto); font-size: 13px; }
+  .total-txt { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto); margin-bottom: 1rem; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: flex-start; justify-content: center; padding: 1rem; overflow-y: auto; }
+  .overlay.aberto { display: flex; }
+  .modal { background: var(--cinza-escuro); border: 1px solid var(--cinza-borda); border-radius: 12px; width: 100%; max-width: 640px; max-height: 92vh; margin: auto; display: flex; flex-direction: column; }
+  .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--cinza-borda); display: flex; align-items: center; justify-content: space-between; }
+  .modal-titulo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.03em; }
+  .modal-fechar { background: transparent; border: none; color: var(--cinza-texto); font-size: 20px; cursor: pointer; }
+  .modal-fechar:hover { color: var(--branco); }
+  .modal-body { padding: 1.5rem; overflow-y: auto; }
+  .modal-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--cinza-borda); display: flex; gap: 10px; justify-content: flex-end; }
+  .campo { margin-bottom: 1rem; }
+  .campo label { display: block; font-size: 11px; font-weight: 500; color: var(--cinza-texto); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px; }
+  .campo input, .campo select, .campo textarea { width: 100%; background: var(--cinza-medio); border: 1px solid var(--cinza-borda); border-radius: 8px; padding: 9px 12px; font-family: 'Inter', sans-serif; font-size: 13px; color: var(--branco); outline: none; }
+  .campo textarea { min-height: 70px; resize: vertical; }
+  .campo input:focus, .campo select:focus, .campo textarea:focus { border-color: var(--roxo); }
+  .campo input::placeholder, .campo textarea::placeholder { color: #555; }
+  .leg-info { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #FFA500; margin-top: 6px; display: block; }
+  .btn-salvar { background: var(--roxo); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-salvar:hover { background: #6960C8; }
+  .btn-salvar:disabled { background: #444; cursor: default; }
+  .btn-cancelar { background: transparent; border: 1px solid var(--cinza-borda); color: var(--cinza-texto); border-radius: 8px; padding: 10px 24px; font-size: 13px; cursor: pointer; font-family: 'Inter', sans-serif; }
+  .btn-cancelar:hover { border-color: #555; color: var(--branco); }
+  #modal-erro { font-size: 12px; color: var(--danger-fg); margin-top: 4px; display: none; }
+
+  @media (max-width: 768px) {
+    .lista-header { display: none; }
+    .card-row { grid-template-columns: 1fr; gap: 8px; }
+    .card-acoes { justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<script src="/js/api.js?v=6"></script>
+<script src="/js/admin-chrome.js"></script>
+
+<div class="layout">
+  <aside id="admin-chrome"></aside>
+  <div class="main">
+    <header id="admin-topbar"></header>
+    <div class="conteudo">
+      <div class="filtros">
+        <select class="filtro-select" id="filtro-curso">
+          <option value="">Todos os cursos</option>
+          <option value="ctsp">CTSP</option>
+          <option value="cba">CBA</option>
+          <option value="ambos">Ambos</option>
+        </select>
+        <select class="filtro-select" id="filtro-status">
+          <option value="">Todos status</option>
+          <option value="publicado">Publicado</option>
+          <option value="rascunho">Rascunho</option>
+          <option value="pendente_aprovacao">Pendente aprovação</option>
+        </select>
+        <input class="filtro-busca" type="text" id="filtro-busca" placeholder="Buscar título ou legislação…">
+      </div>
+
+      <div class="total-txt" id="total-txt">Carregando…</div>
+      <div class="lista-header">
+        <div>Podcast</div><div>Curso</div><div>Áudio</div><div>Status</div>
+        <div style="text-align:right">Ações</div>
+      </div>
+      <div id="lista"><div class="loading-txt">Carregando podcasts…</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- input de áudio escondido, acionado pelo botão "Áudio" de cada linha -->
+<input type="file" id="audio-input" accept="audio/mpeg,audio/mp4,audio/wav,audio/aac,.mp3,.m4a,.wav,.aac" style="display:none">
+
+<!-- MODAL CRIAR/EDITAR -->
+<div class="overlay" id="overlay-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-titulo" id="modal-titulo">Novo Podcast</span>
+      <button class="modal-fechar" id="btn-fechar-modal">×</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="m-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="campo">
+          <label>Área Temática</label>
+          <select id="m-area">
+            <option value="">— selecione —</option>
+            <option value="AT1">AT1 — Segurança contra incêndios</option>
+            <option value="AT2">AT2 — Combate a incêndios</option>
+            <option value="AT3">AT3 — Buscas e salvamentos / APH</option>
+            <option value="AT4">AT4 — Direito institucional e militar</option>
+            <option value="AT5">AT5 — Normas e documentação técnica</option>
+          </select>
+        </div>
+        <div class="campo">
+          <label>Curso</label>
+          <select id="m-curso">
+            <option value="ambos">Ambos (CTSP e CBA)</option>
+            <option value="ctsp">Somente CTSP</option>
+            <option value="cba">Somente CBA</option>
+          </select>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Legislação</label>
+        <select id="m-legislacao-id" disabled><option value="">— escolha a área primeiro —</option></select>
+        <span class="leg-info" id="leg-info"></span>
+      </div>
+      <div class="campo">
+        <label>Título</label>
+        <input type="text" id="m-titulo" placeholder="Ex.: Lei Kiss — o que mais cai">
+      </div>
+      <div class="campo">
+        <label>Descrição (opcional)</label>
+        <textarea id="m-descricao" placeholder="Resumo curto do episódio."></textarea>
+      </div>
+      <div class="campo">
+        <label>Status</label>
+        <select id="m-status">
+          <option value="rascunho">Rascunho</option>
+          <option value="publicado">Publicado</option>
+        </select>
+      </div>
+      <div id="modal-erro"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancelar" id="btn-cancelar-modal">Cancelar</button>
+      <button class="btn-salvar" id="btn-salvar">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let todos = [];
+let manifestoLegs = [];
+let uploadAlvoId = null;
+
+function fmtDur(s) {
+  if (!s && s !== 0) return '';
+  const m = Math.floor(s / 60), seg = Math.round(s % 60);
+  return m + ':' + String(seg).padStart(2, '0');
+}
+
+async function carregarManifesto() {
+  if (manifestoLegs.length) return;
+  try {
+    const r = await fetch('/api/legislacoes/manifesto');
+    const data = await r.json();
+    manifestoLegs = data?.legislacoes || [];
+  } catch (e) { console.error('Erro ao carregar manifesto', e); }
+}
+function legPorId(id) { return manifestoLegs.find(l => l.id === id) || null; }
+function atDaLeg(leg, curso) {
+  if (!leg) return null;
+  const at = leg.area_tematica;
+  if (typeof at === 'string') return at;
+  if (at && typeof at === 'object') return at[curso === 'cba' ? 'cba' : 'ctsp'] || at.ctsp || at.cba;
+  return null;
+}
+
+function popularLegsPorArea(legPreservar) {
+  const at = document.getElementById('m-area').value;
+  const curso = document.getElementById('m-curso').value;
+  const sel = document.getElementById('m-legislacao-id');
+  const anterior = legPreservar || sel.value;
+  if (!at) {
+    sel.innerHTML = '<option value="">— escolha a área primeiro —</option>';
+    sel.disabled = true; return;
+  }
+  const filtradas = manifestoLegs
+    .filter(l => atDaLeg(l, curso) === at)
+    .filter(l => curso === 'ambos' ? l.curso === 'ambos' : (l.curso === curso || l.curso === 'ambos'))
+    .sort((a, b) => (a.nome || '').localeCompare(b.nome || ''));
+  sel.innerHTML = '<option value="">— selecione —</option>' + filtradas.map(l =>
+    `<option value="${l.id}">${(l.nome || '').replace(/</g, '&lt;')}</option>`).join('');
+  if (anterior && filtradas.some(l => l.id === anterior)) sel.value = anterior;
+  sel.disabled = false;
+}
+
+function atualizarInfoLeg() {
+  const id = document.getElementById('m-legislacao-id').value;
+  const info = document.getElementById('leg-info');
+  const selCurso = document.getElementById('m-curso');
+  const tituloEl = document.getElementById('m-titulo');
+  const leg = legPorId(id);
+  if (!leg) { info.innerHTML = ''; return; }
+  info.innerHTML = leg.curso === 'ambos'
+    ? '⭐ Elegível para AMBOS os cursos (CTSP e CBA).'
+    : 'ℹ️ Edital desta legislação: <strong style="color:var(--branco)">' + (leg.curso || '').toUpperCase() + '</strong>';
+  if (leg.curso && selCurso.value !== leg.curso) { selCurso.value = leg.curso; popularLegsPorArea(id); }
+  if (!tituloEl.value.trim()) tituloEl.value = leg.nome || '';
+}
+
+async function carregar() {
+  try {
+    todos = await PBM.Admin.podcasts.listar();
+    todos = Array.isArray(todos) ? todos : [];
+    aplicarFiltros();
+  } catch (e) {
+    document.getElementById('lista').innerHTML = '<div class="loading-txt" style="color:var(--danger-fg)">Não foi possível carregar os podcasts.</div>';
+  }
+}
+
+function aplicarFiltros() {
+  const curso = document.getElementById('filtro-curso').value;
+  const status = document.getElementById('filtro-status').value;
+  const busca = document.getElementById('filtro-busca').value.toLowerCase();
+  const lista = todos.filter(p => {
+    if (curso && p.curso !== curso) return false;
+    if (status && p.status !== status) return false;
+    if (busca && !((p.titulo || '') + ' ' + (p.legislacao_id || '')).toLowerCase().includes(busca)) return false;
+    return true;
+  });
+  document.getElementById('total-txt').textContent =
+    lista.length + ' podcast' + (lista.length !== 1 ? 's' : '');
+  render(lista);
+}
+
+function render(lista) {
+  const el = document.getElementById('lista');
+  if (!lista.length) { el.innerHTML = '<div class="vazio">Nenhum podcast encontrado</div>'; return; }
+  el.innerHTML = lista.map(p => {
+    const temAudio = !!p.storage_path;
+    const audioCell = temAudio
+      ? `<span class="pill audio-sim">${p.duracao_segundos ? fmtDur(p.duracao_segundos) : 'OK'}</span>`
+      : '<span class="pill audio-nao">sem áudio</span>';
+    const stClass = p.status === 'publicado' ? 'status-publicado' : p.status === 'rascunho' ? 'status-rascunho' : 'status-pendente';
+    const stLabel = p.status === 'pendente_aprovacao' ? 'Pendente' : (p.status || '—');
+    const podePublicar = temAudio && p.status !== 'publicado';
+    return `
+    <div class="card-row">
+      <div>
+        <div class="pod-titulo">${(p.titulo || '—').replace(/</g, '&lt;')}</div>
+        <div class="pod-leg">${(p.legislacao_id || '—').replace(/</g, '&lt;')}</div>
+      </div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#888">${(p.curso || '').toUpperCase()}</div>
+      <div>${audioCell}</div>
+      <div><span class="pill ${stClass}">${stLabel}</span></div>
+      <div class="card-acoes">
+        <button class="btn-mini" data-action="audio" data-id="${p.id}">${temAudio ? 'Trocar áudio' : 'Áudio'}</button>
+        <button class="btn-mini ok" data-action="publicar" data-id="${p.id}" ${podePublicar ? '' : 'disabled'}>Publicar</button>
+        <button class="btn-mini edit" data-action="editar" data-id="${p.id}">Editar</button>
+        <button class="btn-mini danger" data-action="excluir" data-id="${p.id}">Excluir</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('lista').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const id = btn.dataset.id;
+  if (btn.dataset.action === 'editar') abrirModalEditar(id);
+  if (btn.dataset.action === 'excluir') excluir(id);
+  if (btn.dataset.action === 'publicar') publicar(id);
+  if (btn.dataset.action === 'audio') { uploadAlvoId = id; document.getElementById('audio-input').click(); }
+});
+
+// ── Upload de áudio ────────────────────────────────────────────────────────────
+function lerDuracao(file) {
+  return new Promise((resolve) => {
+    const a = document.createElement('audio');
+    a.preload = 'metadata';
+    a.onloadedmetadata = () => { const d = a.duration; URL.revokeObjectURL(a.src); resolve(isFinite(d) ? d : null); };
+    a.onerror = () => resolve(null);
+    a.src = URL.createObjectURL(file);
+  });
+}
+
+document.getElementById('audio-input').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  e.target.value = '';
+  if (!file || !uploadAlvoId) return;
+  AdminChrome.toast('Enviando áudio…', 'info', 8000);
+  const duracao = await lerDuracao(file);
+  const r = await PBM.Admin.podcasts.uploadAudio(uploadAlvoId, file, duracao);
+  if (r.ok) { AdminChrome.toast('Áudio enviado.', 'sucesso'); await carregar(); }
+  else AdminChrome.toast(r.erro || 'Falha ao enviar o áudio. Tente novamente.', 'erro');
+  uploadAlvoId = null;
+});
+
+// ── Publicar / Excluir ──────────────────────────────────────────────────────────
+async function publicar(id) {
+  try { await PBM.Admin.podcasts.publicar(id); AdminChrome.toast('Podcast publicado.', 'sucesso'); await carregar(); }
+  catch (err) { AdminChrome.toast(err?.erro || 'Falha ao publicar. Tente novamente.', 'erro'); }
+}
+async function excluir(id) {
+  const p = todos.find(x => String(x.id) === String(id));
+  if (!confirm('Excluir o podcast "' + (p?.titulo || id) + '"? O áudio também será removido. Esta ação não pode ser desfeita.')) return;
+  try { await PBM.Admin.podcasts.excluir(id); AdminChrome.toast('Podcast excluído.', 'sucesso'); await carregar(); }
+  catch (err) { AdminChrome.toast(err?.erro || 'Falha ao excluir. Tente novamente.', 'erro'); }
+}
+
+// ── Modal criar/editar ──────────────────────────────────────────────────────────
+async function abrirModalNovo() {
+  await carregarManifesto();
+  document.getElementById('modal-titulo').textContent = 'Novo Podcast';
+  ['m-id', 'm-titulo', 'm-descricao'].forEach(i => document.getElementById(i).value = '');
+  document.getElementById('m-area').value = '';
+  document.getElementById('m-curso').value = 'ambos';
+  popularLegsPorArea('');
+  document.getElementById('leg-info').innerHTML = '';
+  document.getElementById('m-status').value = 'rascunho';
+  document.getElementById('modal-erro').style.display = 'none';
+  document.getElementById('overlay-modal').classList.add('aberto');
+}
+async function abrirModalEditar(id) {
+  const p = todos.find(x => String(x.id) === String(id));
+  if (!p) return;
+  await carregarManifesto();
+  document.getElementById('modal-titulo').textContent = 'Editar Podcast';
+  document.getElementById('m-id').value = p.id;
+  document.getElementById('m-titulo').value = p.titulo || '';
+  document.getElementById('m-descricao').value = p.descricao || '';
+  document.getElementById('m-curso').value = p.curso || 'ambos';
+  document.getElementById('m-area').value = atDaLeg(legPorId(p.legislacao_id), p.curso) || '';
+  popularLegsPorArea(p.legislacao_id || '');
+  atualizarInfoLeg();
+  document.getElementById('m-status').value = p.status === 'pendente_aprovacao' ? 'rascunho' : (p.status || 'rascunho');
+  document.getElementById('modal-erro').style.display = 'none';
+  document.getElementById('overlay-modal').classList.add('aberto');
+}
+function fecharModal() { document.getElementById('overlay-modal').classList.remove('aberto'); }
+
+async function salvar() {
+  const btn = document.getElementById('btn-salvar');
+  const erroEl = document.getElementById('modal-erro');
+  erroEl.style.display = 'none';
+  const id = document.getElementById('m-id').value;
+  const legislacao_id = document.getElementById('m-legislacao-id').value;
+  const titulo = document.getElementById('m-titulo').value.trim();
+  if (!legislacao_id) { erroEl.textContent = 'Selecione a legislação.'; erroEl.style.display = 'block'; return; }
+  if (!titulo) { erroEl.textContent = 'Preencha o título.'; erroEl.style.display = 'block'; return; }
+  const payload = {
+    legislacao_id, titulo,
+    descricao: document.getElementById('m-descricao').value.trim() || null,
+    curso: document.getElementById('m-curso').value,
+    status: document.getElementById('m-status').value,
+  };
+  btn.disabled = true; btn.textContent = 'Salvando…';
+  try {
+    if (id) await PBM.Admin.podcasts.editar(id, payload);
+    else await PBM.Admin.podcasts.criar(payload);
+    fecharModal();
+    await carregar();
+    AdminChrome.toast('Podcast salvo.', 'sucesso');
+  } catch (err) {
+    erroEl.textContent = err?.erro || err?.message || 'Falha ao salvar. Tente novamente.';
+    erroEl.style.display = 'block';
+  } finally { btn.disabled = false; btn.textContent = 'Salvar'; }
+}
+
+AdminChrome.init({
+  pagina: 'podcasts',
+  titulo: 'Gestão de Podcasts',
+  acoes: [{
+    texto: 'Novo Podcast', variant: 'primary',
+    icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>',
+    onClick: abrirModalNovo,
+  }],
+});
+
+document.getElementById('btn-fechar-modal').addEventListener('click', fecharModal);
+document.getElementById('btn-cancelar-modal').addEventListener('click', fecharModal);
+document.getElementById('btn-salvar').addEventListener('click', salvar);
+document.getElementById('m-area').addEventListener('change', () => popularLegsPorArea());
+document.getElementById('m-curso').addEventListener('change', () => popularLegsPorArea());
+document.getElementById('m-legislacao-id').addEventListener('change', atualizarInfoLeg);
+['filtro-curso', 'filtro-status'].forEach(i => document.getElementById(i).addEventListener('change', aplicarFiltros));
+document.getElementById('filtro-busca').addEventListener('input', aplicarFiltros);
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') fecharModal(); });
+
+carregarManifesto();
+carregar();
+</script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});</script>
+</body>
+</html>

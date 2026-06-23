@@ -15,6 +15,7 @@
     { "source": "/simulado-prova", "destination": "/pbm-simulado-prova" },
     { "source": "/ranking", "destination": "/pbm-ranking" },
     { "source": "/flashcards", "destination": "/pbm-flashcards" },
+    { "source": "/podcast", "destination": "/pbm-podcast" },
     { "source": "/ciclo-estudos", "destination": "/pbm-ciclo-estudos" },
     { "source": "/minhas-dificuldades", "destination": "/pbm-minhas-dificuldades" },
     { "source": "/editais", "destination": "/pbm-editais" },
@@ -25,6 +26,7 @@
     { "source": "/admin-relatorios", "destination": "/admin-relatorios" },
     { "source": "/admin-cadastro", "destination": "/admin-cadastro" },
     { "source": "/admin-aprovacoes", "destination": "/admin-aprovacoes" },
+    { "source": "/admin-podcasts", "destination": "/admin-podcasts" },
     { "source": "/admin-denuncias", "destination": "/admin-denuncias" },
     { "source": "/admin-analytics", "destination": "/admin-analytics" },
     { "source": "/admin-legislacoes", "destination": "/admin-legislacoes" },
@@ -51,7 +53,7 @@
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdn.jsdelivr.net; font-src fonts.gstatic.com; connect-src 'self' https://graduabm-backend-production.up.railway.app https://cdn.jsdelivr.net https://nssqtjvtrrrppfimpouu.supabase.co https://cloudflareinsights.com; img-src 'self' data: https://nssqtjvtrrrppfimpouu.supabase.co https://i.ytimg.com; frame-src https://www.youtube-nocookie.com" },
+        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net cdnjs.cloudflare.com static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com cdn.jsdelivr.net; font-src fonts.gstatic.com; media-src 'self' https://nssqtjvtrrrppfimpouu.supabase.co; connect-src 'self' https://graduabm-backend-production.up.railway.app https://cdn.jsdelivr.net https://nssqtjvtrrrppfimpouu.supabase.co https://cloudflareinsights.com; img-src 'self' data: https://nssqtjvtrrrppfimpouu.supabase.co https://i.ytimg.com; frame-src https://www.youtube-nocookie.com" },
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains" },
         { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
