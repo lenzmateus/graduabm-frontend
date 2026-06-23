@@ -390,7 +390,7 @@ async function abrirModalNovoNaLei(legId) {
   popularLegsPorArea(legId);
   document.getElementById('m-legislacao-id').value = legId;
   atualizarInfoLeg();
-  document.getElementById('m-titulo').value = ((leg && leg.nome) || legId) + ' — Aula ' + proxOrdem;
+  document.getElementById('m-titulo').value = 'Aula ' + proxOrdem;
   document.getElementById('m-ordem').value = proxOrdem;
   document.getElementById('m-status').value = 'rascunho';
   atualizarPreview();
