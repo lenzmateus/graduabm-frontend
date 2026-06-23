@@ -37,20 +37,46 @@
     margin: 0 0 22px;
   }
 
-  .lista { display: flex; flex-direction: column; gap: 10px; }
+  .lista { display: flex; flex-direction: column; gap: 22px; }
+
+  /* Série: episódios de uma mesma lei, em ordem. */
+  .serie-cabecalho { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .serie-nome { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--branco, #fff); }
+  .serie-selo {
+    flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--cinza-texto, #9a9a9a); border: 1px solid var(--cinza-borda, #2a2a2a);
+    border-radius: 999px; padding: 3px 9px;
+  }
+  .serie-selo.completa { color: #fff; background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); }
+  .serie-eps { display: flex; flex-direction: column; gap: 8px; }
+
   .card {
+    display: flex; align-items: center; gap: 12px;
     background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a);
-    border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: border-color 0.15s;
+    border-radius: 12px; padding: 12px 14px; transition: border-color 0.15s;
   }
   .card:hover { border-color: var(--vermelho, #C0270F); }
   .card.ativo { border-color: var(--vermelho, #C0270F); }
+  .card .selecionar { flex: 1; min-width: 0; cursor: pointer; }
+  .card .ep-icone { flex: none; font-size: 15px; width: 18px; text-align: center; color: var(--cinza-texto, #9a9a9a); }
+  .card.concluido .ep-icone { color: var(--vermelho, #C0270F); }
   .card h2 {
-    font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; margin: 0 0 4px;
-    color: var(--branco, #fff);
+    font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; margin: 0 0 3px;
+    color: var(--branco, #fff); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .card .cap { color: var(--cinza-texto, #9a9a9a); font-weight: 500; }
   .card p {
     font-family: 'Inter', sans-serif; font-size: 13px; color: var(--cinza-texto, #9a9a9a); margin: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
+  .card .ouvido-btn {
+    flex: none; background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a);
+    color: var(--cinza-texto, #9a9a9a); border-radius: 999px; padding: 5px 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.03em;
+    text-transform: uppercase; cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .card .ouvido-btn:hover { color: var(--branco, #fff); border-color: var(--texto-suporte, #777); }
+  .card.concluido .ouvido-btn { color: #fff; background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); }
 
   .player {
     margin-top: 22px; background: var(--cinza-escuro, #1a1a1a);
@@ -114,21 +140,121 @@
     let recarregandoUrl = false;
     let ultimoSalvo = 0;     // timestamp do último save (throttle)
     let posicaoInicial = 0;  // onde retomar quando o áudio carregar
+    let episodios = [];      // lista achatada (já ordenada pelo backend) p/ auto-play
+
+    // Agrupa episódios por legislação (a série da lei), preservando a ordem do backend.
+    function agruparPorLei(podcasts) {
+      const grupos = new Map();
+      podcasts.forEach((p) => {
+        const chave = p.legislacao_id;
+        if (!grupos.has(chave)) grupos.set(chave, { nome: p.legislacao_nome || chave, eps: [] });
+        grupos.get(chave).eps.push(p);
+      });
+      return grupos;
+    }
 
     function render(podcasts) {
+      episodios = podcasts;
       elLista.innerHTML = '';
-      podcasts.forEach((p) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.id = p.id;
-        const h = document.createElement('h2');
-        h.textContent = p.titulo;
-        const desc = document.createElement('p');
-        desc.textContent = p.descricao || '';
-        card.append(h, desc);
-        card.addEventListener('click', () => tocar(p));
-        elLista.appendChild(card);
+      agruparPorLei(podcasts).forEach((grupo) => {
+        const serie = document.createElement('section');
+        serie.className = 'serie';
+
+        const cab = document.createElement('div');
+        cab.className = 'serie-cabecalho';
+        const nome = document.createElement('span');
+        nome.className = 'serie-nome';
+        nome.textContent = grupo.nome;
+        const selo = document.createElement('span');
+        selo.className = 'serie-selo';
+        cab.append(nome, selo);
+
+        const eps = document.createElement('div');
+        eps.className = 'serie-eps';
+        grupo.eps.forEach((p) => eps.appendChild(montarEpisodio(p)));
+
+        serie.append(cab, eps);
+        serie.dataset.lei = grupo.eps[0].legislacao_id;
+        elLista.appendChild(serie);
+        atualizarSelo(grupo.eps[0].legislacao_id);
       });
+    }
+
+    function montarEpisodio(p) {
+      const card = document.createElement('div');
+      card.className = 'card' + (p.concluido ? ' concluido' : '');
+      card.dataset.id = p.id;
+      card.dataset.lei = p.legislacao_id;
+
+      const sel = document.createElement('div');
+      sel.className = 'selecionar';
+      const icone = document.createElement('span');
+      icone.className = 'ep-icone';
+      const info = document.createElement('div');
+      const h = document.createElement('h2');
+      if (p.capitulo) {
+        const cap = document.createElement('span');
+        cap.className = 'cap';
+        cap.textContent = p.capitulo + ' · ';
+        h.append(cap);
+      }
+      h.append(document.createTextNode(p.titulo));
+      const desc = document.createElement('p');
+      desc.textContent = p.descricao || '';
+      info.append(h, desc);
+      // ícone + info ocupam a área clicável que toca o episódio
+      const clic = document.createElement('div');
+      clic.style.cssText = 'display:flex;align-items:center;gap:12px;flex:1;min-width:0';
+      clic.append(icone, info);
+      sel.append(clic);
+      sel.addEventListener('click', () => tocar(p));
+
+      const btn = document.createElement('button');
+      btn.className = 'ouvido-btn';
+      btn.addEventListener('click', (e) => { e.stopPropagation(); alternarOuvido(p); });
+
+      card.append(sel, btn);
+      atualizarCardVisual(card, p);
+      return card;
+    }
+
+    function atualizarCardVisual(card, p) {
+      card.classList.toggle('concluido', !!p.concluido);
+      const icone = card.querySelector('.ep-icone');
+      const btn = card.querySelector('.ouvido-btn');
+      if (p.concluido) { icone.textContent = '✓'; btn.textContent = 'Ouvido ✓'; }
+      else if (p.posicao_segundos > 0) { icone.textContent = '▶'; btn.textContent = 'Marcar ouvido'; }
+      else { icone.textContent = '○'; btn.textContent = 'Marcar ouvido'; }
+    }
+
+    // Selo "X/Y ouvidos" da série; fica destacado quando completa.
+    function atualizarSelo(legId) {
+      const serie = elLista.querySelector('.serie[data-lei="' + CSS.escape(legId) + '"]');
+      if (!serie) return;
+      const eps = episodios.filter((p) => p.legislacao_id === legId);
+      const ouvidos = eps.filter((p) => p.concluido).length;
+      const selo = serie.querySelector('.serie-selo');
+      selo.textContent = ouvidos + '/' + eps.length + ' ouvidos';
+      selo.classList.toggle('completa', ouvidos === eps.length && eps.length > 0);
+    }
+
+    // Toggle manual de "ouvido" (além do automático no fim do áudio).
+    async function alternarOuvido(p) {
+      const novo = !p.concluido;
+      p.concluido = novo;
+      const card = elLista.querySelector('.card[data-id="' + CSS.escape(p.id) + '"]');
+      if (card) atualizarCardVisual(card, p);
+      atualizarSelo(p.legislacao_id);
+      try {
+        await PBM.Podcasts.salvarProgresso(p.id, {
+          posicao_segundos: novo ? (p.posicao_segundos || 0) : 0,
+          concluido: novo,
+        });
+      } catch {
+        p.concluido = !novo; // desfaz o otimismo se falhar
+        if (card) atualizarCardVisual(card, p);
+        atualizarSelo(p.legislacao_id);
+      }
     }
 
     function marcarAtivo(id) {
@@ -184,9 +310,31 @@
       if (agora - ultimoSalvo > 10000) { ultimoSalvo = agora; salvarProgresso(); }
     });
     elAudio.addEventListener('pause', () => salvarProgresso());
-    elAudio.addEventListener('ended', () => salvarProgresso(true));
+    elAudio.addEventListener('ended', aoTerminar);
     window.addEventListener('pagehide', () => salvarProgresso());
     document.addEventListener('visibilitychange', () => { if (document.hidden) salvarProgresso(); });
+
+    // Fim do episódio: marca como ouvido, atualiza o selo da série e toca o próximo capítulo.
+    function aoTerminar() {
+      salvarProgresso(true);
+      if (!podcastAtual) return;
+      const concluido = podcastAtual;
+      concluido.concluido = true;
+      concluido.posicao_segundos = 0;
+      const card = elLista.querySelector('.card[data-id="' + CSS.escape(concluido.id) + '"]');
+      if (card) atualizarCardVisual(card, concluido);
+      atualizarSelo(concluido.legislacao_id);
+
+      const proximo = proximoDaSerie(concluido);
+      if (proximo) tocar(proximo);
+    }
+
+    // Próximo episódio da MESMA lei na ordem já entregue pelo backend.
+    function proximoDaSerie(atual) {
+      const daLei = episodios.filter((p) => p.legislacao_id === atual.legislacao_id);
+      const i = daLei.findIndex((p) => p.id === atual.id);
+      return i >= 0 && i + 1 < daLei.length ? daLei[i + 1] : null;
+    }
 
     // ── Velocidade de reprodução ──────────────────────────────────────────────
     document.getElementById('velocidades').addEventListener('click', (e) => {

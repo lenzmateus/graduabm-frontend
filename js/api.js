@@ -1042,12 +1042,26 @@ const PBM = {
         keepalive: true,
       });
     },
+    // Episódio em andamento p/ o "continuar de onde parou" (null se não houver).
+    continuar() {
+      return request('/api/podcasts/continuar');
+    },
   },
 
   Videoaulas: {
-    // Lista as videoaulas publicadas visíveis ao curso do aluno (inclui youtube_id).
+    // Lista as videoaulas publicadas visíveis ao curso do aluno (inclui youtube_id e concluido).
     listar() {
       return request('/api/videoaulas');
+    },
+    // Estado de "visto" do aluno: { concluido }.
+    progresso(id) {
+      return request('/api/videoaulas/' + encodeURIComponent(id) + '/progresso');
+    },
+    salvarProgresso(id, { concluido } = {}) {
+      return request('/api/videoaulas/' + encodeURIComponent(id) + '/progresso', {
+        method: 'POST',
+        body: JSON.stringify({ concluido }),
+      });
     },
   },
 

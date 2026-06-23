@@ -171,6 +171,14 @@
         <textarea id="m-descricao" placeholder="Resumo curto do episódio."></textarea>
       </div>
       <div class="campo">
+        <label>Capítulo (opcional)</label>
+        <input type="text" id="m-capitulo" placeholder="Ex.: Cap. I–II — deixe vazio se for episódio único">
+      </div>
+      <div class="campo">
+        <label>Ordem na série (opcional)</label>
+        <input type="number" id="m-ordem" min="0" step="1" placeholder="Ex.: 1, 2, 3… ordena os episódios da lei">
+      </div>
+      <div class="campo">
         <label>Status</label>
         <select id="m-status">
           <option value="rascunho">Rascunho</option>
@@ -379,7 +387,7 @@ async function excluir(id) {
 async function abrirModalNovo() {
   await carregarManifesto();
   document.getElementById('modal-titulo').textContent = 'Novo Podcast';
-  ['m-id', 'm-titulo', 'm-descricao'].forEach(i => document.getElementById(i).value = '');
+  ['m-id', 'm-titulo', 'm-descricao', 'm-capitulo', 'm-ordem'].forEach(i => document.getElementById(i).value = '');
   document.getElementById('m-area').value = '';
   document.getElementById('m-curso').value = 'ambos';
   popularLegsPorArea('');
@@ -396,6 +404,8 @@ async function abrirModalEditar(id) {
   document.getElementById('m-id').value = p.id;
   document.getElementById('m-titulo').value = p.titulo || '';
   document.getElementById('m-descricao').value = p.descricao || '';
+  document.getElementById('m-capitulo').value = p.capitulo || '';
+  document.getElementById('m-ordem').value = (p.ordem != null ? p.ordem : '');
   document.getElementById('m-curso').value = p.curso || 'ambos';
   document.getElementById('m-area').value = atDaLeg(legPorId(p.legislacao_id), p.curso) || '';
   popularLegsPorArea(p.legislacao_id || '');
@@ -415,9 +425,12 @@ async function salvar() {
   const titulo = document.getElementById('m-titulo').value.trim();
   if (!legislacao_id) { erroEl.textContent = 'Selecione a legislação.'; erroEl.style.display = 'block'; return; }
   if (!titulo) { erroEl.textContent = 'Preencha o título.'; erroEl.style.display = 'block'; return; }
+  const ordemRaw = document.getElementById('m-ordem').value.trim();
   const payload = {
     legislacao_id, titulo,
     descricao: document.getElementById('m-descricao').value.trim() || null,
+    capitulo: document.getElementById('m-capitulo').value.trim() || null,
+    ordem: ordemRaw === '' ? null : Number(ordemRaw),
     curso: document.getElementById('m-curso').value,
     status: document.getElementById('m-status').value,
   };

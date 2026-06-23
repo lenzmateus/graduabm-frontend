@@ -673,6 +673,9 @@ let progressoPorLeg = {};
 let contagensReais = {};
 let contagensCarregadas = false;
 
+// Mídia disponível por legislação: { legId: { podcasts, videoaulas } } — global, init.
+let midiaPorLeg = {};
+
 function tagClass(tag) {
   if (tag === 'exclusivo')     return 'tag-exclusivo';
   if (tag === 'exclusivo-cba') return 'tag-exclusivo-cba';
@@ -757,6 +760,7 @@ function render() {
           <div class="leg-nome">${item.nome}</div>
           <div class="leg-detalhe">${item.detalhe}</div>
           <div class="leg-qbadge${semQuestoes ? ' leg-qbadge-zero' : ''}">${qReal} questões no banco</div>
+          ${badgeMidia(item.id)}
           <div class="qtd-leg-ctrl">
             <button class="qtd-leg-btn" onclick="alterarQtd('${item.id}', -1, event)">−</button>
             <input type="number" class="qtd-leg-val" id="qtd-val-${item.id}" value="${qtdAtual}" min="1" onclick="event.stopPropagation()" oninput="digitarQtd('${item.id}', this, event)" onblur="corrigirQtd('${item.id}', this)">
@@ -929,6 +933,35 @@ function trocarArea(at, btn) {
   carregarContagensReais().then(() => render());
 }
 
+// ── BADGE DE MÍDIA (podcast/videoaula) POR LEGISLAÇÃO ──
+function badgeMidia(legId) {
+  const m = midiaPorLeg[legId];
+  if (!m || (!m.podcasts && !m.videoaulas)) return '';
+  const partes = [];
+  if (m.podcasts) partes.push('🎧 ' + m.podcasts + (m.podcasts > 1 ? ' eps' : ' ep'));
+  if (m.videoaulas) partes.push('🎬 ' + m.videoaulas + (m.videoaulas > 1 ? ' vídeos' : ' vídeo'));
+  return `<div class="leg-detalhe" style="margin-top:3px;opacity:.85;">${partes.join(' · ')}</div>`;
+}
+
+// Conta podcasts e videoaulas por legislação (uma chamada de cada, global).
+async function carregarMidia() {
+  try {
+    const [pods, vids] = await Promise.all([
+      PBM.Podcasts.listar().catch(() => []),
+      PBM.Videoaulas.listar().catch(() => []),
+    ]);
+    midiaPorLeg = {};
+    (pods || []).forEach(p => {
+      if (!midiaPorLeg[p.legislacao_id]) midiaPorLeg[p.legislacao_id] = { podcasts: 0, videoaulas: 0 };
+      midiaPorLeg[p.legislacao_id].podcasts++;
+    });
+    (vids || []).forEach(v => {
+      if (!midiaPorLeg[v.legislacao_id]) midiaPorLeg[v.legislacao_id] = { podcasts: 0, videoaulas: 0 };
+      midiaPorLeg[v.legislacao_id].videoaulas++;
+    });
+  } catch(e) {}
+}
+
 // ── CARREGAR CONTAGENS REAIS DO BANCO POR LEGISLAÇÃO ──
 async function carregarContagensReais() {
   const container = document.getElementById('conteudo-legislacoes');
@@ -1031,7 +1064,7 @@ if (sessionStorage.getItem('pbm_preview_aluno') === '1') {
   }
 })();
 
-Promise.all([carregarAreas(), carregarProgressoLeg(), carregarContagensReais()]).then(() => render());
+Promise.all([carregarAreas(), carregarProgressoLeg(), carregarContagensReais(), carregarMidia()]).then(() => render());
 </script>
 
 <div id="btn-admin-float" style="display:none;position:fixed;bottom:24px;right:24px;z-index:999;">

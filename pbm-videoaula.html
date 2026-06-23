@@ -31,13 +31,35 @@
   .palco iframe { width: 100%; height: 100%; border: 0; display: block; }
   .palco-titulo { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; margin: 0 0 22px; color: var(--branco, #fff); }
 
-  .lista { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-  .card { background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 12px; overflow: hidden; cursor: pointer; transition: border-color 0.15s; }
+  .lista { display: flex; flex-direction: column; gap: 22px; }
+
+  /* Série: vídeos de uma mesma lei, em ordem. */
+  .serie-cabecalho { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+  .serie-nome { font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; color: var(--branco, #fff); }
+  .serie-selo {
+    flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--cinza-texto, #9a9a9a); border: 1px solid var(--cinza-borda, #2a2a2a);
+    border-radius: 999px; padding: 3px 9px;
+  }
+  .serie-selo.completa { color: #fff; background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); }
+  .serie-eps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+
+  .card { position: relative; background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 12px; overflow: hidden; transition: border-color 0.15s; }
   .card:hover, .card.ativo { border-color: var(--vermelho, #C0270F); }
-  .card .thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: #000; }
+  .card.concluido { border-color: var(--vermelho, #C0270F); }
+  .card .thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; background: #000; cursor: pointer; }
   .card .meta { padding: 10px 12px; }
-  .card h2 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; margin: 0; color: var(--branco, #fff); }
+  .card h2 { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; margin: 0; color: var(--branco, #fff); cursor: pointer; }
+  .card .cap { color: var(--cinza-texto, #9a9a9a); font-weight: 500; }
   .card p { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--cinza-texto, #9a9a9a); margin: 4px 0 0; }
+  .visto-btn {
+    margin-top: 10px; width: 100%; background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a);
+    color: var(--cinza-texto, #9a9a9a); border-radius: 8px; padding: 6px 8px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.03em;
+    text-transform: uppercase; cursor: pointer; transition: all 0.15s;
+  }
+  .visto-btn:hover { color: var(--branco, #fff); border-color: var(--texto-suporte, #777); }
+  .card.concluido .visto-btn { color: #fff; background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); }
 
   .aviso { font-family: 'Inter', sans-serif; font-size: 13px; color: var(--cinza-texto, #9a9a9a); padding: 20px 0; }
   .erro { color: var(--vermelho, #C0270F); }
@@ -64,25 +86,109 @@
     const elPlayer = document.getElementById('player');
     const elPalcoTitulo = document.getElementById('palco-titulo');
 
+    let videos = [];
+
     function thumb(id) { return 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/hqdefault.jpg'; }
 
-    function render(videos) {
-      elLista.innerHTML = '';
-      videos.forEach((v) => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.dataset.id = v.id;
-        const img = document.createElement('img');
-        img.className = 'thumb'; img.loading = 'lazy'; img.alt = ''; img.src = thumb(v.youtube_id);
-        const meta = document.createElement('div');
-        meta.className = 'meta';
-        const h = document.createElement('h2'); h.textContent = v.titulo;
-        const desc = document.createElement('p'); desc.textContent = v.descricao || '';
-        meta.append(h, desc);
-        card.append(img, meta);
-        card.addEventListener('click', () => assistir(v));
-        elLista.appendChild(card);
+    // Agrupa por legislação (a série da lei), preservando a ordem do backend.
+    function agruparPorLei(lista) {
+      const grupos = new Map();
+      lista.forEach((v) => {
+        const chave = v.legislacao_id;
+        if (!grupos.has(chave)) grupos.set(chave, { nome: v.legislacao_nome || chave, eps: [] });
+        grupos.get(chave).eps.push(v);
       });
+      return grupos;
+    }
+
+    function render(lista) {
+      videos = lista;
+      elLista.innerHTML = '';
+      agruparPorLei(lista).forEach((grupo) => {
+        const serie = document.createElement('section');
+        serie.className = 'serie';
+        serie.dataset.lei = grupo.eps[0].legislacao_id;
+
+        const cab = document.createElement('div');
+        cab.className = 'serie-cabecalho';
+        const nome = document.createElement('span');
+        nome.className = 'serie-nome'; nome.textContent = grupo.nome;
+        const selo = document.createElement('span');
+        selo.className = 'serie-selo';
+        cab.append(nome, selo);
+
+        const eps = document.createElement('div');
+        eps.className = 'serie-eps';
+        grupo.eps.forEach((v) => eps.appendChild(montarCard(v)));
+
+        serie.append(cab, eps);
+        elLista.appendChild(serie);
+        atualizarSelo(grupo.eps[0].legislacao_id);
+      });
+    }
+
+    function montarCard(v) {
+      const card = document.createElement('div');
+      card.className = 'card' + (v.concluido ? ' concluido' : '');
+      card.dataset.id = v.id;
+      card.dataset.lei = v.legislacao_id;
+
+      const img = document.createElement('img');
+      img.className = 'thumb'; img.loading = 'lazy'; img.alt = ''; img.src = thumb(v.youtube_id);
+      img.addEventListener('click', () => assistir(v));
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const h = document.createElement('h2');
+      if (v.capitulo) {
+        const cap = document.createElement('span');
+        cap.className = 'cap'; cap.textContent = v.capitulo + ' · ';
+        h.append(cap);
+      }
+      h.append(document.createTextNode(v.titulo));
+      h.addEventListener('click', () => assistir(v));
+      const desc = document.createElement('p'); desc.textContent = v.descricao || '';
+
+      const btn = document.createElement('button');
+      btn.className = 'visto-btn';
+      btn.addEventListener('click', (e) => { e.stopPropagation(); alternarVisto(v); });
+
+      meta.append(h, desc, btn);
+      card.append(img, meta);
+      atualizarBotaoVisto(card, v);
+      return card;
+    }
+
+    function atualizarBotaoVisto(card, v) {
+      card.classList.toggle('concluido', !!v.concluido);
+      card.querySelector('.visto-btn').textContent = v.concluido ? 'Visto ✓' : 'Marcar como visto';
+    }
+
+    // Selo "X/Y vistos" da série; destacado quando completa.
+    function atualizarSelo(legId) {
+      const serie = elLista.querySelector('.serie[data-lei="' + CSS.escape(legId) + '"]');
+      if (!serie) return;
+      const eps = videos.filter((v) => v.legislacao_id === legId);
+      const vistos = eps.filter((v) => v.concluido).length;
+      const selo = serie.querySelector('.serie-selo');
+      selo.textContent = vistos + '/' + eps.length + ' vistos';
+      selo.classList.toggle('completa', vistos === eps.length && eps.length > 0);
+    }
+
+    // Check manual de "visto" (o iframe do YouTube não entrega eventos sem mudar a CSP).
+    async function alternarVisto(v) {
+      const novo = !v.concluido;
+      v.concluido = novo;
+      const card = elLista.querySelector('.card[data-id="' + CSS.escape(v.id) + '"]');
+      if (card) atualizarBotaoVisto(card, v);
+      atualizarSelo(v.legislacao_id);
+      try {
+        await PBM.Videoaulas.salvarProgresso(v.id, { concluido: novo });
+      } catch {
+        v.concluido = !novo;
+        if (card) atualizarBotaoVisto(card, v);
+        atualizarSelo(v.legislacao_id);
+      }
     }
 
     function assistir(v) {
@@ -97,10 +203,10 @@
     (async function init() {
       await PBM.protegerRota();
       try {
-        const videos = await PBM.Videoaulas.listar();
-        if (!videos.length) { elStatus.textContent = 'Nenhuma videoaula disponível ainda. Volte em breve.'; return; }
+        const lista = await PBM.Videoaulas.listar();
+        if (!lista.length) { elStatus.textContent = 'Nenhuma videoaula disponível ainda. Volte em breve.'; return; }
         elStatus.style.display = 'none';
-        render(videos);
+        render(lista);
       } catch (err) {
         elStatus.className = 'aviso erro';
         elStatus.textContent = err?.erro || 'Não foi possível carregar as videoaulas.';
