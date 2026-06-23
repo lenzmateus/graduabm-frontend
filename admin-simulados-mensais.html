@@ -1332,7 +1332,7 @@ async function aprovarQuestaoBloco(questaoId, blocoId) {
     toast('Questão aprovada.');
     delete questoesPorBloco[blocoId];
     await recarregarBlocoCard(blocoId);
-  } catch(err) { toast(err.erro||'Erro ao aprovar.', 'err'); }
+  } catch(err) { toast(err.erro||'Falha ao aprovar. Tente novamente.', 'err'); }
 }
 
 async function rejeitarQuestaoBloco(questaoId, blocoId) {
@@ -1341,7 +1341,7 @@ async function rejeitarQuestaoBloco(questaoId, blocoId) {
     toast('Questão rejeitada.');
     delete questoesPorBloco[blocoId];
     await recarregarBlocoCard(blocoId);
-  } catch(err) { toast(err.erro||'Erro ao rejeitar.', 'err'); }
+  } catch(err) { toast(err.erro||'Falha ao rejeitar. Tente novamente.', 'err'); }
 }
 
 // ── Remover questão do bloco ─────────────────────────────────────────────────

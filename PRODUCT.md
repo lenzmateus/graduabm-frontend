@@ -11,7 +11,7 @@ Active military personnel (soldiers, fire cadets) studying for highly competitiv
 To provide an elite, tactical, and distraction-free learning ecosystem. Success is measured by the student's mastery of the fire department's regulatory framework, legislation, and operational procedures, driving high retention (via active recall/SRS flashcards and cyclic study blocks) and mock-exam success.
 
 ## Brand Personality
-Tactical, Direct, Operational. The tone is highly authoritative and disciplined, treating the user like a professional cadet. There is no decorative fluff, no coddling, and no corporate filler.
+Tactical, Direct, Operational — **technical and motivational** (the two are equal pillars). The tone is authoritative and disciplined, treating the user like a professional cadet, and it always points to the mission — approval: it motivates by raising the standard, acknowledging effort and showing progress, **never by empty cheerleading**. No decorative fluff, no hype/coddling, no corporate filler. For *how* this voice is written across UI, e-mail and push, see **[VOICE.md](VOICE.md)** (the editorial source of truth).
 
 ## Anti-references
 - **Playful consumer apps**: Avoid colorful gradients, soft or playful consumer illustrations, emojis, rounded borders > 16px, and overly casual gamification.

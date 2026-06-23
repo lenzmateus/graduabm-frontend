@@ -658,7 +658,7 @@ async function init() {
 
   } catch (err) {
     console.error(err);
-    const msg = err?.erro || err?.message || 'Erro ao carregar simulado.';
+    const msg = err?.erro || err?.message || 'Não foi possível carregar o simulado. Tente novamente.';
     if (err?.codigo === 'JA_ENTREGUE') {
       window.location.href = '/simulado-mensal-ranking?id=' + simuladoId;
       return;
