@@ -80,7 +80,7 @@
     <div class="topo"><img src="/images/emblem-pbm.png" alt=""><h1>Videoaulas</h1></div>
     <p class="subtitulo">Aulas em vídeo por legislação. Conteúdo exclusivo de assinante.</p>
 
-    <div class="palco" id="palco"><iframe id="player" allow="encrypted-media; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div>
+    <div class="palco" id="palco"></div>
     <p class="palco-titulo" id="palco-titulo" style="display:none"></p>
 
     <div id="status" class="aviso">Carregando videoaulas…</div>
@@ -92,10 +92,18 @@
     const elStatus = document.getElementById('status');
     const elLista = document.getElementById('lista');
     const elPalco = document.getElementById('palco');
-    const elPlayer = document.getElementById('player');
     const elPalcoTitulo = document.getElementById('palco-titulo');
 
     let videos = [];
+
+    // Player do YouTube via IFrame Player API (para medir tempo real assistido — ADR-0047).
+    let player = null;        // instância YT.Player
+    let apiPronta = false;    // window.onYouTubeIframeAPIReady já rodou?
+    let pendente = null;      // linha aguardando a API carregar
+    let videoaulaAtual = null;
+    let segAcum = 0;          // segundos de relógio assistidos ainda não creditados
+    let relogioBase = null;   // Date.now() do trecho assistindo (null = parado)
+    let tick = null;          // heartbeat enquanto PLAYING
 
     // ── Área Temática: divide o conteúdo como no resto do site ───────────────
     const AT_LABEL = {
@@ -302,22 +310,62 @@
       }
     }
 
-    // Embed: vídeo dentro da playlist (com ⏮⏭), playlist inteira, ou vídeo único.
-    function urlEmbed(p) {
-      if (p.youtube_id && p.youtube_playlist_id) {
-        return 'https://www.youtube.com/embed/' + encodeURIComponent(p.youtube_id) +
-          '?list=' + encodeURIComponent(p.youtube_playlist_id) + '&rel=0&modestbranding=1&autoplay=1';
-      }
+    // ── Crédito de tempo ao Ciclo (ADR-0047): mede tempo de RELÓGIO assistido ───
+    // via eventos da IFrame Player API e credita o delta ao Balde do bloco da
+    // legislação. O backend ignora se a lei não tem bloco não-concluído no ciclo.
+    function pulsar() {
+      if (relogioBase != null) { segAcum += (Date.now() - relogioBase) / 1000; relogioBase = Date.now(); }
+    }
+    function enviar() {
+      pulsar();
+      if (!videoaulaAtual) return;
+      const inteiro = Math.floor(segAcum);
+      if (inteiro <= 0) return;
+      segAcum -= inteiro;
+      PBM.Videoaulas.tempo(videoaulaAtual.progressoVideoaulaId, {
+        segundos: inteiro, youtube_id: videoaulaAtual.progressoYoutubeId,
+      }).catch(() => {});
+    }
+    function iniciarRelogio() { relogioBase = Date.now(); if (!tick) tick = setInterval(enviar, 5000); }
+    function pararRelogio() { pulsar(); relogioBase = null; if (tick) { clearInterval(tick); tick = null; } enviar(); }
+
+    function onState(e) {
+      const YTS = window.YT && YT.PlayerState;
+      if (!YTS) return;
+      if (e.data === YTS.PLAYING) iniciarRelogio();
+      else if (e.data === YTS.PAUSED || e.data === YTS.ENDED) pararRelogio();
+      else { pulsar(); relogioBase = null; } // BUFFERING/CUED: para de contar, sem flush
+    }
+
+    // Em background o vídeo costuma pausar (YouTube), disparando PAUSED → flush.
+    window.addEventListener('pagehide', enviar);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) enviar(); });
+
+    function criarPlayer(p) {
+      const playerVars = { rel: 0, modestbranding: 1, autoplay: 1, enablejsapi: 1, origin: location.origin, playsinline: 1 };
+      const opts = { width: '100%', height: '100%', playerVars, events: { onStateChange: onState } };
       if (p.youtube_playlist_id) {
-        return 'https://www.youtube.com/embed/videoseries?list=' + encodeURIComponent(p.youtube_playlist_id) + '&rel=0&modestbranding=1&autoplay=1';
+        playerVars.listType = 'playlist';
+        playerVars.list = p.youtube_playlist_id;
+        if (p.youtube_id) opts.videoId = p.youtube_id;
+      } else {
+        opts.videoId = p.youtube_id;
       }
-      return 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(p.youtube_id) + '?rel=0&autoplay=1&modestbranding=1';
+      player = new YT.Player('player', opts);
     }
 
     function assistir(p) {
       document.querySelectorAll('.card').forEach((c) => c.classList.toggle('ativo', c.dataset.id === p.id));
-      elPlayer.src = urlEmbed(p);
+      // Credita o tempo do vídeo anterior e zera o contador para o novo.
+      pararRelogio();
+      segAcum = 0; relogioBase = null;
+      videoaulaAtual = p;
+
+      if (player) { try { player.destroy(); } catch {} player = null; }
+      elPalco.innerHTML = '<div id="player"></div>';
       elPalco.classList.add('on');
+      if (apiPronta) criarPlayer(p); else pendente = p;
+
       elPalcoTitulo.innerHTML = '';
       elPalcoTitulo.append(document.createTextNode(p.label));
       const lei = document.createElement('span');
@@ -327,11 +375,29 @@
       elPalco.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
+    // Carrega a IFrame Player API (callback global exigido pela API do YouTube).
+    window.onYouTubeIframeAPIReady = function () {
+      apiPronta = true;
+      if (pendente) { const p = pendente; pendente = null; criarPlayer(p); }
+    };
+    (function carregarYTApi() {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    })();
+
     (async function init() {
       await PBM.protegerRota();
+      // Deep-link a partir do Ciclo: ?legislacao_id= filtra a série daquela lei.
+      const legFiltro = new URLSearchParams(location.search).get('legislacao_id');
       try {
-        const lista = await PBM.Videoaulas.listar();
-        if (!lista.length) { elStatus.textContent = 'Nenhuma videoaula disponível ainda. Volte em breve.'; return; }
+        const lista = await PBM.Videoaulas.listar(legFiltro || undefined);
+        if (!lista.length) {
+          elStatus.textContent = legFiltro
+            ? 'Nenhuma videoaula desta legislação ainda. Volte em breve.'
+            : 'Nenhuma videoaula disponível ainda. Volte em breve.';
+          return;
+        }
         elStatus.style.display = 'none';
         render(lista);
       } catch (err) {

@@ -201,6 +201,17 @@
     display: flex; gap: 10px; flex-wrap: wrap;
   }
 
+  /* Atalhos para a mídia da legislação do bloco atual (o tempo conta no Ciclo — ADR-0047). */
+  .hero-midia { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; }
+  .hero-midia a {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.03em;
+    color: var(--cinza-texto, #9a9a9a); text-decoration: none;
+    border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 999px; padding: 5px 12px;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  .hero-midia a:hover { color: var(--branco, #fff); border-color: var(--texto-suporte, #777); }
+
   .anel-progresso {
     width: 130px; height: 130px;
     position: relative;
@@ -944,6 +955,7 @@
             <div id="hero-saldo-wrap" style="margin-bottom:10px;"></div>
             <div id="hero-porque-wrap" style="margin-bottom:10px;"></div>
             <div id="hero-nota-wrap"></div>
+            <div id="hero-midia-wrap" class="hero-midia"></div>
             <div class="hero-actions">
               <button class="btn-primario" id="btn-iniciar">Iniciar Bloco</button>
               <button class="btn-secundario" id="btn-pular">Pular para o próximo</button>
@@ -1353,6 +1365,7 @@
       renderSaldoHero(bloco);
       renderPorQueHero(bloco);
       renderNotaHero(bloco);
+      renderMidiaHero(bloco);
       document.getElementById('btn-iniciar').disabled = false;
       document.getElementById('btn-pular').disabled = false;
       // "Marcar concluído" e "Encerrar legislação" só aparecem com bloco em_andamento
@@ -1367,6 +1380,7 @@
       document.getElementById('hero-meta').textContent = '';
       document.getElementById('hero-saldo-wrap').innerHTML = '';
       document.getElementById('hero-porque-wrap').innerHTML = '';
+      document.getElementById('hero-midia-wrap').innerHTML = '';
       document.getElementById('btn-iniciar').disabled = true;
       document.getElementById('btn-pular').disabled = true;
       document.getElementById('btn-forcar').style.display = 'none';
@@ -1708,6 +1722,18 @@
     } else {
       wrap.innerHTML = '';
     }
+  }
+
+  // Atalhos para a mídia da legislação do bloco atual. O tempo ouvido/assistido
+  // conta no Balde do Ciclo (ADR-0047). As páginas filtram por ?legislacao_id=.
+  function renderMidiaHero(bloco) {
+    const wrap = document.getElementById('hero-midia-wrap');
+    if (!wrap) return;
+    const leg = encodeURIComponent(bloco.legislacao_id);
+    wrap.innerHTML = `
+      <a href="/podcast?legislacao_id=${leg}">🎧 Ouvir podcast desta legislação</a>
+      <a href="/videoaula?legislacao_id=${leg}">🎬 Assistir videoaula</a>
+    `;
   }
 
   function escapeHtml(s) {

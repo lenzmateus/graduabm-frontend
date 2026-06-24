@@ -1024,8 +1024,10 @@ const PBM = {
 
   Podcasts: {
     // Lista os podcasts publicados visíveis ao curso do aluno (sem URL de áudio).
-    listar() {
-      return request('/api/podcasts');
+    // `legId` opcional filtra por legislação (deep-link a partir do Ciclo).
+    listar(legId) {
+      const qs = legId ? '?legislacao_id=' + encodeURIComponent(legId) : '';
+      return request('/api/podcasts' + qs);
     },
     // Devolve { url, expira_em } — URL assinada de curta duração (bucket privado).
     stream(id) {
@@ -1046,12 +1048,23 @@ const PBM = {
     continuar() {
       return request('/api/podcasts/continuar');
     },
+    // Credita ao Balde do Ciclo o tempo real de escuta (ADR-0047). `segundos` é o
+    // delta reproduzido desde o último envio. keepalive p/ sobreviver ao unload.
+    tempo(id, { segundos } = {}) {
+      return request('/api/podcasts/' + encodeURIComponent(id) + '/tempo', {
+        method: 'POST',
+        body: JSON.stringify({ segundos }),
+        keepalive: true,
+      });
+    },
   },
 
   Videoaulas: {
     // Lista as videoaulas publicadas visíveis ao curso do aluno (inclui youtube_id e concluido).
-    listar() {
-      return request('/api/videoaulas');
+    // `legId` opcional filtra por legislação (deep-link a partir do Ciclo).
+    listar(legId) {
+      const qs = legId ? '?legislacao_id=' + encodeURIComponent(legId) : '';
+      return request('/api/videoaulas' + qs);
     },
     // Estado de "visto" do aluno: { concluido }.
     progresso(id) {
@@ -1061,6 +1074,15 @@ const PBM = {
       return request('/api/videoaulas/' + encodeURIComponent(id) + '/progresso', {
         method: 'POST',
         body: JSON.stringify({ concluido, youtube_id }),
+      });
+    },
+    // Credita ao Balde do Ciclo o tempo real assistido (ADR-0047). `segundos` é o
+    // delta reproduzido desde o último envio; `youtube_id` distingue a aula da playlist.
+    tempo(id, { segundos, youtube_id } = {}) {
+      return request('/api/videoaulas/' + encodeURIComponent(id) + '/tempo', {
+        method: 'POST',
+        body: JSON.stringify({ segundos, youtube_id }),
+        keepalive: true,
       });
     },
   },
