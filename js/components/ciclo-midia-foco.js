@@ -15,6 +15,22 @@
   function $(id) { return document.getElementById(id); }
   function desligarFundo() { try { if (window.PBMPomo) PBMPomo.setAudio('off'); } catch (_) {} }
 
+  // Rótulo curto do episódio: a legislação já está no topo da tela, então o item
+  // só precisa do que distingue (Aula N / Cap. X), sem repetir o nome da lei.
+  function cap1(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function curto(titulo, legNome, capitulo, ordem) {
+    var t = (titulo || '').trim();
+    var mA = t.match(/aula\s*\d+/i); if (mA) return cap1(mA[0].replace(/\s+/, ' '));
+    var mC = t.match(/cap[íi]tulos?\s*[\dIVXLC]+/i); if (mC) return cap1(mC[0]);
+    var lei = (legNome || '').trim();
+    if (lei && t.toLowerCase().indexOf(lei.toLowerCase()) === 0) {
+      t = t.slice(lei.length).replace(/^[\s—\-–:·.()]+/, '').trim();
+    }
+    if (!t || t.length > 42) t = capitulo || (ordem != null ? 'Episódio ' + ordem : 'Episódio');
+    return t;
+  }
+  function fmt(s) { s = Math.max(0, Math.floor(s || 0)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+
   // ── Medição de relógio (espelha os players standalone) ──────────────────────
   function pulsar(s) { if (s.base != null) { s.seg += (Date.now() - s.base) / 1000; s.base = Date.now(); } }
   function aplicarCredito(r) {
@@ -34,15 +50,28 @@
   }
 
   // ── Podcast (áudio nativo) ──────────────────────────────────────────────────
+  // Player de áudio custom minimalista (o nativo destoa do dark do site).
   function montarAudio() {
     if (pod.audio) return pod.audio;
-    var a = $('fm-audio');
-    if (!a) return null;
+    var a = $('fm-audio'); if (!a) return null;
     pod.audio = a;
-    a.addEventListener('play', function () { pod.base = Date.now(); pararVideo(); desligarFundo(); });
-    a.addEventListener('pause', function () { pulsar(pod); pod.base = null; enviarPod(); });
-    a.addEventListener('ended', function () { pulsar(pod); pod.base = null; enviarPod(); });
+    var play = $('fm-play'), track = $('fm-track'), fill = $('fm-fill'), time = $('fm-time');
+    function pintar() {
+      var d = a.duration || 0, r = d ? Math.min(1, a.currentTime / d) : 0;
+      if (fill) fill.style.width = (r * 100) + '%';
+      if (time) time.textContent = fmt(a.currentTime);
+    }
+    function icone(tocando) { if (play) { play.textContent = tocando ? '⏸' : '▶'; play.setAttribute('aria-label', tocando ? 'Pausar' : 'Tocar'); } }
+    if (play) play.addEventListener('click', function () { if (a.paused) a.play().catch(function () {}); else a.pause(); });
+    if (track) track.addEventListener('click', function (e) {
+      var rect = track.getBoundingClientRect(), r = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+      if (a.duration) { a.currentTime = r * a.duration; pintar(); }
+    });
+    a.addEventListener('play', function () { pod.base = Date.now(); icone(true); pararVideo(); desligarFundo(); });
+    a.addEventListener('pause', function () { pulsar(pod); pod.base = null; enviarPod(); icone(false); });
+    a.addEventListener('ended', function () { pulsar(pod); pod.base = null; enviarPod(); icone(false); });
     a.addEventListener('timeupdate', function () {
+      pintar();
       var t = Date.now(); if (t - pod.ultimo > 10000) { pod.ultimo = t; enviarPod(); }
     });
     return a;
@@ -50,7 +79,9 @@
   function tocarPodcast(p) {
     enviarPod(); pod.seg = 0; pod.base = null; pod.atual = p;
     marcarAtivo('fm-podcast-lista', p.id);
-    var ag = $('fm-podcast-agora'); if (ag) ag.textContent = '♪ ' + (p.titulo || 'Episódio');
+    var player = $('fm-player'); if (player) player.hidden = false;
+    var fill = $('fm-fill'); if (fill) fill.style.width = '0%';
+    var ag = $('fm-podcast-agora'); if (ag) ag.textContent = curto(p.titulo, p.legislacao_nome, p.capitulo, p.ordem);
     var a = montarAudio(); if (!a) return;
     PBM.Podcasts.stream(p.id).then(function (s) {
       a.src = s.url; a.play().catch(function () {});
@@ -113,16 +144,18 @@
   function renderPodcasts() {
     var lista = $('fm-podcast-lista'); if (!lista) return;
     lista.innerHTML = '';
-    pod.lista.forEach(function (p) { lista.appendChild(botao(p.titulo || 'Episódio', p.id, function () { tocarPodcast(p); })); });
+    pod.lista.forEach(function (p) {
+      lista.appendChild(botao(curto(p.titulo, p.legislacao_nome, p.capitulo, p.ordem), p.id, function () { tocarPodcast(p); }));
+    });
   }
   function linhasVideo(v) {
     if (v.videos && v.videos.length) {
       return v.videos.map(function (x, i) {
-        return { key: v.id + ':' + x.youtube_id, label: x.titulo || ('Aula ' + (i + 1)), videoaulaId: v.id, videoId: x.youtube_id, playlistId: v.youtube_playlist_id, ytChave: x.youtube_id };
+        return { key: v.id + ':' + x.youtube_id, label: curto(x.titulo, v.legislacao_nome, null, i + 1) || ('Aula ' + (i + 1)), videoaulaId: v.id, videoId: x.youtube_id, playlistId: v.youtube_playlist_id, ytChave: x.youtube_id };
       });
     }
     if (v.youtube_playlist_id) return [{ key: v.id, label: 'Playlist completa', videoaulaId: v.id, videoId: null, playlistId: v.youtube_playlist_id, ytChave: '' }];
-    return [{ key: v.id, label: v.titulo || 'Vídeo', videoaulaId: v.id, videoId: v.youtube_id, playlistId: null, ytChave: '' }];
+    return [{ key: v.id, label: curto(v.titulo, v.legislacao_nome, v.capitulo, v.ordem), videoaulaId: v.id, videoId: v.youtube_id, playlistId: null, ytChave: '' }];
   }
   function renderVideos() {
     var lista = $('fm-video-lista'); if (!lista) return;
@@ -146,6 +179,7 @@
     onCredito = (opts && opts.onCredito) || null;
     var painel = $('pomo-midia'); if (!painel) return false;
     painel.style.display = 'none';
+    var player = $('fm-player'); if (player) player.hidden = true;
     var leg = bloco.legislacao_id;
     try { pod.lista = (await PBM.Podcasts.listar(leg)) || []; } catch (_) { pod.lista = []; }
     try { vid.lista = (await PBM.Videoaulas.listar(leg)) || []; } catch (_) { vid.lista = []; }
