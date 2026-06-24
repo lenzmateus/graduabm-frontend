@@ -509,15 +509,21 @@
   .pomo-overlay.tela-preta .pomo-audio-frame iframe {
     background: #000 !important;
   }
-  /* Mídia da legislação embutida na tela de foco (ADR-0047) */
-  .pomo-midia { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--cinza-borda, #2a2a2a); text-align: left; }
-  .pomo-midia-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: var(--cinza-texto, #9a9a9a); margin-bottom: 10px; }
-  .pomo-midia-credito { color: var(--vermelho, #C0270F); margin-left: 6px; }
+  /* Mídia da legislação embutida na tela de foco (ADR-0047) — recolhível */
+  .pomo-midia { margin: 16px auto 0; max-width: 420px; padding-top: 6px; border-top: 1px solid var(--cinza-borda, #2a2a2a); text-align: left; }
+  .pomo-midia-sum { display: flex; align-items: center; gap: 8px; cursor: pointer; list-style: none; user-select: none; padding: 10px 4px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: var(--cinza-texto, #9a9a9a); }
+  .pomo-midia-sum::-webkit-details-marker { display: none; }
+  .pomo-midia-sum:hover { color: var(--branco, #fff); }
+  .pomo-midia[open] .pomo-midia-sum { color: var(--branco, #fff); }
+  .pomo-midia-credito { flex: 1; color: var(--vermelho, #C0270F); font-size: 11px; }
+  .pomo-midia-chevron { flex: none; transition: transform .2s; }
+  .pomo-midia[open] .pomo-midia-chevron { transform: rotate(180deg); }
+  .pomo-midia-body { padding: 4px 4px 8px; }
   .pomo-midia-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
   .pomo-midia-tab { background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a); color: var(--cinza-texto, #9a9a9a); border-radius: 999px; padding: 5px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; cursor: pointer; transition: all .12s; }
   .pomo-midia-tab:hover { color: #fff; border-color: var(--texto-suporte, #777); }
   .pomo-midia-tab.ativo { background: rgba(192,39,15,.15); color: #fff; border-color: var(--vermelho, #C0270F); }
-  .fm-lista { display: flex; flex-direction: column; gap: 4px; max-height: 132px; overflow-y: auto; margin-bottom: 12px; }
+  .fm-lista { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
   .fm-item { display: flex; align-items: center; gap: 8px; text-align: left; background: transparent; border: 1px solid transparent; color: var(--cinza-texto, #9a9a9a); border-radius: 7px; padding: 7px 10px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; transition: background .12s, color .12s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .fm-item::before { content: '▷'; font-size: 9px; color: var(--cinza-texto, #777); flex: none; }
   .fm-item:hover { background: rgba(255,255,255,.04); color: #fff; }
@@ -538,8 +544,11 @@
   .pomo-box {
     text-align: center;
     max-width: 540px; width: 100%;
-    max-height: 100vh; overflow-y: auto;
+    /* O scroll fica no .pomo-overlay (overflow-y:auto). Box sem scroll próprio
+       evita scrollbar aninhada. */
   }
+  /* Trava a rolagem da página de fundo enquanto a tela de foco está aberta. */
+  body.pomo-aberto { overflow: hidden; }
   .pomo-fase {
     font-family: 'IBM Plex Mono', monospace; font-size: 11px;
     color: var(--cinza-texto); letter-spacing: 0.14em; text-transform: uppercase;
@@ -1123,32 +1132,37 @@
       </div>
 
       <!-- Mídia da legislação: ouvir/assistir aqui conta no balde do bloco e é
-           deduzido do tempo do Pomodoro (não conta dobrado) — ADR-0047. -->
-      <div class="pomo-midia" id="pomo-midia" style="display:none;">
-        <div class="pomo-midia-titulo">
-          📚 Estudar ouvindo/assistindo<span class="pomo-midia-credito" id="pomo-midia-credito"></span>
-        </div>
-        <div class="pomo-midia-tabs">
-          <button type="button" class="pomo-midia-tab ativo" data-fmtab="podcast">🎧 Podcast</button>
-          <button type="button" class="pomo-midia-tab" data-fmtab="video">🎬 Videoaula</button>
-        </div>
-        <div id="fm-podcast-pane">
-          <div class="fm-lista" id="fm-podcast-lista"></div>
-          <div class="fm-player" id="fm-player" hidden>
-            <button type="button" class="fm-play" id="fm-play" aria-label="Tocar">▶</button>
-            <div class="fm-player-meta">
-              <div class="fm-agora" id="fm-podcast-agora"></div>
-              <div class="fm-track" id="fm-track" role="slider" aria-label="Progresso do áudio" tabindex="0"><div class="fm-fill" id="fm-fill"></div></div>
+           deduzido do tempo do Pomodoro (não conta dobrado) — ADR-0047.
+           Recolhível (<details>) e fechado por padrão p/ não poluir o foco. -->
+      <details class="pomo-midia" id="pomo-midia" style="display:none;">
+        <summary class="pomo-midia-sum">
+          <span class="pomo-midia-rotulo">📚 Estudar ouvindo/assistindo</span>
+          <span class="pomo-midia-credito" id="pomo-midia-credito"></span>
+          <span class="pomo-midia-chevron" aria-hidden="true">⌄</span>
+        </summary>
+        <div class="pomo-midia-body">
+          <div class="pomo-midia-tabs">
+            <button type="button" class="pomo-midia-tab ativo" data-fmtab="podcast">🎧 Podcast</button>
+            <button type="button" class="pomo-midia-tab" data-fmtab="video">🎬 Videoaula</button>
+          </div>
+          <div id="fm-podcast-pane">
+            <div class="fm-lista" id="fm-podcast-lista"></div>
+            <div class="fm-player" id="fm-player" hidden>
+              <button type="button" class="fm-play" id="fm-play" aria-label="Tocar">▶</button>
+              <div class="fm-player-meta">
+                <div class="fm-agora" id="fm-podcast-agora"></div>
+                <div class="fm-track" id="fm-track" role="slider" aria-label="Progresso do áudio" tabindex="0"><div class="fm-fill" id="fm-fill"></div></div>
+              </div>
+              <span class="fm-time" id="fm-time">0:00</span>
+              <audio id="fm-audio" preload="none" oncontextmenu="return false"></audio>
             </div>
-            <span class="fm-time" id="fm-time">0:00</span>
-            <audio id="fm-audio" preload="none" oncontextmenu="return false"></audio>
+          </div>
+          <div id="fm-video-pane" style="display:none;">
+            <div class="fm-lista" id="fm-video-lista"></div>
+            <div class="fm-palco" id="fm-video-palco"></div>
           </div>
         </div>
-        <div id="fm-video-pane" style="display:none;">
-          <div class="fm-lista" id="fm-video-lista"></div>
-          <div class="fm-palco" id="fm-video-palco"></div>
-        </div>
-      </div>
+      </details>
 
       <!-- Áudio ambiente -->
       <div class="pomo-audio-bar">
@@ -1809,6 +1823,7 @@
     document.getElementById('pomo-setup').style.display = '';
     document.getElementById('pomo-rodando').style.display = 'none';
     document.getElementById('pomo-overlay').style.display = '';
+    document.body.classList.add('pomo-aberto');
 
     const tagSetup = document.getElementById('pomo-area-tag');
     tagSetup.textContent = bloco.area;
@@ -1989,6 +2004,7 @@
     // Engine continua: timer e áudio persistem no widget flutuante de /questoes.
     // (Antigamente desligávamos o áudio aqui; agora ele segue junto com a sessão.)
     if (window.PBMPomo) PBMPomo.unmountAudioIframe();
+    document.body.classList.remove('pomo-aberto');
 
     window.location.href = '/questoes';
   }
@@ -2002,6 +2018,7 @@
     const painelMidia = document.getElementById('pomo-midia');
     if (painelMidia) painelMidia.style.display = 'none';
     document.getElementById('pomo-overlay').style.display = 'none';
+    document.body.classList.remove('pomo-aberto');
     document.getElementById('pomo-clock').style.color = ''; // reset cor
     // Reseta toggles /ciclo-specific da overlay
     const overlay = document.getElementById('pomo-overlay');
@@ -2134,6 +2151,7 @@
       if (blocoAtivo) {
         pomoBlocoAtual = blocoAtivo;
         document.getElementById('pomo-overlay').style.display = '';
+    document.body.classList.add('pomo-aberto');
         document.getElementById('pomo-setup').style.display = 'none';
         document.getElementById('pomo-rodando').style.display = '';
         const tag = document.getElementById('pomo-area-tag-2');
@@ -2149,6 +2167,13 @@
         }
         PBMPomo.mountAudioIframe(document.getElementById('pomo-audio-frame'));
         sincronizarAudioUI();
+        // Recarrega o painel de mídia da legislação ao restaurar a tela de foco
+        // (F5 / volta de /questoes) — senão o painel some (ADR-0047).
+        const credEl = document.getElementById('pomo-midia-credito');
+        if (credEl) credEl.textContent = '';
+        if (window.PBM && PBM.CicloMidiaFoco) {
+          PBM.CicloMidiaFoco.carregar(blocoAtivo, { onCredito: atualizarCreditoMidiaUI }).catch(() => {});
+        }
       }
     }
   }
