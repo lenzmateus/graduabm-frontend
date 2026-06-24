@@ -524,11 +524,22 @@
   .pomo-midia-tab:hover { color: #fff; border-color: var(--texto-suporte, #777); }
   .pomo-midia-tab.ativo { background: rgba(192,39,15,.15); color: #fff; border-color: var(--vermelho, #C0270F); }
   .fm-lista { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
-  .fm-item { display: flex; align-items: center; gap: 8px; text-align: left; background: transparent; border: 1px solid transparent; color: var(--cinza-texto, #9a9a9a); border-radius: 7px; padding: 7px 10px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; transition: background .12s, color .12s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .fm-item::before { content: '▷'; font-size: 9px; color: var(--cinza-texto, #777); flex: none; }
-  .fm-item:hover { background: rgba(255,255,255,.04); color: #fff; }
-  .fm-item.ativo { background: rgba(192,39,15,.12); color: #fff; }
-  .fm-item.ativo::before { content: '▶'; color: var(--vermelho, #C0270F); }
+  .fm-item { display: flex; align-items: center; border-radius: 7px; transition: background .12s; }
+  .fm-item:hover { background: rgba(255,255,255,.04); }
+  .fm-item.ativo { background: rgba(192,39,15,.12); }
+  .fm-sel { flex: 1; min-width: 0; display: flex; align-items: center; gap: 9px; text-align: left; background: transparent; border: none; color: var(--cinza-texto, #9a9a9a); padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; }
+  .fm-item:hover .fm-sel, .fm-item.ativo .fm-sel { color: #fff; }
+  .fm-item.concluido .fm-sel { color: #b9b9b9; }
+  .fm-ic { flex: none; width: 10px; font-size: 9px; color: var(--cinza-texto, #777); }
+  .fm-ic::before { content: '▷'; }
+  .fm-item.ativo .fm-ic::before { content: '▶'; color: var(--vermelho, #C0270F); }
+  .fm-item.andamento .fm-ic::before { content: '◔'; color: var(--cinza-texto, #9a9a9a); }
+  .fm-lb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fm-chk { flex: none; width: 26px; height: 26px; margin-right: 8px; border-radius: 50%; background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a); color: var(--cinza-texto, #777); font-size: 11px; line-height: 1; cursor: pointer; transition: all .12s; }
+  .fm-chk::before { content: '○'; }
+  .fm-chk:hover { color: #fff; border-color: var(--texto-suporte, #777); }
+  .fm-item.concluido .fm-chk { background: var(--vermelho, #C0270F); border-color: var(--vermelho, #C0270F); color: #fff; }
+  .fm-item.concluido .fm-chk::before { content: '✓'; }
   /* Player de áudio custom (o nativo destoa do dark do site) */
   #fm-audio { display: none; }
   .fm-player { display: flex; align-items: center; gap: 12px; background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 10px; padding: 10px 12px; }
@@ -1216,7 +1227,7 @@
 <script src="/js/pbm-components.js?v=10"></script>
 <script src="/js/services/cicloApi.js"></script>
 <script src="/js/pomodoro-widget.js?v=8"></script>
-<script src="/js/components/ciclo-midia-foco.js?v=2"></script>
+<script src="/js/components/ciclo-midia-foco.js?v=3"></script>
 <script>
   PBM.protegerRota();
   PBM.Layout.mount({ active: 'ciclo' });
