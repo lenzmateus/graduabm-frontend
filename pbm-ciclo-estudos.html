@@ -517,12 +517,22 @@
   .pomo-midia-tab { background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a); color: var(--cinza-texto, #9a9a9a); border-radius: 999px; padding: 5px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; cursor: pointer; transition: all .12s; }
   .pomo-midia-tab:hover { color: #fff; border-color: var(--texto-suporte, #777); }
   .pomo-midia-tab.ativo { background: rgba(192,39,15,.15); color: #fff; border-color: var(--vermelho, #C0270F); }
-  .fm-lista { display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; margin-bottom: 10px; }
-  .fm-item { text-align: left; background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a); color: #ddd; border-radius: 8px; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; transition: all .12s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .fm-item:hover { border-color: var(--texto-suporte, #777); }
-  .fm-item.ativo { background: rgba(192,39,15,.10); border-color: var(--vermelho, #C0270F); color: #fff; }
-  .fm-agora { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--cinza-texto, #9a9a9a); margin: 0 0 8px; min-height: 16px; }
-  #fm-audio { width: 100%; }
+  .fm-lista { display: flex; flex-direction: column; gap: 4px; max-height: 132px; overflow-y: auto; margin-bottom: 12px; }
+  .fm-item { display: flex; align-items: center; gap: 8px; text-align: left; background: transparent; border: 1px solid transparent; color: var(--cinza-texto, #9a9a9a); border-radius: 7px; padding: 7px 10px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; transition: background .12s, color .12s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fm-item::before { content: '▷'; font-size: 9px; color: var(--cinza-texto, #777); flex: none; }
+  .fm-item:hover { background: rgba(255,255,255,.04); color: #fff; }
+  .fm-item.ativo { background: rgba(192,39,15,.12); color: #fff; }
+  .fm-item.ativo::before { content: '▶'; color: var(--vermelho, #C0270F); }
+  /* Player de áudio custom (o nativo destoa do dark do site) */
+  #fm-audio { display: none; }
+  .fm-player { display: flex; align-items: center; gap: 12px; background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 10px; padding: 10px 12px; }
+  .fm-play { flex: none; width: 36px; height: 36px; border-radius: 50%; border: none; background: var(--vermelho, #C0270F); color: #fff; font-size: 12px; cursor: pointer; display: grid; place-items: center; transition: transform .12s; }
+  .fm-play:hover { transform: scale(1.07); }
+  .fm-player-meta { flex: 1; min-width: 0; }
+  .fm-agora { font-family: 'Inter', sans-serif; font-size: 12.5px; color: #eee; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 0 0 7px; }
+  .fm-track { height: 4px; background: var(--cinza-borda, #2a2a2a); border-radius: 2px; cursor: pointer; }
+  .fm-fill { height: 100%; width: 0; background: var(--vermelho, #C0270F); border-radius: 2px; transition: width .15s linear; }
+  .fm-time { flex: none; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--cinza-texto, #9a9a9a); min-width: 34px; text-align: right; }
   .fm-palco { background: #000; border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 10px; overflow: hidden; aspect-ratio: 16/9; }
   .fm-palco iframe { width: 100%; height: 100%; border: 0; display: block; }
   .pomo-box {
@@ -1124,8 +1134,15 @@
         </div>
         <div id="fm-podcast-pane">
           <div class="fm-lista" id="fm-podcast-lista"></div>
-          <div class="fm-agora" id="fm-podcast-agora"></div>
-          <audio id="fm-audio" preload="none" controls controlsList="nodownload" oncontextmenu="return false"></audio>
+          <div class="fm-player" id="fm-player" hidden>
+            <button type="button" class="fm-play" id="fm-play" aria-label="Tocar">▶</button>
+            <div class="fm-player-meta">
+              <div class="fm-agora" id="fm-podcast-agora"></div>
+              <div class="fm-track" id="fm-track" role="slider" aria-label="Progresso do áudio" tabindex="0"><div class="fm-fill" id="fm-fill"></div></div>
+            </div>
+            <span class="fm-time" id="fm-time">0:00</span>
+            <audio id="fm-audio" preload="none" oncontextmenu="return false"></audio>
+          </div>
         </div>
         <div id="fm-video-pane" style="display:none;">
           <div class="fm-lista" id="fm-video-lista"></div>
@@ -1185,7 +1202,7 @@
 <script src="/js/pbm-components.js?v=10"></script>
 <script src="/js/services/cicloApi.js"></script>
 <script src="/js/pomodoro-widget.js?v=8"></script>
-<script src="/js/components/ciclo-midia-foco.js?v=1"></script>
+<script src="/js/components/ciclo-midia-foco.js?v=2"></script>
 <script>
   PBM.protegerRota();
   PBM.Layout.mount({ active: 'ciclo' });
