@@ -199,6 +199,8 @@
     let posicaoInicial = 0;  // onde retomar quando o áudio carregar
     let episodios = [];      // lista achatada (já ordenada pelo backend) p/ auto-play
     let arrastando = false;  // seek por arraste na barra
+    let segAcum = 0;         // segundos de relógio tocados ainda não creditados ao Ciclo (ADR-0047)
+    let relogioBase = null;  // Date.now() do início do trecho tocando (null = parado)
 
     function fmtTempo(s) {
       if (!isFinite(s) || s < 0) return '0:00';
@@ -397,8 +399,10 @@
     }
 
     async function tocar(p) {
-      // Salva a posição do que estava tocando antes de trocar.
+      // Salva a posição e credita o tempo do que estava tocando antes de trocar.
       salvarProgresso();
+      enviarTempo();
+      segAcum = 0; relogioBase = null; // reset do contador de relógio para o novo episódio
       podcastAtual = p;
       posicaoInicial = 0;
       abrirSerieDoEpisodio(p.legislacao_id);
@@ -474,17 +478,36 @@
         concluido: !!concluido,
       }).catch(() => {});
     }
+    // ── Crédito de tempo ao Ciclo (ADR-0047): mede tempo de RELÓGIO tocado ──────
+    // (não currentTime — 2x/seek não inflam) e credita o delta ao Balde do bloco
+    // da legislação. O backend ignora se a lei não tem bloco não-concluído no ciclo.
+    function pulsarRelogio() {
+      if (relogioBase != null) { segAcum += (Date.now() - relogioBase) / 1000; relogioBase = Date.now(); }
+    }
+    function enviarTempo() {
+      pulsarRelogio();
+      if (!podcastAtual) return;
+      const inteiro = Math.floor(segAcum);
+      if (inteiro <= 0) return;
+      segAcum -= inteiro; // mantém o resto fracionário p/ o próximo envio
+      PBM.Podcasts.tempo(podcastAtual.id, { segundos: inteiro }).catch(() => {});
+    }
+    function pararRelogio() { pulsarRelogio(); relogioBase = null; enviarTempo(); }
+    elAudio.addEventListener('play', () => { relogioBase = Date.now(); });
+
     elAudio.addEventListener('timeupdate', () => {
       const agora = Date.now();
-      if (agora - ultimoSalvo > 10000) { ultimoSalvo = agora; salvarProgresso(); }
+      if (agora - ultimoSalvo > 10000) { ultimoSalvo = agora; salvarProgresso(); enviarTempo(); }
     });
-    elAudio.addEventListener('pause', () => salvarProgresso());
+    elAudio.addEventListener('pause', () => { salvarProgresso(); pararRelogio(); });
     elAudio.addEventListener('ended', aoTerminar);
-    window.addEventListener('pagehide', () => salvarProgresso());
-    document.addEventListener('visibilitychange', () => { if (document.hidden) salvarProgresso(); });
+    // Em background o áudio pode seguir tocando: só faz flush, não para o relógio.
+    window.addEventListener('pagehide', () => { salvarProgresso(); enviarTempo(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { salvarProgresso(); enviarTempo(); } });
 
     // Fim do episódio: marca como ouvido, atualiza o selo da série e toca o próximo capítulo.
     function aoTerminar() {
+      pararRelogio(); // credita o tempo final antes de trocar de episódio
       salvarProgresso(true);
       if (!podcastAtual) return;
       const concluido = podcastAtual;
@@ -545,10 +568,14 @@
 
     (async function init() {
       await PBM.protegerRota();
+      // Deep-link a partir do Ciclo: ?legislacao_id= filtra a série daquela lei.
+      const legFiltro = new URLSearchParams(location.search).get('legislacao_id');
       try {
-        const podcasts = await PBM.Podcasts.listar();
+        const podcasts = await PBM.Podcasts.listar(legFiltro || undefined);
         if (!podcasts.length) {
-          elStatus.textContent = 'Nenhum podcast disponível ainda. Volte em breve.';
+          elStatus.textContent = legFiltro
+            ? 'Nenhum podcast desta legislação ainda. Volte em breve.'
+            : 'Nenhum podcast disponível ainda. Volte em breve.';
           return;
         }
         elStatus.hidden = true;
