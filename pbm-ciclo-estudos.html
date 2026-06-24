@@ -488,6 +488,7 @@
   .pomo-overlay.tela-preta .pomo-sug,
   .pomo-overlay.tela-preta .pomo-actions,
   .pomo-overlay.tela-preta .pomo-clock,
+  .pomo-overlay.tela-preta .pomo-midia,
   .pomo-overlay.tela-preta .pomo-audio-bar { display: none !important; }
   /* Defesa direta: força dark nos 4 botões de áudio e nos toggles,
      mesmo se a cascata de variáveis falhar em algum browser. */
@@ -508,6 +509,22 @@
   .pomo-overlay.tela-preta .pomo-audio-frame iframe {
     background: #000 !important;
   }
+  /* Mídia da legislação embutida na tela de foco (ADR-0047) */
+  .pomo-midia { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--cinza-borda, #2a2a2a); text-align: left; }
+  .pomo-midia-titulo { font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.04em; color: var(--cinza-texto, #9a9a9a); margin-bottom: 10px; }
+  .pomo-midia-credito { color: var(--vermelho, #C0270F); margin-left: 6px; }
+  .pomo-midia-tabs { display: flex; gap: 8px; margin-bottom: 10px; }
+  .pomo-midia-tab { background: transparent; border: 1px solid var(--cinza-borda, #2a2a2a); color: var(--cinza-texto, #9a9a9a); border-radius: 999px; padding: 5px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; cursor: pointer; transition: all .12s; }
+  .pomo-midia-tab:hover { color: #fff; border-color: var(--texto-suporte, #777); }
+  .pomo-midia-tab.ativo { background: rgba(192,39,15,.15); color: #fff; border-color: var(--vermelho, #C0270F); }
+  .fm-lista { display: flex; flex-direction: column; gap: 6px; max-height: 160px; overflow-y: auto; margin-bottom: 10px; }
+  .fm-item { text-align: left; background: var(--cinza-escuro, #1a1a1a); border: 1px solid var(--cinza-borda, #2a2a2a); color: #ddd; border-radius: 8px; padding: 8px 12px; font-family: 'Inter', sans-serif; font-size: 13px; cursor: pointer; transition: all .12s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .fm-item:hover { border-color: var(--texto-suporte, #777); }
+  .fm-item.ativo { background: rgba(192,39,15,.10); border-color: var(--vermelho, #C0270F); color: #fff; }
+  .fm-agora { font-family: 'Inter', sans-serif; font-size: 12px; color: var(--cinza-texto, #9a9a9a); margin: 0 0 8px; min-height: 16px; }
+  #fm-audio { width: 100%; }
+  .fm-palco { background: #000; border: 1px solid var(--cinza-borda, #2a2a2a); border-radius: 10px; overflow: hidden; aspect-ratio: 16/9; }
+  .fm-palco iframe { width: 100%; height: 100%; border: 0; display: block; }
   .pomo-box {
     text-align: center;
     max-width: 540px; width: 100%;
@@ -1095,6 +1112,27 @@
         <button class="btn-secundario" id="pomo-encerrar">Cancelar (não conclui)</button>
       </div>
 
+      <!-- Mídia da legislação: ouvir/assistir aqui conta no balde do bloco e é
+           deduzido do tempo do Pomodoro (não conta dobrado) — ADR-0047. -->
+      <div class="pomo-midia" id="pomo-midia" style="display:none;">
+        <div class="pomo-midia-titulo">
+          📚 Estudar ouvindo/assistindo<span class="pomo-midia-credito" id="pomo-midia-credito"></span>
+        </div>
+        <div class="pomo-midia-tabs">
+          <button type="button" class="pomo-midia-tab ativo" data-fmtab="podcast">🎧 Podcast</button>
+          <button type="button" class="pomo-midia-tab" data-fmtab="video">🎬 Videoaula</button>
+        </div>
+        <div id="fm-podcast-pane">
+          <div class="fm-lista" id="fm-podcast-lista"></div>
+          <div class="fm-agora" id="fm-podcast-agora"></div>
+          <audio id="fm-audio" preload="none" controls controlsList="nodownload" oncontextmenu="return false"></audio>
+        </div>
+        <div id="fm-video-pane" style="display:none;">
+          <div class="fm-lista" id="fm-video-lista"></div>
+          <div class="fm-palco" id="fm-video-palco"></div>
+        </div>
+      </div>
+
       <!-- Áudio ambiente -->
       <div class="pomo-audio-bar">
         <div class="pomo-audio-bar-titulo">🎧 Som de fundo (opcional)</div>
@@ -1143,10 +1181,11 @@
   </div>
 </div>
 
-<script src="/js/api.js?v=5"></script>
+<script src="/js/api.js?v=6"></script>
 <script src="/js/pbm-components.js?v=10"></script>
 <script src="/js/services/cicloApi.js"></script>
 <script src="/js/pomodoro-widget.js?v=8"></script>
+<script src="/js/components/ciclo-midia-foco.js?v=1"></script>
 <script>
   PBM.protegerRota();
   PBM.Layout.mount({ active: 'ciclo' });
@@ -1850,6 +1889,19 @@
       PBMPomo.mountAudioIframe(document.getElementById('pomo-audio-frame'));
       sincronizarAudioUI();
     }
+
+    // Mídia da legislação embutida na tela de foco: ouvir/assistir aqui conta no
+    // balde do bloco (ADR-0047) e é deduzido do tempo do Pomodoro ao ir pras
+    // questões (não conta dobrado). O painel só aparece se houver mídia da lei.
+    document.getElementById('pomo-midia-credito').textContent = '';
+    if (window.PBM && PBM.CicloMidiaFoco) {
+      PBM.CicloMidiaFoco.carregar(pomoBlocoAtual, { onCredito: atualizarCreditoMidiaUI }).catch(() => {});
+    }
+  }
+
+  function atualizarCreditoMidiaUI(totalMin) {
+    const el = document.getElementById('pomo-midia-credito');
+    if (el) el.textContent = totalMin > 0 ? ` · ✓ ${totalMin} min já contam no bloco` : '';
   }
 
   // Listeners do engine atualizam o display da overlay.
@@ -1886,7 +1938,10 @@
       ? PBMPomo.getEstudoMsAcumulado()
       : pomoEstudoMs + (pomoFase === 'estudando' && pomoFaseInicioMs
           ? Math.max(0, Date.now() - pomoFaseInicioMs) : 0);
-    const minutosEstudados = Math.round(totalMs / 60000);
+    // Deduz o que a mídia (podcast/videoaula) já creditou ao balde nesta sessão,
+    // para o tempo não contar dobrado (ADR-0047).
+    const minutosMidia = (window.PBM && PBM.CicloMidiaFoco) ? PBM.CicloMidiaFoco.minutosCreditados() : 0;
+    const minutosEstudados = Math.max(0, Math.round(totalMs / 60000) - minutosMidia);
 
     if (minutosEstudados > 0) {
       try {
@@ -1896,6 +1951,7 @@
         });
       } catch (_) {}
     }
+    if (window.PBM && PBM.CicloMidiaFoco) PBM.CicloMidiaFoco.pararTudo();
 
     // Preparar sessionStorage para /questoes (chaves que pbm-questoes.html lê)
     sessionStorage.setItem('pbm_curso', estado.curso);
@@ -1925,6 +1981,9 @@
     pomoTimer = null;
     pomoBlocoAtual = null;
     if (window.PBMPomo) PBMPomo.cancelar();
+    if (window.PBM && PBM.CicloMidiaFoco) PBM.CicloMidiaFoco.pararTudo();
+    const painelMidia = document.getElementById('pomo-midia');
+    if (painelMidia) painelMidia.style.display = 'none';
     document.getElementById('pomo-overlay').style.display = 'none';
     document.getElementById('pomo-clock').style.color = ''; // reset cor
     // Reseta toggles /ciclo-specific da overlay
