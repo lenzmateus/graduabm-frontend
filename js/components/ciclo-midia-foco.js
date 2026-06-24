@@ -232,6 +232,11 @@
     if (pod.audio) { try { pod.audio.pause(); } catch (_) {} enviarPod(); }
     pararVideo();
   }
+  // Pausa a mídia (sem destruir) para o sinal do Pomodoro sobrepor no fim da fase.
+  function pausarMidia() {
+    if (pod.audio) { try { pod.audio.pause(); } catch (_) {} }
+    if (vid.player && vid.player.pauseVideo) { try { vid.player.pauseVideo(); } catch (_) {} }
+  }
   async function carregar(bloco, opts) {
     reset();
     onCredito = (opts && opts.onCredito) || null;
@@ -275,6 +280,7 @@
   window.PBM.CicloMidiaFoco = {
     carregar: carregar,
     pararTudo: pararTudo,
+    pausarMidia: pausarMidia,
     reset: reset,
     minutosCreditados: function () { return creditadoMin; },
   };

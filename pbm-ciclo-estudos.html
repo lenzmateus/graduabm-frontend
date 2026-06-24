@@ -448,7 +448,9 @@
     background: var(--bg-primario);
     color: var(--texto-principal);
     z-index: 1000;
-    display: flex; align-items: center; justify-content: center;
+    /* column + flex-start + margin:auto no box: centraliza quando cabe e mantém o
+       topo (timer) alcançável pelo scroll quando o conteúdo passa da tela. */
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
     padding: 20px; overflow-y: auto;
   }
   /* Modo "Tela preta" — força paleta escura em TODO o overlay (e descendentes),
@@ -555,6 +557,7 @@
   .pomo-box {
     text-align: center;
     max-width: 540px; width: 100%;
+    margin: auto 0; /* centraliza vertical quando cabe; topo alcançável no overflow */
     /* O scroll fica no .pomo-overlay (overflow-y:auto). Box sem scroll próprio
        evita scrollbar aninhada. */
   }
@@ -1227,7 +1230,7 @@
 <script src="/js/pbm-components.js?v=10"></script>
 <script src="/js/services/cicloApi.js"></script>
 <script src="/js/pomodoro-widget.js?v=8"></script>
-<script src="/js/components/ciclo-midia-foco.js?v=3"></script>
+<script src="/js/components/ciclo-midia-foco.js?v=4"></script>
 <script>
   PBM.protegerRota();
   PBM.Layout.mount({ active: 'ciclo' });
@@ -1967,10 +1970,15 @@
   }
   function aplicarTransicao(ev) {
     const clock = document.getElementById('pomo-clock');
-    if (!clock) return;
-    clock.classList.remove('fase-pausa-curta', 'fase-pausa-longa');
-    if (ev.para === 'pausa-longa') clock.classList.add('fase-pausa-longa');
-    else if (ev.para === 'pausa-curta') clock.classList.add('fase-pausa-curta');
+    if (clock) {
+      clock.classList.remove('fase-pausa-curta', 'fase-pausa-longa');
+      if (ev.para === 'pausa-longa') clock.classList.add('fase-pausa-longa');
+      else if (ev.para === 'pausa-curta') clock.classList.add('fase-pausa-curta');
+    }
+    // O sinal do Pomodoro precisa sobrepor a mídia de estudo no fim da fase:
+    // pausa a mídia (podcast/videoaula) e toca a sirene para o aluno perceber a virada.
+    if (window.PBM && PBM.CicloMidiaFoco) PBM.CicloMidiaFoco.pausarMidia();
+    try { const sirene = new Audio('audio/sirene.mp3'); sirene.volume = 1.0; sirene.play().catch(() => {}); } catch (_) {}
   }
 
   async function pomoIrParaQuestoes() {
